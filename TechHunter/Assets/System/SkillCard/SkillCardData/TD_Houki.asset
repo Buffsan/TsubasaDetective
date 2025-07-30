@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb115587ebfd0544b17a03fb5d1cda0, type: 3}
+  m_Name: TD_Houki
+  m_EditorClassIdentifier: 
+  SkillImage: {fileID: 21300000, guid: eaa9b3725ff94ab4ead4de841cf75932, type: 3}
+  SkillName: "\u30B4\u30DF\u6383\u9664"
+  SkillMessage: "\u30DE\u30A6\u30B9\u30AB\u30FC\u30BD\u30EB\u306E\u65B9\u5411\u306B\u30AA\u30FC\u30C0\u30FC\u30E1\u30A4\u30C9\u306E\u7B92\u3092\u632F\u308A\u56DE\u3059\u3002\u30B9\u30BF\u30F3\u653B\u6483\u529B\u3068\u602F\u307F\u653B\u6483\u529B\u304C\u9AD8\u3044\u3002"
+  CoolTime: 0.6
+  SkillData: {fileID: 8444026472198761522, guid: 9c8dd9c963695ab499cd6caa13974c6c, type: 3}
+  SkillDataList:
+  - {fileID: 8444026472198761522, guid: 9c8dd9c963695ab499cd6caa13974c6c, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  MaxStack: 0

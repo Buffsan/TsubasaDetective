@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb115587ebfd0544b17a03fb5d1cda0, type: 3}
+  m_Name: CG_RockNeedle
+  m_EditorClassIdentifier: 
+  SkillImage: {fileID: 21300000, guid: 171e2b27693617149be0600c05e7c831, type: 3}
+  SkillName: "\u571F\u3088\u9686\u8D77\u305B\u3088"
+  SkillMessage: "\uFF11\uFF0E\uFF15\u79D2\u9593\u8A60\u5531\u3057\u305F\u5F8C\u306B\u5468\u56F2\u306E\u6575\u6700\u5927\uFF11\uFF10\u4F53\u306E\u8DB3\u5143\u306B\u30B9\u30BF\u30F3\u653B\u6483\u529B\u306E\u9AD8\u3044\u5CA9\u3092\u9686\u8D77\u3055\u305B\u308B\u3002\u8A60\u5531\u4E2D\u306B\u4ED6\u30B9\u30AD\u30EB\u3092\u4F7F\u7528\u3059\u308B\u3068\u30AD\u30E3\u30F3\u30BB\u30EB\u3055\u308C\u3066\u3057\u307E\u3046\u3002"
+  CoolTime: 15
+  SkillData: {fileID: 8938690049473394963, guid: 1425fa7c197bd1641ae99378b62972de, type: 3}
+  SkillDataList:
+  - {fileID: 8938690049473394963, guid: 1425fa7c197bd1641ae99378b62972de, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  MaxStack: 0

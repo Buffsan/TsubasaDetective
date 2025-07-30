@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb115587ebfd0544b17a03fb5d1cda0, type: 3}
+  m_Name: CG_AutomaticCrossbow
+  m_EditorClassIdentifier: 
+  SkillImage: {fileID: 21300000, guid: 1b0f161b1c1e8cb46bcc1f094bf5dfcd, type: 3}
+  SkillName: "\u81EA\u52D5\u30AF\u30ED\u30B9\u30DC\u30A6\u5C04\u6483"
+  SkillMessage: "\u524D\u65B9\u306B20\u767A\u306E\u5F13\u77E2\u3092\u5C04\u51FA\u3059\u308B\u3002\u30AF\u30EB\u30FC\u30BF\u30A4\u30E0\u3082\u77ED\u304F\u52B9\u679C\u306F\u7D76\u5927\u3060\u304C\u3001\u767A\u52D5\u4E2D\u306F\u79FB\u52D5\u901F\u5EA6\u304C\u5927\u5E45\u306B\u6E1B\u5C11\u3059\u308B\u3002"
+  CoolTime: 33
+  SkillData: {fileID: 5536113000070016315, guid: 57930cac6e92a844794bccd090a6e1b1, type: 3}
+  SkillDataList:
+  - {fileID: 5536113000070016315, guid: 57930cac6e92a844794bccd090a6e1b1, type: 3}
+  - {fileID: 5536113000070016315, guid: 5ebfe31840e684a40be1743bb6ff7b25, type: 3}
+  - {fileID: 5536113000070016315, guid: 3c9622427d93d7a4ea70ae027e29e9e6, type: 3}
+  MaxStack: 0

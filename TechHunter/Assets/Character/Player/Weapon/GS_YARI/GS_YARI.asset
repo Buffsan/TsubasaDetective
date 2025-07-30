@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9db937061371a418fa7ad9233fd38b, type: 3}
+  m_Name: GS_YARI
+  m_EditorClassIdentifier: 
+  attackType: 4
+  Attack: 6
+  AttackSpeedTime: 0
+  StaggerPower: 1
+  ConfusionPower: 0.7
+  KnockBackPower: 0
+  MaxStack: 0
+  HitAudio: {fileID: 8300000, guid: cfd6bcbd226a4dd42be7b1ad7c432bad, type: 3}

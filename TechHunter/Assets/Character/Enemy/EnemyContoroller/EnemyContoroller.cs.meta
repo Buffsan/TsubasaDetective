@@ -1,0 +1,30 @@
+fileFormatVersion: 2
+guid: 3b5af40ab1267e74385425600ec45b46
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - charadata: {instanceID: 0}
+  - DieEffect: {fileID: 8154208296095492929, guid: af818acf56f0e3447abac572065cc876, type: 3}
+  - EnemyAnimBody: {instanceID: 0}
+  - AttackArea: {fileID: 7223849972691123495, guid: 899721521b650b04589abc041c7755f1, type: 3}
+  - AttackSpawnPoint: {instanceID: 0}
+  - Player: {instanceID: 0}
+  - animator: {instanceID: 0}
+  - HP_Slider: {instanceID: 0}
+  - Confusion_Slider: {instanceID: 0}
+  - rb: {instanceID: 0}
+  - DamageTextCanvas: {fileID: 2677233385989407709, guid: 1b644cc615a560543b7071174e1228a7, type: 3}
+  - DamageCountText: {instanceID: 0}
+  - Coin: {instanceID: 0}
+  - myAttack: {instanceID: 0}
+  - AttackAudio: {instanceID: 0}
+  - AttackStayAudio: {instanceID: 0}
+  - DieAudio: {instanceID: 0}
+  - ConfusionAudio: {instanceID: 0}
+  - moveBase: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

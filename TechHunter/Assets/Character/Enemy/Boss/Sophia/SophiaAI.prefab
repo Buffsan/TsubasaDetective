@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4250237592832571851
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5337401164084972754}
+  - component: {fileID: 2058158297543977961}
+  m_Layer: 0
+  m_Name: SophiaAI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5337401164084972754
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4250237592832571851}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.35094965, y: 0.8503535, z: -0.04440472}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2058158297543977961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4250237592832571851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 977fb89a265d2364b8f9f099986f4b56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnemyName: "\u5B97\u6559\u56FD\u5BB6\u306E\u4FEE\u9053\u5973\u30BD\u30D5\u30A3\u30A2"
+  enemyBase: {fileID: 0}
+  AttackNumber: 0
+  AttackWaitTime: 0
+  AllAttackNumber: 0
+  phase: 0
+  Motar: {fileID: 8070496085575064809, guid: 1dc4dd3f6dc4a954d80ca571a55777a3, type: 3}
+  Laser: {fileID: 443148758960456368, guid: c2579bd2557f082468e9ed70c680fe20, type: 3}
+  Star: {fileID: 647984777046018507, guid: 51617c0c3e504954da8f4e09bb56d56a, type: 3}
+  Slash: {fileID: 388859958678089270, guid: ff60ff3bcef1ccc49b02f56716e046d2, type: 3}
+  AttackStartEffect: {fileID: 6782974541929271303, guid: de5f7c312a3c0054595a54f736352d1f, type: 3}
+  StarClip: {fileID: 8300000, guid: 9764dff15c846354ea81486bcadd24dc, type: 3}
+  AttackStartClip: {fileID: 8300000, guid: 8c18d3b2cb6ea0348ab67878c930e209, type: 3}

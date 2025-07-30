@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9db937061371a418fa7ad9233fd38b, type: 3}
+  m_Name: StarSmog
+  m_EditorClassIdentifier: 
+  attackType: 3
+  Attack: 9
+  AttackSpeedTime: 0
+  StaggerPower: 5
+  ConfusionPower: 0.2
+  KnockBackPower: 0
+  MaxStack: 0
+  HitAudio: {fileID: 8300000, guid: c879d054cb949c545a43ec1542faa99a, type: 3}

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
+  m_Name: FoodServer_ARAKAZE
+  m_EditorClassIdentifier: 
+  NAME: "\u914D\u81B3\u8005\u30FC\u8352\u98A8"
+  MAXHP: 280
+  Regen: 0
+  MAXMP: 0
+  SPEED: 2
+  ATK: 5
+  ATKDF: 1
+  GOLD: 16
+  XP: 20
+  StanHP: 0
+  ConfusionResistance: 200
+  Critical: 0
+  Range: 0
+  ConfusionResistanceRegen: 15

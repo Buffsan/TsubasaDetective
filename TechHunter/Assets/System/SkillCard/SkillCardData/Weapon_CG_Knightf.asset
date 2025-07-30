@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb115587ebfd0544b17a03fb5d1cda0, type: 3}
+  m_Name: Weapon_CG_Knightf
+  m_EditorClassIdentifier: 
+  SkillImage: {fileID: 21300000, guid: 396177a242464b9418130844bdc0519c, type: 3}
+  SkillName: "\u9F20\u9248\u306E\u9AA8\u30CA\u30A4\u30D5"
+  SkillMessage: 
+  CoolTime: 0
+  SkillData: {fileID: 7439381029128719663, guid: c55067cd523432745b44245945404c0a, type: 3}
+  SkillDataList:
+  - {fileID: 7439381029128719663, guid: c55067cd523432745b44245945404c0a, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  MaxStack: 0

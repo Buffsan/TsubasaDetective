@@ -25,6 +25,10 @@ public class SophiaLaser : MonoBehaviour
     [SerializeField] GameObject AttackArea;
     AudioManager manager => AudioManager.instance;
 
+    public float LaserCounts0 =0.8f;
+    public float LaserCounts1 = 0.05f;
+    public float LaserCounts2 = 3;
+
     PlayerController playerController => PlayerController.Instance;
 
     public enum MoveType 
@@ -60,7 +64,7 @@ public class SophiaLaser : MonoBehaviour
             if (MoveType.M2 == moveType)
             {
 
-                if (LaserCount > 0.8)
+                if (LaserCount > LaserCounts0)
                 {
 
                     GameObject CL_Laser = Instantiate(LaserEffect, transform.position, transform.rotation);
@@ -76,7 +80,7 @@ public class SophiaLaser : MonoBehaviour
             if (MoveType.M3 == moveType)
             {
                 animator.SetInteger("Anim", 1);
-                if (LaserCount > 0.05)
+                if (LaserCount > LaserCounts1)
                 {
                     moveType = MoveType.M4;
                     LaserCount = 0;
@@ -106,7 +110,7 @@ public class SophiaLaser : MonoBehaviour
                 }
 
                     animator.SetInteger("Anim", 2);
-                if (LaserCount > 3)
+                if (LaserCount > LaserCounts2)
                 {
                     moveType = MoveType.M5;
                     LaserCount = 0;

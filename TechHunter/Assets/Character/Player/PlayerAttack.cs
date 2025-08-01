@@ -57,12 +57,12 @@ public class PlayerAttack : MonoBehaviour
         float AttackAll;
         if (controller.AddCritical <= CriticalRandom)
         {
-             AttackAll = ((weapondata.Attack + controller.ATK) * (1 + controller.AddATK / 10) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff;
+             AttackAll = ((weapondata.Attack + controller.ATK) * ((100 + controller.AddATK)/100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff;
         }
         else 
         {
             Debug.Log("CriticalII");
-            AttackAll = (((weapondata.Attack + controller.ATK) * (1 + controller.AddATK / 10)  + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff) *3;
+            AttackAll = (((weapondata.Attack + controller.ATK) * ((100 + controller.AddATK) / 100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff) *3;
         }
 
         return AttackAll;

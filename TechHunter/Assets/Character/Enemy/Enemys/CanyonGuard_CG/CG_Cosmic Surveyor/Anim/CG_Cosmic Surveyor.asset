@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
-  m_Name: Player
+  m_Name: CG_Cosmic Surveyor
   m_EditorClassIdentifier: 
-  NAME: "\u30A8\u30EA\u30B9"
-  MAXHP: 10
+  NAME: "\u30AD\u30E3\u30CB\u30AA\u30F3\u30AC\u30FC\u30C9\u306E\u6E2C\u91CF\u8853\u5E2B"
+  MAXHP: 49
   Regen: 0
-  MAXMP: 6
-  SPEED: 3.5
-  ATK: 0
-  ATKDF: 0
-  GOLD: 0
+  MAXMP: 0
+  SPEED: 2
+  ATK: 2
+  ATKDF: 1
+  GOLD: 12
   XP: 0
   StanHP: 0
-  ConfusionResistance: 0
+  ConfusionResistance: 90
   Critical: 0
   Range: 0
   ConfusionResistanceRegen: 15

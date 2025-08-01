@@ -39,14 +39,17 @@ public class EnemyAttack : MonoBehaviour
             IDamageable damageable = other.GetComponent<IDamageable>();
             if (damageable != null)
             {
-
-                damageable.Damage(enemyBase.ATK, 0, 0);
+                if (enemyBase != null)
+                {
+                    damageable.Damage(enemyBase.ATK, 0, 0);
+                }
+                else if (charadata != null) 
+                {
+                    damageable.Damage(charadata.ATK, 0, 0);
+                }
 
             }
-            else if (charadata != null) 
-            {
-                damageable.Damage(charadata.ATK, 0, 0);
-            }
+            
         }
     }
     public void DestroyArea() 

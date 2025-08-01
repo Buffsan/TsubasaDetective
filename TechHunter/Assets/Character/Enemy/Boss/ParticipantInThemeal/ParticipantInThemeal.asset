@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: ParticipantInThemeal
   m_EditorClassIdentifier: 
   NAME: "\u4F1A\u98DF\u8005"
-  MAXHP: 1800
+  MAXHP: 2500
   Regen: 0
   MAXMP: 0
   SPEED: 3
-  ATK: 6
+  ATK: 3
   ATKDF: 3
   GOLD: 240
   XP: 0
   StanHP: 10
-  ConfusionResistance: 450
+  ConfusionResistance: 500
   Critical: 0
   Range: 0
-  ConfusionResistanceRegen: 400
+  ConfusionResistanceRegen: 500

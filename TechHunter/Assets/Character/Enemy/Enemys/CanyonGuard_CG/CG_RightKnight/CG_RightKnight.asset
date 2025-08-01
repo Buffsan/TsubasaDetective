@@ -17,7 +17,7 @@ MonoBehaviour:
   Regen: 0
   MAXMP: 0
   SPEED: 0.8
-  ATK: 3
+  ATK: 1
   ATKDF: 0
   GOLD: 1
   XP: 1

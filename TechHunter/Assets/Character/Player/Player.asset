@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Player
   m_EditorClassIdentifier: 
   NAME: "\u30A8\u30EA\u30B9"
-  MAXHP: 16
+  MAXHP: 5
   Regen: 0
-  MAXMP: 5
-  SPEED: 3
+  MAXMP: 6
+  SPEED: 3.5
   ATK: 1
   ATKDF: 0
   GOLD: 0

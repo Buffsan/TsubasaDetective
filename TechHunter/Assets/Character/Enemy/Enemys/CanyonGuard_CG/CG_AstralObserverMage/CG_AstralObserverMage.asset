@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CG_AstralObserverMage
   m_EditorClassIdentifier: 
   NAME: "\u30AD\u30E3\u30CB\u30AA\u30F3\u30AC\u30FC\u30C9\u306E\u89B3\u6E2C\u8853\u5E2B"
-  MAXHP: 90
+  MAXHP: 65
   Regen: 0
   MAXMP: 0
   SPEED: 0
@@ -22,7 +22,7 @@ MonoBehaviour:
   GOLD: 6
   XP: 0
   StanHP: 5
-  ConfusionResistance: 40
+  ConfusionResistance: 4
   Critical: 0
   Range: 0
   ConfusionResistanceRegen: 20

@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: EarthSite
   m_EditorClassIdentifier: 
   NAME: "Earth\u30B5\u30A4\u30C8"
-  MAXHP: 230
+  MAXHP: 190
   Regen: 0
   MAXMP: 0
   SPEED: 3
   ATK: 5
   ATKDF: 0
-  GOLD: 43
+  GOLD: 16
   XP: 0
   StanHP: 0
   ConfusionResistance: 80

@@ -13,6 +13,9 @@ public class EnemySpawnBase : MonoBehaviour
     public system_GameModeManager gameModeManager;
 
     public List<GameObject> SpawnList = new List<GameObject>();
+
+    public List<EnemySpawnData> enemySpawnDatas = new List<EnemySpawnData>();
+
     public List<Vector3Int> tilePosition = new List<Vector3Int>();
 
     public List<GameObject> Map = new List<GameObject>();
@@ -96,7 +99,37 @@ public class EnemySpawnBase : MonoBehaviour
 
         
     }
+    public void SpawnEnemy(EnemySpawnData enemySpawnDataVALL)
+    {
+        foreach (EnemySpawnGroup enemy in enemySpawnDataVALL.enemyspawnGroup)
+        {
+            int id = GetEnemyID(enemy.enemyType);
+            isCloneEnemy(id, enemy.SpawnNumber);
+        }
+    }
+    private static readonly Dictionary<EnemySpawnGroup.EnemyType, int> enemyIdMap = new()
+    {
+        { EnemySpawnGroup.EnemyType.CG_RightKnight, 5 },
+        { EnemySpawnGroup.EnemyType.CG_Knight, 0 },
+        { EnemySpawnGroup.EnemyType.CG_Sniper, 2 },
+        { EnemySpawnGroup.EnemyType.CG_Spire, 3 },
+        { EnemySpawnGroup.EnemyType.CG_shieldKnight, 1 },
+        { EnemySpawnGroup.EnemyType.CG_Wizard, 4 },
+        { EnemySpawnGroup.EnemyType.CG_Heavy_Knight, 9 },
+        { EnemySpawnGroup.EnemyType.CG_Heavy_Sniper, 10 },
+        { EnemySpawnGroup.EnemyType.CG_Heavy_Wizard, 3 },
+        { EnemySpawnGroup.EnemyType.CG_Hanter, 7 },
+        { EnemySpawnGroup.EnemyType.CG_StarWizard, 6 },
+        { EnemySpawnGroup.EnemyType.MONSTAR_ErathSite, 8 },
+    };
 
+    public int GetEnemyID(EnemySpawnGroup.EnemyType type)
+    {
+        if (enemyIdMap.TryGetValue(type, out int id))
+            return id;
+        else
+            return -1; // –¢’è‹`
+    }
     public void isStartClone() 
     {
         FloorTileMap = Seve_TileMap_C.FloorMap;
@@ -112,23 +145,19 @@ public class EnemySpawnBase : MonoBehaviour
 
         //playerController.cameraM.isChangeNumber(Seve_TileMap_C.MoveCamera);
 
-        List<EnemySpawn> level1Spawns = new List<EnemySpawn>();
+        List<EnemySpawnData> level1Spawns = new List<EnemySpawnData>();
 
-        foreach (GameObject spawn in SpawnList)
+        foreach (var spawn in enemySpawnDatas)
         {
-            EnemySpawn enemySpawn = spawn.GetComponent<EnemySpawn>();
-            if (enemySpawn.Level == gameModeManager.AllGameLevel)
+            if (spawn.StageLevel == gameModeManager.AllGameLevel)
             {
-                level1Spawns.Add(enemySpawn);
+                level1Spawns.Add(spawn);
             }
         }
 
-        EnemySpawn randomSpawn = level1Spawns[Random.Range(0, level1Spawns.Count)];
-        GameObject CL_EnemySpawn = Instantiate(randomSpawn.gameObject);
-        EnemySpawn CL_Spawn = CL_EnemySpawn.GetComponent<EnemySpawn>();
-        CL_Spawn.enemyspawn = this;
-        CL_Spawn.SpawnEnemy();
-        Destroy( CL_EnemySpawn );
+        EnemySpawnData randomSpawn = level1Spawns[Random.Range(0, level1Spawns.Count)];
+        SpawnEnemy(randomSpawn);
+
 
         GameObject[] Enemys = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in Enemys) 

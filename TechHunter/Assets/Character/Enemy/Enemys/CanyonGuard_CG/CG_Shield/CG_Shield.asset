@@ -14,11 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NAME: 
   MAXHP: 55
+  Regen: 0
   MAXMP: 0
   SPEED: 0.6
-  ATK: 6
+  ATK: 2
   ATKDF: 3
   GOLD: 22
   XP: 6
   StanHP: 4
   ConfusionResistance: 55
+  Critical: 0
+  Range: 0
+  ConfusionResistanceRegen: 15

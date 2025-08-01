@@ -9,20 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
-  m_Name: CG_Wizard
+  m_Script: {fileID: 11500000, guid: 27e8f73261ed9894790f38b10f03bc27, type: 3}
+  m_Name: Level2 3
   m_EditorClassIdentifier: 
-  NAME: 
-  MAXHP: 30
-  Regen: 0
-  MAXMP: 0
-  SPEED: 0.4
-  ATK: 3
-  ATKDF: 0
-  GOLD: 14
-  XP: 0
-  StanHP: 0
-  ConfusionResistance: 10
-  Critical: 0
-  Range: 0
-  ConfusionResistanceRegen: 15
+  enemyspawn: {fileID: 0}
+  enemyspawnGroup:
+  - enemyType: 11
+    SpawnNumber: 1
+  - enemyType: 4
+    SpawnNumber: 2
+  StageLevel: 1

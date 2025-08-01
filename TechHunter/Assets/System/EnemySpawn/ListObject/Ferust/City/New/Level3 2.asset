@@ -10,10 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27e8f73261ed9894790f38b10f03bc27, type: 3}
-  m_Name: New Enemy Spawn Data
+  m_Name: Level3 2
   m_EditorClassIdentifier: 
   enemyspawn: {fileID: 0}
   enemyspawnGroup:
-  - enemyType: 7
-    SpawnNumber: 0
-  StageLevel: 0
+  - enemyType: 4
+    SpawnNumber: 2
+  - enemyType: 3
+    SpawnNumber: 2
+  - enemyType: 1
+    SpawnNumber: 2
+  - enemyType: 0
+    SpawnNumber: 5
+  StageLevel: 2

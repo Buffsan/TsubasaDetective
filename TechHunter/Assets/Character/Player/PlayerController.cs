@@ -17,6 +17,7 @@ public class PlayerController : PlayerStatus
     public PlayerBuffController playerBuff;
     public Slider HP_Slider;
     public TextMeshProUGUI HP_Text;
+    public bool Dash = false;
     [SerializeField] TextMeshProUGUI CoinText;
     [SerializeField] GameObject Weapon;
     [Space]
@@ -325,6 +326,7 @@ public class PlayerController : PlayerStatus
         
             case MoveType.Nomal:
                 isMove(1);
+                //animator.SetBool("Dash", false);
                 animator.SetInteger("Attack", 0);
                 break; 
             case MoveType.Guard:
@@ -365,7 +367,7 @@ public class PlayerController : PlayerStatus
         DodgeCount += Time.deltaTime;
         if (DodgeCount < 0.15)
         {
-            rb.velocity = rb.velocity = MoveInputSave.normalized * 8;
+            rb.velocity = rb.velocity = MoveInputSave.normalized * 10;
         }
         else if (DodgeCount < 0.35) 
         {
@@ -377,6 +379,7 @@ public class PlayerController : PlayerStatus
             rb.velocity = Vector2.zero;
             movetype = MoveType.Nomal;
             animator.SetBool("Dodge", false);
+            Dash = true;
             animator.SetInteger("Anim", 0);
             MoveInputSave = MoveInput;
 
@@ -395,9 +398,9 @@ public class PlayerController : PlayerStatus
     }
     void isSkill() 
     {
-
+        
         if (mode == ModeType.M1)
-        {
+        {Dash = false;
             if (animator.GetInteger("Attack") == 1)
             {
                 animator.SetInteger("Attack", 2);
@@ -534,8 +537,20 @@ public class PlayerController : PlayerStatus
 
     public void isMove(float value) 
     {
+
+
+        if (Dash) 
+        {
+            animator.SetBool("Dash", true);
+            rb.velocity = MoveInput.normalized * (SPEED*2 + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
+            if (MoveInput == Vector2.zero) { Dash = false; }
         
-        rb.velocity = MoveInput.normalized * (SPEED + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
+        }
+        else
+        {
+            animator.SetBool("Dash", false);
+            rb.velocity = MoveInput.normalized * (SPEED + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
+        }
     }
     void isChangeAnim() 
     {

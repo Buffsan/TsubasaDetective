@@ -16,7 +16,7 @@ MonoBehaviour:
   enemyspawnGroup:
   - enemyType: 5
     SpawnNumber: 2
-  - enemyType: 6
+  - enemyType: 11
     SpawnNumber: 2
   - enemyType: 1
     SpawnNumber: 5
@@ -24,6 +24,6 @@ MonoBehaviour:
     SpawnNumber: 2
   - enemyType: 2
     SpawnNumber: 1
-  - enemyType: 11
+  - enemyType: 6
     SpawnNumber: 1
   StageLevel: 3

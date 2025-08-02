@@ -76,7 +76,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 5, y: 4}
+  m_Size: {x: 8, y: 8}
   m_EdgeRadius: 0
 --- !u!114 &2765569081359736373
 MonoBehaviour:
@@ -91,3 +91,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapondata: {fileID: 11400000, guid: 5d2bfabe4c3b3e042a63583b8a96f916, type: 2}
+  AgeinAttack: 0

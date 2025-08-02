@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DE_BigSword
   m_EditorClassIdentifier: 
   attackType: 0
-  Attack: 120
+  Attack: 90
   AttackSpeedTime: 1
   StaggerPower: 15
   ConfusionPower: 1.1

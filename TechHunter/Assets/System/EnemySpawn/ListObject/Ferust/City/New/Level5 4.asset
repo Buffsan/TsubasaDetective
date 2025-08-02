@@ -16,4 +16,6 @@ MonoBehaviour:
   enemyspawnGroup:
   - enemyType: 3
     SpawnNumber: 12
+  - enemyType: 11
+    SpawnNumber: 5
   StageLevel: 4

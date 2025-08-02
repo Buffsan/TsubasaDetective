@@ -121,6 +121,8 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.CG_Hanter, 7 },
         { EnemySpawnGroup.EnemyType.CG_StarWizard, 6 },
         { EnemySpawnGroup.EnemyType.MONSTAR_ErathSite, 8 },
+        { EnemySpawnGroup.EnemyType.CG_CosmicSurveyor, 11 },
+ 
     };
 
     public int GetEnemyID(EnemySpawnGroup.EnemyType type)

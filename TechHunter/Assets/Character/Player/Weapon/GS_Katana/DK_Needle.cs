@@ -9,8 +9,14 @@ public class DK_Needle : MonoBehaviour
     [SerializeField] Animator animator;
     [SerializeField] Rigidbody2D rb;
 
+    PlayerController playerController => PlayerController.Instance;
+
+    [SerializeField] BuffData buffData;
+
     public GameObject Target;
     public GameObject Player;
+
+    float TargetDistance = 0;
 
     float DieTimer = 0;
 
@@ -31,8 +37,11 @@ public class DK_Needle : MonoBehaviour
         {
 
             Vector2 velo = Target.transform.position - transform.position;
+
+            TargetDistance = Vector2.Distance(Target.transform.position, transform.position);
+
             transform.up = velo;
-            rb.velocity = velo.normalized * 15 ;
+            rb.velocity = velo.normalized * 40 ;
 
         }
         if (Hit) 
@@ -46,9 +55,13 @@ public class DK_Needle : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("EnemyArea")&&!Hit) 
-        { 
-        AttackArea.enabled = false;
+        if (other.CompareTag("EnemyArea")&&!Hit&& TargetDistance < 2) 
+        {
+            Debug.Log("HIT");
+
+            playerController.playerBuff.SpawnBuff(buffData);
+
+            AttackArea.enabled = false;
             animator.Play("Attack");
             rb.velocity = Vector3.zero;
             Hit = true;

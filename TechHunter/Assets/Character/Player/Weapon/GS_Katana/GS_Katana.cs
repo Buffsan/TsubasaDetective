@@ -8,7 +8,7 @@ public class GS_Katana : PlayerSkillBase
     DK_Needle needle;
 
     public GameObject SaveTarget;
-    float SmallDistance=9999999999;
+    float SmallDistance=0;
 
     GameObject[] enemyObject;
     List<GameObject> enemyList;
@@ -40,7 +40,7 @@ public class GS_Katana : PlayerSkillBase
 
                 float Distance = Vector2.Distance(enemy.transform.position , playerController.transform.position);
                 //Debug.Log(Distance);
-                if (Distance < SmallDistance) 
+                if (Distance > SmallDistance) 
                 {
                     SmallDistance = Distance;
                     SaveTarget = enemy;

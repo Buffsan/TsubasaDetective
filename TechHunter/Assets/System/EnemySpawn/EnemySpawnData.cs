@@ -38,6 +38,7 @@ public class EnemySpawnGroup
         CG_Heavy_Sniper,
         CG_Heavy_Wizard,
         CG_Hanter,
+        CG_CosmicSurveyor,
 
         MONSTAR_ErathSite
 

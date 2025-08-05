@@ -15,4 +15,12 @@ public class EnemyMoveBase : MonoBehaviour
     {
 
     }
+    public virtual void EnemyConfusionPlay() 
+    { 
+    
+    }
+    public virtual void EnemyStanPlay()
+    { 
+    
+    }
 }

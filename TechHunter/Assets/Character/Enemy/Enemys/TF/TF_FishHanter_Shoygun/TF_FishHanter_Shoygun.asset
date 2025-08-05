@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TF_FishHanter_Shoygun
   m_EditorClassIdentifier: 
   NAME: "\u30D5\u30A3\u30C3\u30B7\u30E5\u30CF\u30F3\u30BF\u30FC\u306E\u6563\u5F3E\u9283\u5E2B"
-  MAXHP: 240
+  MAXHP: 400
   Regen: 0
   MAXMP: 0
   SPEED: 2
@@ -22,7 +22,7 @@ MonoBehaviour:
   GOLD: 20
   XP: 0
   StanHP: 5
-  ConfusionResistance: 100
+  ConfusionResistance: 200
   Critical: 0
   Range: 0
-  ConfusionResistanceRegen: 15
+  ConfusionResistanceRegen: 30

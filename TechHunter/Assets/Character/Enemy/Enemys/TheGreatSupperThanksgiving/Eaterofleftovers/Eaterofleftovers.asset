@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Eaterofleftovers
   m_EditorClassIdentifier: 
   NAME: "\u6B8B\u98DF\u8005"
-  MAXHP: 120
+  MAXHP: 220
   Regen: 0
   MAXMP: 0
-  SPEED: 3
-  ATK: 5
-  ATKDF: 3
+  SPEED: 4
+  ATK: 3
+  ATKDF: 4
   GOLD: 8
   XP: 10
-  StanHP: 0
-  ConfusionResistance: 20
+  StanHP: 5
+  ConfusionResistance: 50
   Critical: 8
   Range: 0
   ConfusionResistanceRegen: 15

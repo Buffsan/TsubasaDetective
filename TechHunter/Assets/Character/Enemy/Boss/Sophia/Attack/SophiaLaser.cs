@@ -147,7 +147,7 @@ public class SophiaLaser : MonoBehaviour
                 {
                     GameObject CL_Laser = Instantiate(LaserEffect, transform.position, transform.rotation);
                     CL_Laser.transform.Rotate(0, 0, 180);
-
+                    Destroy(CL_Laser, 2);
                     moveType = MoveType.M3;
                     LaserCount = 0;
                     manager.isPlaySE(Clip2);
@@ -216,7 +216,7 @@ public class SophiaLaser : MonoBehaviour
 
                     GameObject CL_Laser = Instantiate(LaserEffect, transform.position, transform.rotation);
                     CL_Laser.transform.Rotate(0, 0, 180);
-
+                    Destroy(CL_Laser,2);
                     moveType = MoveType.M3;
                     LaserCount = 0;
                     manager.isPlaySE(Clip2);

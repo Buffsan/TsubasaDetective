@@ -542,7 +542,7 @@ public class PlayerController : PlayerStatus
         if (Dash) 
         {
             animator.SetBool("Dash", true);
-            rb.velocity = MoveInput.normalized * (SPEED*2 + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
+            rb.velocity = MoveInput.normalized * (SPEED*1.5f + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
             if (MoveInput == Vector2.zero) { Dash = false; }
         
         }

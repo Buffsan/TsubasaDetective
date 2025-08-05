@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &3939183517729591600
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.962435
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.053693473
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4263319095818336797, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 93c31a8194daa7b43930cfeeb8829101, type: 2}
+    - target: {fileID: 4457924940185567627, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4457924940185567627, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 972936574117129005}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: moveBase
+      value: 
+      objectReference: {fileID: 1395988648936144081, guid: d83ab044dccae6743996773f3904ad10, type: 3}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: charadata
+      value: 
+      objectReference: {fileID: 11400000, guid: 7bd3b1fca0288e1459f5ba7e7d547142, type: 2}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: AttackAudio
+      value: 
+      objectReference: {fileID: 8300000, guid: 81b9d61c48d6f6a49867cf0a2667a8b2, type: 3}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: LookPlayerDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: EnemyMoveBaseObject
+      value: 
+      objectReference: {fileID: 4055104202845920425, guid: d83ab044dccae6743996773f3904ad10, type: 3}
+    - target: {fileID: 7031987147499244862, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7198778347497280995, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1dca5a39e4629594a97c87a8e9472ac2, type: 3}
+    - target: {fileID: 8859200305933763443, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_Name
+      value: TF_FishHanter_Shoygun Variant
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+--- !u!95 &972936574117129005 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4263319095818336797, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+  m_PrefabInstance: {fileID: 3939183517729591600}
+  m_PrefabAsset: {fileID: 0}

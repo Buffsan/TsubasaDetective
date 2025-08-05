@@ -46,9 +46,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
     // Update is called once per frame
     void Update()
     {
-        PlayerDistanceNow = Vector2.Distance(enemyBase.transform.position,enemyBase.Player.transform.position);
+        PlayerDistanceNow = Vector2.Distance(enemyBase.transform.position, enemyBase.Player.transform.position);
 
-        if (enemyBase.status == EnemyBase.Status.ConfusionResistance) 
+        if (enemyBase.status == EnemyBase.Status.ConfusionResistance)
         {
             AttackPhase = 0;
             StandOk = false;
@@ -62,6 +62,14 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 myRunningCoroutine = null; // éQè∆ÇÉNÉäÉA
             }
         }
+    }
+    public override void M_Stan()
+    {
+        ATTCKFINISH(); AttackWaitTime = 50;
+    }
+    public override void M_Con()
+    {
+        ATTCKFINISH(); AttackWaitTime = 50;
     }
     public override void M_AI() 
     {

@@ -46,14 +46,15 @@ public class EnemyContoroller : EnemyBase
 
     void isConfusion()
     {
+
         animator.SetBool("Damage", true);
         if (ConfusionTimer + 3 > StanCount)
-        {
+        {moveBase.EnemyConfusionPlay();
             StanCount += Time.deltaTime;
         }
         else
         {
-
+            
             StanCount = 0;
             status = Status.Nomal;
             animator.SetBool("Damage", false);
@@ -64,12 +65,12 @@ public class EnemyContoroller : EnemyBase
     {
         animator.SetBool("Damage", true);
         if (StanTime > StanCount)
-        {
+        {moveBase.EnemyStanPlay();
             StanCount += Time.deltaTime;
         }
         else
         {
-
+            
             StanCount = 0;
             status = Status.Nomal;
             animator.SetBool("Damage", false);

@@ -39,6 +39,14 @@ public class Boss_MoveBase : MonoBehaviour
     { 
     
     }
+    public virtual void M_Stan()
+    {
+
+    }
+    public virtual void M_Con()
+    {
+
+    }
 
     public void AttackFinish() 
     {

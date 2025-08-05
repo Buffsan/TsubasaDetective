@@ -58,7 +58,7 @@ public class Boss_Controller : EnemyBase
         }
         else
         {
-
+            moveBase.M_Con();
             StanCount = 0;
             status = Status.Nomal;
             animator.SetBool("Damage", false);
@@ -74,7 +74,7 @@ public class Boss_Controller : EnemyBase
         }
         else
         {
-
+            moveBase.M_Stan();
             StanCount = 0;
             status = Status.Nomal;
             animator.SetBool("Damage", false);

@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: FoodServer
   m_EditorClassIdentifier: 
   NAME: "\u914D\u81B3\u8005"
-  MAXHP: 400
+  MAXHP: 500
   Regen: 0
   MAXMP: 0
-  SPEED: 4
+  SPEED: 12
   ATK: 5
   ATKDF: 3
-  GOLD: 0
+  GOLD: 67
   XP: 0
   StanHP: 5
   ConfusionResistance: 50

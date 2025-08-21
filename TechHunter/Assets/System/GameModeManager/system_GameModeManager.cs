@@ -69,7 +69,8 @@ public class system_GameModeManager : MonoBehaviour
 
             break;
                 case AllGameMode.SpotChoiceMode: 
-                playerController.movetype = PlayerController.MoveType.NoAction;
+                playerController.movetype = PlayerController.MoveType.Wait;
+                playerController.rb.velocity = Vector2.zero;
                 break;
         
         

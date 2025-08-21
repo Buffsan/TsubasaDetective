@@ -31,7 +31,7 @@ public class TG_Maquette : MonoBehaviour
         //transform.Rotate(0, 0, 90);
 
         AttackCount += Time.deltaTime;
-        if (ArrowCount == 0 && AttackCount > 2)
+        if (ArrowCount == 0 && AttackCount > 0.2f)
         {
             ArrowCount = 1;
             GameObject CL_Arrow = Instantiate(Arrow, AttackPont.transform.position, Quaternion.identity);

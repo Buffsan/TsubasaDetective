@@ -14,6 +14,8 @@ public class OW_Harpoon_AI : PlayerSkillBase
 
     Vector2 EnemyDirection;
 
+    [SerializeField] BuffData BUFF;
+
     void Start()
     {
         MYskillBase = GetComponent<PlayerSkillBase>();
@@ -30,6 +32,7 @@ public class OW_Harpoon_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
+            playerController.playerBuff.SpawnBuff(BUFF);
             GameObject CL_Weapon = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
             Att = ATT.A2;
             CL_Weapon.transform.parent = playerController.MainAnimBody.transform;

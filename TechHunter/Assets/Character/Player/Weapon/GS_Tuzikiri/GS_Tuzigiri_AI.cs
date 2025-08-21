@@ -7,7 +7,7 @@ public class GS_Tuzigiri_AI : PlayerSkillBase
     PlayerSkillBase MYskillBase;
 
     [SerializeField] BuffData buffdata;
-
+    [SerializeField] BuffData LastBuff;
     public GameObject SaveTarget;
     
     Vector2 EnemyDirection;
@@ -47,6 +47,7 @@ public class GS_Tuzigiri_AI : PlayerSkillBase
                     playerController.mode = PlayerController.ModeType.M1;
                     playerController.movetype = PlayerController.MoveType.Nomal;
 
+                playerController.playerBuff.SpawnBuff(LastBuff);
                     //Debug.Log("AAAAA");
                     Destroy(this.gameObject);
                 }

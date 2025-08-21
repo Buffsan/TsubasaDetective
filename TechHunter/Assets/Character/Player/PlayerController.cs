@@ -348,7 +348,7 @@ public class PlayerController : PlayerStatus
                 isNoAction();
                 break;
             case MoveType.Wait:
-
+                
                 break;
             
 

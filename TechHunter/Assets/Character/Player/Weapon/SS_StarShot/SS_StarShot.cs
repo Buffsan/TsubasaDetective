@@ -37,20 +37,20 @@ public class SS_StarShot : MonoBehaviour
         //transform.Rotate(0, 0, 90);
 
         AttackCount += Time.deltaTime;
-        if (ArrowCount <= 2 && AttackCount > 0.3)
+        if (ArrowCount <= 3 && AttackCount > 0.3)
         {
             
             AttackCount = 0;
             controller.isCursorDirection();
 
-            float angleStep = 15 + ArrowCount *5;
+            float angleStep = 20 + ArrowCount *5;
             float angle = -angleStep;
             for (int i = 0; i < 3; i++)
             {//Debug.Log("“Š‚°‚é");
 
                 GameObject bullet = Instantiate(Arrow, controller.transform.position, Quaternion.identity);
                 Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-                Destroy(bullet, 5);
+                Destroy(bullet, 5 + ArrowCount);
 
                 Vector2 bulletDirection = Quaternion.Euler(0, 0, angle) * controller.CursorDirection.normalized;
                 rb.velocity = bulletDirection * 2.5f;

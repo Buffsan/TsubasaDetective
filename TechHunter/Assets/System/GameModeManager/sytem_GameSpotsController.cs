@@ -28,6 +28,8 @@ public class sytem_GameSpotsController : MonoBehaviour
     [SerializeField] float Ydistance = 1;
     Vector2 StartPos = new Vector2 (-4.5f, -3.8f);
 
+    ALL_SystemManager ALL_SystemManager => ALL_SystemManager.Instance;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -66,6 +68,8 @@ public class sytem_GameSpotsController : MonoBehaviour
     public void PopSpots() 
     {
         gamemode.allgamemode = AllGameMode.SpotChoiceMode;
+
+        
         NewSpawnSpots();
     }
     void PlayerSpot() 
@@ -328,6 +332,8 @@ public class sytem_GameSpotsController : MonoBehaviour
     }
     public void NewSpawnSpots() 
     {
+        ALL_SystemManager.system_EventObjects.UI_Active_FALSE();
+        //ALL_SystemManager.playerController.movetype = PlayerController.MoveType.Wait;
         int spotInfosNumber = 0;
         int X_spotInfosNumber = 0;
         int t = 0;
@@ -394,6 +400,8 @@ public class sytem_GameSpotsController : MonoBehaviour
         PlayerSystemPos = newPos;
         systemmanager.isGameStart();
         DestroyInputSpots();
+        //ALL_SystemManager.playerController.movetype = PlayerController.MoveType.Wait;
+        ALL_SystemManager.system_EventObjects.UI_Active_TRUE();
         gamemode.allgamemode = AllGameMode.AdventureGameMode;
     }
 }

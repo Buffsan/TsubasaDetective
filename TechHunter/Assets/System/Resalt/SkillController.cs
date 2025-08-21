@@ -4,6 +4,7 @@ using TMPro;
 using Unity.Jobs;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SkillController : MonoBehaviour
 {
@@ -33,6 +34,8 @@ public class SkillController : MonoBehaviour
     float ReRollCost = 0;
     public int ReRollCount = 0;
 
+    AllSkilPagel allskillpage;
+    ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
     public enum ChoiceCardMode 
     {
         
@@ -94,19 +97,29 @@ public class SkillController : MonoBehaviour
     {
         isStartSkillPageChoice();
         GameObject CL_AllSkillPage = Instantiate(AllSkillPage);
-
+        playerController.movetype = PlayerController.MoveType.Wait;
         AllSkillPages.Add(CL_AllSkillPage);
 
-        AllSkilPagel allskillpage = CL_AllSkillPage.GetComponent<AllSkilPagel>();
+         allskillpage = CL_AllSkillPage.GetComponent<AllSkilPagel>();
+        allskillpage.skillController = this;
         CL_AllSkillPage.transform.parent = ResultCanvas.transform;
-        int i = 0;
-        foreach (var ALL_p in allskillpage.AllSkillPagesList) 
-        {
-            ALL_p.SkillImage.sprite = playerController.skillINFO[i].skillDATA.SkillImage;
-            ALL_p.PageControllText.text = playerController.skillINFO[i].PC_ControllText;
-            ALL_p.LevelText.text = playerController.skillINFO[i].SkillLevel.ToString();
 
-            i++;
+        Change_AllSkillPage();
+    }
+    public void Change_AllSkillPage() 
+    {
+        if (allskillpage != null) 
+        {
+            
+            int i = 0;
+            foreach (var ALL_p in allskillpage.AllSkillPagesList)
+            {
+                ALL_p.SkillImage.sprite = playerController.skillINFO[i].skillDATA.SkillImage;
+                ALL_p.PageControllText.text = playerController.skillINFO[i].PC_ControllText;
+                ALL_p.LevelText.text = playerController.skillINFO[i].SkillLevel.ToString();
+
+                i++;
+            }
         }
     }
     public void isStartSkillPageChoice() 
@@ -158,6 +171,7 @@ public class SkillController : MonoBehaviour
     public void isStartPageChoice() 
     {
         ReRollAnim.Play("出現");
+        playerController.movetype = PlayerController.MoveType.Wait;
         cardMode = ChoiceCardMode.Status;
 
         List <StatusUP> NowPage = new List<StatusUP>();
@@ -206,7 +220,10 @@ public class SkillController : MonoBehaviour
 
     public void ChoicePage() 
     {
+        playerController.movetype = PlayerController.MoveType.Nomal;
         ReRollAnim.Play("消える");
+        playerController.rb.velocity = Vector2.zero;
+
         cardMode = ChoiceCardMode.None;
         int index = 0;
         foreach (PageManager save in SavePage) 
@@ -263,8 +280,11 @@ public class SkillController : MonoBehaviour
 
     public void ChoiceSkillPage()
     {
+        playerController.movetype = PlayerController.MoveType.Nomal;
         ReRollAnim.Play("消える");
         cardMode = ChoiceCardMode.None;
+        playerController.rb.velocity = Vector2.zero;
+
         int index = 0;
         foreach (SkillPageManager save in SavesSkillPageManager)
         {
@@ -320,6 +340,21 @@ public class SkillController : MonoBehaviour
 
         SavePage.Add(pageManager);
         SaveStatus.Add(statuspage);
+
+        if (statuspage.Rarity == 1)
+        {
+            Debug.Log("コモン");
+            pageManager.Page_rarity.sprite = pageManager.CommonPage;
+        }
+        if (statuspage.Rarity == 2)
+        {
+            Debug.Log("アンコモン");
+            pageManager.Page_rarity.sprite = pageManager.UnCommonPage;
+        }
+        if (statuspage.Rarity == 3)
+        {
+            pageManager.Page_rarity.sprite = pageManager.Rare;
+        }
 
         pageManager.SkillController = this;
 
@@ -456,7 +491,7 @@ public class SkillController : MonoBehaviour
         SaveSkills.Add(statuspage);
 
         pageManager.SkillController = this;
-
+        
         Animator animator = CL_Page.GetComponent<Animator>();
         RectTransform rect = CL_Page.GetComponent<RectTransform>();
         CL_Page.transform.parent = ResultCanvas.transform;

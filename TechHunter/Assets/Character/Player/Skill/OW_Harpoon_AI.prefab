@@ -46,6 +46,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillWeapon: {fileID: 7467118396563883393, guid: 86c3ff9633194b14e9d0eb830f806d8f, type: 3}
   SlillBullet: {fileID: 0}
+  SkillLevel: 0
   Att: 0
   skillcount: 0
   SaveTarget: {fileID: 0}
+  BUFF: {fileID: 11400000, guid: 38e95af45541a9142996afc3223092a2, type: 2}

@@ -6,7 +6,7 @@ public class CursorController : MonoBehaviour
 {
 
     public Vector3 MousePos;
-    Vector3 MouseScreenPos;
+    public Vector3 MouseScreenPos;
     // Start is called before the first frame update
     void Start()
     {

@@ -9,13 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27e8f73261ed9894790f38b10f03bc27, type: 3}
-  m_Name: Level4 2
+  m_Script: {fileID: 11500000, guid: 8ba888ecbe55fb74fa1508e01c5c75ac, type: 3}
+  m_Name: OW_Harpoon_Buff
   m_EditorClassIdentifier: 
-  enemyspawn: {fileID: 0}
-  enemyspawnGroup:
-  - enemyType: 1
-    SpawnNumber: 40
-  - enemyType: 0
-    SpawnNumber: 5
-  StageLevel: 3
+  Invincible: 0
+  BuffNAME: 
+  BuffTime: 5
+  Regen: 0
+  SPEED: 0
+  MultiplySPEED: 0
+  ATK: 0
+  MultiplyATK: 0
+  ATKDF: 5
+  MultiplyATKDF: 0

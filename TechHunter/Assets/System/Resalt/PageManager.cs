@@ -16,6 +16,12 @@ public class PageManager : MonoBehaviour
     public TextMeshProUGUI Explanation;
     public TextMeshProUGUI NumberExplanation;
     public Image MainImage;
+    [Space]
+    public Image Page_rarity;
+    public Sprite CommonPage;
+    public Sprite UnCommonPage;
+    public Sprite Rare;
+
 
     public float TargetRectPos=0;
     [SerializeField] AudioClip Clip1;

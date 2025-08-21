@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillImage: {fileID: 21300000, guid: e7b7bddc3ca2bb64d8a9e52419fbb7bc, type: 3}
   SkillName: "\u8FBB\u9727"
-  SkillMessage: "\uFF10\uFF0E\uFF13\u79D2\u306E\u7121\u6575\u3092\u7372\u5F97\u3057\u306A\u304C\u3089\u524D\u65B9\u306B\u5207\u308A\u8FBC\u3080\u3002"
+  SkillMessage: "\uFF10\uFF0E\uFF13\u79D2\u306E\u7121\u6575\u3092\u7372\u5F97\u3057\u306A\u304C\u3089\u524D\u65B9\u306B\u5207\u308A\u8FBC\u3080\u3002\u30B9\u30AD\u30EB\u7D42\u4E86\u5F8C\u306B\uFF13\u79D2\u9593\u306E\u9593\u3001\u653B\u6483\u529B+\uFF13\u3092\u7372\u5F97\u3059\u308B\u3002"
   CoolTime: 5
   SkillData: {fileID: 1768018139665870469, guid: 463afcd5b022c034fb09a068050f65a8, type: 3}
   SkillDataList:

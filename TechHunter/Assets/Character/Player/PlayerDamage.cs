@@ -13,6 +13,8 @@ public class PlayerDamage : MonoBehaviour, IDamageable
 
     [SerializeField] SpriteRenderer spriteRenderer;
 
+    ALL_SystemManager systemManager => ALL_SystemManager.Instance;
+
     public enum Mode
     {
 
@@ -60,9 +62,9 @@ public class PlayerDamage : MonoBehaviour, IDamageable
             }
         }
     }
-    public void Damage(float Attackvalue, float Stanvalue, float value2)
+    public void Damage(float Attackvalue, float Stanvalue, float value2, bool value3)
     {
-        if (mode != Mode.Invincible)
+        if (mode != Mode.Invincible && systemManager.systemManager.gameMode == SystemManager.GameMode.Nomal)
         {
             audiomanager.isPlaySE(DamageClip);
             float AddDamage = Attackvalue - (playerController.AddAtkDF + playerController.playerBuff.DEF_AllBuff) * playerController.playerBuff.MultiplyDEF_AllBuff;

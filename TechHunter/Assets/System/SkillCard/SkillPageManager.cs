@@ -16,6 +16,9 @@ public class SkillPageManager : MonoBehaviour
     public TextMeshProUGUI Explanation;
     public TextMeshProUGUI NumberExplanation;
     public Image MainImage;
+    [Space]
+    public TextMeshProUGUI CoolTimeTEXT;
+    public TextMeshProUGUI TotalTEXT;
 
     public float TargetRectPos = 0;
     [SerializeField] AudioClip Clip1;

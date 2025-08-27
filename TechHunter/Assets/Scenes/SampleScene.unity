@@ -54468,7 +54468,7 @@ PrefabInstance:
       objectReference: {fileID: 708077611}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: BigMap.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: Map.Array.data[0]
@@ -54497,11 +54497,15 @@ PrefabInstance:
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: BigMap.Array.data[1]
       value: 
-      objectReference: {fileID: 5459650908682768138, guid: 3b074077dad981d41b86d0df0659c618, type: 3}
+      objectReference: {fileID: 8674399196386823789, guid: a7b0710563481074f838b005941fd57f, type: 3}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: BigMap.Array.data[2]
       value: 
-      objectReference: {fileID: 7404824971383307101, guid: 398a9ec571e646647adbdcea2218d2f1, type: 3}
+      objectReference: {fileID: 8652311286453886359, guid: 3353fcbb0e8b25f49a46a5e97e7d183f, type: 3}
+    - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: BigMap.Array.data[3]
+      value: 
+      objectReference: {fileID: 8099063448714564921, guid: 879d886e570f2d94782ad5d1fb2dcaf1, type: 3}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: SpawnList.Array.size
       value: 0
@@ -54823,9 +54827,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 432727049}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: Critical
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: DogeBuff
       value: 
       objectReference: {fileID: 11400000, guid: 13aebd38d74e781459d8c69da4434bd1, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: DodgeClip
+      value: 
+      objectReference: {fileID: 8300000, guid: c879f970851157648bca7bd211531ed0, type: 3}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: playerBuff
       value: 
@@ -55057,15 +55069,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 663211941195472331, guid: f3fc90e2351e6aa4d88b96262575cd6f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 663211941195472331, guid: f3fc90e2351e6aa4d88b96262575cd6f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 663211941195472331, guid: f3fc90e2351e6aa4d88b96262575cd6f, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1697717517867400815, guid: f3fc90e2351e6aa4d88b96262575cd6f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -55129,7 +55141,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7169216917115216518, guid: f3fc90e2351e6aa4d88b96262575cd6f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

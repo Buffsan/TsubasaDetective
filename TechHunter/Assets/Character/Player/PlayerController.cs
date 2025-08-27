@@ -38,6 +38,7 @@ public class PlayerController : PlayerStatus
     int X_Scale = 1;
     [SerializeField] AudioClip Clip;
     [SerializeField] AudioClip guardClip;
+    [SerializeField] AudioClip DodgeClip;
     public Rigidbody2D rb;
     Animator animator;
     public int AllCoins=0;
@@ -287,6 +288,7 @@ public class PlayerController : PlayerStatus
             //playerDamage.SetInvincible(0.3f);
             playerBuff.SpawnBuff(DogeBuff);
             animator.SetBool("Dodge", true);
+            audioManager.isPlaySE(DodgeClip);
         }
     }
     // Start is called before the first frame update

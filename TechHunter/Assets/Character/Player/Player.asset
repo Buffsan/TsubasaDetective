@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
   m_Name: Player
   m_EditorClassIdentifier: 
-  NAME: "\u30A8\u30EA\u30B9"
+  NAME: "\u30A8\u30A4\u30C8"
   MAXHP: 10
   Regen: 0
   MAXMP: 6
@@ -23,6 +23,6 @@ MonoBehaviour:
   XP: 0
   StanHP: 0
   ConfusionResistance: 0
-  Critical: 0
+  Critical: 1
   Range: 0
   ConfusionResistanceRegen: 15

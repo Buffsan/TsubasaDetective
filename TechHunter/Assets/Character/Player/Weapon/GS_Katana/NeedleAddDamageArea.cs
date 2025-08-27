@@ -19,9 +19,9 @@ public class NeedleAddDamageArea : MonoBehaviour ,IDamageable
     {
         
     }
-    public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower)
+    public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower,bool criticul)
     {
-        _Needle.charaDamage.Damage(weapon.Attack,weapon.StaggerPower,weapon.ConfusionPower);
+        _Needle.charaDamage.Damage(weapon.Attack,weapon.StaggerPower,weapon.ConfusionPower,false);
     }
     public void Death()
     { 

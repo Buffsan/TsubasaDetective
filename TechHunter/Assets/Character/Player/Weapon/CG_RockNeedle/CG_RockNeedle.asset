@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: CG_RockNeedle
   m_EditorClassIdentifier: 
   attackType: 2
-  Attack: 4
+  Attack: 9
   AttackSpeedTime: 0
-  StaggerPower: 15
+  StaggerPower: 2
   ConfusionPower: 5
   KnockBackPower: 0
   MaxStack: 0

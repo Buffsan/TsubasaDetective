@@ -22,3 +22,4 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   MaxStack: 0
+  TotalDamage: 60

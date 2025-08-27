@@ -18,4 +18,7 @@ public class SkillCardData : ScriptableObject
 
     public int MaxStack = 0;
 
+    [Space]
+    public float TotalDamage =0;
+
 }

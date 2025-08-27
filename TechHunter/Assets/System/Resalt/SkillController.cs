@@ -22,7 +22,7 @@ public class SkillController : MonoBehaviour
     public List<Relic> Relics = new List<Relic>();
 
     [HideInInspector]public List<PageManager> SavePage = new List<PageManager>();
-    [HideInInspector]public List<StatusUP> SaveStatus = new List<StatusUP>();
+    public List<StatusUP> SaveStatus = new List<StatusUP>();
 
     [HideInInspector] public List<SkillPageManager> SavesSkillPageManager = new List<SkillPageManager>();
     [HideInInspector] public List<Skill> SaveSkills = new List<Skill>();
@@ -173,6 +173,17 @@ public class SkillController : MonoBehaviour
         ReRollAnim.Play("出現");
         playerController.movetype = PlayerController.MoveType.Wait;
         cardMode = ChoiceCardMode.Status;
+
+
+        //もともとあったページの削除
+        foreach (PageManager save in SavePage)
+        {
+              save.move = PageManager.Move.Run;          
+              Destroy(save.gameObject, 5);
+
+        }
+        SavePage.Clear();
+        SaveStatus.Clear();
 
         List <StatusUP> NowPage = new List<StatusUP>();
         for (int i = 0; i < 3; i++)
@@ -350,6 +361,7 @@ public class SkillController : MonoBehaviour
         {
             Debug.Log("アンコモン");
             pageManager.Page_rarity.sprite = pageManager.UnCommonPage;
+            pageManager.tape.sprite = pageManager.UnCommonPage_kazari;
         }
         if (statuspage.Rarity == 3)
         {
@@ -483,7 +495,7 @@ public class SkillController : MonoBehaviour
 
     void isSkillPage(Skill statuspage, int value)
     {
-
+        //ーーーーーーーーーーーーーーーースキルカードーーーーーーーーーーーーーーーー
         GameObject CL_Page = Instantiate(SkillPage);
         SkillPageManager pageManager = CL_Page.GetComponent<SkillPageManager>();
 
@@ -502,12 +514,14 @@ public class SkillController : MonoBehaviour
         pageManager.Explanation.text = statuspage.skill.SkillMessage;
         //pageManager.UP_Number.text = statuspage.UpExplanation;
         pageManager.MainImage.sprite = statuspage.skill.SkillImage;
+        pageManager.CoolTimeTEXT.text = statuspage.skill.CoolTime.ToString();
+        pageManager.TotalTEXT.text = statuspage.skill.TotalDamage.ToString();
 
         rect.transform.position = new Vector2(-1200, 0);
 
         //設置間隔 -500 0 500
         //500 1000 1500
-        int TargetPos = 450 * value -200;
+        int TargetPos = 480 * value -220;
         Debug.Log(TargetPos);
         pageManager.TargetRectPos = TargetPos;
         

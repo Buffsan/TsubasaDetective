@@ -22,7 +22,7 @@ public class Boss_Controller : EnemyBase
         CL_MoveBase.transform.SetParent(gameObject.transform);
 
 
-        
+        ALL_System.systemManager.AllEnemy.Add(this.gameObject);
 
     }
     private void FixedUpdate()

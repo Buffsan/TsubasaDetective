@@ -45,16 +45,28 @@ public class PlayerAttack : MonoBehaviour
                     if (AgeinAttack) { EnemyData.Add(other.gameObject); }
                     
                     audioManager.isPlaySE(weapondata.HitAudio);
-                    damageable.Damage(AttackMathf(), weapondata.StaggerPower, weapondata.ConfusionPower);
-                    controller.HitEffectSpawn(other.transform.position);
+                    float CriticalRandom = Random.Range(1f, 100f);
+                    if (controller.AddCritical+controller.Critical <= CriticalRandom)
+                    {
+                        damageable.Damage(AttackMathf(), weapondata.StaggerPower, weapondata.ConfusionPower,false);
+                    }
+                    else 
+                    {
+                        Debug.Log("Critical！！");
+                        damageable.Damage(AttackMathf()*3, weapondata.StaggerPower, weapondata.ConfusionPower,true);
+                    }
+                        controller.HitEffectSpawn(other.transform.position);
                 }
             }
         }
     }
     float AttackMathf() 
     {
-        float CriticalRandom = Random.Range(1f,100f);
+        //float CriticalRandom = Random.Range(1f,100f);
         float AttackAll;
+        AttackAll = ((weapondata.Attack + controller.ATK) * ((100 + controller.AddATK) / 100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff;
+
+        /*
         if (controller.AddCritical <= CriticalRandom)
         {
              AttackAll = ((weapondata.Attack + controller.ATK) * ((100 + controller.AddATK)/100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff;
@@ -63,7 +75,7 @@ public class PlayerAttack : MonoBehaviour
         {
             Debug.Log("Critical！！");
             AttackAll = (((weapondata.Attack + controller.ATK) * ((100 + controller.AddATK) / 100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff) *3;
-        }
+        }*/
 
         return AttackAll;
     }

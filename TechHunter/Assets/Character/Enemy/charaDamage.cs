@@ -39,7 +39,7 @@ public class charaDamage : MonoBehaviour, IDamageable
         coinManager = Coin.GetComponent<CoinManager>();
         enemyBase.DefaltColor = enemyBase.spriteRenderer.color;
     }
-    public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower)
+    public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower,bool Critical)
     {
         float AddDamage = Attackvalue - DF;
         if (AddDamage > 0)
@@ -47,12 +47,12 @@ public class charaDamage : MonoBehaviour, IDamageable
             if (enemyBase.status == EnemyBase.Status.ConfusionResistance)
             {
                 enemyBase.HP -= AddDamage * 2;
-                isDamageTextPop(AddDamage * 2,2);
+                isDamageTextPop(AddDamage * 2,2, Critical);
             }
             else
             {
                 enemyBase.HP -= AddDamage;
-                isDamageTextPop(AddDamage, 1);
+                isDamageTextPop(AddDamage, 1 , Critical);
             }
 
             enemyBase.TakeDamageColor();
@@ -181,12 +181,13 @@ public class charaDamage : MonoBehaviour, IDamageable
     {
 
     }
-    void isDamageTextPop(float value,int PP) 
+    void isDamageTextPop(float value,int PP,bool Criticul) 
     {
         GameObject CL_DamageText = Instantiate(enemyBase.DamageTextCanvas, enemyBase.transform.position, Quaternion.identity);
         CL_DamageText.transform.position = new Vector2(CL_DamageText.transform.position.x, CL_DamageText.transform.position.y + 1);
         DamageText damageText = CL_DamageText.GetComponent<DamageText>();
         damageText.isChangeText(value);
+        damageText.Criticul = Criticul;
 
         Destroy(CL_DamageText, 0.5f);
 

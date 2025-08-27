@@ -18,8 +18,10 @@ public class PageManager : MonoBehaviour
     public Image MainImage;
     [Space]
     public Image Page_rarity;
+    public Image tape;
     public Sprite CommonPage;
     public Sprite UnCommonPage;
+    public Sprite UnCommonPage_kazari;
     public Sprite Rare;
 
 

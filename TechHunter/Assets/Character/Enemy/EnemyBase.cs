@@ -53,6 +53,7 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] GameObject Coin;
 
     public AudioManager audioManager => AudioManager.instance;
+    public ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
     public EnemyAttack myAttack;
 
     public AudioClip AttackAudio;

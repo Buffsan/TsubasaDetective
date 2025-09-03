@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: CG_Knife 1
   m_EditorClassIdentifier: 
   attackType: 1
-  Attack: 17
+  Attack: 8
   AttackSpeedTime: 0.05
-  StaggerPower: 10
+  StaggerPower: 2
   ConfusionPower: 1
   KnockBackPower: 2
   MaxStack: 0

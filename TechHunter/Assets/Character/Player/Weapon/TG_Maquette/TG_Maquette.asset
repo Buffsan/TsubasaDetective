@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TG_Maquette
   m_EditorClassIdentifier: 
   attackType: 1
-  Attack: 85
+  Attack: 100
   AttackSpeedTime: 0
   StaggerPower: 20
   ConfusionPower: 1

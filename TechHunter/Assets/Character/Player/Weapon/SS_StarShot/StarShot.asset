@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: StarShot
   m_EditorClassIdentifier: 
   attackType: 3
-  Attack: 3
+  Attack: 5
   AttackSpeedTime: 0
   StaggerPower: 0.3
   ConfusionPower: 1

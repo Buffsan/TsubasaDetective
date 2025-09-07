@@ -17,6 +17,8 @@ public class PlayerBuffController : MonoBehaviour
     public float Speed_AllBuff = 0;
     public float MultiplySpeed_AllBuff = 1;
 
+    public float Multiply_CoolTimeBuff = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,6 +53,8 @@ public class PlayerBuffController : MonoBehaviour
         Speed_AllBuff = 0;
         MultiplySpeed_AllBuff = 1;
 
+        Multiply_CoolTimeBuff = 0;
+
         foreach (PlayerBuffsBase buffs in playerBuffs) 
         {
 
@@ -75,6 +79,8 @@ public class PlayerBuffController : MonoBehaviour
 
             Speed_AllBuff += buffs.SPEED;
             MultiplySpeed_AllBuff+= buffs.MultiplySPEED;
+
+                Multiply_CoolTimeBuff += buffs.Multiply_CoolTimeBuff;
 
             }
             //playerBuffs.RemoveAll(buffs => buffs == null || buffs.My == null);

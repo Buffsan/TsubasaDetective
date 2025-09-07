@@ -93,7 +93,7 @@ public class SkillCardManager : MonoBehaviour
             if (mode == Mode.CoolTime)
             {
 
-                CoolCount += Time.deltaTime;
+                isCoolTime();
                 cardImage.color = BlackColor;
                 CoolCountText.enabled = true;
 
@@ -129,7 +129,7 @@ public class SkillCardManager : MonoBehaviour
 
                 if (CountStack == 0)
                 {
-                    CoolCount += Time.deltaTime;
+                    isCoolTime();
                     cardImage.color = BlackColor;
                     CoolCountText.enabled = true;
 
@@ -180,7 +180,17 @@ public class SkillCardManager : MonoBehaviour
         }
 
     }
-
+    public void isCoolTime() 
+    {
+        CoolCount += Time.deltaTime * (1 + playerController.playerBuff.Multiply_CoolTimeBuff);
+    }
+    public void isCoolTime_add(float value) 
+    {
+        if (mode == Mode.CoolTime) 
+        {
+            CoolCount +=value;
+        }
+    }
     public void SetSkill() 
     {
 

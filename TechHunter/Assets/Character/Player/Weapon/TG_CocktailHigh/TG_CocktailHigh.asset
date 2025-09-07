@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: TG_CocktailHigh
   m_EditorClassIdentifier: 
   Invincible: 0
-  BuffNAME: 
+  BuffNAME: "\u30A6\u30A3\u30B9\u30AD\u30FC\u30CF\u30A4"
   BuffTime: 12
   Regen: 0
   SPEED: 0
   MultiplySPEED: 0
   ATK: 0
   MultiplyATK: 0
-  ATKDF: 0
+  ATKDF: -10
   MultiplyATKDF: 0
+  Multiply_CoolTimeBuff: 0.5

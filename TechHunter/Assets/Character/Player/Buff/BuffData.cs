@@ -22,6 +22,6 @@ public class BuffData : ScriptableObject
     public float ATKDF;
     public float MultiplyATKDF;
 
-
+    public float Multiply_CoolTimeBuff;
 
 }

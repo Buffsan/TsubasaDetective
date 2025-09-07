@@ -24,6 +24,8 @@ public class PlayerBuffsBase : MonoBehaviour
     public float ATKDF;
     public float MultiplyATKDF;
 
+    public float Multiply_CoolTimeBuff;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -43,6 +45,8 @@ public class PlayerBuffsBase : MonoBehaviour
 
      ATKDF = buffData.ATKDF;
      MultiplyATKDF = buffData.MultiplyATKDF;
+
+        Multiply_CoolTimeBuff = buffData.Multiply_CoolTimeBuff;
 
     }
 

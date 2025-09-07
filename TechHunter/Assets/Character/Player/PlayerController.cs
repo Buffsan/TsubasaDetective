@@ -30,6 +30,7 @@ public class PlayerController : PlayerStatus
     [SerializeField] GameObject knife;
     [Space]
     [SerializeField] BuffData DogeBuff;
+    public GameObject SpecialBuff;
     public List<SkillInfo> skillINFO = new List<SkillInfo>();
     [SerializeField] GameObject HitEffect;
     public GameObject AnimatorBody;

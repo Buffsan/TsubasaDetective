@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: TG_Maquette
   m_EditorClassIdentifier: 
   attackType: 1
-  Attack: 100
+  Attack: 200
   AttackSpeedTime: 0
   StaggerPower: 20
-  ConfusionPower: 1
+  ConfusionPower: 1.5
   KnockBackPower: 0
   MaxStack: 0
   HitAudio: {fileID: 8300000, guid: aef2d68c1fdf5664e87ee216e7c9b412, type: 3}

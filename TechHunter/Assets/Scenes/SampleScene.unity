@@ -1947,15 +1947,9 @@ MonoBehaviour:
   - SkillName: "\u6DF1\u304F\u7A81\u304D\u3055\u3059"
     Rarity: 2
     skill: {fileID: 11400000, guid: 26d64c0de1f960d42859d138f0a7e39f, type: 2}
-  - SkillName: "\u30A6\u30A9\u30FC\u30B8\u30E5\u30FC\u30B9\u6442\u53D6"
-    Rarity: 2
-    skill: {fileID: 11400000, guid: 09996ea7e35ecf34b9f6f757e3b1a1ba, type: 2}
   - SkillName: "\u30BD\u30CA\u30BF\u306E\u81EA\u52D5\u30AF\u30ED\u30B9\u30DC\u30A6\u5C04\u6483"
     Rarity: 2
     skill: {fileID: 11400000, guid: 9d8c009157ab1df4cbb59ea70231ae02, type: 2}
-  - SkillName: "\u300C\u7570\u7AEF\u306F\u9003\u3057\u307E\u305B\u3093\u300D"
-    Rarity: 2
-    skill: {fileID: 11400000, guid: 22f2300043f273e49a6c6f92942af0f9, type: 2}
   - SkillName: "\u898B\u9727"
     Rarity: 2
     skill: {fileID: 11400000, guid: bd29f0761fd109f4d991ec2a3cfc7587, type: 2}
@@ -1995,6 +1989,9 @@ MonoBehaviour:
   - SkillName: "\u30A6\u30A3\u30B9\u30AD\u30FC\u30CF\u30A4"
     Rarity: 2
     skill: {fileID: 11400000, guid: 0e3fdb166da003148aebf4e4dd27b60a, type: 2}
+  - SkillName: "\u30A6\u30A9\u30FC\u30B8\u30E5\u30FC\u30B9\u6442\u53D6"
+    Rarity: 2
+    skill: {fileID: 11400000, guid: 09996ea7e35ecf34b9f6f757e3b1a1ba, type: 2}
   StatusUPs:
   - MainImage: {fileID: 21300000, guid: cd059f8ea1dce9148ab5c348307a30ec, type: 3}
     PageName: "\u6226\u95D8\u8A13\u7DF4"

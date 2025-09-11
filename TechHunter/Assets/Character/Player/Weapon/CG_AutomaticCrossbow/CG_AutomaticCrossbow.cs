@@ -13,7 +13,7 @@ public class CG_AutomaticCrossbow : MonoBehaviour
     int ArrowCount = 0;
 
     float AttackCount = 0;
-    float AttackTime = 0.12f;
+    float AttackTime = 0.14f;
 
     PlayerController controller => PlayerController.Instance;
     // Start is called before the first frame update
@@ -30,7 +30,7 @@ public class CG_AutomaticCrossbow : MonoBehaviour
         transform.Rotate(0, 0, 90);
 
         AttackCount += Time.deltaTime;
-        if (AttackCount > AttackTime && ArrowCount < 30) 
+        if (AttackCount > AttackTime && ArrowCount < 40) 
         {
             AttackCount = 0;
             ArrowCount++;

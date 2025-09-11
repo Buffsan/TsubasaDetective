@@ -96,6 +96,7 @@ public class SkillController : MonoBehaviour
     public void isAll_StartSkillPageChoice() 
     {
         isStartSkillPageChoice();
+        ReRollAnim.Play("èoåª",0,0);
         GameObject CL_AllSkillPage = Instantiate(AllSkillPage);
         playerController.movetype = PlayerController.MoveType.Wait;
         AllSkillPages.Add(CL_AllSkillPage);
@@ -126,6 +127,16 @@ public class SkillController : MonoBehaviour
     {
         cardMode = ChoiceCardMode.Skill;
         ReRollAnim.Play("èoåª");
+
+        foreach (SkillPageManager save in SavesSkillPageManager)
+        {
+            save.move = SkillPageManager.Move.Run;
+            Destroy(save.gameObject, 5);
+
+        }
+        SaveSkills.Clear();
+        SavesSkillPageManager.Clear();
+
 
         List<Skill> NowSkill = new List<Skill>();
 

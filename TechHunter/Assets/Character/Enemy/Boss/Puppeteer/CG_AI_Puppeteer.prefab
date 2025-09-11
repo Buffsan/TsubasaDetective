@@ -49,6 +49,7 @@ MonoBehaviour:
   AttackNumber: 0
   AttackWaitTime: 0
   AllAttackNumber: 0
+  AttackPhase: 0
   SaveVolume: 0
   phase: 0
   RockNeedle: {fileID: 2218436625401236047, guid: e57302ff6772a8a498ffbbfccb56c502, type: 3}
@@ -60,7 +61,7 @@ MonoBehaviour:
   - {fileID: 3053387841086163839, guid: 380cdd8badf123245947f21453bebced, type: 3}
   - {fileID: 8574007411557729063, guid: e76d873b781f46346b2313b67f17a980, type: 3}
   - {fileID: 5747729073694033841, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
-  - {fileID: 6345432140904166158, guid: ea812d26f417724458ff351416c5a919, type: 3}
+  - {fileID: 5747729073694033841, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
   - {fileID: 6345432140904166158, guid: ea812d26f417724458ff351416c5a919, type: 3}
   - {fileID: 6345432140904166158, guid: ea812d26f417724458ff351416c5a919, type: 3}
   - {fileID: 9054921199967653630, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
@@ -68,10 +69,11 @@ MonoBehaviour:
   - {fileID: 9054921199967653630, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
   - {fileID: 9054921199967653630, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
   - {fileID: 6345432140904166158, guid: ea812d26f417724458ff351416c5a919, type: 3}
+  - {fileID: 1195127491811443262, guid: edc1068857f7e6c47bb7dfac63172d9e, type: 3}
   AddMovePointGameObject: {fileID: 0}
   EnemySpawnLists_GameObject: {fileID: 0}
-  Zako: {fileID: 408498929731567729, guid: d75d7855c200e52468d982edd94103bb, type: 3}
-  AstroZako: {fileID: 2426935040293742889, guid: 7231016c493f4064d9427548949c2736, type: 3}
+  Zako: {fileID: 6345432140904166158, guid: ea812d26f417724458ff351416c5a919, type: 3}
+  AstroZako: {fileID: 1195127491811443262, guid: edc1068857f7e6c47bb7dfac63172d9e, type: 3}
   MovePoints:
   - {fileID: 0}
   - {fileID: 0}

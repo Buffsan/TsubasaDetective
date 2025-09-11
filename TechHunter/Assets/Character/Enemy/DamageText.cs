@@ -33,6 +33,6 @@ public class DamageText : MonoBehaviour
     }
     public void isChangeText(float value) 
     {
-        DamageCountText.text = value.ToString();
+        DamageCountText.text = value.ToString("F1");
     }
 }

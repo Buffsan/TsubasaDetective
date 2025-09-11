@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CG_Spear
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 80
+  MAXHP: 70
   Regen: 0
   MAXMP: 0
   SPEED: 1.1

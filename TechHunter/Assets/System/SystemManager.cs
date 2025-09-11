@@ -255,7 +255,9 @@ public class SystemManager : MonoBehaviour
 
     }
     public void isGameStart() 
-    {skillController.ReRollCount = 0;
+    {
+        skillController.ReRollCount = 0;
+        controller.animator.SetBool("Dodge", false);
         if (gameModeManager.BattlePhase < 3)
         {
             

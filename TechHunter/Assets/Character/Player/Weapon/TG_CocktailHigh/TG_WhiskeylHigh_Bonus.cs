@@ -47,7 +47,7 @@ public class TG_WhiskeylHigh_Bonus : MonoBehaviour
                     if (skill.skillDATA != null &&
                         skill.SkillCardManager.mode == SkillCardManager.Mode.CoolTime)
                     {
-                        skill.SkillCardManager.isCoolTime_add(0.3f);
+                        skill.SkillCardManager.isCoolTime_add(0.7f);
                     }
                 }
             }

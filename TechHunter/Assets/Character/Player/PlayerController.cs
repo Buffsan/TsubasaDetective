@@ -41,7 +41,7 @@ public class PlayerController : PlayerStatus
     [SerializeField] AudioClip guardClip;
     [SerializeField] AudioClip DodgeClip;
     public Rigidbody2D rb;
-    Animator animator;
+    public Animator animator;
     public int AllCoins=0;
     float AttackWaitCount = 0;
     float DodgeCount = 0;

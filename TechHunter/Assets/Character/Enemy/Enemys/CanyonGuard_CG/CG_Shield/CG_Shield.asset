@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CG_Shield
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 55
+  MAXHP: 76
   Regen: 0
   MAXMP: 0
   SPEED: 0.6

@@ -22,4 +22,4 @@ MonoBehaviour:
   MultiplyATK: 0
   ATKDF: -10
   MultiplyATKDF: 0
-  Multiply_CoolTimeBuff: 0.5
+  Multiply_CoolTimeBuff: 0.1

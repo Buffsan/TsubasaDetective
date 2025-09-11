@@ -364,8 +364,12 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
                 if (AttackNumber < 30)
                 {
-                    Vector2 newPos = SavePos + new Vector2(Random.Range((float)-AttackNumber / 3, (float)AttackNumber / 3), Random.Range((float)-AttackNumber / 2, (float)AttackNumber / 2));
-                    NeedleSpawn(newPos);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Vector2 newPos = SavePos + new Vector2(Random.Range((float)-AttackNumber / 3, (float)AttackNumber / 3), Random.Range((float)-AttackNumber / 2, (float)AttackNumber / 2));
+                        NeedleSpawn(newPos);
+                    }
+                    //NeedleSpawn(-newPos);
                 }
                 else 
                 { 
@@ -764,15 +768,19 @@ public class CG_AI_Puppeteer : Boss_MoveBase
             float newDistance = Vector2.Distance(SavePos, transform.position);
             Vector2 newDirection = SavePos - (Vector2)transform.position;
 
-            enemyBase.rb.velocity = newDirection.normalized * enemyBase.SPEED;
+            enemyBase.rb.velocity = newDirection.normalized * enemyBase.SPEED/3;
 
             sabAttackCount += Time.deltaTime;
             if (sabAttackCount > 0.08)
             {
 
                 sabAttackCount = 0;
-                Vector2 NeedlePos = (Vector2)transform.position + new Vector2(Random.Range(-2f, 2f), Random.Range(-3f, -1f));
-                NeedleSpawn(NeedlePos);
+                for (int i = 0; i < 3; i++)
+                {
+                    Vector2 NeedlePos = (Vector2)transform.position + new Vector2(Random.Range(-2f-i * 5, 2f+i * 5), Random.Range(-3f-i*4, -1f+i * 4));
+                    NeedleSpawn(NeedlePos);
+                }
+                
 
             }
 
@@ -792,7 +800,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
 
-            if (enemyBase.AttackCount > 0.5)
+            if (enemyBase.AttackCount > 3)
             {
                 enemyBase.animator2.Play("上攻撃", 0, 0);
                 AttackNumber++;
@@ -805,15 +813,15 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
         if (enemyBase.mode == EnemyBase.ModeType.M4)
         {
-            if (enemyBase.AttackCount > 0.3)
+            if (enemyBase.AttackCount > 0.1)
             {
                
                 if (AttackNumber < 12)
                 {
-                    for (int i = 0; i < 10 + AttackNumber; i++)
+                    for (int i = 0; i < 10 ; i++)
                     {
 
-                        float angle = (360 / 10 + AttackNumber) * i;
+                        float angle = (360 / 10 ) * i;
                         float angleRad = angle * Mathf.Deg2Rad;
 
                         float newX = (transform.position.x + 1 + AttackNumber) * Mathf.Cos(angleRad);
@@ -827,7 +835,79 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                     }
                     AttackNumber++;
                     enemyBase.AttackCount = 0;
-                    enemyBase.mode = EnemyBase.ModeType.M4;
+
+                }
+                else
+                {
+                    AttackNumber=0;
+                    enemyBase.AttackCount = 0;
+                    enemyBase.mode = EnemyBase.ModeType.M5;
+                }
+            }
+
+
+        }
+        if (enemyBase.mode == EnemyBase.ModeType.M5)
+        {
+            if (enemyBase.AttackCount > 0.1)
+            {
+
+                if (AttackNumber < 12)
+                {
+                    for (int i = 0; i < 10; i++)
+                    {
+
+                        float angle = ((360 / 10)+20) * i;
+                        float angleRad = angle * Mathf.Deg2Rad;
+
+                        float newX = (transform.position.x + 1 + AttackNumber) * Mathf.Cos(angleRad);
+                        float newY = (transform.position.y + 1 + AttackNumber) * Mathf.Sin(angleRad);
+
+                        // 新しい位置にクローンを作成
+                        Vector2 newPosition = new Vector2(newX, newY);
+
+                        NeedleSpawn(newPosition);
+
+                    }
+                    AttackNumber++;
+                    enemyBase.AttackCount = 0;
+                   
+                }
+                else
+                {
+                    AttackNumber = 0;
+                    enemyBase.AttackCount = 0;
+                    enemyBase.mode = EnemyBase.ModeType.M6;
+                }
+            }
+
+
+        }
+        if (enemyBase.mode == EnemyBase.ModeType.M6)
+        {
+            if (enemyBase.AttackCount > 0.1)
+            {
+
+                if (AttackNumber < 12)
+                {
+                    for (int i = 0; i < 10; i++)
+                    {
+
+                        float angle = ((360 / 10) + 40) * i;
+                        float angleRad = angle * Mathf.Deg2Rad;
+
+                        float newX = (transform.position.x + 1 + AttackNumber) * Mathf.Cos(angleRad);
+                        float newY = (transform.position.y + 1 + AttackNumber) * Mathf.Sin(angleRad);
+
+                        // 新しい位置にクローンを作成
+                        Vector2 newPosition = new Vector2(newX, newY);
+
+                        NeedleSpawn(newPosition);
+
+                    }
+                    AttackNumber++;
+                    enemyBase.AttackCount = 0;
+ 
                 }
                 else
                 {
@@ -841,7 +921,6 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
 
         }
-        
 
     }
 }

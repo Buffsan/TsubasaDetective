@@ -182,7 +182,7 @@ public class SkillCardManager : MonoBehaviour
     }
     public void isCoolTime() 
     {
-        CoolCount += Time.deltaTime * (1 + playerController.playerBuff.Multiply_CoolTimeBuff +( (100+playerController.AddRange)/100));
+        CoolCount += Time.deltaTime * (1 + playerController.playerBuff.Multiply_CoolTimeBuff +( (playerController.AddRange)/100));
     }
     public void isCoolTime_add(float value) 
     {

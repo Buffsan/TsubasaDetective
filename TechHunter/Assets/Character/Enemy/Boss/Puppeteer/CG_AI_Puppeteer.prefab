@@ -55,6 +55,7 @@ MonoBehaviour:
   RockNeedle: {fileID: 2218436625401236047, guid: e57302ff6772a8a498ffbbfccb56c502, type: 3}
   DieEffect: {fileID: 8154208296095492929, guid: af818acf56f0e3447abac572065cc876, type: 3}
   Needleclip: {fileID: 0}
+  DamageEffect: {fileID: 4735767792586528100, guid: 72019fb5ec960cd4484fa0993c22dcca, type: 3}
   EnemySpawnBool: 00000000
   Enemys:
   - {fileID: 9054921199967653630, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
@@ -62,17 +63,18 @@ MonoBehaviour:
   - {fileID: 8574007411557729063, guid: e76d873b781f46346b2313b67f17a980, type: 3}
   - {fileID: 5747729073694033841, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
   - {fileID: 5747729073694033841, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
-  - {fileID: 6345432140904166158, guid: ea812d26f417724458ff351416c5a919, type: 3}
-  - {fileID: 6345432140904166158, guid: ea812d26f417724458ff351416c5a919, type: 3}
+  - {fileID: 3053387841086163839, guid: 380cdd8badf123245947f21453bebced, type: 3}
+  - {fileID: 8574007411557729063, guid: e76d873b781f46346b2313b67f17a980, type: 3}
   - {fileID: 9054921199967653630, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
   - {fileID: 9054921199967653630, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
   - {fileID: 9054921199967653630, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
-  - {fileID: 9054921199967653630, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
-  - {fileID: 6345432140904166158, guid: ea812d26f417724458ff351416c5a919, type: 3}
+  - {fileID: 8574007411557729063, guid: e76d873b781f46346b2313b67f17a980, type: 3}
+  - {fileID: 8574007411557729063, guid: e76d873b781f46346b2313b67f17a980, type: 3}
   - {fileID: 1195127491811443262, guid: edc1068857f7e6c47bb7dfac63172d9e, type: 3}
   AddMovePointGameObject: {fileID: 0}
   EnemySpawnLists_GameObject: {fileID: 0}
-  Zako: {fileID: 6345432140904166158, guid: ea812d26f417724458ff351416c5a919, type: 3}
+  Zako: {fileID: 8927993177932673123, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
+  Zako1: {fileID: 6345432140904166158, guid: ea812d26f417724458ff351416c5a919, type: 3}
   AstroZako: {fileID: 1195127491811443262, guid: edc1068857f7e6c47bb7dfac63172d9e, type: 3}
   MovePoints:
   - {fileID: 0}

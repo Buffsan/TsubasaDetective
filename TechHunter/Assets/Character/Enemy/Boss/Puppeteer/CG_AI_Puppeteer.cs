@@ -14,6 +14,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     [SerializeField] GameObject RockNeedle;
     [SerializeField] GameObject DieEffect;
     [SerializeField] AudioClip Needleclip;
+    [SerializeField] GameObject DamageEffect;
 
     public List<bool> EnemySpawnBool = new List<bool>();
 
@@ -24,6 +25,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     [SerializeField]Add_Lists_GameObject EnemySpawnLists_GameObject;
 
     [SerializeField] GameObject Zako;
+    [SerializeField] GameObject Zako1;
     [SerializeField] GameObject AstroZako;
 
     bool Astrobool = false;
@@ -740,30 +742,83 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
     void A7()
     {
-        if (enemyBase.mode == EnemyBase.ModeType.M1)
+        if (enemyBase.mode == EnemyBase.ModeType.M1) 
+        {
+            GameObject CL_effect = Instantiate(DamageEffect,transform.position, Quaternion.identity);
+            enemyBase.CharaDamage.AllRecorverConfusionHP(); enemyBase.DamageBody.SetActive(false);
+            Destroy(CL_effect,1);
+            
+
+            enemyBase.AttackCount = 0; AttackNumber=0;
+            enemyBase.mode = EnemyBase.ModeType.M14;
+        }
+        if (enemyBase.mode == EnemyBase.ModeType.M14)
+        {
+            Vector2 directionBase = enemyBase.Player.transform.position - transform.position;
+            enemyBase.rb.velocity = -directionBase.normalized * 5;
+            if (enemyBase.AttackCount > 1) 
+            {
+                enemyBase.rb.velocity = Vector2.zero;
+                enemyBase.animator.Play("“D“P‘Þ");
+                enemyBase.animator2.Play("ö•š");
+                enemyBase.AttackCount = 0; AttackNumber = 0;
+                enemyBase.mode = EnemyBase.ModeType.M15;
+            }
+        }
+
+            if (enemyBase.mode == EnemyBase.ModeType.M15)
+        {
+            if (enemyBase.AttackCount > 0.4)
+            {
+                Vector2 newPos = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
+
+                Instantiate(Zako, newPos, Quaternion.identity);
+                Instantiate(DieEffect, newPos, Quaternion.identity);
+                AttackNumber++;
+                enemyBase.AttackCount = 0;
+                if (AttackNumber % 5 == 0)
+                {
+                    Vector2 newPos2 = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
+
+                    Instantiate(Zako1, newPos, Quaternion.identity);
+                    Instantiate(DieEffect, newPos, Quaternion.identity);
+                }
+                if (AttackNumber % 10 == 0) 
+                {
+                    Vector2 newPos2 = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
+
+                    Instantiate(Enemys[0], newPos, Quaternion.identity);
+                    Instantiate(DieEffect, newPos, Quaternion.identity);
+                }
+
+                if (AttackNumber > 30) 
+                {
+                    enemyBase.mode = EnemyBase.ModeType.M2;
+                    enemyBase.AttackCount = 0; AttackNumber = 0;
+                }
+            }
+        }
+        if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
 
-            enemyBase.CharaDamage.AllRecorverConfusionHP();enemyBase.DamageBody.SetActive(false);
-
-            enemyBase.animator.Play("“D“P‘Þ");
-            enemyBase.animator2.Play("ö•š");
-            if (enemyBase.AttackCount > 2)
+            
+            if (enemyBase.AttackCount > 20)
             {
                 
                 
 
                 
                 SavePos = add_Lists_GameObject.gameObjects[4].transform.position;
-                enemyBase.animator.Play("“DˆÚ“®");
+                //enemyBase.animator.Play("“DˆÚ“®");
                 enemyBase.AttackCount = 0;
-                enemyBase.mode = EnemyBase.ModeType.M2;
+                enemyBase.mode = EnemyBase.ModeType.M3;
 
 
 
 
             }
         }
-        if (enemyBase.mode == EnemyBase.ModeType.M2)
+        if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
             float newDistance = Vector2.Distance(SavePos, transform.position);
             Vector2 newDirection = SavePos - (Vector2)transform.position;
@@ -791,13 +846,13 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 sabAttackCount = 0;
                 enemyBase.rb.velocity = Vector2.zero;
                 enemyBase.AttackCount = 0;
-                enemyBase.mode = EnemyBase.ModeType.M3;
+                enemyBase.mode = EnemyBase.ModeType.M4;
                 enemyBase.DamageBody.SetActive(true);
             }
 
         }
        
-        if (enemyBase.mode == EnemyBase.ModeType.M3)
+        if (enemyBase.mode == EnemyBase.ModeType.M4)
         {
 
             if (enemyBase.AttackCount > 3)
@@ -805,13 +860,13 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 enemyBase.animator2.Play("ãUŒ‚", 0, 0);
                 AttackNumber++;
                 enemyBase.AttackCount = 0;
-                enemyBase.mode = EnemyBase.ModeType.M4;
+                enemyBase.mode = EnemyBase.ModeType.M5;
                 NeedleSpawn(transform.position);
             }
 
         }
 
-        if (enemyBase.mode == EnemyBase.ModeType.M4)
+        if (enemyBase.mode == EnemyBase.ModeType.M5)
         {
             if (enemyBase.AttackCount > 0.1)
             {
@@ -841,13 +896,13 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 {
                     AttackNumber=0;
                     enemyBase.AttackCount = 0;
-                    enemyBase.mode = EnemyBase.ModeType.M5;
+                    enemyBase.mode = EnemyBase.ModeType.M6;
                 }
             }
 
 
         }
-        if (enemyBase.mode == EnemyBase.ModeType.M5)
+        if (enemyBase.mode == EnemyBase.ModeType.M6)
         {
             if (enemyBase.AttackCount > 0.1)
             {
@@ -877,13 +932,13 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 {
                     AttackNumber = 0;
                     enemyBase.AttackCount = 0;
-                    enemyBase.mode = EnemyBase.ModeType.M6;
+                    enemyBase.mode = EnemyBase.ModeType.M7;
                 }
             }
 
 
         }
-        if (enemyBase.mode == EnemyBase.ModeType.M6)
+        if (enemyBase.mode == EnemyBase.ModeType.M7)
         {
             if (enemyBase.AttackCount > 0.1)
             {

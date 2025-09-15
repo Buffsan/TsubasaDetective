@@ -8,6 +8,7 @@ public class PlayerSkillBase : MonoBehaviour
     public GameObject SlillBullet;
     public PlayerController playerController => PlayerController.Instance;
 
+
     public int SkillLevel =0;
 
     public enum ATT 

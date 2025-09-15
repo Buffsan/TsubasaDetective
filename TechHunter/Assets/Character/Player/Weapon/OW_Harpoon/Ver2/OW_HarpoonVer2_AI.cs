@@ -70,7 +70,7 @@ public class OW_HarpoonVer2_AI : PlayerSkillBase
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy")&& !Attacked) 
+        if (other.CompareTag("EnemyArea")&& !Attacked) 
         {
             Shot();
         }

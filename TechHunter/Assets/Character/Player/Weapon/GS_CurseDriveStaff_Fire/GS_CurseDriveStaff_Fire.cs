@@ -34,7 +34,7 @@ public class GS_CurseDriveStaff_Fire : MonoBehaviour
             GameObject CL_Attack = Instantiate(Attack, transform.position, Quaternion.identity);
             Destroy(CL_Attack, 0.2f);
 
-            for (int i = 0; i < 6; i++) 
+            for (int i = 0; i < 10; i++) 
             {
                 Vector2 NowPos = (Vector2)transform.position + new Vector2(Random.RandomRange(-3f, 3f), Random.RandomRange(-3f, 3f));
                 Instantiate(Fire, NowPos, Quaternion.identity);

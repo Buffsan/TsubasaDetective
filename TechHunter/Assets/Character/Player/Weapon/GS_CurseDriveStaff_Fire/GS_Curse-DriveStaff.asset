@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GS_Curse-DriveStaff
   m_EditorClassIdentifier: 
   attackType: 3
-  Attack: 30
+  Attack: 35
   AttackSpeedTime: 0
   StaggerPower: 3
   ConfusionPower: 0.1

@@ -51,11 +51,7 @@ public class sytem_GameSpotsController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.J)) 
         {
 
-            systemmanager.ReStart();
-            gamemode.allgamemode = AllGameMode.SpotChoiceMode;
-            DestroyInputSpots();
-            UpdateInputSpot();
-            NewSpawnSpots();
+            isGameSpotStart();
         }
         if (Input.GetKeyDown(KeyCode.K)) 
         {
@@ -64,6 +60,14 @@ public class sytem_GameSpotsController : MonoBehaviour
             PlayerSpot();
 
 
+    }
+    public void isGameSpotStart() 
+    {
+        systemmanager.ReStart();
+        gamemode.allgamemode = AllGameMode.SpotChoiceMode;
+        DestroyInputSpots();
+        UpdateInputSpot();
+        NewSpawnSpots();
     }
     public void PopSpots() 
     {

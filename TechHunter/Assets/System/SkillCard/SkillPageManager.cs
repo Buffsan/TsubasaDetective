@@ -23,6 +23,10 @@ public class SkillPageManager : MonoBehaviour
     public float TargetRectPos = 0;
     [SerializeField] AudioClip Clip1;
     [SerializeField] AudioClip Clip2;
+
+    public GameObject TriggerCanvas;
+
+    public bool DontTotch =false;
     AudioManager audio => AudioManager.instance;
     public enum Move
     {
@@ -53,7 +57,7 @@ public class SkillPageManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && Totch)
+        if (Input.GetMouseButtonDown(0) && Totch && !DontTotch)
         {
             audio.isPlaySE(Clip2);
             Select = true;

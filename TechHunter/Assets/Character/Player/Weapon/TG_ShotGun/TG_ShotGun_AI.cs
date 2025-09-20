@@ -44,7 +44,8 @@ public class TG_ShotGun_AI : PlayerSkillBase
         }
         else if (Att == ATT.A2)
         {
-            playerController.rb.velocity = playerController.CursorDirection.normalized * -15;
+            playerController.rb.velocity = playerController.CursorDirection.normalized * -20;
+            
             if (skillcount > 0.1)
             {
                 Att = ATT.A3;
@@ -54,8 +55,8 @@ public class TG_ShotGun_AI : PlayerSkillBase
         }
         else if (Att == ATT.A3) 
         {
-            playerController.rb.velocity = playerController.rb.velocity*0.7f;
-            if (skillcount > 0.4)
+            playerController.rb.velocity = playerController.rb.velocity*0.5f;
+            if (skillcount > 0.2)
             {
            
                 end();

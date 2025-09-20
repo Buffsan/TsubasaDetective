@@ -26,6 +26,9 @@ public class SkillController : MonoBehaviour
 
     [HideInInspector] public List<SkillPageManager> SavesSkillPageManager = new List<SkillPageManager>();
     [HideInInspector] public List<Skill> SaveSkills = new List<Skill>();
+
+    ALL_SystemManager allSystemManager => ALL_SystemManager.Instance;
+
     [SerializeField] TextMeshProUGUI ReRollText;
     [SerializeField] Animator ReRollAnim;
     StatusUP SaveStatusUP;
@@ -63,7 +66,7 @@ public class SkillController : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.N))
         {
-            isAll_StartSkillPageChoice();
+            isAll_StartSkillPageChoice(2);
         }
         if (systemManager.gameMode == SystemManager.GameMode.Result) 
         {
@@ -84,7 +87,7 @@ public class SkillController : MonoBehaviour
                 ReRollCount++;
                 if (cardMode == ChoiceCardMode.Skill)
                 {
-                    isStartSkillPageChoice();
+                    isStartSkillPageChoice(2);
                 }
                 else if (cardMode == ChoiceCardMode.Status)
                 {
@@ -93,9 +96,10 @@ public class SkillController : MonoBehaviour
             }
         }
     }
-    public void isAll_StartSkillPageChoice() 
+    public void isAll_StartSkillPageChoice(int RarityValue) 
     {
-        isStartSkillPageChoice();
+        isStartSkillPageChoice(RarityValue);
+
         ReRollAnim.Play("oŒ»",0,0);
         GameObject CL_AllSkillPage = Instantiate(AllSkillPage);
         playerController.movetype = PlayerController.MoveType.Wait;
@@ -123,8 +127,9 @@ public class SkillController : MonoBehaviour
             }
         }
     }
-    public void isStartSkillPageChoice() 
+    public void isStartSkillPageChoice(int RarityValue) 
     {
+        //Debug.Log( "" + RarityValue);
         cardMode = ChoiceCardMode.Skill;
         ReRollAnim.Play("oŒ»");
 
@@ -148,7 +153,7 @@ public class SkillController : MonoBehaviour
                 foreach (Skill s in SkillList)
                 {
 
-                    if (s.Rarity >= 2)
+                    if (s.Rarity == RarityValue)
                     {
                         SaveStatusUps_R1.Add(s);
                     }
@@ -291,7 +296,7 @@ public class SkillController : MonoBehaviour
             if (gameModeManager.BattlePhase == 2) 
             {
                 //isStartSkillPageChoice();
-                isAll_StartSkillPageChoice();
+                isAll_StartSkillPageChoice(2);
             }
         }
 
@@ -307,10 +312,16 @@ public class SkillController : MonoBehaviour
         cardMode = ChoiceCardMode.None;
         playerController.rb.velocity = Vector2.zero;
 
+        if (ALL_System.system_GameStartController != null) 
+        {
+            ALL_System.system_GameStartController.NextPhase();
+        
+        }
+
         int index = 0;
         foreach (SkillPageManager save in SavesSkillPageManager)
         {
-
+            save.DontTotch = true;
             if (save.Select)
             {
                 save.move = SkillPageManager.Move.Wait;

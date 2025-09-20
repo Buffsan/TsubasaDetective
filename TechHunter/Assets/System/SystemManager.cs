@@ -7,7 +7,7 @@ public class SystemManager : MonoBehaviour
     [SerializeField] EnemySpawnBase enemySpawn;
     [SerializeField] system_GameModeManager gameModeManager;
     [SerializeField] sytem_GameSpotsController sytem_GameSpotsController;
-    [SerializeField] SkillCardData NoneSkill;
+    public SkillCardData NoneSkill;
  
 
     public List<GameObject> AllEnemy = new List<GameObject>();
@@ -116,7 +116,13 @@ public class SystemManager : MonoBehaviour
     { 
     
     }
-
+    public void AllSkillReset() 
+    {
+        foreach (SkillInfo skill in controller.skillINFO)
+        {            
+                skill.skillDATA = NoneSkill;      
+        }
+    }
     public void ReStart() 
     {
         controller.AddATK = 0;

@@ -7,6 +7,7 @@ public class ALL_SystemManager : MonoBehaviour
     public SystemManager systemManager;
     public system_GameModeManager system_GameModeManager;
     public sytem_GameSpotsController sytem_GameSpotsController;
+    public System_GameStart_Controller system_GameStartController;
 
     public SkillController skillController;
     public EnemySpawnBase enemySpawnBASE;

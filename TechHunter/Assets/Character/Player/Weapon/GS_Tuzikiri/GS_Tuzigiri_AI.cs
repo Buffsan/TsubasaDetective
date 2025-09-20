@@ -12,6 +12,8 @@ public class GS_Tuzigiri_AI : PlayerSkillBase
     
     Vector2 EnemyDirection;
 
+    Vector2 SaveDirection;
+
     void Start()
     {
         MYskillBase = GetComponent<PlayerSkillBase>();
@@ -35,7 +37,7 @@ public class GS_Tuzigiri_AI : PlayerSkillBase
 
             playerController.playerBuff.SpawnBuff(buffdata);
 
-            EnemyDirection = playerController.MoveInput;
+            EnemyDirection = playerController.CursorDirection.normalized;
             
 
         }
@@ -54,7 +56,7 @@ public class GS_Tuzigiri_AI : PlayerSkillBase
                 else
                 {
 
-                    playerController.rb.velocity = EnemyDirection.normalized * 15;
+                    playerController.rb.velocity = EnemyDirection.normalized * 20;
 
                 }
         }

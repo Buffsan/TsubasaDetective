@@ -41,7 +41,7 @@ public class TileMap_Goal : MonoBehaviour
             if (system.gameMode == SystemManager.GameMode.Nomal)
             {
 
-  
+                WallEffect.emissionRate = 70;
                 Wall.SetActive(true);
 
             }

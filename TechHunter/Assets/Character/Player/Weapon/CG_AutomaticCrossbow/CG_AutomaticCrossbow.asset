@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CG_AutomaticCrossbow
   m_EditorClassIdentifier: 
   attackType: 1
-  Attack: 3
+  Attack: 4
   AttackSpeedTime: 0
   StaggerPower: 1
   ConfusionPower: 0.1

@@ -10,6 +10,8 @@ public class SkillCardManager : MonoBehaviour
 {
     // Start is called before the first frame update
 
+  
+
     public SkillCardData cardData;
 
     public TextMeshProUGUI CoolCountText;

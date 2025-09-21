@@ -199,3 +199,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapondata: {fileID: 11400000, guid: c9793c5c2861c0b4b986e931d08581ba, type: 2}
+  skillcarddata: {fileID: 11400000, guid: b20418522b7ecef41936fbaf573aea20, type: 2}
+  AttackLevel: 0
+  Level_AttackBONUS_multiplier: 15
+  Level_AttackBONUS: 1
+  AgeinAttack: 0

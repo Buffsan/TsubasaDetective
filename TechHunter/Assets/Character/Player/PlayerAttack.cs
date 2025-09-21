@@ -5,25 +5,19 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     public weapondata weapondata;
+    public SkillCardData skillcarddata;
+    public int AttackLevel = 0;
 
+
+     float Level_AttackBONUS_multiplier = 40;
+     float Level_AttackBONUS = 0.5f;
     PlayerController controller => PlayerController.Instance;
     public AudioManager audioManager => AudioManager.instance;
 
     public bool AgeinAttack = false;
 
     List<GameObject> EnemyData = new List<GameObject>();
-    // Start is called before the first frame update
-    
-    private void Awake()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+ 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("EnemyArea")) 
@@ -62,22 +56,28 @@ public class PlayerAttack : MonoBehaviour
     }
     float AttackMathf() 
     {
-        //float CriticalRandom = Random.Range(1f,100f);
         float AttackAll;
-        AttackAll = ((weapondata.Attack + controller.ATK) * ((100 + controller.AddATK) / 100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff;
+        float Level_BONUS_Damage = 0;
+        float Level_BONUS_Damage_multiply = 0;
 
-        /*
-        if (controller.AddCritical <= CriticalRandom)
+        if (skillcarddata != null) 
         {
-             AttackAll = ((weapondata.Attack + controller.ATK) * ((100 + controller.AddATK)/100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff;
+            foreach (var skillinfo in controller.skillINFO) 
+            {
+                if (skillinfo.skillDATA == skillcarddata) 
+                {
+                    AttackLevel = skillinfo.SkillLevel -1;
+
+                    Level_BONUS_Damage = Level_AttackBONUS * AttackLevel;
+                    Level_BONUS_Damage_multiply = Level_AttackBONUS_multiplier * AttackLevel;
+
+                    break;
+                }
+            }
         }
-        else 
-        {
-            Debug.Log("CriticalII");
-            AttackAll = (((weapondata.Attack + controller.ATK) * ((100 + controller.AddATK) / 100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff) *3;
-        }*/
 
-        return AttackAll;
+        AttackAll = ((weapondata.Attack + controller.ATK + Level_BONUS_Damage) * ((100 + controller.AddATK + Level_BONUS_Damage_multiply) / 100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff;
+       return AttackAll;
     }
 
 }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4270286341787468377}
   m_Layer: 7
   m_Name: AttackArea1 (6)
-  m_TagString: PlayerArea
+  m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapondata: {fileID: 11400000, guid: 227eb61c0cfc7434d8e4ef6cc841423c, type: 2}
+  skillcarddata: {fileID: 11400000, guid: 820074ac6b1b5d34baad85b79ba01a5c, type: 2}
+  AttackLevel: 0
   AgeinAttack: 0
 --- !u!61 &4270286341787468377
 BoxCollider2D:
@@ -143,7 +145,7 @@ GameObject:
   - component: {fileID: 537253419998749565}
   m_Layer: 7
   m_Name: AttackArea1 (1)
-  m_TagString: PlayerArea
+  m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -176,6 +178,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapondata: {fileID: 11400000, guid: 8a0dd9a958b5340488459a931a045283, type: 2}
+  skillcarddata: {fileID: 11400000, guid: 820074ac6b1b5d34baad85b79ba01a5c, type: 2}
+  AttackLevel: 0
   AgeinAttack: 0
 --- !u!61 &537253419998749565
 BoxCollider2D:
@@ -235,7 +239,7 @@ GameObject:
   - component: {fileID: 2750885302621527394}
   m_Layer: 7
   m_Name: AttackArea1 (4)
-  m_TagString: PlayerArea
+  m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -268,6 +272,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapondata: {fileID: 11400000, guid: ff3f3acc3bbec5a46bddb23ff55244df, type: 2}
+  skillcarddata: {fileID: 11400000, guid: 820074ac6b1b5d34baad85b79ba01a5c, type: 2}
+  AttackLevel: 0
   AgeinAttack: 0
 --- !u!61 &2750885302621527394
 BoxCollider2D:
@@ -327,7 +333,7 @@ GameObject:
   - component: {fileID: 7613212394198485080}
   m_Layer: 7
   m_Name: AttackArea1 (2)
-  m_TagString: PlayerArea
+  m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -360,6 +366,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapondata: {fileID: 11400000, guid: 227eb61c0cfc7434d8e4ef6cc841423c, type: 2}
+  skillcarddata: {fileID: 11400000, guid: 820074ac6b1b5d34baad85b79ba01a5c, type: 2}
+  AttackLevel: 0
   AgeinAttack: 0
 --- !u!61 &7613212394198485080
 BoxCollider2D:
@@ -419,7 +427,7 @@ GameObject:
   - component: {fileID: 3451319348290404301}
   m_Layer: 7
   m_Name: AttackArea1
-  m_TagString: PlayerArea
+  m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -452,6 +460,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapondata: {fileID: 11400000, guid: 008e0381826aecf43807fd313dcc3a63, type: 2}
+  skillcarddata: {fileID: 11400000, guid: 820074ac6b1b5d34baad85b79ba01a5c, type: 2}
+  AttackLevel: 0
   AgeinAttack: 0
 --- !u!61 &3451319348290404301
 BoxCollider2D:
@@ -511,7 +521,7 @@ GameObject:
   - component: {fileID: 8216031487697066773}
   m_Layer: 7
   m_Name: AttackArea1 (5)
-  m_TagString: PlayerArea
+  m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -544,6 +554,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapondata: {fileID: 11400000, guid: ff3f3acc3bbec5a46bddb23ff55244df, type: 2}
+  skillcarddata: {fileID: 11400000, guid: 820074ac6b1b5d34baad85b79ba01a5c, type: 2}
+  AttackLevel: 0
   AgeinAttack: 0
 --- !u!61 &8216031487697066773
 BoxCollider2D:
@@ -603,7 +615,7 @@ GameObject:
   - component: {fileID: 4993546708477315312}
   m_Layer: 7
   m_Name: AttackArea1 (3)
-  m_TagString: PlayerArea
+  m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -636,6 +648,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapondata: {fileID: 11400000, guid: ff3f3acc3bbec5a46bddb23ff55244df, type: 2}
+  skillcarddata: {fileID: 11400000, guid: 820074ac6b1b5d34baad85b79ba01a5c, type: 2}
+  AttackLevel: 0
   AgeinAttack: 0
 --- !u!61 &4993546708477315312
 BoxCollider2D:

@@ -417,27 +417,27 @@ public class PlayerController : PlayerStatus
             
             if (skilltype == SkillYype.Skill1)
             {
-                SaveSkill(Skill1);
+                SaveSkill(Skill1,0);
             }
             else if (skilltype == SkillYype.Skill2)
             {
-                SaveSkill(Skill2);
+                SaveSkill(Skill2,1);
             }
             else if (skilltype == SkillYype.Skill3)
             {
-                SaveSkill(Skill3);
+                SaveSkill(Skill3,2);
             }
             else if (skilltype == SkillYype.Skill4)
             {
-                SaveSkill(Skill4);
+                SaveSkill(Skill4,3);
             }
             else if (skilltype == SkillYype.Skill5)
             {
-                SaveSkill(Skill5);
+                SaveSkill(Skill5,4);
             }
             else if (skilltype == SkillYype.Skill6)
             {
-                SaveSkill(Skill6);
+                SaveSkill(Skill6,5);
             }
             mode = ModeType.M2;
         }
@@ -459,13 +459,26 @@ public class PlayerController : PlayerStatus
         }
         */
     }
-    void SaveSkill(GameObject SkillOBJ) 
+    void SaveSkill(GameObject SkillOBJ,int Level) 
     {
         GameObject CL_SkillOBJ = Instantiate(SkillOBJ,transform.position,Quaternion.identity);
         CL_SkillOBJ.transform.parent = transform;
 
         PlayerSkillBase CL_playerSkill = CL_SkillOBJ.GetComponent<PlayerSkillBase>();
         SaveSkillBase = CL_playerSkill;
+
+        int i = 0;
+        int SkillLevel = 0;
+        foreach (var skillinfo in skillINFO) 
+        {
+            if (i == Level) 
+            {
+                SkillLevel = skillinfo.SkillLevel;
+            }
+            i++;
+        }
+
+        CL_playerSkill.SkillLevel = SkillLevel;
     }
     void isAttack() 
     { 

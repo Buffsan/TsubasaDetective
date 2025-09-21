@@ -46,6 +46,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapondata: {fileID: 11400000, guid: 640b3731f27254e4ebd96a7604e5a013, type: 2}
+  skillcarddata: {fileID: 11400000, guid: 0126b2f653667434693dbd20d0482a1b, type: 2}
+  AttackLevel: 0
+  Level_AttackBONUS_multiplier: 15
+  Level_AttackBONUS: 1
   AgeinAttack: 0
 --- !u!58 &6116345587475292342
 CircleCollider2D:

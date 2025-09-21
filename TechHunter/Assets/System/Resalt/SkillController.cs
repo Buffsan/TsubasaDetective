@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public class SkillController : MonoBehaviour
 {
     [SerializeField] GameObject ResultCanvas;
+    [SerializeField] GameObject StatusMenuObject;
     [SerializeField] GameObject Page;
     [SerializeField] GameObject SkillPage;
     [SerializeField] GameObject AllSkillPage;
@@ -31,6 +32,7 @@ public class SkillController : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI ReRollText;
     [SerializeField] Animator ReRollAnim;
+    [SerializeField] Animator SkipAnim;
     StatusUP SaveStatusUP;
     Skill SaveSkill;
 
@@ -38,6 +40,7 @@ public class SkillController : MonoBehaviour
     public int ReRollCount = 0;
 
     AllSkilPagel allskillpage;
+    StatusMenu statusMenu;
     ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
     public enum ChoiceCardMode 
     {
@@ -101,6 +104,7 @@ public class SkillController : MonoBehaviour
         isStartSkillPageChoice(RarityValue);
 
         ReRollAnim.Play("出現",0,0);
+        SkipAnim.Play("出現", 0, 0);
         GameObject CL_AllSkillPage = Instantiate(AllSkillPage);
         playerController.movetype = PlayerController.MoveType.Wait;
         AllSkillPages.Add(CL_AllSkillPage);
@@ -132,6 +136,7 @@ public class SkillController : MonoBehaviour
         //Debug.Log( "" + RarityValue);
         cardMode = ChoiceCardMode.Skill;
         ReRollAnim.Play("出現");
+        SkipAnim.Play("出現");
 
         foreach (SkillPageManager save in SavesSkillPageManager)
         {
@@ -187,10 +192,18 @@ public class SkillController : MonoBehaviour
     public void isStartPageChoice() 
     {
         ReRollAnim.Play("出現");
+        SkipAnim.Play("出現");
         playerController.movetype = PlayerController.MoveType.Wait;
         cardMode = ChoiceCardMode.Status;
 
+        if (statusMenu == null)
+        {
+            GameObject CL_MenuObject = Instantiate(StatusMenuObject, new Vector3(-1000, 0, 0), Quaternion.identity);
+            statusMenu = CL_MenuObject.GetComponent<StatusMenu>();
+            CL_MenuObject.transform.parent = ResultCanvas.transform;
 
+            statusMenu.SetStatus();
+        }
         //もともとあったページの削除
         foreach (PageManager save in SavePage)
         {
@@ -249,7 +262,15 @@ public class SkillController : MonoBehaviour
     {
         playerController.movetype = PlayerController.MoveType.Nomal;
         ReRollAnim.Play("消える");
+        SkipAnim.Play("消える");
         playerController.rb.velocity = Vector2.zero;
+
+        if (statusMenu != null) 
+        {
+            statusMenu.move = StatusMenu.Move.Run;
+            Destroy(statusMenu.gameObject, 2);
+            statusMenu = null;
+        }
 
         cardMode = ChoiceCardMode.None;
         int index = 0;
@@ -305,10 +326,17 @@ public class SkillController : MonoBehaviour
         SaveStatus.Clear();
     }
 
+    public void SkipPage() 
+    {
+        ChoiceSkillPage();
+        ChoicePage();
+    }
+
     public void ChoiceSkillPage()
     {
         playerController.movetype = PlayerController.MoveType.Nomal;
         ReRollAnim.Play("消える");
+        SkipAnim.Play("消える");
         cardMode = ChoiceCardMode.None;
         playerController.rb.velocity = Vector2.zero;
 
@@ -325,17 +353,30 @@ public class SkillController : MonoBehaviour
             if (save.Select)
             {
                 save.move = SkillPageManager.Move.Wait;
-
-                foreach (SkillInfo skillinfo in playerController.skillINFO) 
+                bool LevelUP = false;
+                int i = 0;
+                foreach (SkillInfo skillinfo in playerController.skillINFO)
                 {
-                    if (skillinfo.skillDATA == skillNoneData) 
+                    if (skillinfo.skillDATA == SaveSkills[index].skill && skillinfo.skillDATA != skillNoneData)
                     {
-                        systemManager.gameMode = SystemManager.GameMode.Goal;
-                        playerController.movetype = PlayerController.MoveType.Nomal;
-                        systemManager.mode = SystemManager.ModeType.M1;
-                        Debug.Log("skillセット");
-                        skillinfo.skillDATA = SaveSkills[index].skill;
-                        break;
+                        skillinfo.SkillLevel++;
+                        LevelUP = true;
+                    }
+                        
+                }
+                if (!LevelUP)
+                {
+                    foreach (SkillInfo skillinfo in playerController.skillINFO)
+                    {
+                        if (skillinfo.skillDATA == skillNoneData)
+                        {
+                            systemManager.gameMode = SystemManager.GameMode.Goal;
+                            playerController.movetype = PlayerController.MoveType.Nomal;
+                            systemManager.mode = SystemManager.ModeType.M1;
+                            Debug.Log("skillセット");
+                            skillinfo.skillDATA = SaveSkills[index].skill;
+                            break;
+                        }
                     }
                 }
 
@@ -367,7 +408,7 @@ public class SkillController : MonoBehaviour
     }
     void isStatusPage(StatusUP statuspage,int value) 
     { 
-    
+    //-----------------statusページ生成
         GameObject CL_Page = Instantiate(Page);
        PageManager pageManager = CL_Page.GetComponent<PageManager>();
 
@@ -407,7 +448,7 @@ public class SkillController : MonoBehaviour
 
         //設置間隔 -500 0 500
         //500 1000 1500
-        int TargetPos = 500 * value - 500;
+        int TargetPos = 480 * value - 700;
         Debug.Log(TargetPos);
         pageManager.TargetRectPos = TargetPos;
         int NumverStringCount = 0;
@@ -448,9 +489,10 @@ public class SkillController : MonoBehaviour
         }
         if (statuspage.HP != 0) 
         {   float HP_Count = 0;
+            float NowHP = playerController.charadata.MAXHP + playerController.AddHP;
             NumverStringCount++;
-            HP_Count = playerController.charadata.MAXHP + statuspage.HP;
-            HP_String = "最大HP:"+ playerController.charadata.MAXHP + "→" +HP_Count;
+            HP_Count = playerController.charadata.MAXHP+ playerController.AddHP + statuspage.HP;
+            HP_String = "最大HP:"+ NowHP + "→" +HP_Count;
             AllStatusStrings.Add(HP_String);
         }
         if (statuspage.Regen != 0) 
@@ -489,7 +531,7 @@ public class SkillController : MonoBehaviour
             float Range_Count = playerController.Range;
             float Range_Count2 = Range_Count + statuspage.Range;
 
-            string Rangestring = "射程:" +Range_Count+"→"+Range_Count2; 
+            string Rangestring = "クールタイム速度:" +Range_Count+"→"+Range_Count2; 
             AllStatusStrings.Add(Rangestring);
         }
 

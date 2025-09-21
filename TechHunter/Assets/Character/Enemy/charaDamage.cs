@@ -41,49 +41,54 @@ public class charaDamage : MonoBehaviour, IDamageable
     }
     public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower,bool Critical)
     {
-        float AddDamage = Attackvalue - DF;
-        if (AddDamage > 0)
-        {
+        
+        
+
+            float AddDamage = Attackvalue - DF;
+            if (AddDamage < 1)
+            {
+                AddDamage = 1;
+            }
+            
             if (enemyBase.status == EnemyBase.Status.ConfusionResistance)
             {
                 enemyBase.HP -= AddDamage * 2;
-                isDamageTextPop(AddDamage * 2,2, Critical);
+                isDamageTextPop(AddDamage * 2, 2, Critical);
             }
             else
             {
                 enemyBase.HP -= AddDamage;
-                isDamageTextPop(AddDamage, 1 , Critical);
+                isDamageTextPop(AddDamage, 1, Critical);
             }
 
-            enemyBase.TakeDamageColor();
-            ConfusionHP -= (Attackvalue * HP_percent) * ConfusionPower;
+                enemyBase.TakeDamageColor();
+                ConfusionHP -= (Attackvalue * HP_percent) * ConfusionPower;
+            if (1 - (ConfusionHP / enemyBase.ConfusionHP) > enemyBase.HP / enemyBase.MAXHP && enemyBase.status != EnemyBase.Status.ConfusionResistance)
+            {//ç¨óê
 
-        }
-        if (1 - (ConfusionHP / enemyBase.ConfusionHP) > enemyBase.HP / enemyBase.MAXHP && enemyBase.status != EnemyBase.Status.ConfusionResistance)
-        {//ç¨óê
+                audioManager.isPlaySE(enemyBase.ConfusionAudio);
+                enemyBase.status = EnemyBase.Status.ConfusionResistance;
+                StanCount = 0;
+                SavePos = enemyBase.gameObject.transform.position;
 
-            audioManager.isPlaySE(enemyBase.ConfusionAudio);
-            enemyBase.status = EnemyBase.Status.ConfusionResistance;
-            StanCount = 0;
-            SavePos = enemyBase.gameObject.transform.position;
+                GameObject CL_ConfusionText = Instantiate(enemyBase.ConfusionImageText, enemyBase.transform.position, Quaternion.identity);
+                Destroy(CL_ConfusionText, 2);
 
-            GameObject CL_ConfusionText = Instantiate(enemyBase.ConfusionImageText,enemyBase.transform.position,Quaternion.identity);
-            Destroy( CL_ConfusionText ,2);
+            }
+            else if (Stan < Stanvalue && enemyBase.status != EnemyBase.Status.ConfusionResistance)
+            {
+                enemyBase.status = EnemyBase.Status.Stan;
+                StanCount = 0;
+                SavePos = enemyBase.gameObject.transform.position;
+            }
 
-        }
-        else if (Stan < Stanvalue && enemyBase.status != EnemyBase.Status.ConfusionResistance)
-        {
-            enemyBase.status = EnemyBase.Status.Stan;
-            StanCount = 0;
-            SavePos = enemyBase.gameObject.transform.position;
-        }
-
-
-        //enemyBase.Confusion_Slider.value = ConfusionHP / enemyBase.ConfusionHP;
         if (enemyBase.HP <= 0 && enemyBase.status != EnemyBase.Status.Die)
         {
             Death();
         }
+
+        //enemyBase.Confusion_Slider.value = ConfusionHP / enemyBase.ConfusionHP;
+
 
     }
     public void AllRecorverConfusionHP() 
@@ -156,6 +161,7 @@ public class charaDamage : MonoBehaviour, IDamageable
         }
         if (enemyBase.status == EnemyBase.Status.Die)
         {
+           
             if (DieCount < 0.3) {
                 DieCount += Time.deltaTime;
             } else {
@@ -164,10 +170,15 @@ public class charaDamage : MonoBehaviour, IDamageable
             }
         }
     }
+
+    private bool isDead = false;
     public void Death()
-    {
+    {enemyBase.status = EnemyBase.Status.Die;
         //Debug.Log("ÇµÇÒÇæ");
-        enemyBase.status = EnemyBase.Status.Die;
+        if (isDead) return;   // ä˘Ç…éÄñSèàóùíÜÇ»ÇÁâΩÇ‡ÇµÇ»Ç¢
+        isDead = true;        // Ç±Ç±Ç≈ç≈èâÇ…ÉçÉbÉNÇÇ©ÇØÇÈ
+
+        
         enemyBase.animator.SetBool("Damage", true);
         enemyBase.rb.velocity = Vector2.zero;
         CoinDrop();

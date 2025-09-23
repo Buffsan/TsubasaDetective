@@ -48,7 +48,7 @@ public class StatusMenu : MonoBehaviour
     public void SetStatus() 
     {
         
-        float ALL_HP = ALL_System.playerController.MaxHP + ALL_System.playerController.AddHP;
+        float ALL_HP = ALL_System.playerController.MaxHP;
         float ALL_Attack_multiplier = ALL_System.playerController.AddATK;
         float ALL_Attack = 0;
 

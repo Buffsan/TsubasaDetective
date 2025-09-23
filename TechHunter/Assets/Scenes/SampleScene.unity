@@ -116192,75 +116192,6 @@ Transform:
   - {fileID: 1243928255}
   m_Father: {fileID: 649239054}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 120}
---- !u!1001 &1824681636
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 60412698506620263, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -8.507761
-      objectReference: {fileID: 0}
-    - target: {fileID: 60412698506620263, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.6188153
-      objectReference: {fileID: 0}
-    - target: {fileID: 60412698506620263, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 60412698506620263, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 60412698506620263, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 60412698506620263, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 60412698506620263, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 60412698506620263, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 60412698506620263, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 60412698506620263, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4380052859264365211, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4380052859264365211, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6954132658472451630, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8927993177932673123, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
-      propertyPath: m_Name
-      value: CG_Asult_RightKnight Variant
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b8df3144247deca4a8cdff472068ccdb, type: 3}
 --- !u!4 &1862631911 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2643262560076968720, guid: f165dcc7c72103a43bcc2ee62882b6a1, type: 3}
@@ -117621,7 +117552,7 @@ PrefabInstance:
       objectReference: {fileID: 708077611}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: BigMap.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: Map.Array.data[0]
@@ -117659,6 +117590,10 @@ PrefabInstance:
       propertyPath: BigMap.Array.data[3]
       value: 
       objectReference: {fileID: 8099063448714564921, guid: 879d886e570f2d94782ad5d1fb2dcaf1, type: 3}
+    - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: BigMap.Array.data[4]
+      value: 
+      objectReference: {fileID: 1915454969690100420, guid: 5d9cdb99a68304d439ba66ff663d7a56, type: 3}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: SpawnList.Array.size
       value: 0
@@ -118503,4 +118438,3 @@ SceneRoots:
   - {fileID: 130086754}
   - {fileID: 649239054}
   - {fileID: 1092393775}
-  - {fileID: 1824681636}

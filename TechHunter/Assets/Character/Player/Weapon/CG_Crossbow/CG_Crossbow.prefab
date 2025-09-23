@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c36ae1a74d7a03e48812377037baed84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Arrow: {fileID: 9171795978727990248, guid: a4d87ee1289689342b263be3b2995de3, type: 3}
+  Arrow: {fileID: 9171795978727990248, guid: b86163157f4737b4e92b551416a89b8a, type: 3}
   Clip: {fileID: 8300000, guid: 3f04f6836b42f1d418d5d60b7a1b073e, type: 3}
   AttackPont: {fileID: 1154727670157480704}
 --- !u!95 &2571009453147786856

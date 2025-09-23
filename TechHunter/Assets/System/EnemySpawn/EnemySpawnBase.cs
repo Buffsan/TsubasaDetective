@@ -30,24 +30,7 @@ public class EnemySpawnBase : MonoBehaviour
 
     public TileMap_Controller Seve_TileMap_C;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        /*if (Input.GetKeyDown(KeyCode.P)) 
-        {
-            isStartClone();
-        }*/
-    }
-    private void FixedUpdate()
-    {
-        
-    }
+   
     public void isBossMapSpawn() 
     {
         foreach (BossStage stage in bossStages) 

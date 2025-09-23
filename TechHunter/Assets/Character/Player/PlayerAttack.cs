@@ -9,7 +9,7 @@ public class PlayerAttack : MonoBehaviour
     public int AttackLevel = 0;
 
 
-     float Level_AttackBONUS_multiplier = 40;
+     float Level_AttackBONUS_multiplier = 50;
      float Level_AttackBONUS = 0.5f;
     PlayerController controller => PlayerController.Instance;
     public AudioManager audioManager => AudioManager.instance;

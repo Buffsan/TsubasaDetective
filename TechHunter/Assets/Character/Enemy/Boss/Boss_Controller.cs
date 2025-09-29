@@ -15,14 +15,20 @@ public class Boss_Controller : EnemyBase
     
     private void Start()
     {
-        GameObject CL_MoveBase = Instantiate(EnemyMoveBaseObject);
-        moveBase = CL_MoveBase.GetComponent<Boss_MoveBase>();
+        if (moveBase.enemyBase == null)
+        {
+            GameObject CL_MoveBase = Instantiate(EnemyMoveBaseObject, transform.position, Quaternion.identity);
+            moveBase = CL_MoveBase.GetComponent<Boss_MoveBase>();
+            CL_MoveBase.transform.SetParent(gameObject.transform);
+        }
+        
+
 
         moveBase.enemyBase = this;
-        CL_MoveBase.transform.SetParent(gameObject.transform);
+        
 
 
-        ALL_System.systemManager.AllEnemy.Add(this.gameObject);
+        //ALL_System.systemManager.AllEnemy.Add(this.gameObject);
 
     }
     private void FixedUpdate()
@@ -111,6 +117,17 @@ public class Boss_Controller : EnemyBase
     {
         //moveBase.M_BaseMove();
         isAI();
+    }
+    public void isTargetLook(Vector2 target) 
+    {
+        if (target.x < transform.position.x)
+        {
+            EnemyAnimBody.transform.localScale = new Vector2(-2.5f, 2.5f);
+        }
+        else
+        {
+            EnemyAnimBody.transform.localScale = new Vector2(2.5f, 2.5f);
+        }
     }
     public void isPlayerLook()
     {

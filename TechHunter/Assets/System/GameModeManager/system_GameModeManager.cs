@@ -60,7 +60,11 @@ public class system_GameModeManager : MonoBehaviour
         }
         else if (gameMode == AdventureGameMode.EliteBattleSpot)
         {
-            AllGameLevel = GameLevel +1;
+            AllGameLevel = GameLevel + 1;
+        }
+        else if (gameMode == AdventureGameMode.MortalBattleSpot) 
+        {
+            AllGameLevel = 5;
         }
 
         switch (allgamemode) 

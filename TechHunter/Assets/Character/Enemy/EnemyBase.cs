@@ -139,7 +139,17 @@ public class EnemyBase : MonoBehaviour
         Destroy( CL_AttackArea ,AttackDellTimer);
         myAttack.enemyBase = Ebase;
     }
-
+    public void isTargetLook(Vector2 target)
+    {
+        if (target.x < transform.position.x)
+        {
+            EnemyAnimBody.transform.localScale = new Vector2(-2.5f, 2.5f);
+        }
+        else
+        {
+            EnemyAnimBody.transform.localScale = new Vector2(2.5f, 2.5f);
+        }
+    }
     public void isPlayerLookBase()
     {
         PlayerDirection = Player.transform.position - transform.position;

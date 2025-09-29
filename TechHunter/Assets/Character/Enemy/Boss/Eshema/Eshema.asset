@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
-  m_Name: CG_Hanter
+  m_Name: Eshema
   m_EditorClassIdentifier: 
-  NAME: "\u30AD\u30E3\u30CB\u30AA\u30F3\u30AC\u30FC\u30C9\u306E\u72E9\u4EBA"
-  MAXHP: 700
+  NAME: "\u30A8\u30B7\u30A7\u30DE"
+  MAXHP: 1600
   Regen: 0
   MAXMP: 0
-  SPEED: 0.4
-  ATK: 4
-  ATKDF: 3
-  GOLD: 222
-  XP: 222
-  StanHP: 9
-  ConfusionResistance: 450
+  SPEED: 8
+  ATK: 7
+  ATKDF: 4
+  GOLD: 1200
+  XP: 0
+  StanHP: 10
+  ConfusionResistance: 250
   Critical: 0
   Range: 0
-  ConfusionResistanceRegen: 200
+  ConfusionResistanceRegen: 12

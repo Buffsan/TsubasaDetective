@@ -28,7 +28,7 @@ public class Boss_Controller : EnemyBase
         
 
 
-        //ALL_System.systemManager.AllEnemy.Add(this.gameObject);
+        ALL_System.systemManager.AllEnemy.Add(this.gameObject);
 
     }
     private void FixedUpdate()

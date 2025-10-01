@@ -11,6 +11,7 @@ public class EnemySpawnBase : MonoBehaviour
     [SerializeField] GameObject SpawnEffect;
     [SerializeField] SystemManager manager;
     public system_GameModeManager gameModeManager;
+    AudioManager audioManager => AudioManager.instance;
 
     public List<GameObject> SpawnList = new List<GameObject>();
 
@@ -39,6 +40,12 @@ public class EnemySpawnBase : MonoBehaviour
             {
                 GameObject CL_Map = Instantiate(stage.BossMap);
                 Seve_TileMap_C = CL_Map.GetComponent<TileMap_Controller>();
+
+                if (Seve_TileMap_C.BGM != audioManager.BgmSource.clip)
+                {
+                    audioManager.BgmSource.clip = Seve_TileMap_C.BGM;
+                    audioManager.BgmSource.Play();
+                }
             }
         }
     }
@@ -78,7 +85,11 @@ public class EnemySpawnBase : MonoBehaviour
         GameObject CL_Map = Instantiate(randomTileMap_C.gameObject);
 
          Seve_TileMap_C = CL_Map.GetComponent<TileMap_Controller>();
-
+        if (Seve_TileMap_C.BGM != audioManager.BgmSource.clip) 
+        {
+            audioManager.BgmSource.clip = Seve_TileMap_C.BGM;
+            audioManager.BgmSource.Play();
+        }
 
         
     }

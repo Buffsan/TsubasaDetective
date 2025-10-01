@@ -7,7 +7,7 @@ public class AudioManager : MonoBehaviour
     public static AudioManager instance;
     [SerializeField] GameObject AudioPlayObj;
     [SerializeField] AudioClip BGM;
-    AudioSource BgmSource;
+    public AudioSource BgmSource;
     AudioPlay audioPlay;
 
     public List<AudioPlay> audioPlays = new List<AudioPlay>();

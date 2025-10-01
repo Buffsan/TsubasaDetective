@@ -7,6 +7,8 @@ public class TileMap_Controller : MonoBehaviour
 {
     PlayerController controller => PlayerController.Instance;
 
+    public AudioClip BGM;
+
     public Vector2 MoveCamera = new Vector2(8,6);
 
     public Tilemap FloorMap;

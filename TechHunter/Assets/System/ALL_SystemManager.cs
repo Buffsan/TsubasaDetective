@@ -20,7 +20,7 @@ public class ALL_SystemManager : MonoBehaviour
 
     public static ALL_SystemManager Instance;
 
-    private void Start()
+    private void Awake()
     {
         if (Instance != null)
         {

@@ -5135,3 +5135,5 @@ MonoBehaviour:
   Attack: {fileID: 1108607028572981469, guid: 57c50cc7189f00345ab7149c7fbe7e99, type: 3}
   AttackPoint: {fileID: 48463956106979624}
   Effect: {fileID: 4567253483973507975, guid: 56c0472efce70544993864965806a37a, type: 3}
+  Clip0: {fileID: 8300000, guid: 8baa1735468150e47ab00ed2147e3ce2, type: 3}
+  Clip1: {fileID: 8300000, guid: c389354e45f4d724495484bbe21e5c00, type: 3}

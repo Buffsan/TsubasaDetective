@@ -12,6 +12,7 @@ public class PlayerStatus : MonoBehaviour
     public float AddHP = 0;
     public float AddRange = 0;
     public float AddCritical = 0;
+    public float AddSpeed = 0;
 
     public float AddMultiplierATK = 1;
 

@@ -15,7 +15,7 @@ public class OW_HarpoonVer2_AI : PlayerSkillBase
     }
     private void FixedUpdate()
     {
-        if (playerController.SaveSkillBase != MYskillBase)
+        if (playerController.SaveSkillBase != MYskillBase || playerController.SaveSkillBase == null)
         {
             Destroy(this.gameObject);
         }
@@ -64,7 +64,7 @@ public class OW_HarpoonVer2_AI : PlayerSkillBase
         }
         Att = ATT.A2;
         skillcount = 0;
-        //end();
+        end();
 
     }
 

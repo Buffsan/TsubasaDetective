@@ -21,6 +21,7 @@ public class PageManager : MonoBehaviour
     public Image tape;
     public Sprite CommonPage;
     public Sprite UnCommonPage;
+    public Sprite RarePage;
     public Sprite UnCommonPage_kazari;
     public Sprite Rare;
 

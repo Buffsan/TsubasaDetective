@@ -62,7 +62,7 @@ public class StatusMenu : MonoBehaviour
         float ALL_CriticulAttack_multiplier = 0;
         float ALL_CriticulAttack = 0;
 
-        float ALL_Speed_multiplier = 0;
+        float ALL_Speed_multiplier = ALL_System.playerController.AddSpeed;
         float ALL_Speed = ALL_System.playerController.SPEED;
 
 

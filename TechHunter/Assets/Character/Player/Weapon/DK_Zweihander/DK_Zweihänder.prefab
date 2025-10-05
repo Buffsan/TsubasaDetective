@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttackArea: {fileID: 5797679938533529573, guid: b47dda787dfc4df4f8ea78f82dcd6bcb, type: 3}
+  AttackEffect: {fileID: 901977618991616142, guid: 7873161e8a4b55d4ab1c7e6d19800fed, type: 3}
 --- !u!1 &3499363044265454763
 GameObject:
   m_ObjectHideFlags: 0

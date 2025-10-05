@@ -19,7 +19,7 @@ MonoBehaviour:
   SPEED: 0
   ATK: 5
   ATKDF: 0
-  GOLD: 6
+  GOLD: 7
   XP: 0
   StanHP: 5
   ConfusionResistance: 4

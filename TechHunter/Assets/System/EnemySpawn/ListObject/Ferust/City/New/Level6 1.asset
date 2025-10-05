@@ -30,8 +30,10 @@ MonoBehaviour:
     SpawnNumber: 5
   - enemyType: 8
     SpawnNumber: 1
-  - enemyType: 1
-    SpawnNumber: 30
-  - enemyType: 2
-    SpawnNumber: 3
+  - enemyType: 12
+    SpawnNumber: 10
+  - enemyType: 13
+    SpawnNumber: 1
+  - enemyType: 15
+    SpawnNumber: 1
   StageLevel: 5

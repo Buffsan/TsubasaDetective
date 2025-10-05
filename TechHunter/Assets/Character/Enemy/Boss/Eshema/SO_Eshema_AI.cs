@@ -44,6 +44,8 @@ public class SO_Eshema_AI : Boss_MoveBase
         Finish(); AttackWaitTime = 0;StandOk = false;
         if (myRunningCoroutine != null)
         {
+            AttackCount1 = 0;
+            asaltAttackArea.SetActive(false);
             StopCoroutine(myRunningCoroutine); // 特定のコルーチンを停止
             Debug.Log("コルーチンを停止しました。");
             myRunningCoroutine = null; // 参照をクリア
@@ -54,6 +56,8 @@ public class SO_Eshema_AI : Boss_MoveBase
         Finish(); AttackWaitTime = 0; StandOk = false;
         if (myRunningCoroutine != null)
         {
+            AttackCount1 = 0;
+            asaltAttackArea.SetActive(false);
             StopCoroutine(myRunningCoroutine); // 特定のコルーチンを停止
             Debug.Log("コルーチンを停止しました。");
             myRunningCoroutine = null; // 参照をクリア
@@ -237,6 +241,7 @@ public class SO_Eshema_AI : Boss_MoveBase
     {
         AttackPhase=0;
         AttackNumber = 0;
+        AttackCount1 = 0;
         enemyBase.AttackCount = 0;
         enemyBase.moveType = EnemyBase.MoveType.Move;
         ARM.SetActive (false);
@@ -266,12 +271,14 @@ public class SO_Eshema_AI : Boss_MoveBase
         {
             float TargetDistanse = Vector2.Distance(targetPos,transform.position);
             
-            if (TargetDistanse > 1)
+            if (TargetDistanse > 1 || AttackCount1 > 1.8)
             {
+                AttackCount1 += Time.fixedDeltaTime;
                 enemyBase.rb.velocity = targetDirection.normalized * enemyBase.SPEED;
             }
             else 
             {
+                AttackCount1 = 0;
                 NextPhase();
                 enemyBase.animator.Play("攻撃待機",0,0);
                 audioManager.isPlaySE(audioclips[2]);
@@ -334,8 +341,10 @@ public class SO_Eshema_AI : Boss_MoveBase
             
             NextPhase();
              enemyBase.isPlayerLookBase();
-
-            enemyBase.animator.Play("攻撃待機", 0, 0);
+            if (AttackNumber == 0)
+            {
+                enemyBase.animator.Play("攻撃待機", 0, 0);
+            }
 
             for (int i = 0; i < 5; i++)
             {
@@ -405,7 +414,21 @@ public class SO_Eshema_AI : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 0.2)
             {
-                NextPhase();
+                enemyBase.isPlayerLookBase();
+                if (enemyBase.PlayerDistance > 2)
+                {
+                    NextPhase();
+                }
+                else
+                {
+                    ARM.SetActive(false);
+                    GunLaser[0].SetActive(false);
+                    GunLaser[1].SetActive(false);
+
+                    AttackPhase = 0;
+                    enemyBase.AttackCount = 0;
+                    enemyBase.attackType = EnemyBase.AttackType.A1;
+                }
             }
         }
         if (AttackPhase == 2) //singleショット
@@ -574,7 +597,7 @@ public class SO_Eshema_AI : Boss_MoveBase
         if (AttackPhase == 2) 
         {  
             enemyBase.rb.velocity =enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 3;
-            if (enemyBase.AttackCount > 0.7) 
+            if (enemyBase.AttackCount > 0.7 * (1  + AttackNumber * 0.5)) 
             {
                 enemyBase.animator.Play("ジャンプ待機", 0, 0);
                 asaltAttackArea.SetActive(false);
@@ -606,10 +629,31 @@ public class SO_Eshema_AI : Boss_MoveBase
         if (AttackPhase == 3) 
         {
             enemyBase.rb.velocity = enemyBase.rb.velocity * 0.6f;
-            if (enemyBase.AttackCount > 0.4) 
+            int randomValue = Random.Range(0, 2);
+            if (AttackNumber == 0) 
+            { 
+            if (randomValue == 0)
+            {
+                AttackNumber++;
+                ChoiseNextPhase(0);
+            }
+            else
+            {
+                if (enemyBase.AttackCount > 0.4)
+                {
+                    //Finish();
+                    AttackNumber = 6;
+                    ChoiseNextPhase(0);
+                    enemyBase.attackType = EnemyBase.AttackType.A2;
+                }
+            }
+            } 
+            else 
             {
                 Finish();
             }
+            
+
         }
     }
     private IEnumerator MoveInArc()

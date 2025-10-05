@@ -16,7 +16,7 @@ MonoBehaviour:
   Attack: 20
   AttackSpeedTime: 1
   StaggerPower: 1
-  ConfusionPower: 0.5
+  ConfusionPower: 1
   KnockBackPower: 2
   MaxStack: 0
   HitAudio: {fileID: 8300000, guid: 530775961427795498c2d931f7943f98, type: 3}

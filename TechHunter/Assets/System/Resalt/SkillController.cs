@@ -18,6 +18,8 @@ public class SkillController : MonoBehaviour
 
     [SerializeField] SkillCardData skillNoneData;
 
+    public SkillCardData NoneSkill;
+
     public List<Skill> SkillList = new List<Skill>();
     public List<StatusUP> StatusUPs = new List<StatusUP>();
     public List<Relic> Relics = new List<Relic>();
@@ -222,17 +224,24 @@ public class SkillController : MonoBehaviour
             List<StatusUP> SaveStatusUps_R1 = new List<StatusUP>();
                 foreach (StatusUP s in StatusUPs) 
                 {
-                    if (gameModeManager.gameMode == system_GameModeManager.AdventureGameMode.NomalBattleSpot)
-                    {
-                        if (s.Rarity == 1)
-                        {
-                            SaveStatusUps_R1.Add(s);
-                        }
-                    }
-                    else
+                if (gameModeManager.gameMode == system_GameModeManager.AdventureGameMode.NomalBattleSpot)
+                {
+                    if (s.Rarity == 1)
                     {
                         SaveStatusUps_R1.Add(s);
                     }
+                }
+                else if (gameModeManager.gameMode == system_GameModeManager.AdventureGameMode.MortalBattleSpot)
+                {
+                    SaveStatusUps_R1.Add(s);
+                }
+                else 
+                {
+                    if (s.Rarity == 1 || s.Rarity == 2)
+                    {
+                        SaveStatusUps_R1.Add(s);
+                    }
+                }
                 }
 
                 while (!Set)
@@ -298,6 +307,16 @@ public class SkillController : MonoBehaviour
                 playerController.isRecoveryHP(SaveStatus[index].RecoveryHP);
                 playerController.AddCritical += SaveStatus[index].Critical;
                 playerController.AddRange += SaveStatus[index].Range;
+                playerController.AddSpeed += SaveStatus[index].Speed;
+
+                float coinChange = Mathf.Max((100f + SaveStatus[index].Coin) / 100f, 0f);
+                // 一時的にfloatで計算してからintに戻す
+                playerController.AllCoins = Mathf.RoundToInt(playerController.AllCoins * coinChange);
+
+                if (SaveStatus[index].RandomLevelUp > 0) 
+                {
+                    playerController.RandomLevelUp(SaveStatus[index].RandomLevelUp);
+                }
 
                 Debug.Log("statusセット");
                 systemManager.gameMode = SystemManager.GameMode.Goal;
@@ -429,6 +448,7 @@ public class SkillController : MonoBehaviour
         if (statuspage.Rarity == 3)
         {
             pageManager.Page_rarity.sprite = pageManager.Rare;
+            pageManager.tape.sprite = pageManager.UnCommonPage_kazari;
         }
 
         pageManager.SkillController = this;
@@ -534,6 +554,25 @@ public class SkillController : MonoBehaviour
             string Rangestring = "クールタイム速度:" +Range_Count+"→"+Range_Count2; 
             AllStatusStrings.Add(Rangestring);
         }
+        if (statuspage.Speed != 0)
+        {
+
+            float Range_Count = playerController.AddSpeed;
+            float Range_Count2 = playerController.AddSpeed + statuspage.Speed;
+
+            string Rangestring = "移動速度:" + Range_Count + "→" + Range_Count2;
+            AllStatusStrings.Add(Rangestring);
+        }
+        if (statuspage.Coin != 0)
+        {
+
+            float Range_Count = playerController.AllCoins;
+            float Range_Count2 = playerController.AllCoins * ((100 + statuspage.Coin) / 100);
+
+            string Rangestring = "所持金:" + Range_Count + "→" + Range_Count2;
+            AllStatusStrings.Add(Rangestring);
+        }
+
 
         int index = 0;
         string AllStatusString ="";
@@ -619,6 +658,9 @@ public class StatusUP
     public float RecoveryHP =0;
     public float Critical = 0;
     public float Range = 0;
+    public float Speed = 0;
+    public int RandomLevelUp = 0;
+    public float Coin = 0;
 }
 [System.Serializable]
 public class Relic 

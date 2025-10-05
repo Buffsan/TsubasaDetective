@@ -104,9 +104,9 @@ public class sytem_GameSpot : MonoBehaviour
         {
             
 
-            foreach (GameSpot_SpotInfo next in controller.NextInputSpot) 
-            {
-                if (next.SpotPos == SpotSystemPos || next.SpotPos == new Vector2(99,99)) 
+            foreach (GameSpot_SpotInfo next in controller.NextInputSpot)
+            {//|| next.SpotPos == new Vector2(99,99)
+                if (next.SpotPos == SpotSystemPos || controller.PlayerSystemPos.x == 3 && SpotInfo.SpotPos == new Vector2(99, 99)) 
                 {
                     
                 Totch = true;//Debug.Log("P");

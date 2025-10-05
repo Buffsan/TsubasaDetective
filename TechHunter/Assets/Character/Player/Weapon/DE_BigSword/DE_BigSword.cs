@@ -11,7 +11,13 @@ public class DE_BigSword : MonoBehaviour
 
     [SerializeField] GameObject Effect;
 
+    [SerializeField] AudioClip Clip0;
+    [SerializeField] AudioClip Clip1;
+
+    AudioManager audioManager=> AudioManager.instance; 
+
     bool AttackBool = false;
+    bool audioBool = false;
 
     // Start is called before the first frame update
     void Start()
@@ -23,13 +29,18 @@ public class DE_BigSword : MonoBehaviour
     private void FixedUpdate()
     {
         transform.localScale = new Vector3(1, 1, 1);
+        if (AttackCount > 1 && !audioBool) 
+        { 
+        audioBool = true;
+            audioManager.isPlaySE(Clip0);
+        }
         if (AttackCount > 1.2)
         {
 
             if (!AttackBool)
             {
                 AttackBool = true;
-
+                audioManager.isPlaySE(Clip1);
                 GameObject CL_Attack = Instantiate(Attack, AttackPoint.transform.position, Quaternion.identity);
                 GameObject CL_effect = Instantiate(Effect, transform.position, Quaternion.identity);
                 Destroy(CL_Attack, 0.15f);

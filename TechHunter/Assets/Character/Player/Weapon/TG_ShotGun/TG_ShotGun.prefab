@@ -84,6 +84,7 @@ MonoBehaviour:
   skillcount: 0
   Attack: {fileID: 756551725561512835, guid: 84515e8cc31f2b3429b8dc0e62c3a2ce, type: 3}
   Effect: {fileID: 8608565372891062977, guid: 329218924efb0ce4b90503a4496e1578, type: 3}
+  clip0: {fileID: 8300000, guid: 7605819949a993c4a80e6e275fce96f8, type: 3}
 --- !u!1 &6210338357261430385
 GameObject:
   m_ObjectHideFlags: 0

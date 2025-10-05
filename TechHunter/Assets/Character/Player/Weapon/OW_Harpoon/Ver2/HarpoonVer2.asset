@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HarpoonVer2
   m_EditorClassIdentifier: 
   attackType: 4
-  Attack: 20
+  Attack: 40
   AttackSpeedTime: 0
   StaggerPower: 10
   ConfusionPower: 1

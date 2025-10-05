@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Eshema
   m_EditorClassIdentifier: 
   NAME: "\u30A8\u30B7\u30A7\u30DE"
-  MAXHP: 2500
+  MAXHP: 2534
   Regen: 0
   MAXMP: 0
   SPEED: 8
-  ATK: 7
+  ATK: 6
   ATKDF: 1
   GOLD: 1200
   XP: 0

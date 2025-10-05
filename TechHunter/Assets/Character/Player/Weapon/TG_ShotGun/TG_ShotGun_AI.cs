@@ -12,6 +12,10 @@ public class TG_ShotGun_AI : PlayerSkillBase
     [SerializeField] GameObject Attack;
     [SerializeField] GameObject Effect;
 
+    [SerializeField] AudioClip clip0;
+
+    AudioManager audioManager => AudioManager.instance;
+
     void Start()
     {
         MYskillBase = GetComponent<PlayerSkillBase>();
@@ -30,6 +34,8 @@ public class TG_ShotGun_AI : PlayerSkillBase
 
         if (Att == ATT.A1)
         {
+            audioManager.isPlaySE(clip0);
+
             GameObject CL_Weapon = Instantiate(Attack, playerController.transform.position, Quaternion.identity);
             GameObject CL_Effect = Instantiate(Effect, playerController.transform.position, Quaternion.identity);
             Destroy(CL_Weapon,0.1f);

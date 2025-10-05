@@ -116,7 +116,11 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.CG_StarWizard, 6 },
         { EnemySpawnGroup.EnemyType.MONSTAR_ErathSite, 8 },
         { EnemySpawnGroup.EnemyType.CG_CosmicSurveyor, 11 },
- 
+        { EnemySpawnGroup.EnemyType.TERUSETO_TGST_Eaterofleftovers,12},
+        { EnemySpawnGroup.EnemyType.TERUSETO_TGST_FoodServer,13},
+        { EnemySpawnGroup.EnemyType.TERUSETO_TGST_ARAKAZEFoodServer,14},
+        { EnemySpawnGroup.EnemyType.TERUSETO_FishHanter_Shoygun,15},
+
     };
 
     public int GetEnemyID(EnemySpawnGroup.EnemyType type)

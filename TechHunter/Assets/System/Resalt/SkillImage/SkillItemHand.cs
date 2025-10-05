@@ -15,7 +15,7 @@ public class SkillItemHand : MonoBehaviour, IPointerDownHandler,IPointerUpHandle
 
     public int _ID_Number = 100;
 
-    public float WaitTime = 0.1f;
+    public float WaitTime = 0.02f;
      float WaitCount = 0;
     public bool PutImage = false;
 

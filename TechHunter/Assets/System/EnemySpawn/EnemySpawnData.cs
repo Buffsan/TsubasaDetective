@@ -40,6 +40,11 @@ public class EnemySpawnGroup
         CG_Hanter,
         CG_CosmicSurveyor,
 
+        TERUSETO_TGST_Eaterofleftovers,
+        TERUSETO_TGST_FoodServer,
+        TERUSETO_TGST_ARAKAZEFoodServer,
+        TERUSETO_FishHanter_Shoygun,
+
         MONSTAR_ErathSite
 
 

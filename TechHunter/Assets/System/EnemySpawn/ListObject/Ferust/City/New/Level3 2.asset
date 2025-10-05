@@ -22,6 +22,6 @@ MonoBehaviour:
     SpawnNumber: 2
   - enemyType: 0
     SpawnNumber: 2
-  - enemyType: 12
+  - enemyType: 16
     SpawnNumber: 1
   StageLevel: 2

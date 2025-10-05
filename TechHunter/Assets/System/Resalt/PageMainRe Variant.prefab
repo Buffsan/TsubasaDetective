@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3965311651336677042
 RectTransform:
   m_ObjectHideFlags: 0
@@ -287,6 +287,10 @@ PrefabInstance:
       value: PageMainRe Variant
       objectReference: {fileID: 0}
     - target: {fileID: 3785110891409702158, guid: 09dc8412601627946985d95bdd456211, type: 3}
+      propertyPath: Rare
+      value: 
+      objectReference: {fileID: 21300000, guid: 61df95b13840c1a418fe9255f49d52ea, type: 3}
+    - target: {fileID: 3785110891409702158, guid: 09dc8412601627946985d95bdd456211, type: 3}
       propertyPath: tape
       value: 
       objectReference: {fileID: 4821102176534798905}
@@ -299,9 +303,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 2493cc64b1a333148a18e518609ebc19, type: 3}
     - target: {fileID: 3785110891409702158, guid: 09dc8412601627946985d95bdd456211, type: 3}
+      propertyPath: RarePage
+      value: 
+      objectReference: {fileID: 21300000, guid: 61df95b13840c1a418fe9255f49d52ea, type: 3}
+    - target: {fileID: 3785110891409702158, guid: 09dc8412601627946985d95bdd456211, type: 3}
       propertyPath: CommonPage
       value: 
-      objectReference: {fileID: 21300000, guid: b82042784c79e8349b52260ff16d421d, type: 3}
+      objectReference: {fileID: 21300000, guid: 968e8744764b2a94db2a2b514a9b255b, type: 3}
     - target: {fileID: 3785110891409702158, guid: 09dc8412601627946985d95bdd456211, type: 3}
       propertyPath: Page_rarity
       value: 
@@ -313,7 +321,7 @@ PrefabInstance:
     - target: {fileID: 3785110891409702158, guid: 09dc8412601627946985d95bdd456211, type: 3}
       propertyPath: UnCommonPage
       value: 
-      objectReference: {fileID: 21300000, guid: cd51717e28ceb8c40a0dee673594adc2, type: 3}
+      objectReference: {fileID: 21300000, guid: 3710ddf247d0afa49921416dcd31a69c, type: 3}
     - target: {fileID: 3785110891409702158, guid: 09dc8412601627946985d95bdd456211, type: 3}
       propertyPath: UnCommonPage_kazari
       value: 

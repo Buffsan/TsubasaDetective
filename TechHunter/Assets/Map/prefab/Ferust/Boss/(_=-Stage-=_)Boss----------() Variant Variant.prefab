@@ -275,6 +275,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 102742561717375186, guid: 30a4445962c475846b10dd7c58d626d4, type: 3}
+      propertyPath: BGM
+      value: 
+      objectReference: {fileID: 8300000, guid: eb7547ee503c9694cae3f59eebbb3885, type: 3}
     - target: {fileID: 651832436167929395, guid: 30a4445962c475846b10dd7c58d626d4, type: 3}
       propertyPath: m_Tiles.Array.size
       value: 414

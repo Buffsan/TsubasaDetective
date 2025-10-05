@@ -15,7 +15,7 @@ public class Boss_Controller : EnemyBase
     
     private void Start()
     {
-        if (moveBase.enemyBase == null)
+        if (moveBase == null)
         {
             GameObject CL_MoveBase = Instantiate(EnemyMoveBaseObject, transform.position, Quaternion.identity);
             moveBase = CL_MoveBase.GetComponent<Boss_MoveBase>();

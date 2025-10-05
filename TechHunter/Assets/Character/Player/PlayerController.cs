@@ -48,7 +48,7 @@ public class PlayerController : PlayerStatus
     
     float AttackMoveCount = 0;
 
-    
+    ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
 
     public Vector2 MoveInput = Vector2.zero;
     public Vector2 MoveInputSave = Vector2.zero;
@@ -520,11 +520,11 @@ public class PlayerController : PlayerStatus
     public void isInputCharadata() 
     {
      NAME = charadata.NAME;
-        MaxHP = charadata.MAXHP + AddHP;
+     MaxHP = charadata.MAXHP + AddHP;
      HP = charadata.MAXHP + AddHP;
 
      MP = charadata.MAXMP;
-     SPEED = charadata.SPEED;
+     SPEED = charadata.SPEED * ((100 + AddSpeed) / 100);
      ATK = charadata.ATK;
      ATKDF = charadata.ATKDF + AddAtkDF;
      GOLD = charadata.GOLD;
@@ -533,21 +533,49 @@ public class PlayerController : PlayerStatus
 
         Critical = charadata.Critical + AddCritical;
         Range = charadata.Range + AddRange;
+
+        playerDamage.HP_SliderChange();
         //RecoveryHP = AddRecoveryHP;
     }
+
+    public void RandomLevelUp(int Value) 
+    {
+        
+        List<SkillInfo> skillInfos = new List<SkillInfo>();
+        foreach (SkillInfo info in skillINFO) 
+        {
+            if (info.skillDATA != ALL_System.skillController.NoneSkill) 
+            { 
+            skillInfos.Add(info);
+            }
+        }
+
+        if (skillInfos.Count == 0)
+        {
+            Debug.LogWarning("レベルアップ可能なスキルがありません。");
+            return;
+        }
+
+        int randomSkillInfo = Random.Range(0, skillInfos.Count);
+        skillInfos[randomSkillInfo].SkillLevel+= Value;
+    
+    }
+
     public void isAddStatus()
     {
         NAME = charadata.NAME;
         MaxHP = charadata.MAXHP + AddHP;
 
         MP = charadata.MAXMP;
-        SPEED = charadata.SPEED;
+        SPEED = charadata.SPEED * ((100 + AddSpeed)/100);
         ATK = charadata.ATK;
         ATKDF = charadata.ATKDF + AddAtkDF;
         Regen = charadata.Regen + AddRegen;
 
         Critical = charadata.Critical + AddCritical;
         Range = charadata.Range + AddRange;
+
+        playerDamage.HP_SliderChange();
 
     }
 

@@ -16529,6 +16529,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6999f486965ba684a962889e835a073e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BGM: {fileID: 8300000, guid: 6fc823d245076db4a80d8b45dd16cf10, type: 3}
   MoveCamera: {x: 8, y: 6}
   FloorMap: {fileID: 1104467495117769808}
   StartPoint: {fileID: 9022247725667495620}

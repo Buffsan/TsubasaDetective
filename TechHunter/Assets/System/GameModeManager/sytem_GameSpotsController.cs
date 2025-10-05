@@ -204,9 +204,27 @@ public class sytem_GameSpotsController : MonoBehaviour
         }
         //Debug.Log (AllSpawRate);
 
+        int shopSpot = Random.Range(1, 5);
+        int motalSpot;
+
+        do
+        {
+            motalSpot = Random.Range(1, 5);
+        } while (motalSpot == shopSpot);
+
+        int x2 = 0;
+        int y2 = 0;
+
         for (int f = 0; f < 16; f++)
         {
             
+            if (y2 == 4)
+            {
+                x2++;
+                y2 = 0;
+            }
+            y2++;
+
             float NextSpawRate = 0; float RandomRate = Random.Range(0, (int)AllSpawRate);
             foreach (GameSpot_SpotInfo spInfo in SpotInfos)
             {   
@@ -224,26 +242,48 @@ public class sytem_GameSpotsController : MonoBehaviour
                 }
                 else
                 {//Debug.Log("AAAA");
-                    if (NextSpawRate <= RandomRate && NextSpawRate + spInfo.SpawNumber > RandomRate)
+
+                    if (x2 == 3 && y2 == shopSpot)
                     {
-
-                        //Debug.Log("Input :"+RandomRate);
-                        float adddd = NextSpawRate + spInfo.SpawNumber;
-                        //Debug.Log(NextSpawRate + "<=" + RandomRate + " && " + adddd + ">" + RandomRate);
-
-
-                        GameSpot_SpotInfo clonedInfo = spInfo.Clone(); ; // DeepCloneメソッドを仮定
+                        GameSpot_SpotInfo clonedInfo = SpotInfos[3].Clone(); ; // DeepCloneメソッドを仮定
                         clonedInfo.Mast = true;
                         InputSpot.Add(clonedInfo); // クローンを追加
-                        //InputSpot.Add(spInfo);
+
                         break;
+                    } 
+                    else if (x2 == 3 && y2 == motalSpot) 
+                    {
+                        GameSpot_SpotInfo clonedInfo = SpotInfos[2].Clone(); ; // DeepCloneメソッドを仮定
+                        clonedInfo.Mast = true;
+                        InputSpot.Add(clonedInfo); // クローンを追加
+                        break;
+                    }
+                    else
+                    {
+                        if (NextSpawRate <= RandomRate && NextSpawRate + spInfo.SpawNumber > RandomRate)
+                        {
+
+                            //Debug.Log("Input :"+RandomRate);
+                            float adddd = NextSpawRate + spInfo.SpawNumber;
+                            //Debug.Log(NextSpawRate + "<=" + RandomRate + " && " + adddd + ">" + RandomRate);
+
+
+                            GameSpot_SpotInfo clonedInfo = spInfo.Clone(); ; // DeepCloneメソッドを仮定
+                            clonedInfo.Mast = true;
+                            InputSpot.Add(clonedInfo); // クローンを追加
+                                                       //InputSpot.Add(spInfo);
+                            break;
+                        }
                     }
 
                 }
-
+                
                 
                 NextSpawRate += spInfo.SpawNumber;
             }
+
+            
+
         }
         int y = 0;
         int x = 0;
@@ -252,13 +292,13 @@ public class sytem_GameSpotsController : MonoBehaviour
         {
 
            
-            int RandomPop = Random.Range(0, 2);
-            if (RandomPop == 1 && y != 3 && x != 3)
+            int RandomPop = Random.Range(0, 3);
+            if (RandomPop != 1 && y != 3 && x != 3)
             {
                 spInfo.Up = true;
             }
-            RandomPop = Random.Range(0, 2);
-            if (RandomPop == 1 && y != 0 && x != 3)
+            RandomPop = Random.Range(0, 3);
+            if (RandomPop != 1 && y != 0 && x != 3)
             {
                 spInfo.Down = true;
             }

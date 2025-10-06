@@ -120,6 +120,7 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.TERUSETO_TGST_FoodServer,13},
         { EnemySpawnGroup.EnemyType.TERUSETO_TGST_ARAKAZEFoodServer,14},
         { EnemySpawnGroup.EnemyType.TERUSETO_FishHanter_Shoygun,15},
+        { EnemySpawnGroup.EnemyType.MONSTAR_LastHoliday,16},
 
     };
 

@@ -13,7 +13,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
     int ArrowCount = 0;
     float walkCount = 0;
 
-    int AttackCount = 0;
+    int AttackNumberArrow = 0;
     int AttackType = 0;
 
     Vector2 SavePos=Vector2.zero;
@@ -26,19 +26,19 @@ public class CG_HeavySniper_AI : EnemyMoveBase
 
         if (walkCount > 3 || walkCount > 1 && enemyBase.PlayerDistance < 8)
         {
-            Debug.Log(AttackCount +"  "+enemyBase.PlayerDistance);
-            if (enemyBase.PlayerDistance < 3 && AttackCount > 1)
+            Debug.Log(AttackNumberArrow +"  "+enemyBase.PlayerDistance);
+            if (enemyBase.PlayerDistance < 3 && AttackNumberArrow > 1)
             {
                 //Debug.Log("AAA");
                 enemyBase.moveType = EnemyBase.MoveType.Attack;
                 AttackType = 1;
-                AttackCount = 0;
+                AttackNumberArrow = 0;
             }
             else 
             { 
             AttackType = 0;
             enemyBase.moveType = EnemyBase.MoveType.Attack;
-            AttackCount++;
+            AttackNumberArrow++;
             }
         } 
         else 

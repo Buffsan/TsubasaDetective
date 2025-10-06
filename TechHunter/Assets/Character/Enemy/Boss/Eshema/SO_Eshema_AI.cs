@@ -271,7 +271,7 @@ public class SO_Eshema_AI : Boss_MoveBase
         {
             float TargetDistanse = Vector2.Distance(targetPos,transform.position);
             
-            if (TargetDistanse > 1 || AttackCount1 > 1.8)
+            if (TargetDistanse > 1 && AttackCount1 < 2.5)
             {
                 AttackCount1 += Time.fixedDeltaTime;
                 enemyBase.rb.velocity = targetDirection.normalized * enemyBase.SPEED;

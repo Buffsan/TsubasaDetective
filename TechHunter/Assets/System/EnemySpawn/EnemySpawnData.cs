@@ -45,7 +45,8 @@ public class EnemySpawnGroup
         TERUSETO_TGST_ARAKAZEFoodServer,
         TERUSETO_FishHanter_Shoygun,
 
-        MONSTAR_ErathSite
+        MONSTAR_ErathSite,
+        MONSTAR_LastHoliday
 
 
     }

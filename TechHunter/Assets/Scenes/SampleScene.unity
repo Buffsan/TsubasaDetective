@@ -118746,7 +118746,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: enemyList.Array.size
-      value: 16
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: bossStages.Array.size
@@ -118858,7 +118858,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: enemySpawnDatas.Array.size
-      value: 24
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: enemyList.Array.data[10].ID
@@ -118886,7 +118886,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: enemyList.Array.data[16].ID
-      value: 12
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: enemyList.Array.data[6].Name
@@ -118930,7 +118930,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: enemyList.Array.data[16].Name
-      value: "\u8352\u98A8\u306E\u914D\u81B3\u8005"
+      value: "\u30E9\u30B9\u30C8\u30DB\u30EA\u30C7\u30FC"
       objectReference: {fileID: 0}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: enemyList.Array.data[6].Enemy
@@ -119015,7 +119015,7 @@ PrefabInstance:
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: enemyList.Array.data[16].Enemy
       value: 
-      objectReference: {fileID: 2140942339163935926, guid: e1ec060004666a94ea38ab8cef1b4fe3, type: 3}
+      objectReference: {fileID: 5792392259453229634, guid: 1328a757268ed0e4585ecb57f05cef6e, type: 3}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: enemySpawnDatas.Array.data[10]
       value: 
@@ -119072,6 +119072,14 @@ PrefabInstance:
       propertyPath: enemySpawnDatas.Array.data[23]
       value: 
       objectReference: {fileID: 11400000, guid: b232ce74cea37364aab667cff4a2450e, type: 2}
+    - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: enemySpawnDatas.Array.data[24]
+      value: 
+      objectReference: {fileID: 11400000, guid: 43aff98ae4ab3a845b6b3dc61c3f10bd, type: 2}
+    - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: enemySpawnDatas.Array.data[25]
+      value: 
+      objectReference: {fileID: 11400000, guid: ec2de0f879568b047a17e7669bdaac00, type: 2}
     - target: {fileID: 6084301640169290136, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: bossStages.Array.data[0].BossMap
       value: 

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2126726264602944330
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8765608621059785463}
+  - component: {fileID: 4787314824217649859}
+  m_Layer: 0
+  m_Name: MO_LastHoliday_AI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8765608621059785463
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2126726264602944330}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.042191, y: 0.2599004, z: -0.012030403}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4787314824217649859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2126726264602944330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 235f4e960335b2846a2e18b27eaaf682, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnemyName: "\u30E9\u30B9\u30C8\u30DB\u30EA\u30C7\u30FC"
+  enemyBase: {fileID: 0}
+  A_Phase: 0
+  AttackCount: 0
+  Arrow: {fileID: 0}
+  Attack: {fileID: 4855850175358324939, guid: 7365361692a5ac84da4656a14ce78504, type: 3}
+  Denger_AttackArea: {fileID: 520444690567741310, guid: e50319ecbfbf2a541bf859e37986ddd4, type: 3}
+  audioClips:
+  - {fileID: 8300000, guid: 81b9d61c48d6f6a49867cf0a2667a8b2, type: 3}
+  - {fileID: 8300000, guid: 3f04f6836b42f1d418d5d60b7a1b073e, type: 3}
+  duration: 1
+  arcHeight: 3

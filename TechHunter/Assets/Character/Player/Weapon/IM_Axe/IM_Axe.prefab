@@ -76,6 +76,7 @@ MonoBehaviour:
   animator: {fileID: 2820115056836821694}
   clip1: {fileID: 8300000, guid: 74f8980f688f2154ea8ef6bffad76c40, type: 3}
   clip2: {fileID: 8300000, guid: c0a1fe8381a32d74a973a17aed126599, type: 3}
+  clip3: {fileID: 8300000, guid: b359e6940670fa34b821c4ba71661661, type: 3}
 --- !u!1 &4224954263379165404
 GameObject:
   m_ObjectHideFlags: 0

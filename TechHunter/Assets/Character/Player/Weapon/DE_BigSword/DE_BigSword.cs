@@ -11,6 +11,7 @@ public class DE_BigSword : MonoBehaviour
 
     [SerializeField] GameObject Effect;
 
+    ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
     [SerializeField] AudioClip Clip0;
     [SerializeField] AudioClip Clip1;
 
@@ -39,6 +40,7 @@ public class DE_BigSword : MonoBehaviour
 
             if (!AttackBool)
             {
+                ALL_System.camera_Controller.Shake(0.2f, 0.2f);
                 AttackBool = true;
                 audioManager.isPlaySE(Clip1);
                 GameObject CL_Attack = Instantiate(Attack, AttackPoint.transform.position, Quaternion.identity);

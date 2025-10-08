@@ -118,7 +118,7 @@ public class charaDamage : MonoBehaviour, IDamageable
         {
             if (StanCount < 3)
             {
-                StanCount += Time.deltaTime;
+                StanCount += Time.fixedDeltaTime;
                 float randomY = Random.Range(-0.1f, 0.1f);
                 enemyBase.gameObject.transform.position = new Vector2(SavePos.x, SavePos.y + randomY);
                 enemyBase.rb.velocity = Vector2.zero;
@@ -140,7 +140,7 @@ public class charaDamage : MonoBehaviour, IDamageable
         {
 
             if (StanCount < 0.15)
-            { StanCount += Time.deltaTime;
+            { StanCount += Time.fixedDeltaTime;
                 float randomY = Random.Range(-0.1f, 0.1f);
                 enemyBase.gameObject.transform.position = new Vector2(SavePos.x, SavePos.y + randomY);
                 enemyBase.rb.velocity = Vector2.zero;
@@ -163,7 +163,7 @@ public class charaDamage : MonoBehaviour, IDamageable
         {
            
             if (DieCount < 0.3) {
-                DieCount += Time.deltaTime;
+                DieCount += Time.fixedDeltaTime;
             } else {
                 Instantiate(enemyBase.DieEffect, transform.position, Quaternion.identity);
                 Destroy(enemyBase.gameObject);
@@ -173,7 +173,8 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     private bool isDead = false;
     public void Death()
-    {enemyBase.status = EnemyBase.Status.Die;
+    {
+        enemyBase.status = EnemyBase.Status.Die;
         //Debug.Log("‚µ‚ñ‚¾");
         if (isDead) return;   // Šù‚ÉŽ€–Sˆ—’†‚È‚ç‰½‚à‚µ‚È‚¢
         isDead = true;        // ‚±‚±‚ÅÅ‰‚ÉƒƒbƒN‚ð‚©‚¯‚é

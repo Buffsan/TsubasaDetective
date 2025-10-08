@@ -15,6 +15,8 @@ public class DK_Halberd : MonoBehaviour
     bool Attack = false;
     bool Attack1 = false;
 
+    ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
+
     bool OneMore = false;
     Vector2 SaveDirection = Vector2.zero;
 
@@ -60,6 +62,7 @@ public class DK_Halberd : MonoBehaviour
 
             if (!Attack1) 
             {
+                ALL_System.camera_Controller.Shake(0.1f, 0.1f);
                 audioManager.isPlaySE(Clip1);
                 GameObject CL_AttackArea = Instantiate(AttackArea, AttackPoint.transform.position, Quaternion.identity); 
                 Destroy(CL_AttackArea, 0.1f);

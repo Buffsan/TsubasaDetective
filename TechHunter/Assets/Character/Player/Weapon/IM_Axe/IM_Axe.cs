@@ -18,7 +18,7 @@ public class IM_Axe : MonoBehaviour
     [SerializeField] AudioClip clip1;
     [SerializeField] AudioClip clip2;
     [SerializeField] AudioClip clip3;
-
+    ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
     PlayerController playerController=> PlayerController.Instance;
     AudioManager audioManager => AudioManager.instance;
 
@@ -46,6 +46,8 @@ public class IM_Axe : MonoBehaviour
                 Destroy(CL_Attack, 0.15f);
                 Destroy(CL_effect, 1);
 
+                ALL_System.camera_Controller.Shake(0.1f, 0.1f);
+
                 AttackCount = 0;
                 animator.Play("‰ñ“]Ø‚è");phase = 1;
             }
@@ -65,6 +67,7 @@ public class IM_Axe : MonoBehaviour
             transform.up = playerController.CursorDirection.normalized;
             if (AttackCount > 0.3)
             {
+                ALL_System.camera_Controller.Shake(0.1f, 0.2f);
                 audioManager.isPlaySE(clip2);
                 GameObject CL_Bullet = Instantiate(Bullet, transform.position, Quaternion.identity);
                 IM_SmokeBullet iM_Smoke = CL_Bullet.GetComponent<IM_SmokeBullet>();

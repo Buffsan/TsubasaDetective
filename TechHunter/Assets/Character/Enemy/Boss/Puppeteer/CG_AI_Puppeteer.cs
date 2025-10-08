@@ -7,6 +7,7 @@ using UnityEngine.Assertions.Must;
 
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UIElements;
 
 public class CG_AI_Puppeteer : Boss_MoveBase
 {
@@ -44,7 +45,10 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     float sabAttackCount = 0;
     int sabAttackNumber = 0;
 
+    public float radius = 3f;      // 回転半径
+    public float angularSpeed = 90f; // 回転速度（度/秒）
 
+    private float angle; // 現在の角度
 
     public List<GameObject> MovePoints = new List<GameObject>();
    
@@ -759,18 +763,43 @@ public class CG_AI_Puppeteer : Boss_MoveBase
             if (enemyBase.AttackCount > 1) 
             {
                 enemyBase.rb.velocity = Vector2.zero;
-                enemyBase.animator.Play("泥撤退");
+                enemyBase.animator.Play("泥移動");
                 enemyBase.animator2.Play("潜伏");
                 enemyBase.AttackCount = 0; AttackNumber = 0;
                 enemyBase.mode = EnemyBase.ModeType.M15;
+
+                Vector2 pos = enemyBase.rb.position;
+                radius = pos.magnitude; // 原点との距離
+                angle = Mathf.Atan2(pos.y, pos.x); // 現在の角度をラジアンで取得
             }
         }
 
-            if (enemyBase.mode == EnemyBase.ModeType.M15)
+        if (enemyBase.mode == EnemyBase.ModeType.M15)
         {
+
+            angle += (enemyBase.SPEED /5) * Mathf.Deg2Rad;
+
+            // 新しい位置を計算（原点を中心とした円運動）
+            Vector2 RnewPos = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+
+            // Rigidbody2Dを移動
+            enemyBase.rb.MovePosition(RnewPos);
+
+            // 常に中心を向かせたい場合（オプション）
+            /*
+            Vector2 dirToCenter = -RnewPos.normalized;
+            float targetAngle = Mathf.Atan2(dirToCenter.y, dirToCenter.x) * Mathf.Rad2Deg;
+            enemyBase.rb.MoveRotation(targetAngle);*/
+
             if (enemyBase.AttackCount > 0.4)
             {
                 Vector2 newPos = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
+
+                for (int i = 0; i < 2; i++)
+                {
+                    Vector2 NeedlePos = (Vector2)transform.position + new Vector2(Random.Range(-0.5f *i, 0.5f * i), Random.Range(-0.5f * i, 0.5f * i));
+                    NeedleSpawn(NeedlePos);
+                }
 
                 Instantiate(Zako, newPos, Quaternion.identity);
                 Instantiate(DieEffect, newPos, Quaternion.identity);
@@ -778,6 +807,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 enemyBase.AttackCount = 0;
                 if (AttackNumber % 5 == 0)
                 {
+                    
                     Vector2 newPos2 = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
 
                     Instantiate(Zako1, newPos, Quaternion.identity);

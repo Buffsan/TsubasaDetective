@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
+
 
 public class Boss_Controller : EnemyBase
 {
@@ -44,6 +41,8 @@ public class Boss_Controller : EnemyBase
             case Status.ConfusionResistance:
                 isConfusion();
                 break;
+            case Status.Die:
+                return; // €–S’†‚ÍˆêØ“®‚©‚³‚È‚¢
         }
         HP_TextChange();
     }

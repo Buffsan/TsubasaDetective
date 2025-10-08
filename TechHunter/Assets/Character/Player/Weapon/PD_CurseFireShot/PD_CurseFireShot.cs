@@ -15,6 +15,8 @@ public class PD_CurseFireShot : MonoBehaviour
     [SerializeField] GameObject AttackPoint;
     [SerializeField] AudioClip Clip;
 
+    ALL_SystemManager systemManager => ALL_SystemManager.Instance;
+
     AudioManager audiomanager => AudioManager.instance;
 
     PlayerController playerController => PlayerController.Instance;
@@ -55,7 +57,7 @@ public class PD_CurseFireShot : MonoBehaviour
             GameObject CL_Attack = Instantiate(AttackArea, AttackPoint.transform.position, Quaternion.identity);
             GameObject CL_Attack2 = Instantiate(AttackArea2, AttackPoint.transform.position, Quaternion.identity);
             GameObject CL_Attack3 = Instantiate(AttackArea3, AttackPoint.transform.position, Quaternion.identity);
-
+            systemManager.camera_Controller.Shake(0.2f, 0.2f);
             Destroy(CL_Effect,5);
             Destroy(CL_Attack,0.1f);
             Destroy(CL_Attack2, 0.2f);

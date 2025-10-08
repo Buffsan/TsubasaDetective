@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TG_ShotGun
   m_EditorClassIdentifier: 
   attackType: 1
-  Attack: 20
+  Attack: 25
   AttackSpeedTime: 0
   StaggerPower: 10
   ConfusionPower: 1

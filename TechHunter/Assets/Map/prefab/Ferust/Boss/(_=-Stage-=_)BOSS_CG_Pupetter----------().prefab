@@ -26142,6 +26142,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9100000, guid: c9733744b696b574d957eab7b75fb270, type: 2}
     - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
+      propertyPath: DieAudio
+      value: 
+      objectReference: {fileID: 8300000, guid: 04c3a74f7fe52964ca9340ab3a850d23, type: 3}
+    - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
       propertyPath: animator
       value: 
       objectReference: {fileID: 918634967510658050}
@@ -26158,9 +26162,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6991829684670392484}
     - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
+      propertyPath: AttackAudio
+      value: 
+      objectReference: {fileID: 8300000, guid: cfd6bcbd226a4dd42be7b1ad7c432bad, type: 3}
+    - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
       propertyPath: CharaDamage
       value: 
       objectReference: {fileID: 3736293809660759021}
+    - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
+      propertyPath: ConfusionAudio
+      value: 
+      objectReference: {fileID: 8300000, guid: 1fd5afe1ed99691449b429b42b92789b, type: 3}
+    - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
+      propertyPath: AttackStayAudio
+      value: 
+      objectReference: {fileID: 8300000, guid: b359e6940670fa34b821c4ba71661661, type: 3}
     - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
       propertyPath: EnemyMoveBaseObject
       value: 

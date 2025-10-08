@@ -51,30 +51,34 @@ public class EnemySpawnGroup
 
     }
 
-    [CustomPropertyDrawer(typeof(EnemyType))]
-    public class EnemyTypeDrawer : PropertyDrawer
-    {
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-        {
-            EditorGUI.BeginProperty(position, label, property);
-
-            var enumValue = (EnemyType)property.enumValueIndex;
-            var displayName = enumValue.ToString().Replace("_", "/"); // ŠK‘w‚Á‚Û‚­Œ©‚¹‚é
-
-            property.enumValueIndex = EditorGUI.Popup(position, label.text, property.enumValueIndex, GetOptions());
-
-            EditorGUI.EndProperty();
-        }
-
-        private string[] GetOptions()
-        {
-            return System.Enum.GetNames(typeof(EnemyType))
-                .Select(name => name.Replace("_", "/"))
-                .ToArray();
-        }
-    }
+    
 
     public EnemyType enemyType;
 
     public int SpawnNumber;
 }
+
+#if UNITY_EDITOR
+[CustomPropertyDrawer(typeof(EnemySpawnGroup.EnemyType))]
+public class EnemyTypeDrawer : PropertyDrawer
+{
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    {
+        EditorGUI.BeginProperty(position, label, property);
+
+        var enumValue = (EnemySpawnGroup.EnemyType)property.enumValueIndex;
+        var displayName = enumValue.ToString().Replace("_", "/");
+
+        property.enumValueIndex = EditorGUI.Popup(position, label.text, property.enumValueIndex, GetOptions());
+
+        EditorGUI.EndProperty();
+    }
+
+    private string[] GetOptions()
+    {
+        return System.Enum.GetNames(typeof(EnemySpawnGroup.EnemyType))
+            .Select(name => name.Replace("_", "/"))
+            .ToArray();
+    }
+}
+#endif

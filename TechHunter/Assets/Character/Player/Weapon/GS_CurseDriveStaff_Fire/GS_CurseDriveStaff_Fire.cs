@@ -14,6 +14,7 @@ public class GS_CurseDriveStaff_Fire : MonoBehaviour
 
     [SerializeField] AudioClip AudioClip;
 
+    ALL_SystemManager ALL_SystemManager => ALL_SystemManager.Instance;
     AudioManager audioManager => AudioManager.instance;
 
     // Start is called before the first frame update
@@ -28,6 +29,8 @@ public class GS_CurseDriveStaff_Fire : MonoBehaviour
         AttackCount += Time.fixedDeltaTime;
         if (AttackCount > AttackTime) 
         {
+            ALL_SystemManager.camera_Controller.Shake(0.1f,0.2f);
+
             audioManager.isPlaySE(AudioClip);
         GameObject CL_Effect = Instantiate(Effect,transform.position,Quaternion.identity);
             Destroy(CL_Effect,5);

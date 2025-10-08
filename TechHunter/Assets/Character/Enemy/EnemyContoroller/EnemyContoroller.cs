@@ -18,7 +18,7 @@ public class EnemyContoroller : EnemyBase
 
     private void Start()
     {
-        GameObject CL_MoveBase = Instantiate(EnemyMoveBaseObject);
+        GameObject CL_MoveBase = Instantiate(EnemyMoveBaseObject,transform.position,Quaternion.identity);
         moveBase = CL_MoveBase.GetComponent<EnemyMoveBase>();
    
         moveBase.enemyBase = this;

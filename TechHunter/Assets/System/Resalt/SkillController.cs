@@ -1,10 +1,8 @@
-using System.Collections;
+
 using System.Collections.Generic;
 using TMPro;
-using Unity.Jobs;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.UI;
+
 
 public class SkillController : MonoBehaviour
 {
@@ -226,10 +224,22 @@ public class SkillController : MonoBehaviour
                 {
                 if (gameModeManager.gameMode == system_GameModeManager.AdventureGameMode.NomalBattleSpot)
                 {
-                    if (s.Rarity == 1)
+                    float randomValue = Random.Range(0, 101);
+                    if (randomValue < playerController.Critical)
                     {
-                        SaveStatusUps_R1.Add(s);
+                        if (s.Rarity == 2)
+                        {                       
+                            SaveStatusUps_R1.Add(s);
+                        }
                     }
+                    else
+                    {
+                        if (s.Rarity == 1)
+                        {
+                            SaveStatusUps_R1.Add(s);
+                        }
+                    }
+                    
                 }
                 else if (gameModeManager.gameMode == system_GameModeManager.AdventureGameMode.MortalBattleSpot)
                 {

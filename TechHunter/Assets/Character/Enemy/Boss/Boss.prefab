@@ -11798,6 +11798,7 @@ MonoBehaviour:
   HP_Slider: {fileID: 14205757930710054}
   Confusion_Slider: {fileID: 139104577139167631}
   CharaDamage: {fileID: 0}
+  DefoScale: 2.5
   DefaltColor: {r: 0, g: 0, b: 0, a: 0}
   AttackCount: 0
   rb: {fileID: 0}
@@ -11817,10 +11818,10 @@ MonoBehaviour:
   DamageCountText: {fileID: 0}
   Coin: {fileID: 0}
   myAttack: {fileID: 0}
-  AttackAudio: {fileID: 0}
-  AttackStayAudio: {fileID: 0}
-  DieAudio: {fileID: 0}
-  ConfusionAudio: {fileID: 0}
+  AttackAudio: {fileID: 8300000, guid: cfd6bcbd226a4dd42be7b1ad7c432bad, type: 3}
+  AttackStayAudio: {fileID: 8300000, guid: b359e6940670fa34b821c4ba71661661, type: 3}
+  DieAudio: {fileID: 8300000, guid: 04c3a74f7fe52964ca9340ab3a850d23, type: 3}
+  ConfusionAudio: {fileID: 8300000, guid: 1fd5afe1ed99691449b429b42b92789b, type: 3}
   ConfusionImageText: {fileID: 4173767549076776010, guid: 2a540308cb9bc3944979bab60b0edace, type: 3}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
   DamageBody: {fileID: 0}

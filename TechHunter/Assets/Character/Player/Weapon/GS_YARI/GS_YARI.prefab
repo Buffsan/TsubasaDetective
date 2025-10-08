@@ -168,8 +168,6 @@ MonoBehaviour:
   weapondata: {fileID: 11400000, guid: 401fc62ff38421d4a96919f11881f8bb, type: 2}
   skillcarddata: {fileID: 11400000, guid: f48c7eacb22734a4b98894294b125336, type: 2}
   AttackLevel: 0
-  Level_AttackBONUS_multiplier: 15
-  Level_AttackBONUS: 1
   AgeinAttack: 0
 --- !u!1 &4488436296799460301
 GameObject:
@@ -198,7 +196,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.97509754, y: -2.7025466, z: 0.6512482}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 178711124880137464}

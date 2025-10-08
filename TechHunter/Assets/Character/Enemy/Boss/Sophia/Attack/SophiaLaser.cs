@@ -69,6 +69,7 @@ public class SophiaLaser : MonoBehaviour
 
                     GameObject CL_Laser = Instantiate(LaserEffect, transform.position, transform.rotation);
                     Laser = CL_Laser;
+                    Destroy(CL_Laser, 2);
                     CL_Laser.transform.Rotate(0, 0, 180);
 
                     moveType = MoveType.M3;

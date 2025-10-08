@@ -13,7 +13,7 @@ public class TG_ShotGun_AI : PlayerSkillBase
     [SerializeField] GameObject Effect;
 
     [SerializeField] AudioClip clip0;
-
+    ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
     AudioManager audioManager => AudioManager.instance;
 
     void Start()
@@ -36,6 +36,7 @@ public class TG_ShotGun_AI : PlayerSkillBase
         {
             audioManager.isPlaySE(clip0);
 
+            ALL_System.camera_Controller.Shake(0.2f, 0.1f);
             GameObject CL_Weapon = Instantiate(Attack, playerController.transform.position, Quaternion.identity);
             GameObject CL_Effect = Instantiate(Effect, playerController.transform.position, Quaternion.identity);
             Destroy(CL_Weapon,0.1f);

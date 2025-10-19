@@ -111,7 +111,7 @@ public class CG_RightKnight : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
             //enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 1.2f;
+            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized *enemyBase.SPEED * 1.2f;
             if (enemyBase.AttackCount > 0.5f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;
@@ -132,7 +132,7 @@ public class CG_RightKnight : EnemyMoveBase
             GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
             EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
             enemyAttack.enemyBase = enemyBase;
-            Destroy(CL_Attack, 0.01f);
+            Destroy(CL_Attack, 0.1f);
 
             enemyBase.audioManager.isPlaySE(enemyBase.AttackAudio);
             enemyBase.animator.SetInteger("Anim", 3);

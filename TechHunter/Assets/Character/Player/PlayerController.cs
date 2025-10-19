@@ -16,6 +16,7 @@ public class PlayerController : PlayerStatus
     public Vector2 CursorDirection;
     public PlayerBuffController playerBuff;
     public Slider HP_Slider;
+    public RectTransform HP_RectTransform;
     public TextMeshProUGUI HP_Text;
     public bool Dash = false;
     [SerializeField] TextMeshProUGUI CoinText;
@@ -535,6 +536,7 @@ public class PlayerController : PlayerStatus
         Range = charadata.Range + AddRange;
 
         playerDamage.HP_SliderChange();
+        HP_RectTransform.sizeDelta = new Vector2(50 + (MaxHP * 0.3f), HP_RectTransform.sizeDelta.y);
         //RecoveryHP = AddRecoveryHP;
     }
 
@@ -576,6 +578,8 @@ public class PlayerController : PlayerStatus
         Range = charadata.Range + AddRange;
 
         playerDamage.HP_SliderChange();
+
+        HP_RectTransform.sizeDelta = new Vector2(80+ (MaxHP*1.5f),HP_RectTransform.sizeDelta.y);
 
     }
 

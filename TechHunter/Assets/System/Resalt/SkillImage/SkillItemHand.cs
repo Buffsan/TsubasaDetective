@@ -11,6 +11,8 @@ public class SkillItemHand : MonoBehaviour, IPointerDownHandler,IPointerUpHandle
     [SerializeField] Image My;
     public GameObject SkillImageObject;
 
+    ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
+
     public bool PushButton = false;
 
     public int _ID_Number = 100;
@@ -92,6 +94,8 @@ public class SkillItemHand : MonoBehaviour, IPointerDownHandler,IPointerUpHandle
             PushButton = true;
             skilPagel.ChoicePage = this.gameObject;
             skilPagel._ID_ChoiceNumber = _ID_Number;
+
+            ALL_System.skillController.ClickSkillFrame(_ID_Number);
            // My.raycastTarget = false;
         }
     }

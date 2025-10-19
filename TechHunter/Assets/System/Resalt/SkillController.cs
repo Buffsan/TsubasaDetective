@@ -1,8 +1,6 @@
-
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-
 
 public class SkillController : MonoBehaviour
 {
@@ -22,10 +20,11 @@ public class SkillController : MonoBehaviour
     public List<StatusUP> StatusUPs = new List<StatusUP>();
     public List<Relic> Relics = new List<Relic>();
 
-    [HideInInspector]public List<PageManager> SavePage = new List<PageManager>();
+    [HideInInspector] public List<PageManager> SavePage = new List<PageManager>();
     public List<StatusUP> SaveStatus = new List<StatusUP>();
 
     [HideInInspector] public List<SkillPageManager> SavesSkillPageManager = new List<SkillPageManager>();
+    SkillPageManager ChangeSkillPageManger_save;
     [HideInInspector] public List<Skill> SaveSkills = new List<Skill>();
 
     ALL_SystemManager allSystemManager => ALL_SystemManager.Instance;
@@ -42,13 +41,13 @@ public class SkillController : MonoBehaviour
     AllSkilPagel allskillpage;
     StatusMenu statusMenu;
     ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
-    public enum ChoiceCardMode 
+    public enum ChoiceCardMode
     {
-        
+
         Skill,
         Status,
         None
-    
+
     }
     ChoiceCardMode cardMode = ChoiceCardMode.None;
 
@@ -63,29 +62,29 @@ public class SkillController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M)) 
+        if (Input.GetKeyDown(KeyCode.M) && ALL_System.systemManager.gameSystemMode == SystemManager.GameSystemMODE.Debug)
         {
             isStartPageChoice();
         }
-        if (Input.GetKeyDown(KeyCode.N))
+        if (Input.GetKeyDown(KeyCode.N) && ALL_System.systemManager.gameSystemMode == SystemManager.GameSystemMODE.Debug)
         {
             isAll_StartSkillPageChoice(2);
         }
-        if (systemManager.gameMode == SystemManager.GameMode.Result) 
+        if (systemManager.gameMode == SystemManager.GameMode.Result)
         {
-            ReRollCost = 10 * (ReRollCount+1) + gameModeManager.AllGameLevel * 5;
-            if (ReRollCost <= 0) 
+            ReRollCost = 10 * (ReRollCount + 1) + gameModeManager.AllGameLevel * 5;
+            if (ReRollCost <= 0)
             {
                 ReRollCost = 1;
             }
             ReRollText.text = ReRollCost.ToString("F0");
         }
     }
-    public void ReROLL() 
+    public void ReROLL()
     {
-        if (cardMode != ChoiceCardMode.None) 
+        if (cardMode != ChoiceCardMode.None)
         {
-            if (playerController.AllCoins > ReRollCost) {
+            if (playerController.AllCoins >= ReRollCost) {
                 playerController.AllCoins -= (int)ReRollCost;
                 ReRollCount++;
                 if (cardMode == ChoiceCardMode.Skill)
@@ -99,27 +98,27 @@ public class SkillController : MonoBehaviour
             }
         }
     }
-    public void isAll_StartSkillPageChoice(int RarityValue) 
+    public void isAll_StartSkillPageChoice(int RarityValue)
     {
         isStartSkillPageChoice(RarityValue);
 
-        ReRollAnim.Play("出現",0,0);
+        ReRollAnim.Play("出現", 0, 0);
         SkipAnim.Play("出現", 0, 0);
         GameObject CL_AllSkillPage = Instantiate(AllSkillPage);
         playerController.movetype = PlayerController.MoveType.Wait;
         AllSkillPages.Add(CL_AllSkillPage);
 
-         allskillpage = CL_AllSkillPage.GetComponent<AllSkilPagel>();
+        allskillpage = CL_AllSkillPage.GetComponent<AllSkilPagel>();
         allskillpage.skillController = this;
         CL_AllSkillPage.transform.parent = ResultCanvas.transform;
 
         Change_AllSkillPage();
     }
-    public void Change_AllSkillPage() 
+    public void Change_AllSkillPage()
     {
-        if (allskillpage != null) 
+        if (allskillpage != null)
         {
-            
+
             int i = 0;
             foreach (var ALL_p in allskillpage.AllSkillPagesList)
             {
@@ -131,7 +130,7 @@ public class SkillController : MonoBehaviour
             }
         }
     }
-    public void isStartSkillPageChoice(int RarityValue) 
+    public void isStartSkillPageChoice(int RarityValue)
     {
         //Debug.Log( "" + RarityValue);
         cardMode = ChoiceCardMode.Skill;
@@ -153,43 +152,43 @@ public class SkillController : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             bool Set = false;
-            
-                List<Skill> SaveStatusUps_R1 = new List<Skill>();
-                foreach (Skill s in SkillList)
+
+            List<Skill> SaveStatusUps_R1 = new List<Skill>();
+            foreach (Skill s in SkillList)
+            {
+
+                if (s.Rarity == RarityValue)
                 {
-
-                    if (s.Rarity == RarityValue)
-                    {
-                        SaveStatusUps_R1.Add(s);
-                    }
-
+                    SaveStatusUps_R1.Add(s);
                 }
 
-                
-            
+            }
+
+
+
             while (!Set)
             {
                 SaveSkill = SaveStatusUps_R1[Random.Range(0, SaveStatusUps_R1.Count)];
 
                 int j = 0;
-                foreach (var a in NowSkill) 
+                foreach (var a in NowSkill)
                 {
-                    if (a == SaveSkill) 
-                    { 
-                    j++;
+                    if (a == SaveSkill)
+                    {
+                        j++;
                     }
                 }
-                if (j == 0) 
-                { 
-                Set = true;
+                if (j == 0)
+                {
+                    Set = true;
                 }
-                
+
             }
             NowSkill.Add(SaveSkill);
             isSkillPage(SaveSkill, i);
         }
     }
-    public void isStartPageChoice() 
+    public void isStartPageChoice()
     {
         ReRollAnim.Play("出現");
         SkipAnim.Play("出現");
@@ -207,28 +206,28 @@ public class SkillController : MonoBehaviour
         //もともとあったページの削除
         foreach (PageManager save in SavePage)
         {
-              save.move = PageManager.Move.Run;          
-              Destroy(save.gameObject, 5);
+            save.move = PageManager.Move.Run;
+            Destroy(save.gameObject, 5);
 
         }
         SavePage.Clear();
         SaveStatus.Clear();
 
-        List <StatusUP> NowPage = new List<StatusUP>();
+        List<StatusUP> NowPage = new List<StatusUP>();
         for (int i = 0; i < 3; i++)
         {
             bool Set = false;
 
             List<StatusUP> SaveStatusUps_R1 = new List<StatusUP>();
-                foreach (StatusUP s in StatusUPs) 
-                {
+            foreach (StatusUP s in StatusUPs)
+            {
                 if (gameModeManager.gameMode == system_GameModeManager.AdventureGameMode.NomalBattleSpot)
                 {
                     float randomValue = Random.Range(0, 101);
                     if (randomValue < playerController.Critical)
                     {
                         if (s.Rarity == 2)
-                        {                       
+                        {
                             SaveStatusUps_R1.Add(s);
                         }
                     }
@@ -239,52 +238,52 @@ public class SkillController : MonoBehaviour
                             SaveStatusUps_R1.Add(s);
                         }
                     }
-                    
+
                 }
                 else if (gameModeManager.gameMode == system_GameModeManager.AdventureGameMode.MortalBattleSpot)
                 {
                     SaveStatusUps_R1.Add(s);
                 }
-                else 
+                else
                 {
                     if (s.Rarity == 1 || s.Rarity == 2)
                     {
                         SaveStatusUps_R1.Add(s);
                     }
                 }
-                }
+            }
 
-                while (!Set)
+            while (!Set)
+            {
+                SaveStatusUP = SaveStatusUps_R1[Random.Range(0, SaveStatusUps_R1.Count)];
+
+                int j = 0;
+                foreach (var a in NowPage)
                 {
-                    SaveStatusUP = SaveStatusUps_R1[Random.Range(0, SaveStatusUps_R1.Count)];
-
-                    int j = 0;
-                    foreach (var a in NowPage)
+                    if (a == SaveStatusUP)
                     {
-                        if (a == SaveStatusUP)
-                        {
-                            j++;
-                        }
+                        j++;
+                    }
 
-                    }
-                    if (j == 0)
-                    {
-                        Set = true;
-                    }
                 }
-                NowPage.Add(SaveStatusUP);
-                isStatusPage(SaveStatusUP, i);
+                if (j == 0)
+                {
+                    Set = true;
+                }
+            }
+            NowPage.Add(SaveStatusUP);
+            isStatusPage(SaveStatusUP, i);
         }
     }
 
-    public void ChoicePage() 
+    public void ChoicePage()
     {
         playerController.movetype = PlayerController.MoveType.Nomal;
         ReRollAnim.Play("消える");
         SkipAnim.Play("消える");
         playerController.rb.velocity = Vector2.zero;
 
-        if (statusMenu != null) 
+        if (statusMenu != null)
         {
             statusMenu.move = StatusMenu.Move.Run;
             Destroy(statusMenu.gameObject, 2);
@@ -293,7 +292,7 @@ public class SkillController : MonoBehaviour
 
         cardMode = ChoiceCardMode.None;
         int index = 0;
-        foreach (PageManager save in SavePage) 
+        foreach (PageManager save in SavePage)
         {
 
             if (save.Select)
@@ -302,17 +301,17 @@ public class SkillController : MonoBehaviour
 
                 playerController.AddATK += SaveStatus[index].Attack;
                 playerController.AddAtkDF += SaveStatus[index].Defense;
-                
+
 
                 if (playerController.charadata.MAXHP + SaveStatus[index].HP + playerController.AddHP < 0)
                 {
-                    playerController.AddHP =  1- playerController.charadata.MAXHP;
+                    playerController.AddHP = 1 - playerController.charadata.MAXHP;
                 }
-                else 
+                else
                 {
                     playerController.AddHP += SaveStatus[index].HP;
                 }
-                
+
                 playerController.AddRegen += SaveStatus[index].Regen;
                 playerController.isRecoveryHP(SaveStatus[index].RecoveryHP);
                 playerController.AddCritical += SaveStatus[index].Critical;
@@ -323,7 +322,7 @@ public class SkillController : MonoBehaviour
                 // 一時的にfloatで計算してからintに戻す
                 playerController.AllCoins = Mathf.RoundToInt(playerController.AllCoins * coinChange);
 
-                if (SaveStatus[index].RandomLevelUp > 0) 
+                if (SaveStatus[index].RandomLevelUp > 0)
                 {
                     playerController.RandomLevelUp(SaveStatus[index].RandomLevelUp);
                 }
@@ -334,7 +333,7 @@ public class SkillController : MonoBehaviour
                 systemManager.mode = SystemManager.ModeType.M1;
 
             }
-            else 
+            else
             {
                 save.move = PageManager.Move.Run;
             }
@@ -343,25 +342,81 @@ public class SkillController : MonoBehaviour
             playerController.playerDamage.HP_SliderChange();
             Destroy(save.gameObject, 5);
 
-            if (gameModeManager.BattlePhase == 2) 
+            if (gameModeManager.BattlePhase == 2)
             {
                 //isStartSkillPageChoice();
                 isAll_StartSkillPageChoice(2);
             }
         }
-
-        
         SavePage.Clear();
         SaveStatus.Clear();
     }
 
-    public void SkipPage() 
+    public void SkipPage()
     {
-        ChoiceSkillPage();
+        AllRunSkillPage();
         ChoicePage();
     }
+    public void AllRunSkillPage()
+    {
+        ChangeSkillPageManger_save = null;
+        if (AllSkillPages.Count != 0)
+        {
+            foreach (SkillPageManager save in SavesSkillPageManager)
+            {
+                save.move = SkillPageManager.Move.Run;
 
-    public void ChoiceSkillPage()
+                Destroy(save, 5);
+            }
+        }
+        if (AllSkillPages.Count != 0)
+        {
+            foreach (var a in AllSkillPages)
+            {
+                AllSkilPagel allSkil = a.GetComponent<AllSkilPagel>();
+                allSkil.move = AllSkilPagel.Move.Run;
+
+                Destroy(a, 5);
+            }
+        }
+        AllSkillPages.Clear();
+
+        SaveSkills.Clear();
+        SavesSkillPageManager.Clear();
+    }
+
+    public void ClickSkillFrame(int IDnumber) 
+    { 
+        
+    }
+    public void ChoiceSkillPage()//スキルページの選択
+    {
+        bool isMaxSkill = false;
+        int Max_skillCount = 0;
+        foreach (SkillInfo skillInfo in playerController.skillINFO) 
+        {
+            if (skillInfo.skillDATA != skillNoneData) 
+            {
+                Debug.Log("info:"+ skillInfo.skillDATA + "  noneSkill:" + NoneSkill);
+                Max_skillCount++;
+            }
+        }
+        
+        if (Max_skillCount >= 5) 
+        { 
+            isMaxSkill = true;
+        }
+        if (isMaxSkill)
+        {
+            Max_ChoicePage();
+        }
+        else 
+        { 
+            Min_ChoicePage();
+        }
+       
+    }
+    void FinChoicePage() 
     {
         playerController.movetype = PlayerController.MoveType.Nomal;
         ReRollAnim.Play("消える");
@@ -369,12 +424,88 @@ public class SkillController : MonoBehaviour
         cardMode = ChoiceCardMode.None;
         playerController.rb.velocity = Vector2.zero;
 
-        if (ALL_System.system_GameStartController != null) 
+        ChangeSkillPageManger_save = null;
+        if (ALL_System.system_GameStartController != null)
         {
             ALL_System.system_GameStartController.NextPhase();
-        
+
+        }
+    }
+    void Max_ChoicePage() 
+    {
+        bool LevelUP = false;
+        int index = 0;
+        SkillInfo LevelUP_SkillInfo;
+        foreach (SkillPageManager save in SavesSkillPageManager) 
+        {//レベルアップできるかの検証
+            if (save.Select)
+            {
+                ChangeSkillPageManger_save = save;
+            }
+            foreach (SkillInfo skillinfo in playerController.skillINFO)
+            {
+                
+                if (skillinfo.skillDATA == SaveSkills[index].skill && skillinfo.skillDATA != skillNoneData)
+                {
+                    LevelUP = true;
+                    LevelUP_SkillInfo = skillinfo;
+                }
+            }
+            index++;
+        }
+        index = 0;
+
+        if (LevelUP) 
+        {
+            foreach (SkillPageManager save in SavesSkillPageManager)
+            {
+                save.DontTotch = true;
+                if (save.Select)
+                {
+                    
+                    save.move = SkillPageManager.Move.Wait;
+                    int i = 0;
+                    foreach (SkillInfo skillinfo in playerController.skillINFO)
+                    {
+                        if (skillinfo.skillDATA == SaveSkills[index].skill && skillinfo.skillDATA != skillNoneData)
+                        {
+                            skillinfo.SkillLevel++;
+                            LevelUP = true;
+                        }
+
+                    }
+                }
+                else
+                {
+                    save.move = SkillPageManager.Move.Run;
+                }
+                index++;
+                playerController.isAddStatus();
+                playerController.playerDamage.HP_SliderChange();
+                Destroy(save.gameObject, 3);
+            }
+
+            if (AllSkillPages.Count != 0)
+            {
+                foreach (var a in AllSkillPages)
+                {
+                    AllSkilPagel allSkil = a.GetComponent<AllSkilPagel>();
+                    allSkil.move = AllSkilPagel.Move.Run;
+
+                    Destroy(a, 5);
+                }
+            }
+            AllSkillPages.Clear();
+
+            SaveSkills.Clear();
+            SavesSkillPageManager.Clear();
+
+            FinChoicePage();
         }
 
+    }
+    void Min_ChoicePage() 
+    {
         int index = 0;
         foreach (SkillPageManager save in SavesSkillPageManager)
         {
@@ -391,7 +522,7 @@ public class SkillController : MonoBehaviour
                         skillinfo.SkillLevel++;
                         LevelUP = true;
                     }
-                        
+
                 }
                 if (!LevelUP)
                 {
@@ -434,6 +565,7 @@ public class SkillController : MonoBehaviour
 
         SaveSkills.Clear();
         SavesSkillPageManager.Clear();
+        FinChoicePage();
     }
     void isStatusPage(StatusUP statuspage,int value) 
     { 

@@ -206,6 +206,8 @@ public class charaDamage : MonoBehaviour, IDamageable
     }
     void CoinDrop() 
     {
+        
+
         int CrystalCount = 0;
         int GoaldCount =0;
         int SilverCount = 0;
@@ -219,10 +221,13 @@ public class charaDamage : MonoBehaviour, IDamageable
         
         for (int i = 0; i < CrystalCount; i++)
         {
+            
+
             GameObject CL_Goald = Instantiate(Coin, transform.position, Quaternion.identity);
             CoinManager CL_coin = CL_Goald.GetComponent<CoinManager>();
 
             CL_coin.coinType = CoinManager.CoinType.CrystalCoin;
+            enemyBase.ALL_System.systemManager.coinManagers.Add(CL_coin);
         }
         for (int i = 0; i < GoaldCount; i++) 
         {
@@ -230,6 +235,7 @@ public class charaDamage : MonoBehaviour, IDamageable
             CoinManager CL_coin = CL_Goald.GetComponent<CoinManager>();
 
             CL_coin.coinType = CoinManager.CoinType.GoaldCoin;
+            enemyBase.ALL_System.systemManager.coinManagers.Add(CL_coin);
         }
         for (int i = 0; i < SilverCount; i++)
         {
@@ -237,6 +243,7 @@ public class charaDamage : MonoBehaviour, IDamageable
             CoinManager CL_coin = CL_Goald.GetComponent<CoinManager>();
 
             CL_coin.coinType = CoinManager.CoinType.SilverCoin;
+            enemyBase.ALL_System.systemManager.coinManagers.Add(CL_coin);
         }
         for (int i = 0; i < CopperCount; i++)
         {
@@ -244,6 +251,7 @@ public class charaDamage : MonoBehaviour, IDamageable
             CoinManager CL_coin = CL_Goald.GetComponent<CoinManager>();
 
             CL_coin.coinType = CoinManager.CoinType.CopperCoin;
+            enemyBase.ALL_System.systemManager.coinManagers.Add(CL_coin);
         }
     }
 }

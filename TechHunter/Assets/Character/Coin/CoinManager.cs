@@ -40,7 +40,7 @@ public class CoinManager : MonoBehaviour
         Chase
 
     }
-    MoveType moveType = MoveType.Fly;
+    public MoveType moveType = MoveType.Fly;
 
     // Start is called before the first frame update
     void Start()

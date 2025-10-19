@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb115587ebfd0544b17a03fb5d1cda0, type: 3}
+  m_Name: DK_BattleFlag
+  m_EditorClassIdentifier: 
+  SkillImage: {fileID: 21300000, guid: 2d94c2ad9265d7b49a009fe3eb55dd74, type: 3}
+  SkillName: "\u540C\u5FD7\u3088\u65D7\u306B\u7D9A\u3051"
+  SkillMessage: "\u7121\u6575\u72B6\u614B\u306B\u306A\u308A\u3001\u65D7\u304B\u3089\u885D\u6483\u6CE2\u3092\u653E\u3063\u3066\u7BC4\u56F2\u653B\u6483\u3092\u884C\u3046\u3002\n\u79FB\u52D5\u901F\u5EA6\u304C1\u79D2\u959350%\u4E0A\u6607\u3057\u30011\u79D2\u5F8C\u306B\u65D7\u3092\u53E9\u304D\u3064\u3051\u3066\u5927\u898F\u6A21\u306A\u885D\u6483\u6CE2\u3092\u767A\u751F\u3055\u305B\u308B\u3002\n\u65D7\u306F8\u79D2\u9593\u5730\u9762\u306B\u523A\u3055\u308A\u3001\u6301\u7D9A\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u306A\u304C\u3089\u653B\u6483\u529B+30%\u3059\u308B\u5F37\u5316\u30D5\u30A3\u30FC\u30EB\u30C9\u3092\u5C55\u958B\u3059\u308B\u3002"
+  CoolTime: 34
+  SkillData: {fileID: 2666702551037970044, guid: 064a606ebd1f624459a7c0cd366e6f29, type: 3}
+  SkillDataList: []
+  MaxStack: 0
+  TotalDamage: 60

@@ -26,7 +26,7 @@ public class DE_BigSword_AI : PlayerSkillBase
         {
             GameObject CL_Weapon = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
             Att = ATT.A2;
-            CL_Weapon.transform.parent = playerController.MainAnimBody.transform;
+            CL_Weapon.transform.parent = playerController.transform;
         }
         else if (Att == ATT.A2)
         {

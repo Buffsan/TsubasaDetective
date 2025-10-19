@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 
 public class SystemManager : MonoBehaviour
@@ -8,6 +9,8 @@ public class SystemManager : MonoBehaviour
     [SerializeField] system_GameModeManager gameModeManager;
     [SerializeField] sytem_GameSpotsController sytem_GameSpotsController;
     public SkillCardData NoneSkill;
+
+    public List<CoinManager> coinManagers = new List<CoinManager>();
  
 
     public List<GameObject> AllEnemy = new List<GameObject>();
@@ -25,6 +28,15 @@ public class SystemManager : MonoBehaviour
         M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M11, M12, M13, M14, M15, M16, M17, M18, M19, M20, M21, M22, M23, M24,
     }
     public ModeType mode = ModeType.M1;
+
+    public enum GameSystemMODE 
+    { 
+    
+        Debug,
+        Build
+    
+    }
+    public GameSystemMODE gameSystemMode = GameSystemMODE.Debug;
     public enum GameMode
     {
 
@@ -163,6 +175,11 @@ public class SystemManager : MonoBehaviour
 
             skillController.isStartPageChoice();
 
+            foreach (CoinManager coin in coinManagers) 
+            {
+                coin.moveType = CoinManager.MoveType.Chase;
+            }
+            coinManagers.Clear();
             mode = ModeType.M2;
             controller.rb.velocity = Vector2.zero;
             controller.movetype = PlayerController.MoveType.Wait;
@@ -176,8 +193,12 @@ public class SystemManager : MonoBehaviour
 
         }
     }
-    void isStart()
+    void isStart()//ゲームの開始
     {
+        foreach (SkillInfo skill in controller.skillINFO) 
+        {//クールタイム全回復
+            skill.SkillCardManager.isCoolTime_add(skill.SkillCardManager.CoolTime);
+        }
 
         StartCount += Time.deltaTime;
         if (gameModeManager.gameMode == system_GameModeManager.AdventureGameMode.BossBattleSpot)

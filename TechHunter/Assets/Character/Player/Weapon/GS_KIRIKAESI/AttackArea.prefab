@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1.0675, y: 0, z: 0}
-  m_LocalScale: {x: 3.5, y: 3, z: 1}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -48,8 +48,6 @@ MonoBehaviour:
   weapondata: {fileID: 11400000, guid: e1639b2caee733840bb9631bfc0f9c66, type: 2}
   skillcarddata: {fileID: 11400000, guid: bd29f0761fd109f4d991ec2a3cfc7587, type: 2}
   AttackLevel: 0
-  Level_AttackBONUS_multiplier: 15
-  Level_AttackBONUS: 1
   AgeinAttack: 0
 --- !u!61 &4656028562849032331
 BoxCollider2D:

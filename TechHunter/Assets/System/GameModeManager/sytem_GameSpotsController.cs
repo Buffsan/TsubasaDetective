@@ -48,7 +48,7 @@ public class sytem_GameSpotsController : MonoBehaviour
             CursorPrefab.SetActive(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.J)) 
+        if (Input.GetKeyDown(KeyCode.J)&&systemmanager.gameSystemMode == SystemManager.GameSystemMODE.Debug) 
         {
 
             isGameSpotStart();

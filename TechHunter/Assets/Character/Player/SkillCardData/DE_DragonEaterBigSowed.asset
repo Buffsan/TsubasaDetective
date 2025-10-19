@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb115587ebfd0544b17a03fb5d1cda0, type: 3}
   m_Name: DE_DragonEaterBigSowed
   m_EditorClassIdentifier: 
-  SkillImage: {fileID: 21300000, guid: 267afc176f33d624e83bdc026410718c, type: 3}
+  SkillImage: {fileID: 21300000, guid: b20efc529f827b74d99d5575878f4254, type: 3}
   SkillName: "\u9F8D\u6BBA\u3057"
-  SkillMessage: "\u5927\u304D\u306A\u9699\u306E\u5F8C\u306B\u5F37\u529B\u306A\u65AC\u6483\u3092\u4E0E\u3048\u308B\u3002\u307E\u3055\u306B\u9F8D\u72E9\u308A\u306E\u4E00\u6483\u3002"
+  SkillMessage: "\u5927\u304D\u306A\u9699\u306E\u5F8C\u306B\u5F37\u529B\u306A\u65AC\u6483\u3092\u4E0E\u3048\u308B\u3002\n\"\u307E\u3055\u306B\u9F8D\u72E9\u308A\u306E\u4E00\u6483\""
   CoolTime: 35
   SkillData: {fileID: 1469469695698759297, guid: 1afd8f3122a4f3e4b8a609c1c336d272, type: 3}
   SkillDataList:

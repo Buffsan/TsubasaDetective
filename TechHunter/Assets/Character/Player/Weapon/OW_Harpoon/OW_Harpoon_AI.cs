@@ -35,7 +35,7 @@ public class OW_Harpoon_AI : PlayerSkillBase
             playerController.playerBuff.SpawnBuff(BUFF);
             GameObject CL_Weapon = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
             Att = ATT.A2;
-            CL_Weapon.transform.parent = playerController.MainAnimBody.transform;
+            CL_Weapon.transform.parent = playerController.transform;
 
             enemyObject = GameObject.FindGameObjectsWithTag("Enemy");
             enemyList = new List<GameObject>(enemyObject);

@@ -46,7 +46,13 @@ public class EnemySpawnGroup
         TERUSETO_FishHanter_Shoygun,
 
         MONSTAR_ErathSite,
-        MONSTAR_LastHoliday
+        MONSTAR_LastHoliday,
+
+        TERUSETO_FP_walker,
+            TERUSETO_KINGYO_Koaka,
+            TERUSETO_KINGYO_LeaderKoaka,
+        TERUSETO_FishHanter_Shield,
+        TERUSETO_FishHanter_maquette,
 
 
     }

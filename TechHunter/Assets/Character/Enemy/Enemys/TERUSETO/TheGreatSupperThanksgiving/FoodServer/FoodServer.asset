@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FoodServer
   m_EditorClassIdentifier: 
   NAME: "\u914D\u81B3\u8005"
-  MAXHP: 500
+  MAXHP: 552
   Regen: 0
   MAXMP: 0
   SPEED: 12

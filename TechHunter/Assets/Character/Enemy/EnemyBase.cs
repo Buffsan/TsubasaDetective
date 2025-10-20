@@ -150,6 +150,12 @@ public class EnemyBase : MonoBehaviour
             EnemyAnimBody.transform.localScale = new Vector2(2.5f, 2.5f);
         }
     }
+    public void isLookDistance() 
+    {
+        PlayerDirection = Player.transform.position - transform.position;
+        PlayerDistance = Vector2.Distance(Player.transform.position, transform.position);
+
+    }
     public void isPlayerLookBase()
     {
         PlayerDirection = Player.transform.position - transform.position;

@@ -1,0 +1,177 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7224581011658967937
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5241446225880091797}
+  - component: {fileID: 46257588767420318}
+  m_Layer: 0
+  m_Name: Kingyo_koaka_AI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5241446225880091797
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7224581011658967937}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 658730985926097609}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &46257588767420318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7224581011658967937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab3d568965955c64eaf3c8d59a16847f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnemyName: 
+  enemyBase: {fileID: 0}
+  A_Phase: 0
+  AttackCount: 0
+  Arrow: {fileID: 0}
+--- !u!1001 &641270998430999742
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.048523
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.7695923
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2015402950634030218, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3853466502093270879, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_Size.x
+      value: 1.37
+      objectReference: {fileID: 0}
+    - target: {fileID: 4263319095818336797, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 5b83d9ce85626094599631637e55a888, type: 2}
+    - target: {fileID: 4457924940185567627, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4457924940185567627, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 3732387545076031139}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: moveBase
+      value: 
+      objectReference: {fileID: 46257588767420318}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: charadata
+      value: 
+      objectReference: {fileID: 11400000, guid: 8ea0bd3b00cd2d74b9f5331da16e9fb0, type: 2}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: AttackArea
+      value: 
+      objectReference: {fileID: 7223849972691123495, guid: fe4d023bf252dbe42bdcac25177c0f13, type: 3}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: PlayerDistance
+      value: 999
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: Choice_MoveToBase
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: EnemyMoveBaseObject
+      value: 
+      objectReference: {fileID: 7224581011658967937}
+    - target: {fileID: 7031987147499244862, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7198778347497280995, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: cd9bc5a8e81df384883b2a5feb9bd970, type: 3}
+    - target: {fileID: 8859200305933763443, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: m_Name
+      value: KINGYO_Koaka Variant
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5241446225880091797}
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+--- !u!4 &658730985926097609 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 126673377973214839, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+  m_PrefabInstance: {fileID: 641270998430999742}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &3732387545076031139 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4263319095818336797, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+  m_PrefabInstance: {fileID: 641270998430999742}
+  m_PrefabAsset: {fileID: 0}

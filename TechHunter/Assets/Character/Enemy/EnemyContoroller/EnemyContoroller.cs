@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyContoroller : EnemyBase
 {
-    [SerializeField] EnemyMoveBase moveBase;
+    public EnemyMoveBase moveBase;
     [SerializeField] GameObject EnemyMoveBaseObject;
 
     public enum MoveToBase
@@ -18,11 +18,16 @@ public class EnemyContoroller : EnemyBase
 
     private void Start()
     {
-        GameObject CL_MoveBase = Instantiate(EnemyMoveBaseObject,transform.position,Quaternion.identity);
-        moveBase = CL_MoveBase.GetComponent<EnemyMoveBase>();
+
+        if (moveBase == null)
+        {
+            GameObject CL_MoveBase = Instantiate(EnemyMoveBaseObject, transform.position, Quaternion.identity);
+            moveBase = CL_MoveBase.GetComponent<EnemyMoveBase>();
+            CL_MoveBase.transform.SetParent(gameObject.transform);
+        }
    
         moveBase.enemyBase = this;
-        CL_MoveBase.transform.SetParent(gameObject.transform);
+        
 
         
     }

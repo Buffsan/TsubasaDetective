@@ -168,7 +168,7 @@ PrefabInstance:
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: moveBase
       value: 
-      objectReference: {fileID: 1865380978929415754, guid: 149f856bf19dd1b42b6b2f2c7012d093, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: charadata
       value: 

@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 public class EnemySpawnBase : MonoBehaviour
 {
     public List<EnemyInfo> enemyList = new List<EnemyInfo>();
+    ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
     
 
     [SerializeField] GameObject SpawnEffect;
@@ -15,12 +16,10 @@ public class EnemySpawnBase : MonoBehaviour
 
     public List<GameObject> SpawnList = new List<GameObject>();
 
-    public List<EnemySpawnData> enemySpawnDatas = new List<EnemySpawnData>();
-
+    public List<Stages> stages = new List<Stages>();
+    Stages Save_Stages = null;
+    
     public List<Vector3Int> tilePosition = new List<Vector3Int>();
-
-    public List<GameObject> Map = new List<GameObject>();
-    public List<GameObject> BigMap = new List<GameObject>();
     public List<BossStage> bossStages = new List<BossStage>();
 
     public Vector2 SpawnArea = new Vector2(7, 9);
@@ -53,10 +52,18 @@ public class EnemySpawnBase : MonoBehaviour
     { 
     
         List<TileMap_Controller> map_sp = new List<TileMap_Controller>();
+        foreach (Stages stage in stages) 
+        {
+            if (stage.stage.ToString() == ALL_System.systemManager.stage.ToString()) 
+            {
+                Save_Stages = stage;
+                break;
+            }
+        }
 
         if (gameModeManager.AllGameLevel >= 2)
         {
-            foreach (GameObject mapprefab in BigMap)
+            foreach (GameObject mapprefab in Save_Stages.BigMap)
             {
 
                 TileMap_Controller tilemap_C = mapprefab.GetComponent<TileMap_Controller>();
@@ -69,7 +76,7 @@ public class EnemySpawnBase : MonoBehaviour
         }
         else
         {
-            foreach (GameObject mapprefab in Map)
+            foreach (GameObject mapprefab in Save_Stages.Map)
             {
 
                 TileMap_Controller tilemap_C = mapprefab.GetComponent<TileMap_Controller>();
@@ -121,8 +128,13 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.TERUSETO_TGST_ARAKAZEFoodServer,14},
         { EnemySpawnGroup.EnemyType.TERUSETO_FishHanter_Shoygun,15},
         { EnemySpawnGroup.EnemyType.MONSTAR_LastHoliday,16},
+        { EnemySpawnGroup.EnemyType.TERUSETO_FP_walker,17},
+        { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_Koaka,18},
+        { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_LeaderKoaka,19},
+        { EnemySpawnGroup.EnemyType.TERUSETO_FishHanter_Shield,20},
+        { EnemySpawnGroup.EnemyType.TERUSETO_FishHanter_maquette,21}
 
-    };
+    }; 
 
     public int GetEnemyID(EnemySpawnGroup.EnemyType type)
     {
@@ -148,7 +160,7 @@ public class EnemySpawnBase : MonoBehaviour
 
         List<EnemySpawnData> level1Spawns = new List<EnemySpawnData>();
 
-        foreach (var spawn in enemySpawnDatas)
+        foreach (var spawn in Save_Stages.enemySpawnDatas)
         {
             if (spawn.StageLevel == gameModeManager.AllGameLevel)
             {
@@ -247,7 +259,26 @@ public class EnemyInfo
     public GameObject Enemy;
 }
 
+[System.Serializable]
+public class Stages
+{
+    public enum Stage
+    {
 
+        Ferust,
+        Diana,
+        Garewo,
+        Kardia,
+        Pastal,
+        Teruseto,
+        Shuela
+
+    }
+    public Stage stage = Stage.Ferust;
+    public List<EnemySpawnData> enemySpawnDatas = new List<EnemySpawnData>();
+    public List<GameObject> Map = new List<GameObject>();
+    public List<GameObject> BigMap = new List<GameObject>();
+}
 [System.Serializable]
 public class BossStage 
 {

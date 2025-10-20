@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: FP_walker
   m_EditorClassIdentifier: 
   NAME: "\u4EBA\u8CB7\u3044\u306E\u8FFD\u8DE1\u8005"
-  MAXHP: 322
+  MAXHP: 333
   Regen: 0
   MAXMP: 0
   SPEED: 3
   ATK: 5
   ATKDF: 3
-  GOLD: 23
+  GOLD: 14
   XP: 0
   StanHP: 0
   ConfusionResistance: 160

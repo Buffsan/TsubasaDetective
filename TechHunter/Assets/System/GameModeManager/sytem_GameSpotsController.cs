@@ -69,6 +69,14 @@ public class sytem_GameSpotsController : MonoBehaviour
         UpdateInputSpot();
         NewSpawnSpots();
     }
+    public void isNext_GameSpotStart()
+    {
+        systemmanager.NextStageReset();
+        gamemode.allgamemode = AllGameMode.SpotChoiceMode;
+        DestroyInputSpots();
+        UpdateInputSpot();
+        NewSpawnSpots();
+    }
     public void PopSpots() 
     {
         gamemode.allgamemode = AllGameMode.SpotChoiceMode;

@@ -77,6 +77,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: LookPlayerDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: EnemyMoveBaseObject
       value: 
       objectReference: {fileID: 3524220196483176933, guid: 41e08a3cb1386fd49911fc44fbbc36f5, type: 3}

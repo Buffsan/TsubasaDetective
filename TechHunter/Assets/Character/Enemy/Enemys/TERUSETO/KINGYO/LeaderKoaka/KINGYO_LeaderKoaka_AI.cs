@@ -26,7 +26,7 @@ public class KINGYO_LeaderKoaka_AI : EnemyMoveBase
         if (!one)
         {
             one = true;
-            RandomTime = Random.Range(8, 15f);
+            RandomTime = Random.Range(2, 5f);
             int boolrandom = Random.Range(0, 2);
             if (boolrandom == 0)
             {

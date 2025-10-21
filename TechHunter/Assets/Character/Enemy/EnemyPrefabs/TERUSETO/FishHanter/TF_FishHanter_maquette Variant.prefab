@@ -248,7 +248,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: LookPlayerDistance
-      value: 8
+      value: 8.5
       objectReference: {fileID: 0}
     - target: {fileID: 7031987147499244862, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: m_AnchorMax.y

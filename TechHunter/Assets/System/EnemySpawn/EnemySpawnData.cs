@@ -53,6 +53,8 @@ public class EnemySpawnGroup
             TERUSETO_KINGYO_LeaderKoaka,
         TERUSETO_FishHanter_Shield,
         TERUSETO_FishHanter_maquette,
+        TERUSETO_KINGYO_Wakin,
+        SHUELA_SS_StarMagician,
 
 
     }

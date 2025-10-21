@@ -33,7 +33,16 @@ public class EnemySpawnBase : MonoBehaviour
    
     public void isBossMapSpawn() 
     {
-        foreach (BossStage stage in bossStages) 
+        foreach (Stages stage in stages)
+        {
+            if (stage.stage.ToString() == ALL_System.systemManager.stage.ToString())
+            {
+                Save_Stages = stage;
+                break;
+            }
+        }
+
+        foreach (BossStage stage in Save_Stages.bossStages) 
         {
             if (stage.StageNumber == gameModeManager.SatgeNumber) 
             {
@@ -132,7 +141,9 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_Koaka,18},
         { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_LeaderKoaka,19},
         { EnemySpawnGroup.EnemyType.TERUSETO_FishHanter_Shield,20},
-        { EnemySpawnGroup.EnemyType.TERUSETO_FishHanter_maquette,21}
+        { EnemySpawnGroup.EnemyType.TERUSETO_FishHanter_maquette,21},
+        { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_Wakin,22},
+        { EnemySpawnGroup.EnemyType.SHUELA_SS_StarMagician,23}
 
     }; 
 
@@ -278,6 +289,7 @@ public class Stages
     public List<EnemySpawnData> enemySpawnDatas = new List<EnemySpawnData>();
     public List<GameObject> Map = new List<GameObject>();
     public List<GameObject> BigMap = new List<GameObject>();
+    public List<BossStage> bossStages = new List<BossStage>();
 }
 [System.Serializable]
 public class BossStage 

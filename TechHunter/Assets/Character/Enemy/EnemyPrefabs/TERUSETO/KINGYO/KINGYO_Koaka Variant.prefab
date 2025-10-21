@@ -153,6 +153,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: cd9bc5a8e81df384883b2a5feb9bd970, type: 3}
+    - target: {fileID: 8687102048804372716, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: PlusLayer
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8859200305933763443, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: m_Name
       value: KINGYO_Koaka Variant

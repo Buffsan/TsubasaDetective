@@ -123,6 +123,10 @@ PrefabInstance:
       propertyPath: charadata
       value: 
       objectReference: {fileID: 11400000, guid: f9cae923bcf4f154697dc76cff104581, type: 2}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: LookPlayerDistance
+      value: 3.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7031987147499244862, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

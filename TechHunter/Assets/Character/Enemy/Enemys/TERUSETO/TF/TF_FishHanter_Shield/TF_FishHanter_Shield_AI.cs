@@ -92,5 +92,6 @@ public class TF_FishHanter_Shield_AI : EnemyMoveBase
 
         // オブジェクトを設置
         GameObject CL_litSlash = Instantiate(RockNeedle, finalPos, Quaternion.identity);
+        Destroy( CL_litSlash ,5);
     }
 }

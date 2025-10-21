@@ -135,6 +135,16 @@ public class SystemManager : MonoBehaviour
                 skill.skillDATA = NoneSkill;      
         }
     }
+    public void NextStageReset() 
+    {
+        sytem_GameSpotsController.PlayerSystemPos = new Vector2(-1, 0);
+
+        controller.transform.position = Vector2.zero;
+        gameModeManager.BattlePhase = 0;
+        gameModeManager.GameLevel = 0;
+        mode = ModeType.M1;
+        gameMode = GameMode.None;
+    }
     public void ReStart() 
     {
         controller.AddATK = 0;
@@ -287,15 +297,23 @@ public class SystemManager : MonoBehaviour
         controller.animator.SetBool("Dodge", false);
         if (gameModeManager.BattlePhase < 3)
         {
-            
-            gameModeManager.BattlePhase++;
-            gameMode = GameMode.Start;
             controller.isRecoveryHP(controller.Regen);
             if (enemySpawn.Seve_TileMap_C != null)
             {
                 Destroy(enemySpawn.Seve_TileMap_C.gameObject);
                 enemySpawn.tilePosition.Clear();
             }
+            if (gameModeManager.gameMode == system_GameModeManager.AdventureGameMode.BossBattleSpot && gameModeManager.BattlePhase == 1)
+            { 
+                sytem_GameSpotsController.isNext_GameSpotStart();
+                if (stage == Stage.Teruseto) {stage = Stage.Shuela;return; }
+                if (stage == Stage.Ferust) { stage = Stage.Teruseto; return; }
+            }
+            else 
+            { 
+                gameModeManager.BattlePhase++;   
+                gameMode = GameMode.Start;           
+            }      
         }
         else 
         {

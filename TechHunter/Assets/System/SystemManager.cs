@@ -16,7 +16,8 @@ public class SystemManager : MonoBehaviour
     public List<GameObject> AllEnemy = new List<GameObject>();
     PlayerController controller => PlayerController.Instance;
     public int Level = 0;
-    float WaitEnemyDieCount =0;
+    public float WaitEnemyDieCount =0;
+    public bool isMinEnemy = true;
     public static SystemManager Instance;
 
     SkillController skillController;
@@ -94,6 +95,14 @@ public class SystemManager : MonoBehaviour
                     Debug.Log("‘SˆõŽ€‚ñ‚¾I");
                     gameMode = GameMode.Result;
                     mode = ModeType.M1;
+                }
+                if (AllEnemy.Count >= 5)
+                {
+                    isMinEnemy = true;
+                }
+                else 
+                { 
+                    isMinEnemy = false;
                 }
             }
         }
@@ -319,6 +328,7 @@ public class SystemManager : MonoBehaviour
         {
             gameModeManager.GameLevel++;
             gameModeManager.BattlePhase =0;
+            AllEnemy.Clear();
 
             controller.transform.position = Vector3.zero;
 

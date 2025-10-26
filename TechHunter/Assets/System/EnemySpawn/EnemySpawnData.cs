@@ -55,6 +55,11 @@ public class EnemySpawnGroup
         TERUSETO_FishHanter_maquette,
         TERUSETO_KINGYO_Wakin,
         SHUELA_SS_StarMagician,
+        SHUELA_SS_StarKnight,
+        SHUELA_SS_FairySpear,
+        SHUELA_SS_FairyAXE,
+        SHUELA_SS_FairyHammer,
+        SHUELA_SS_FairyMagic,
 
 
     }

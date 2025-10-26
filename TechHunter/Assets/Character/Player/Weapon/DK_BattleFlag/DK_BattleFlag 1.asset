@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DK_BattleFlag 1
   m_EditorClassIdentifier: 
   attackType: 2
-  Attack: 40
+  Attack: 30
   AttackSpeedTime: 0
   StaggerPower: 11
   ConfusionPower: 1

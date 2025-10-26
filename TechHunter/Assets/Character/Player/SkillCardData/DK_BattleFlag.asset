@@ -19,4 +19,4 @@ MonoBehaviour:
   SkillData: {fileID: 2666702551037970044, guid: 064a606ebd1f624459a7c0cd366e6f29, type: 3}
   SkillDataList: []
   MaxStack: 0
-  TotalDamage: 60
+  TotalDamage: 40

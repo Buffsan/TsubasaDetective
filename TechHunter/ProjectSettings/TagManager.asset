@@ -15,6 +15,7 @@ TagManager:
   - MovePoints
   - EnemySpawnPoints
   - Cursor
+  - Stage_EnemySpawnArea
   layers:
   - Default
   - TransparentFX

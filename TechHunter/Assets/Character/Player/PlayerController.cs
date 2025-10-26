@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerController : PlayerStatus
 {
@@ -33,6 +34,8 @@ public class PlayerController : PlayerStatus
     [SerializeField] BuffData DogeBuff;
     public GameObject SpecialBuff;
     public List<SkillInfo> skillINFO = new List<SkillInfo>();
+    public List<RelicData> relicDatas = new List<RelicData>();
+    public GameObject RelicControllerObject;
     [SerializeField] GameObject HitEffect;
     public GameObject AnimatorBody;
     public GameObject MainAnimBody;
@@ -48,6 +51,8 @@ public class PlayerController : PlayerStatus
     float DodgeCount = 0;
     
     float AttackMoveCount = 0;
+
+    float DontMove = 99;
 
     ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
 
@@ -121,24 +126,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnGuard(InputAction.CallbackContext context) 
     {
-        /*
-        if (movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
-        {
-            if (context.performed)
-            {
-                // ボタンが押されたときの処理
-                // Debug.Log("Button Pressed");
-                movetype = MoveType.Guard;
-                audioManager.isPlaySE(guardClip);
-            }
-            else if (context.canceled)
-            {
-                // ボタンが離されたときの処理
-                //Debug.Log("Button Released");
-                movetype = MoveType.Nomal;
-                animator.SetBool("Guard", false);
-            }
-        }*/
+        
     }
     public void OnNomalAttack(InputAction.CallbackContext context)
     {
@@ -155,31 +143,7 @@ public class PlayerController : PlayerStatus
                 skillINFO[4].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
         }
-        /*
-        if (context.phase == InputActionPhase.Performed && movetype != MoveType.NoAction && movetype != MoveType.Wait)
-        {
-            
-            
-            if (AttackWaitCount > 0.05 && movetype != MoveType.Guard && movetype != MoveType.Dodge && movetype != MoveType.Skill)
-            {
-
-
-
-                GameObject CL_knife = Instantiate(knife, transform.position, Quaternion.identity);
-                Rigidbody2D CL_rb = CL_knife.GetComponent<Rigidbody2D>();
-              
-                isCursorDirection();
-                CL_knife.transform.up = CursorDirection.normalized;
-                Destroy( CL_knife ,10);
-                CL_rb.velocity = CursorDirection.normalized*10;
-                
-                audioManager.isPlaySE(Clip);
-                movetype = MoveType.Attack;
-                GameObject CL_Weapon = Instantiate(Weapon, new Vector2(AnimatorBody.transform.position.x, AnimatorBody.transform.position.y), Quaternion.identity);
-                CL_Weapon.transform.localScale = new Vector2(transform.localScale.x * X_Scale, transform.localScale.y);
-
-            }
-        }*/
+        
     }
     public void isCursorDirection() 
     {
@@ -580,24 +544,33 @@ public class PlayerController : PlayerStatus
         playerDamage.HP_SliderChange();
 
         HP_RectTransform.sizeDelta = new Vector2(80+ (MaxHP*1.5f),HP_RectTransform.sizeDelta.y);
-
     }
-
+    public void isSpecialMove(float value,Vector2 moveSPinput) 
+    {
+        rb.velocity = moveSPinput.normalized * (SPEED + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
+        DontMove = 0;
+    }
     public void isMove(float value) 
     {
 
+        if (DontMove > 0.05)
+        {
+            if (Dash)
+            {
+                animator.SetBool("Dash", true);
+                rb.velocity = MoveInput.normalized * (SPEED * 1.5f + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
+                if (MoveInput == Vector2.zero) { Dash = false; }
 
-        if (Dash) 
-        {
-            animator.SetBool("Dash", true);
-            rb.velocity = MoveInput.normalized * (SPEED*1.5f + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
-            if (MoveInput == Vector2.zero) { Dash = false; }
-        
+            }
+            else
+            {
+                animator.SetBool("Dash", false);
+                rb.velocity = MoveInput.normalized * (SPEED + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
+            }
         }
-        else
+        else 
         {
-            animator.SetBool("Dash", false);
-            rb.velocity = MoveInput.normalized * (SPEED + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
+            DontMove += Time.fixedDeltaTime;
         }
     }
     void isChangeAnim() 

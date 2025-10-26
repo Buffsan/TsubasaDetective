@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TF_FishHanter_Shield
   m_EditorClassIdentifier: 
   NAME: "\u7E26\u6301\u3061\u30D5\u30A3\u30C3\u30B7\u30E5\u30CF\u30F3\u30BF\u30FC"
-  MAXHP: 435
+  MAXHP: 534
   Regen: 0
   MAXMP: 0
   SPEED: 1

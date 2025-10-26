@@ -229,6 +229,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Boss
       objectReference: {fileID: 0}
+    - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
+      propertyPath: charadata
+      value: 
+      objectReference: {fileID: 11400000, guid: 7e794fb16fdf59d49b175e66fbe70e40, type: 2}
     - target: {fileID: 5446412693679331372, guid: 1560399e849ab07438ec40795c604e39, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

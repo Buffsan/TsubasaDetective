@@ -143,7 +143,12 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.TERUSETO_FishHanter_Shield,20},
         { EnemySpawnGroup.EnemyType.TERUSETO_FishHanter_maquette,21},
         { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_Wakin,22},
-        { EnemySpawnGroup.EnemyType.SHUELA_SS_StarMagician,23}
+        { EnemySpawnGroup.EnemyType.SHUELA_SS_StarMagician,23},
+        { EnemySpawnGroup.EnemyType.SHUELA_SS_StarKnight,24},
+        { EnemySpawnGroup.EnemyType.SHUELA_SS_FairySpear,25},
+        { EnemySpawnGroup.EnemyType.SHUELA_SS_FairyAXE,26},
+        { EnemySpawnGroup.EnemyType.SHUELA_SS_FairyHammer,27},
+        { EnemySpawnGroup.EnemyType.SHUELA_SS_FairyMagic,28},
 
     }; 
 
@@ -198,6 +203,7 @@ public class EnemySpawnBase : MonoBehaviour
 
         foreach (EnemyInfo enemy in enemyList) 
         {
+            
             if (enemy.ID == IDvalue) 
             {
 
@@ -222,6 +228,7 @@ public class EnemySpawnBase : MonoBehaviour
     {
         Debug.Log("Wait");
         yield return new WaitForSeconds(WaitTime);
+        manager.WaitEnemyDieCount = 0;
         if (tilePosition.Count > 0)
         {
 

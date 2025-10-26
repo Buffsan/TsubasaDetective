@@ -5,6 +5,7 @@ using UnityEngine;
 public class CG_RightKnight : EnemyMoveBase
 {
     [SerializeField] GameObject Arrow;
+    [SerializeField] EnemyContoroller enemyContoroller;
 
     int Phase = 0;
 
@@ -16,7 +17,12 @@ public class CG_RightKnight : EnemyMoveBase
     public override void EnemyMovePlay()
     {
         enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
-        
+
+        if (!enemyBase.ALL_System.systemManager.isMinEnemy) 
+        {
+            enemyContoroller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Out;
+        }
+
         if (enemyBase.PlayerDistance < 5)
         {//enemyBase.isPlayerLookBase();
             enemyBase.isPlayerLookBase();

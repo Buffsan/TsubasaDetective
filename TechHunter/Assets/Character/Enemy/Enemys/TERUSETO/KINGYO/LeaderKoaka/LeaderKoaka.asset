@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LeaderKoaka
   m_EditorClassIdentifier: 
   NAME: "\u30EA\u30FC\u30C0\u30FC\u30B3\u30A2\u30AB"
-  MAXHP: 480
+  MAXHP: 512
   Regen: 0
   MAXMP: 0
   SPEED: 2

@@ -87,7 +87,7 @@ public class DK_BattleFlag : MonoBehaviour
                 AttackCount = 0;
                 phase = 3;
             }
-            if (AttackCount1 > 0.5) 
+            if (AttackCount1 > 1) 
             {
                 AttackCount1 = 0;
                 GameObject CL_Attack = Instantiate(Attacks[2],transform.position, Quaternion.identity);

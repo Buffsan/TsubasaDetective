@@ -8,6 +8,7 @@ public class PlayerAttack : MonoBehaviour
     public SkillCardData skillcarddata;
     public int AttackLevel = 0;
 
+    public bool isCriticulUse = true;
 
      float Level_AttackBONUS_multiplier = 50;
      float Level_AttackBONUS = 0.5f;
@@ -39,15 +40,16 @@ public class PlayerAttack : MonoBehaviour
                     if (AgeinAttack) { EnemyData.Add(other.gameObject); }
                     
                     audioManager.isPlaySE(weapondata.HitAudio);
-                    float CriticalRandom = Random.Range(1f, 100f);
-                    if (controller.AddCritical+controller.Critical <= CriticalRandom)
+                    float CriticalRandom = Random.Range(0f, 100f);
+                    if (controller.AddCritical+controller.Critical <= CriticalRandom || !isCriticulUse)
                     {
                         damageable.Damage(AttackMathf(), weapondata.StaggerPower, weapondata.ConfusionPower,false);
                     }
                     else 
                     {
+                        GlobalEvents.InvokeCritical(other.gameObject, AttackMathf(), 3f);
                         Debug.Log("CriticalII");
-                        damageable.Damage(AttackMathf()*3, weapondata.StaggerPower, weapondata.ConfusionPower,true);
+                        damageable.Damage((AttackMathf()*3)+5, weapondata.StaggerPower, weapondata.ConfusionPower,true);
                     }
                         controller.HitEffectSpawn(other.transform.position);
                 }

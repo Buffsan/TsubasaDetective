@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,13 @@ using UnityEngine;
 public class Relic_bloodSpear : RelicBase_AI
 {
     [SerializeField] GameObject SecondAttack;
+    [SerializeField] GameObject thirdAttack;
     [SerializeField] float CoolTime = 0.5f;
+    [SerializeField] List<BuffData> buffDatas = new List<BuffData>();
+    [SerializeField] List<AudioClip> audioClips = new List<AudioClip>();
+    [SerializeField] BuffData buffsataWeek;
+    [SerializeField] GameObject Effect;
+   
     float CoolCount = 0;
     bool DashAttack = false;
     [SerializeField] float doubleTapTime = 0.4f; // ダブルタップとして認識する猶予時間
@@ -15,19 +22,22 @@ public class Relic_bloodSpear : RelicBase_AI
     private Vector2 prevInput;      // 前フレームの入力
     private Vector2 lastTapDir;
 
+    bool SaveSkill = false;
+
     Vector2 lastDIR = Vector2.zero;
     [SerializeField] float DashSpeed;
     float DashCount = 0;
     [SerializeField]float DashTimer = 0.1f;
     public override void BaseAction()
     {
- 
+
+        
         if (lastDIR != Vector2.zero) 
         {
             Debug.Log(lastDIR);
             playerController.isSpecialMove(DashSpeed, lastDIR);
-            if (DashCount > DashTimer && !DashAttack || DashCount > DashTimer*2 && DashAttack)
-            {   
+            if (DashCount > DashTimer && !DashAttack && !playerController.SaveSkillBase || DashCount > DashTimer*2 && DashAttack && !playerController.SaveSkillBase || playerController.SaveSkillBase && DashCount > DashTimer * 2)
+            {
                 DashAttack = false;
                 DashCount = 0;
                 lastDIR = Vector2.zero;
@@ -74,20 +84,53 @@ public class Relic_bloodSpear : RelicBase_AI
                         Debug.Log("同方向ダブルタップ!");
                         CoolCount = 0;
 
-                        if (DashAttack)
+                        if (playerController.SaveSkillBase)
                         {
-
-                            GameObject CL_Attack = Instantiate(SecondAttack, transform.position, Quaternion.identity);
+                            foreach (var buffs in buffDatas)
+                            {
+                                playerController.playerBuff.SpawnBuff(buffs);
+                            }
+                            GameObject CL_Effect = Instantiate(Effect, transform.position, Quaternion.identity);
+                            GameObject CL_Attack = Instantiate(thirdAttack, transform.position, Quaternion.identity);
                             CL_Attack.transform.up = lastTapDir.normalized;
                             CL_Attack.transform.parent = playerController.transform;
+                            CL_Effect.transform.up = lastTapDir.normalized;
+                            CL_Effect.transform.parent = playerController.transform;
                             Destroy(CL_Attack, 0.35f);
+                            Destroy(CL_Effect, 1);
+                            playerController.Dash = true;
+                            AudioPlay(audioClips[1]);
+
                         }
                         else
                         {
-                            GameObject CL_Attack = Instantiate(AttackObject, transform.position, Quaternion.identity);
-                            CL_Attack.transform.up = lastTapDir.normalized;
-                            CL_Attack.transform.parent = playerController.transform;
-                            Destroy(CL_Attack, 0.35f);
+                            if (DashAttack)
+                            {
+                                foreach (var buffs in buffDatas)
+                                {
+                                    playerController.playerBuff.SpawnBuff(buffs);
+                                }
+                                GameObject CL_Effect = Instantiate(Effect, transform.position, Quaternion.identity);
+                                GameObject CL_Attack = Instantiate(SecondAttack, transform.position, Quaternion.identity);
+                                CL_Attack.transform.up = lastTapDir.normalized;
+                                CL_Attack.transform.parent = playerController.transform;
+                                CL_Effect.transform.up = lastTapDir.normalized;
+                                CL_Effect.transform.parent = playerController.transform;
+                                Destroy(CL_Attack, 0.35f);
+                                Destroy(CL_Effect, 1);
+                                playerController.Dash = true;
+                                AudioPlay(audioClips[1]);
+                            }
+                            else
+                            {
+                                playerController.playerBuff.SpawnBuff(buffsataWeek);
+                                GameObject CL_Attack = Instantiate(AttackObject, transform.position, Quaternion.identity);
+                                CL_Attack.transform.up = lastTapDir.normalized;
+                                CL_Attack.transform.parent = playerController.transform;
+                                Destroy(CL_Attack, 0.35f);
+                                playerController.Dash = true;
+                                AudioPlay(audioClips[0]);
+                            }
                         }
 
                     }

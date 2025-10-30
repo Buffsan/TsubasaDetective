@@ -22,7 +22,7 @@ MonoBehaviour:
   GOLD: 350
   XP: 350
   StanHP: 15
-  ConfusionResistance: 520
+  ConfusionResistance: 700
   Critical: 0
   Range: 0
-  ConfusionResistanceRegen: 30
+  ConfusionResistanceRegen: 45

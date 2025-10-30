@@ -42,6 +42,7 @@ public class EnemyAttack : MonoBehaviour
                 if (enemyBase != null)
                 {
                     damageable.Damage(enemyBase.ATK, 0, 0,false);
+                    
                 }
                 else if (charadata != null) 
                 {

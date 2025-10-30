@@ -19,7 +19,6 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     public float UP_Confusion;
 
-    
 
     float StanCount = 0;
     float DieCount = 0;
@@ -41,8 +40,8 @@ public class charaDamage : MonoBehaviour, IDamageable
     }
     public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower,bool Critical)
     {
-        
-        
+
+        if (isDead) return;
 
             float AddDamage = Attackvalue - DF;
             if (AddDamage < 1)

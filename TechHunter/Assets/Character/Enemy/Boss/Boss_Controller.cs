@@ -42,9 +42,15 @@ public class Boss_Controller : EnemyBase
                 isConfusion();
                 break;
             case Status.Die:
+                foreach (var enemys in moveBase.enemyList) 
+                {
+                    Destroy(enemys.gameObject);
+                }
+                moveBase.enemyList.Clear();
                 return; // €–S’†‚ÍˆêØ“®‚©‚³‚È‚¢
         }
         HP_TextChange();
+        
     }
     void HP_TextChange() 
     {

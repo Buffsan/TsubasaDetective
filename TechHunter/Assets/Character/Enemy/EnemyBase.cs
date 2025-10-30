@@ -65,6 +65,7 @@ public class EnemyBase : MonoBehaviour
 
     public Color damageColor = Color.red;
     public GameObject DamageBody;
+    public charaDamage charaDamage;
 
     public Volume volume;
     public Bloom bloom;

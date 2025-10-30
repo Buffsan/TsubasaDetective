@@ -38,7 +38,18 @@ public class SS_AI_Sophia : Boss_MoveBase
             Debug.LogWarning("プロファイルにBloomが見つかりません！");
         }
     }
-
+    public override void M_Con()
+    {
+        AllAttackNumber = 0;
+        AttackWaitTime = 99;
+        AttackNumber = 0;
+    }
+    public override void M_Stan()
+    {
+        AllAttackNumber = 0;
+        AttackWaitTime = 99;
+        AttackNumber = 0;
+    }
     public override void M_AI()
     {
 

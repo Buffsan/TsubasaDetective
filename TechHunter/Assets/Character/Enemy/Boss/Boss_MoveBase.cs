@@ -9,6 +9,8 @@ public class Boss_MoveBase : MonoBehaviour
     public string EnemyName;
     public EnemyBase enemyBase;
 
+    public List<EnemyContoroller> enemyList = new List<EnemyContoroller>();
+
     public int AttackNumber = 0;
     public float AttackWaitTime = 0;
     public int AllAttackNumber = 0;
@@ -44,6 +46,10 @@ public class Boss_MoveBase : MonoBehaviour
 
     }
     public virtual void M_Con()
+    {
+
+    }
+    public virtual void M_Die()
     {
 
     }

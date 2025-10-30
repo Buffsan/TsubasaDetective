@@ -48,6 +48,7 @@ MonoBehaviour:
   weapondata: {fileID: 11400000, guid: b7b600c98e1c009419874b36d9f7369a, type: 2}
   skillcarddata: {fileID: 11400000, guid: b28b6d1e7942b7d42ba5b16f651d0da9, type: 2}
   AttackLevel: 0
+  isCriticulUse: 0
   AgeinAttack: 0
 --- !u!61 &8762382153317548181
 BoxCollider2D:

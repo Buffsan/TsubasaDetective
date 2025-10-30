@@ -306,6 +306,7 @@ public class SystemManager : MonoBehaviour
         controller.animator.SetBool("Dodge", false);
         if (gameModeManager.BattlePhase < 3)
         {
+            GlobalEvents.InvokeOnNextSpot(gameModeManager.BattlePhase);
             controller.isRecoveryHP(controller.Regen);
             if (enemySpawn.Seve_TileMap_C != null)
             {

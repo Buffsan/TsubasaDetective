@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5350f31428789b94589b208b814222cc, type: 3}
+  m_Name: KARAKAZE_Relic
+  m_EditorClassIdentifier: 
+  RelicName: "\u546A\u708E\u7A7A\u98A8"
+  RelicDataObject: {fileID: 2445585254119926013, guid: 2efb787858b20994ea0f80366a6a119d, type: 3}
+  RelicImage: {fileID: 21300000, guid: d811e7eccfdb79f46bba44f0b0a5cd24, type: 3}
+  Explanation: "\u901A\u5E38\u8FD1\u63A5\u30B9\u30AD\u30EB\u30925\u56DE\u767A\u52D5\u3055\u305B\u308B\u305F\u3073\u306B\u546A\u708E\u304C\u6E9C\u307E\u3063\u3066\u3044\u304D\u3001\u546A\u708E\u304C\u4E00\u5B9A\u5024\u306B\u9054\u3059\u308B\u3068\u901A\u5E38\u653B\u6483\u30B9\u30AD\u30EB\u306E\u767A\u52D5\u3068\u540C\u6642\u306B\u4EA1\u970A\u304C\u53EC\u559A\u3055\u308C\u3001\u546A\u708E\u7A7A\u98A8\u3092\u632F\u308A\u56DE\u3057\u546A\u3044\u306E\u65AC\u6483\u3092\u98DB\u3070\u3059\u3088\u3046\u306B\u306A\u308B\u3002"
+  stage: 5

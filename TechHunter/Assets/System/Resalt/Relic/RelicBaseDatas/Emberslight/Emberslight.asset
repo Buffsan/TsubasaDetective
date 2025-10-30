@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5350f31428789b94589b208b814222cc, type: 3}
+  m_Name: Emberslight
+  m_EditorClassIdentifier: 
+  RelicName: "\u30A8\u30F3\u30D0\u30FC\u30BA\u30E9\u30A4\u30C8"
+  RelicDataObject: {fileID: 6731619368993808893, guid: c043959432b22af4b822781acce14e42, type: 3}
+  RelicImage: {fileID: 0}
+  Explanation: 
+  stage: 0

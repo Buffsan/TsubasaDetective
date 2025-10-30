@@ -125,6 +125,7 @@ public class SkillCardManager : MonoBehaviour
         else 
         {
             StackText.enabled = true;
+
             StackText.text = CountStack.ToString();
             if (mode == Mode.CoolTime)
             {

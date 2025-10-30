@@ -55,7 +55,7 @@ public class sytem_GameSpotsController : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.K)) 
         {
-           //PopSpots();
+            //PopSpots();
         }
             PlayerSpot();
 
@@ -76,6 +76,7 @@ public class sytem_GameSpotsController : MonoBehaviour
         DestroyInputSpots();
         UpdateInputSpot();
         NewSpawnSpots();
+
     }
     public void PopSpots() 
     {

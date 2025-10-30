@@ -682,13 +682,18 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
             Vector2 newPos = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
 
-            Instantiate(Enemys[Random.Range(0, Enemys.Count)], newPos, Quaternion.identity);
+            GameObject CL_Enemy0 = Instantiate(Enemys[Random.Range(0, Enemys.Count)], newPos, Quaternion.identity);
+            EnemyContoroller enemyContoroller = CL_Enemy0.GetComponent<EnemyContoroller>();
+            enemyList.Add(enemyContoroller);
             Instantiate(DieEffect, newPos, Quaternion.identity);
 
         }
         Vector2 newPos2 = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
 
-        Instantiate(Enemys[1], newPos2, Quaternion.identity);
+        GameObject CL_Enemy1 = Instantiate(Enemys[1], newPos2, Quaternion.identity);
+        EnemyContoroller enemyContoroller1 = CL_Enemy1.GetComponent<EnemyContoroller>();
+        enemyList.Add(enemyContoroller1);
+        
         Instantiate(DieEffect, newPos2, Quaternion.identity);
         for (int i = 0; i < 7; i++)
         {
@@ -699,8 +704,10 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     void NeedSpawnEnemy(GameObject ZakoEnemy,Vector2 ZakoPos)
     {
        
-            Instantiate(ZakoEnemy, ZakoPos, Quaternion.identity);
-            Instantiate(DieEffect, ZakoPos, Quaternion.identity);
+         GameObject CL_Enemy =   Instantiate(ZakoEnemy, ZakoPos, Quaternion.identity);
+        EnemyContoroller enemyContoroller1 = CL_Enemy.GetComponent<EnemyContoroller>();
+        enemyList.Add(enemyContoroller1);
+        Instantiate(DieEffect, ZakoPos, Quaternion.identity);
 
     }
     void SpawnZakoEnemy()
@@ -710,7 +717,9 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
             Vector2 newPos = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
 
-            Instantiate(Zako, newPos, Quaternion.identity);
+            GameObject CL_Enemy = Instantiate(Zako, newPos, Quaternion.identity);
+            EnemyContoroller enemyContoroller1 = CL_Enemy.GetComponent<EnemyContoroller>();
+            enemyList.Add(enemyContoroller1);
             Instantiate(DieEffect, newPos, Quaternion.identity);
 
         }
@@ -719,7 +728,9 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
             Vector2 newPos = EnemySpawnLists_GameObject.gameObjects[1].transform.position;
 
-            Instantiate(Zako, newPos, Quaternion.identity);
+            GameObject CL_Enemy = Instantiate(Zako, newPos, Quaternion.identity);
+            EnemyContoroller enemyContoroller1 = CL_Enemy.GetComponent<EnemyContoroller>();
+            enemyList.Add(enemyContoroller1);
             Instantiate(DieEffect, newPos, Quaternion.identity);
 
         }
@@ -733,7 +744,10 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
             Vector2 newPos = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
 
-            Instantiate(Enemys[Random.Range(0,Enemys.Count)], newPos, Quaternion.identity);
+            GameObject CL_Enemy= Instantiate(Enemys[Random.Range(0,Enemys.Count)], newPos, Quaternion.identity);
+            EnemyContoroller enemyContoroller1 = CL_Enemy.GetComponent<EnemyContoroller>();
+            enemyList.Add(enemyContoroller1);
+
             Instantiate(DieEffect, newPos, Quaternion.identity);
 
         }
@@ -802,6 +816,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 }
 
                 Instantiate(Zako, newPos, Quaternion.identity);
+
                 Instantiate(DieEffect, newPos, Quaternion.identity);
                 AttackNumber++;
                 enemyBase.AttackCount = 0;
@@ -810,14 +825,19 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                     
                     Vector2 newPos2 = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
 
-                    Instantiate(Zako1, newPos, Quaternion.identity);
+                    GameObject CL_Enemy = Instantiate(Zako1, newPos, Quaternion.identity);
+                    EnemyContoroller enemyContoroller1 = CL_Enemy.GetComponent<EnemyContoroller>();
+                    enemyList.Add(enemyContoroller1);
                     Instantiate(DieEffect, newPos, Quaternion.identity);
                 }
                 if (AttackNumber % 10 == 0) 
                 {
                     Vector2 newPos2 = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
 
-                    Instantiate(Enemys[0], newPos, Quaternion.identity);
+                    GameObject CL_Enemy = Instantiate(Enemys[0], newPos, Quaternion.identity);
+                    EnemyContoroller enemyContoroller1 = CL_Enemy.GetComponent<EnemyContoroller>();
+                    enemyList.Add(enemyContoroller1);
+
                     Instantiate(DieEffect, newPos, Quaternion.identity);
                 }
 

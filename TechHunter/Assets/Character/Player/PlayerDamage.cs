@@ -64,6 +64,7 @@ public class PlayerDamage : MonoBehaviour, IDamageable
     }
     public void Damage(float Attackvalue, float Stanvalue, float value2, bool value3)
     {
+        GlobalEvents.InvokeOnPlayerDamage(Attackvalue);
         if (mode != Mode.Invincible && systemManager.systemManager.gameMode == SystemManager.GameMode.Nomal)
         {
             audiomanager.isPlaySE(DamageClip);

@@ -7138,6 +7138,71 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 86978387}
   m_CullTransparentMesh: 1
+--- !u!1001 &101048669
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 657449846}
+    m_Modifications:
+    - target: {fileID: 1292433330406397380, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_Name
+      value: RelicController (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1292433330406397380, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3498356656198322871, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: relicData
+      value: 
+      objectReference: {fileID: 11400000, guid: ea852aef28f6e914e91f8f097d153b05, type: 2}
+    - target: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
 --- !u!1 &129127833
 GameObject:
   m_ObjectHideFlags: 0
@@ -10625,6 +10690,7 @@ MonoBehaviour:
   StatusMenuObject: {fileID: 5779708675234629566, guid: 8044abe6e3480d84f99d0b1a70a1f0c0, type: 3}
   Page: {fileID: 831724228387390672, guid: 45e42c868343cbd458497ae2a2bba0cf, type: 3}
   SkillPage: {fileID: 6990323225384390568, guid: ac06a81c365bb914798d16d86f3cee1b, type: 3}
+  RelicPage: {fileID: 4991694320284581830, guid: f2e5acab025f5904c9746d12b6d01967, type: 3}
   AllSkillPage: {fileID: 8121136791898089043, guid: 8fbe1a03c44112f4a9982e4a5f2f95c0, type: 3}
   AllSkillPages: []
   gameModeManager: {fileID: 708077611}
@@ -10952,8 +11018,12 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 27e8effa4081f324fa6a802ed8e3ad0b, type: 2}
   - Name: "\u8840\u751F\u81ED\u3044\u8907\u88FD\u6A5F"
     data: {fileID: 11400000, guid: 0f14f0a562b751843b6d144c0f08f7ed, type: 2}
+  - Name: "\u9F8D\u306E\u546A\u3044\u3068\u7F8E\u3057\u3044\u795D\u798F"
+    data: {fileID: 11400000, guid: ea852aef28f6e914e91f8f097d153b05, type: 2}
   SavePage: []
   SaveStatus: []
+  Save_RelicPage: []
+  SaveRelics: []
   SavesSkillPageManager: []
   SaveSkills: []
   ReRollText: {fileID: 1812232328}
@@ -11578,6 +11648,7 @@ Transform:
   - {fileID: 1047188418}
   - {fileID: 1668781682}
   - {fileID: 442476049}
+  - {fileID: 2111006579}
   m_Father: {fileID: 1127405249}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &668299025 stripped
@@ -128351,6 +128422,11 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 7387623916410538418, guid: e1ec060004666a94ea38ab8cef1b4fe3, type: 3}
   m_PrefabInstance: {fileID: 1958579739}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2111006579 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8552860412232987522, guid: 4ecd7c59e0fd9ff42b33a0ebf897eb30, type: 3}
+  m_PrefabInstance: {fileID: 101048669}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2114450777
 PrefabInstance:

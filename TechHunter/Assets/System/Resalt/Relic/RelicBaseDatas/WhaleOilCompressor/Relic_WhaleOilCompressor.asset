@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RelicName: "\u9BE8\u6CB9\u5727\u7E2E\u6A5F"
   RelicDataObject: {fileID: 5723089851146744756, guid: 0b0fef9ae7654b54eb2e72c4c6200c93, type: 3}
-  RelicImage: {fileID: 21300000, guid: 2b7d8d1ff2a71b04f9ae42fd07ae0958, type: 3}
-  Explanation: 
+  RelicImage: {fileID: 21300000, guid: f462b3a39b57a4f4cae423a2b335aae8, type: 3}
+  Explanation: "\u30AF\u30EA\u30C6\u30A3\u30AB\u30EB\u304C\u767A\u751F\u3057\u305F\u5834\u6240\u306B\u6B21\u5143\u306E\u88C2\u3051\u76EE\u3092\u53EC\u559A\u3059\u308B\u3002"
   stage: 0

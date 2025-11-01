@@ -85,7 +85,7 @@ public class RelicPageManager : MonoBehaviour
     }
     void isRun()
     {
-        rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 60, 320);
+        rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 60, 380);
         animator.SetInteger("Anim", 0);
     }
     void isMove()
@@ -93,12 +93,12 @@ public class RelicPageManager : MonoBehaviour
         if (rect.transform.localPosition.x < TargetRectPos)
         {
 
-            rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 70, 320);
+            rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 70, 380);
 
         }
         else
         {
-            rect.transform.localPosition = new Vector2(TargetRectPos, 320);
+            rect.transform.localPosition = new Vector2(TargetRectPos, 380);
 
             if (Totch)
             {

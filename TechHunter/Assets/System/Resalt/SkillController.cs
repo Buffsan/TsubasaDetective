@@ -8,6 +8,7 @@ public class SkillController : MonoBehaviour
     [SerializeField] GameObject StatusMenuObject;
     [SerializeField] GameObject Page;
     [SerializeField] GameObject SkillPage;
+    [SerializeField] GameObject RelicPage;
     [SerializeField] GameObject AllSkillPage;
     public List<GameObject> AllSkillPages = new List<GameObject>();
     [SerializeField] system_GameModeManager gameModeManager;
@@ -23,6 +24,10 @@ public class SkillController : MonoBehaviour
     [HideInInspector] public List<PageManager> SavePage = new List<PageManager>();
     public List<StatusUP> SaveStatus = new List<StatusUP>();
 
+
+    [HideInInspector] public List<RelicPageManager> Save_RelicPage = new List<RelicPageManager>();
+    public List<Relic> SaveRelics = new List<Relic>();
+
     [HideInInspector] public List<SkillPageManager> SavesSkillPageManager = new List<SkillPageManager>();
     SkillPageManager ChangeSkillPageManger_save;
     [HideInInspector] public List<Skill> SaveSkills = new List<Skill>();
@@ -34,6 +39,7 @@ public class SkillController : MonoBehaviour
     [SerializeField] Animator SkipAnim;
     StatusUP SaveStatusUP;
     Skill SaveSkill;
+    Relic SaveRelic;
 
     float ReRollCost = 0;
     public int ReRollCount = 0;
@@ -46,6 +52,7 @@ public class SkillController : MonoBehaviour
 
         Skill,
         Status,
+        Relic,
         None
 
     }
@@ -69,6 +76,10 @@ public class SkillController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.N) && ALL_System.systemManager.gameSystemMode == SystemManager.GameSystemMODE.Debug)
         {
             isAll_StartSkillPageChoice(2);
+        }
+        if (Input.GetKeyDown(KeyCode.B) && ALL_System.systemManager.gameSystemMode == SystemManager.GameSystemMODE.Debug)
+        {
+            isStart_RelicPageChoice();
         }
         if (systemManager.gameMode == SystemManager.GameMode.Result)
         {
@@ -94,6 +105,10 @@ public class SkillController : MonoBehaviour
                 else if (cardMode == ChoiceCardMode.Status)
                 {
                     isStartPageChoice();
+                }
+                else if (cardMode == ChoiceCardMode.Relic) 
+                {
+                    isStart_RelicPageChoice();
                 }
             }
         }
@@ -276,6 +291,58 @@ public class SkillController : MonoBehaviour
         }
     }
 
+    public void isStart_RelicPageChoice()//レリックページの抽選
+    {
+        ReRollAnim.Play("出現");
+        SkipAnim.Play("出現");
+        playerController.movetype = PlayerController.MoveType.Wait;
+        cardMode = ChoiceCardMode.Relic;
+
+       
+        //もともとあったページの削除
+        foreach (RelicPageManager save in Save_RelicPage)
+        {
+            save.move = RelicPageManager.Move.Run;
+            Destroy(save.gameObject, 5);
+
+        }
+        Save_RelicPage.Clear();
+        SaveRelics.Clear();
+
+        List<Relic> NowPage = new List<Relic>();
+        for (int i = 0; i < 3; i++)
+        {
+            bool Set = false;
+
+            List<Relic> SaveLocal_RelicPage = new List<Relic>();
+            foreach (Relic s in Relics)
+            {
+                SaveLocal_RelicPage.Add(s);
+                
+            }
+
+            while (!Set)
+            {
+                SaveRelic = SaveLocal_RelicPage[Random.Range(0, SaveLocal_RelicPage.Count)];
+
+                int j = 0;
+                foreach (var a in NowPage)
+                {
+                    if (a == SaveRelic)
+                    {
+                        j++;
+                    }
+
+                }
+                if (j == 0)
+                {
+                    Set = true;
+                }
+            }
+            NowPage.Add(SaveRelic);
+            isSet_Relic(SaveRelic, i);
+        }
+    }
     public void ChoicePage()
     {
         playerController.movetype = PlayerController.MoveType.Nomal;
@@ -566,6 +633,32 @@ public class SkillController : MonoBehaviour
         SaveSkills.Clear();
         SavesSkillPageManager.Clear();
         FinChoicePage();
+    }
+    void isSet_Relic(Relic relic,int value) 
+    {
+        GameObject CL_RelicPage = Instantiate(RelicPage);
+        RelicPageManager pageManager = CL_RelicPage.GetComponent<RelicPageManager>();
+
+        Save_RelicPage.Add(pageManager);
+        SaveRelics.Add(relic);
+
+        pageManager.SkillController = this;
+
+        Animator animator = CL_RelicPage.GetComponent<Animator>();
+        RectTransform rect = CL_RelicPage.GetComponent<RectTransform>();
+        CL_RelicPage.transform.parent = ResultCanvas.transform;
+
+        pageManager.Name.text = relic.data.RelicName;
+        pageManager.Explanation.text = relic.data.Explanation;
+        pageManager.MainImage.sprite = relic.data.RelicImage;
+
+        rect.transform.position = new Vector2(-1200, 1000);
+
+        //設置間隔 -500 0 500
+        //500 1000 1500
+        int TargetPos = 480 * value - 400;
+        Debug.Log(TargetPos);
+        pageManager.TargetRectPos = TargetPos;
     }
     void isStatusPage(StatusUP statuspage,int value) 
     { 

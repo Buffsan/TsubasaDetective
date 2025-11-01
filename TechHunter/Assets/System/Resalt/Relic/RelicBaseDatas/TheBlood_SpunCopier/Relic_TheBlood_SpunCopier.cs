@@ -24,4 +24,5 @@ public class Relic_TheBlood_SpunCopier : RelicBase_AI
         
         ghost.playerskillBase = AI;
     }
+    
 }

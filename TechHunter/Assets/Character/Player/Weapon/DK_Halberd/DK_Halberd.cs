@@ -26,9 +26,6 @@ public class DK_Halberd : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
-
-        gameObject.transform.SetParent(playerController.MainAnimBody.transform);
         audioManager.isPlaySE(Clip2);
     }
 

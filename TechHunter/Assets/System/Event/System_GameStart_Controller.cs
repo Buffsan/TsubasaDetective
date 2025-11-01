@@ -25,16 +25,23 @@ public class System_GameStart_Controller : MonoBehaviour
     {
         if (Phase == 1) 
         {
-            aLL_System.skillController.isAll_StartSkillPageChoice(0);
+            aLL_System.skillController.All_StartRelicPageSpawn();
+           
             NextPhase();
         }
         if (Phase == 3) 
-        {
-            aLL_System.skillController.isAll_StartSkillPageChoice(1);
+        { 
+            aLL_System.skillController.isAll_StartSkillPageChoice(0);
+            
             NextPhase();
         }
         if (Phase == 5) 
         {
+            aLL_System.skillController.isAll_StartSkillPageChoice(1);
+            NextPhase();
+        }
+        if (Phase == 7) 
+        { 
             aLL_System.sytem_GameSpotsController.isGameSpotStart();
             Phase = 0;
         }

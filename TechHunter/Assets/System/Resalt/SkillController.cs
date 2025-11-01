@@ -10,6 +10,7 @@ public class SkillController : MonoBehaviour
     [SerializeField] GameObject SkillPage;
     [SerializeField] GameObject RelicPage;
     [SerializeField] GameObject AllSkillPage;
+    [SerializeField] GameObject AllRelicPage;
     public List<GameObject> AllSkillPages = new List<GameObject>();
     [SerializeField] system_GameModeManager gameModeManager;
 
@@ -79,7 +80,7 @@ public class SkillController : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.B) && ALL_System.systemManager.gameSystemMode == SystemManager.GameSystemMODE.Debug)
         {
-            isStart_RelicPageChoice();
+            All_StartRelicPageSpawn();
         }
         if (systemManager.gameMode == SystemManager.GameMode.Result)
         {
@@ -113,6 +114,22 @@ public class SkillController : MonoBehaviour
             }
         }
     }
+    public void All_StartRelicPageSpawn() 
+    {
+        isStart_RelicPageChoice();
+
+        ReRollAnim.Play("出現", 0, 0);
+        SkipAnim.Play("出現", 0, 0);
+        GameObject CL_AllSkillPage = Instantiate(AllRelicPage);
+        playerController.movetype = PlayerController.MoveType.Wait;
+        AllSkillPages.Add(CL_AllSkillPage);
+
+        allskillpage = CL_AllSkillPage.GetComponent<AllSkilPagel>();
+        allskillpage.skillController = this;
+        CL_AllSkillPage.transform.parent = ResultCanvas.transform;
+
+        Change_AllRelicPage();
+    }
     public void isAll_StartSkillPageChoice(int RarityValue)
     {
         isStartSkillPageChoice(RarityValue);
@@ -128,6 +145,24 @@ public class SkillController : MonoBehaviour
         CL_AllSkillPage.transform.parent = ResultCanvas.transform;
 
         Change_AllSkillPage();
+    }
+    public void Change_AllRelicPage()
+    {
+            if (allskillpage == null) return;
+        
+
+            int i = 0;
+            foreach (var ALL_p in allskillpage.AllSkillPagesList)
+            {
+                if (playerController.relicDatas[i])
+                {
+                    
+                    if(playerController.relicDatas[i].RelicImage) ALL_p.SkillImage.sprite = playerController.relicDatas[i].RelicImage;
+                }
+  
+                i++;
+            }
+        
     }
     public void Change_AllSkillPage()
     {
@@ -408,7 +443,10 @@ public class SkillController : MonoBehaviour
             playerController.isAddStatus();
             playerController.playerDamage.HP_SliderChange();
             Destroy(save.gameObject, 5);
-
+            if (ALL_System.system_GameModeManager.gameMode == system_GameModeManager.AdventureGameMode.BossBattleSpot) 
+            {
+                All_StartRelicPageSpawn();
+            }
             if (gameModeManager.BattlePhase == 2)
             {
                 //isStartSkillPageChoice();
@@ -423,6 +461,7 @@ public class SkillController : MonoBehaviour
     {
         AllRunSkillPage();
         ChoicePage();
+        ChoiceRelicPage();
     }
     public void AllRunSkillPage()
     {
@@ -455,6 +494,62 @@ public class SkillController : MonoBehaviour
     public void ClickSkillFrame(int IDnumber) 
     { 
         
+    }
+    public void ChoiceRelicPage() 
+    {
+        playerController.movetype = PlayerController.MoveType.Nomal;
+        ReRollAnim.Play("消える");
+        SkipAnim.Play("消える");
+        playerController.rb.velocity = Vector2.zero;
+
+        if (ALL_System.system_GameStartController != null)
+        {
+            ALL_System.system_GameStartController.NextPhase();
+
+        }
+
+        cardMode = ChoiceCardMode.None;
+        int index = 0;
+        foreach (var save in Save_RelicPage)
+        {
+
+            if (save.Select)
+            {
+                save.move = RelicPageManager.Move.Wait;
+
+                playerController.SpawnRelic(SaveRelics[index].data);
+
+                Debug.Log("statusセット");
+                systemManager.gameMode = SystemManager.GameMode.Goal;
+                playerController.movetype = PlayerController.MoveType.Nomal;
+                systemManager.mode = SystemManager.ModeType.M1;
+
+            }
+            else
+            {
+                save.move = RelicPageManager.Move.Run;
+            }
+            index++;
+            
+            Destroy(save.gameObject, 5);
+
+        }
+
+        if (AllSkillPages.Count != 0)
+        {
+            foreach (var a in AllSkillPages)
+            {
+                AllSkilPagel allSkil = a.GetComponent<AllSkilPagel>();
+                allSkil.move = AllSkilPagel.Move.Run;
+
+                Destroy(a, 5);
+            }
+        }
+        AllSkillPages.Clear();
+
+
+        Save_RelicPage.Clear();
+        SaveRelics.Clear();
     }
     public void ChoiceSkillPage()//スキルページの選択
     {

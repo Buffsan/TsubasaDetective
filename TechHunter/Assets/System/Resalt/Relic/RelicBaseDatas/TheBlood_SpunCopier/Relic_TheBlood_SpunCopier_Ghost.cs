@@ -21,7 +21,7 @@ public class Relic_TheBlood_SpunCopier_Ghost : MonoBehaviour
         if (Phase == 0) 
         {
             Cout += Time.fixedDeltaTime;
-            if (Cout > 3) 
+            if (Cout > 5) 
             {
                 Phase++;
             }
@@ -55,5 +55,11 @@ public class Relic_TheBlood_SpunCopier_Ghost : MonoBehaviour
             Destroy(gameObject, 15);
             animator.Play("è¡Ç¶ÇÈ");
         }
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        EnemyAttack enemyAttack = other.GetComponent<EnemyAttack>();
+        if (!enemyAttack) return;
+        Destroy(gameObject);
     }
 }

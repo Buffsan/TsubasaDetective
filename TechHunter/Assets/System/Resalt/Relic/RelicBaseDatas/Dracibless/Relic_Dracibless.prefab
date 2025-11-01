@@ -4879,10 +4879,11 @@ MonoBehaviour:
   isSpaceInput: 0
   buffData: {fileID: 11400000, guid: bc5080d529785cd42bbd17a2ede5e9e2, type: 2}
   AudioClips:
-  - {fileID: 8300000, guid: 3e9104251791a2b49ab076151b8bd4d3, type: 3}
+  - {fileID: 8300000, guid: d52b2d18e3479244e9759058fdcee1e3, type: 3}
   - {fileID: 8300000, guid: 8baa1735468150e47ab00ed2147e3ce2, type: 3}
   Effect: {fileID: 3258802114965287124, guid: 3903fae808c61a5498b21246bfd832dd, type: 3}
   particleSystem: {fileID: 7447076789210472597}
+  CoolTimeRecoveryCount: 999
 --- !u!1 &7022159683054123831
 GameObject:
   m_ObjectHideFlags: 0

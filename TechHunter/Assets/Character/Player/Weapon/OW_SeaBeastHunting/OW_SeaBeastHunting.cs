@@ -63,7 +63,7 @@ public class OW_SeaBeastHunting : MonoBehaviour
                 Destroy(CL_Attack, 0.15f);
                 Destroy(CL_effect, 1);
 
-                SavePos = playerController.transform.position;
+                SavePos = transform.position;
                 if (LitAttack)
                 {
                     for (int i = 0; i < 35; i++)

@@ -48,7 +48,7 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
 
             GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
 
-            GameObject CL_Attack = Instantiate(Bullet, playerController.transform.position, Quaternion.identity);
+            GameObject CL_Attack = Instantiate(Bullet,transform.position, Quaternion.identity);
             CL_Attack.transform.up = playerController.CursorDirection.normalized;
             Rigidbody2D CL_rb = CL_Attack.GetComponent<Rigidbody2D>();
             CL_rb.velocity = playerController.CursorDirection.normalized * 10;

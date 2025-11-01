@@ -36,6 +36,7 @@ public class PlayerController : PlayerStatus
     public List<SkillInfo> skillINFO = new List<SkillInfo>();
     public List<RelicData> relicDatas = new List<RelicData>();
     public GameObject RelicControllerObject;
+    public GameObject RelicManagerObject;
     [SerializeField] GameObject HitEffect;
     public GameObject AnimatorBody;
     public GameObject MainAnimBody;
@@ -338,6 +339,31 @@ public class PlayerController : PlayerStatus
         }
 
         
+    }
+    public void SpawnRelic(RelicData relicData) 
+    {
+        int index = 0;
+        foreach (var relic in relicDatas) 
+        { 
+        
+            if(relic)index++;
+        
+        }
+        if (index >= 5) return;
+        int j = 0;
+        foreach (var relic in relicDatas)
+        {
+
+            if (!relic) break;
+            j++;
+        }
+        relicDatas[j] = relicData;
+        GameObject CL_Relic = Instantiate(RelicControllerObject, transform.position, Quaternion.identity);
+        CL_Relic.transform.parent = RelicManagerObject.transform;
+        RelicController relicController = CL_Relic.GetComponent<RelicController>();
+        relicController.relicData = relicData;
+
+    
     }
     void isNoAction() 
     { 

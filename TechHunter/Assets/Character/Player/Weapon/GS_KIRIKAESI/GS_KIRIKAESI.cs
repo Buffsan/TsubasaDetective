@@ -37,6 +37,7 @@ public class GS_KIRIKAESI : MonoBehaviour
             {
                 animator.SetInteger("Anim", 1);
                 GameObject CL_AttackArea = Instantiate(AttackArea,AttackPoint.transform.position,Quaternion.identity);
+                GlobalEvents.InvokeOnPlayerDamage(0);
                 Destroy(CL_AttackArea,0.1f);
                 CL_AttackArea.transform.rotation = Quaternion.identity;
                 audioManager.isPlaySE(Clip);

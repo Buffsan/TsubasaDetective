@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: bloodSpear 1
   m_EditorClassIdentifier: 
   attackType: 0
-  Attack: 16
+  Attack: 19
   AttackSpeedTime: 0
   StaggerPower: 6
   ConfusionPower: 1.5

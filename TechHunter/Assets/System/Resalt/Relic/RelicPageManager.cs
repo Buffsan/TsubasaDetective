@@ -57,7 +57,7 @@ public class RelicPageManager : MonoBehaviour
             audio.isPlaySE(Clip2);
             Select = true;
             //Debug.Log("‘I‘ðŠ®—¹");
-            SkillController.ChoiceSkillPage();
+            SkillController.ChoiceRelicPage();
         }
     }
     private void FixedUpdate()
@@ -99,7 +99,7 @@ public class RelicPageManager : MonoBehaviour
         else
         {
             rect.transform.localPosition = new Vector2(TargetRectPos, 380);
-
+            TriggerCanvas.SetActive(true);
             if (Totch)
             {
                 animator.SetInteger("Anim", 2);

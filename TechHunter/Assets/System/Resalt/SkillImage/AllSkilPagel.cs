@@ -18,6 +18,7 @@ public class AllSkilPagel : MonoBehaviour
     public int _ID_ChoiceNumber = -1;
 
     public GameObject HaveCarsor_PageImage;
+    public bool isRelicPage = false;
 
     public enum Move
     {
@@ -99,19 +100,34 @@ public class AllSkilPagel : MonoBehaviour
 
 
     }
+    
     public void ChangeSkill() 
     {
-
-        //&& _ID_ChoiceNumber != -1 && _ID_ChoiceNumber_NowPage != -1
-        if (_ID_ChoiceNumber != _ID_ChoiceNumber_NowPage && _ID_ChoiceNumber != -1 && _ID_ChoiceNumber_NowPage != -1) 
+        if (isRelicPage)
         {
-            Debug.Log("ページ変更" + _ID_ChoiceNumber +"(初選択)　と　" +_ID_ChoiceNumber_NowPage +"　（最終選択）の取り換え");
-            var temp = playerController.skillINFO[_ID_ChoiceNumber_NowPage].skillDATA;
-            playerController.skillINFO[_ID_ChoiceNumber_NowPage].skillDATA = playerController.skillINFO[_ID_ChoiceNumber].skillDATA;
-            playerController.skillINFO[_ID_ChoiceNumber].skillDATA = temp;
+            if (_ID_ChoiceNumber != _ID_ChoiceNumber_NowPage && _ID_ChoiceNumber != -1 && _ID_ChoiceNumber_NowPage != -1)
+            {
+                Debug.Log("ページ変更" + _ID_ChoiceNumber + "(初選択)　と　" + _ID_ChoiceNumber_NowPage + "　（最終選択）の取り換え");
+                var temp = playerController.relicDatas[_ID_ChoiceNumber_NowPage];
+                playerController.relicDatas[_ID_ChoiceNumber_NowPage] = playerController.relicDatas[_ID_ChoiceNumber];
+                playerController.relicDatas[_ID_ChoiceNumber] = temp;
 
-            skillController.Change_AllSkillPage();
+                skillController.Change_AllRelicPage();
 
+            }
+        }
+        else
+        {
+            if (_ID_ChoiceNumber != _ID_ChoiceNumber_NowPage && _ID_ChoiceNumber != -1 && _ID_ChoiceNumber_NowPage != -1)
+            {
+                Debug.Log("ページ変更" + _ID_ChoiceNumber + "(初選択)　と　" + _ID_ChoiceNumber_NowPage + "　（最終選択）の取り換え");
+                var temp = playerController.skillINFO[_ID_ChoiceNumber_NowPage].skillDATA;
+                playerController.skillINFO[_ID_ChoiceNumber_NowPage].skillDATA = playerController.skillINFO[_ID_ChoiceNumber].skillDATA;
+                playerController.skillINFO[_ID_ChoiceNumber].skillDATA = temp;
+
+                skillController.Change_AllSkillPage();
+
+            }
         }
     }
     void isWait()

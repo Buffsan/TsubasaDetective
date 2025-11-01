@@ -37,7 +37,7 @@ public class TG_WarJuice_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
-            GameObject CL_Weapon = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
+             GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
             Att = ATT.A2;
 
             if (DrinkTYPE == drinkTYPE.WhiskeyHigh) 
@@ -46,7 +46,7 @@ public class TG_WarJuice_AI : PlayerSkillBase
                 Destroy(CL_Bounas,12);
             }
 
-            CL_Weapon.transform.parent = playerController.MainAnimBody.transform;
+           
             playerController.playerBuff.SpawnBuff(BuffData);
 
             GameObject CL_Effect = Instantiate(Effect, playerController.transform.position,Quaternion.identity);

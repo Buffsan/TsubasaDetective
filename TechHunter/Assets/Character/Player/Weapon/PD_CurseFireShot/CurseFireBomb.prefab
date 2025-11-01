@@ -14499,6 +14499,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2777798350740600828}
+  - component: {fileID: 4537388688491117679}
   m_Layer: 0
   m_Name: CurseFireBomb
   m_TagString: Untagged
@@ -14524,3 +14525,18 @@ Transform:
   - {fileID: 4952882903320538489}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4537388688491117679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7920103761063091423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2336809674f1bd48a85d8c2f4d578e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttackTime: 0.3
+  AttackNumber: 5
+  AttackArea: {fileID: 5918457363760637217, guid: 3b0bf87bdaf403c4fb6246c5592bea01, type: 3}

@@ -23,19 +23,18 @@ public class TD_Houki_AI : PlayerSkillBase
         if (Att == ATT.A1) 
         {
 
-            GameObject CL_Weapon = Instantiate(SkillWeapon, playerController.gameObject.transform.position, Quaternion.identity);
+            GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
             playerController.isCursorDirection();
 
             CL_Weapon.transform.up = playerController.CursorDirection;
             CL_Weapon.transform.Rotate(0, 0, 90);
-            CL_Weapon.transform.parent = playerController.transform;
 
             Destroy(CL_Weapon , 5);
             Att = ATT.A2;
         }
         if (Att == ATT.A2) 
         {
-            playerController.isMove(0.4f);
+            PlayerMove(0.4f);
             if (skillcount > 0.5)
             {
                 end();

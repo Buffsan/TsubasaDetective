@@ -49,3 +49,4 @@ MonoBehaviour:
   buffData: {fileID: 11400000, guid: 5a448884d54317b4cbdec5d8c97244d3, type: 2}
   clip: {fileID: 8300000, guid: 7605819949a993c4a80e6e275fce96f8, type: 3}
   Effect: {fileID: 3157343213878449449, guid: dbd62a4a23915b44ba72d46654ee5a44, type: 3}
+  Effect_Relic: {fileID: 1222045766291040762, guid: 9493efe7c0413164c8c3cca6fbd6c0a0, type: 3}

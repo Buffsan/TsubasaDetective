@@ -7,6 +7,7 @@ public class PlayerDamage : MonoBehaviour, IDamageable
 {
     [SerializeField] PlayerController playerController;
     [SerializeField] AudioClip DamageClip;
+    [SerializeField] BuffData DamageBuff;
 
     [SerializeField] GameObject DamageImage;
     Animator animator;
@@ -72,9 +73,14 @@ public class PlayerDamage : MonoBehaviour, IDamageable
             if (AddDamage > 0)
             {
                 playerController.HP -= AddDamage;
-                SetInvincible(0.5f);
+                playerController.playerBuff.SpawnBuff(DamageBuff);
 
                 animator.Play("É_ÉÅÅ[ÉW");
+            }
+            else 
+            {
+                playerController.HP -= 1;
+                playerController.playerBuff.SpawnBuff(DamageBuff);
             }
 
             HP_SliderChange();

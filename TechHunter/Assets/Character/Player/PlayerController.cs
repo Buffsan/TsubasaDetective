@@ -141,7 +141,7 @@ public class PlayerController : PlayerStatus
                 skilltype = SkillYype.Skill5;
                 Skill1 = skillINFO[4].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill1.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill1);
                 skillINFO[4].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
         }
@@ -163,7 +163,7 @@ public class PlayerController : PlayerStatus
                 skilltype = SkillYype.Skill1;
                 Skill1 = skillINFO[0].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill1.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill1);
                 skillINFO[0].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
         }
@@ -180,7 +180,7 @@ public class PlayerController : PlayerStatus
                 skilltype = SkillYype.Skill2;
                 Skill2 = skillINFO[1].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill2.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill2);
                 skillINFO[1].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
         }
@@ -197,7 +197,7 @@ public class PlayerController : PlayerStatus
                 skilltype = SkillYype.Skill3;
                 Skill3 = skillINFO[2].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill3.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill3);
                 skillINFO[2].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
         }
@@ -213,7 +213,7 @@ public class PlayerController : PlayerStatus
             AttackMoveCount = 0;
             Skill4 = skillINFO[3].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill4.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill4);
                 skillINFO[3].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
 
@@ -232,7 +232,7 @@ public class PlayerController : PlayerStatus
                 AttackMoveCount = 0;
                 Skill5 = skillINFO[4].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill5.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill5);
                 skillINFO[4].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
 
@@ -251,7 +251,7 @@ public class PlayerController : PlayerStatus
                 AttackMoveCount = 0;
                 Skill6 = skillINFO[5].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill6.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill6);
                 skillINFO[5].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
 

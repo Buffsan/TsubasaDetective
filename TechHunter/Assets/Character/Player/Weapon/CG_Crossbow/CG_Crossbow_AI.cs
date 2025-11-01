@@ -25,8 +25,7 @@ public class CG_Crossbow_AI : PlayerSkillBase
         if (Att == ATT.A1)
         {
 
-            GameObject CL_Skill = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
-            CL_Skill.transform.parent = playerController.transform;
+            GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
             Att = ATT.A2;
 
         }
@@ -38,7 +37,7 @@ public class CG_Crossbow_AI : PlayerSkillBase
             }
             else
             {
-                playerController.isMove(0.9f);
+                PlayerMove(0.9f);
             }
         }
 

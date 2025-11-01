@@ -194,9 +194,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a339c75f59057a42848b070e8306424, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Arrow: {fileID: 5785777630457512547, guid: e4dc67ee65cf4474698a35a862248263, type: 3}
-  Clip: {fileID: 8300000, guid: 94a19eb241b73fe45801fae23390fdd1, type: 3}
+  Arrow: {fileID: 5785777630457512547, guid: 2ac5cf9b695f9b2488f62bd0055ba675, type: 3}
+  Clip: {fileID: 8300000, guid: 7605819949a993c4a80e6e275fce96f8, type: 3}
   AttackPont: {fileID: 4772516347827779594}
+  animator: {fileID: 2494292567441262320}
+  AttackTarget: {fileID: 8300000, guid: e35ff3fcb2a521e4b8899a70cafee991, type: 3}
+  WaitTime: 88
 --- !u!95 &2494292567441262320
 Animator:
   serializedVersion: 5

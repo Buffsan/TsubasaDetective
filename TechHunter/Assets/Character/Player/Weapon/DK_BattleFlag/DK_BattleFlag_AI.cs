@@ -21,8 +21,7 @@ public class DK_BattleFlag_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
-            GameObject CL_SkillWeapon = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
-            CL_SkillWeapon.transform.parent = playerController.MainAnimBody.transform;
+            GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
             Att = ATT.A2;
         }
         if (Att == ATT.A2)
@@ -33,7 +32,7 @@ public class DK_BattleFlag_AI : PlayerSkillBase
             }
             else
             {
-                playerController.isMove(1);
+                PlayerMove(1);
             }
         }
     }

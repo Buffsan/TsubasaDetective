@@ -8,7 +8,7 @@ static class GlobalEvents
 {
     public static event Action<int> OnNextSpot;
     public static event Action<float> OnPlayerDamage;
-    public static event Action<PlayerSkillBase> OnSkillUse;
+    public static event Action<PlayerSkillBase,GameObject> OnSkillUse;
     // Critical発生時のイベント
     // 引数：攻撃対象, ダメージ量, クリティカル倍率など
     public static event Action<GameObject, float, float> OnCriticalHit;
@@ -21,9 +21,9 @@ static class GlobalEvents
     { 
         OnPlayerDamage?.Invoke(damage);
     }
-    public static void InvokeSkillUse(PlayerSkillBase skill)
+    public static void InvokeSkillUse(PlayerSkillBase skill , GameObject Skill_AI)
     {
-     OnSkillUse?.Invoke(skill);
+     OnSkillUse?.Invoke(skill,Skill_AI);
     }
     // 呼び出し用
     public static void InvokeCritical(GameObject target, float damage, float multiplier)

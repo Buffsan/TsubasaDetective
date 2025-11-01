@@ -25,10 +25,10 @@ public class OW_HarpoonVer2_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
-            playerController.isMove(2f);
+            PlayerMove(2f);
             playerController.isCursorDirection();
 
-            transform.position = playerController.transform.position;
+            transform.position = transform.position;
             transform.up = (Vector2)playerController.CursorDirection;
 
             if (skillcount > 5) 

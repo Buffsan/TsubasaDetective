@@ -30,7 +30,7 @@ public class GS_Tuzigiri_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
-            GameObject CL_Weapon = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
+            GameObject CL_Weapon = Instantiate(SkillWeapon, transform.position, Quaternion.identity);
             Att = ATT.A2;
             CL_Weapon.transform.parent = playerController.MainAnimBody.transform;
             Destroy(CL_Weapon, 2);

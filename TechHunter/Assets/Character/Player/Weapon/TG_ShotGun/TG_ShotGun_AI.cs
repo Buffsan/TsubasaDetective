@@ -37,8 +37,8 @@ public class TG_ShotGun_AI : PlayerSkillBase
             audioManager.isPlaySE(clip0);
 
             ALL_System.camera_Controller.Shake(0.2f, 0.1f);
-            GameObject CL_Weapon = Instantiate(Attack, playerController.transform.position, Quaternion.identity);
-            GameObject CL_Effect = Instantiate(Effect, playerController.transform.position, Quaternion.identity);
+            GameObject CL_Weapon = Instantiate(Attack, transform.position, Quaternion.identity);
+            GameObject CL_Effect = Instantiate(Effect, transform.position, Quaternion.identity);
             Destroy(CL_Weapon,0.1f);
             Destroy(CL_Effect, 1f);
 

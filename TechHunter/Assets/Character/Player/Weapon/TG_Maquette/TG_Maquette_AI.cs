@@ -7,7 +7,8 @@ public class TG_Maquette_AI : PlayerSkillBase
 
     PlayerSkillBase MYskillBase;
     [SerializeField] GameObject Effect;
-
+    [SerializeField] List<GameObject> SpawnLists;
+    [SerializeField] GameObject SkillWeapon2;
     void Start()
     {
         MYskillBase = GetComponent<PlayerSkillBase>();
@@ -25,13 +26,28 @@ public class TG_Maquette_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
-            GameObject CL_Skill = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
-            CL_Skill.transform.parent = playerController.transform;
+            float i = 0;
+            foreach (var spawn in SpawnLists)
+            {
+                if (i == SpawnLists.Count-1)
+                {
+                    GameObject CL_Weapon = SkillSpawn_Add(SkillWeapon2, TargetObject,spawn);
+                    TG_Maquette _Maquette = CL_Weapon.GetComponent<TG_Maquette>();
+                    _Maquette.WaitTime = i/5;
+                }
+                else 
+                {
+                    GameObject CL_Weapon = SkillSpawn_Add(SkillWeapon, TargetObject,spawn);
+                    TG_Maquette _Maquette = CL_Weapon.GetComponent<TG_Maquette>();
+                    _Maquette.WaitTime = i /5;
+                }
+                 i++;
+            }
             Att = ATT.A2;
         }
         if (Att == ATT.A2)
         {
-            playerController.isMove(0.3f);
+            PlayerMove(0.3f);
             if (skillcount > 2)
             {
                 skillcount = 0;
@@ -47,7 +63,7 @@ public class TG_Maquette_AI : PlayerSkillBase
             }
             else
             {
-                playerController.isMove(0.3f);
+                PlayerMove(0.3f);
             }
            
 

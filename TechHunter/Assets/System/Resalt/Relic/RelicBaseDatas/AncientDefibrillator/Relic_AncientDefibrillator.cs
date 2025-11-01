@@ -10,6 +10,7 @@ public class Relic_AncientDefibrillator : RelicBase_AI
     [SerializeField] BuffData buffData;
     [SerializeField] AudioClip clip;
     [SerializeField] GameObject Effect;
+    [SerializeField] GameObject Effect_Relic;
     ALL_SystemManager systemManager => ALL_SystemManager.Instance;
     AudioManager audioManager => AudioManager.instance;
     // Start is called before the first frame update
@@ -34,17 +35,21 @@ public class Relic_AncientDefibrillator : RelicBase_AI
 
     public void OnDamage(float damage) 
     {
+        if (damage <= 0) return; 
         if (!useRelic)
         {
-            if (playerController.MaxHP * 0.2f > playerController.HP - damage)
+            if (playerController.MaxHP * 0.4f > playerController.HP - damage)
             {
+
                 useRelic = true;
-                playerController.isRecoveryHP(playerController.MaxHP * 0.2f);
+                playerController.isRecoveryHP(playerController.MaxHP * 0.4f);
                 playerController.playerBuff.SpawnBuff(buffData);
                 systemManager.camera_Controller.Shake(0.2f, 0.4f);
                 audioManager.isPlaySE(clip);
                 GameObject CL_Effect = Instantiate(Effect, transform.position, Quaternion.identity);
-                Destroy(CL_Effect, 5);
+                Destroy(CL_Effect, 8);
+                GameObject CL_Effect1 = Instantiate(Effect_Relic, transform.position, Quaternion.identity);
+                Destroy(CL_Effect1, 2);
             }
         }
     }

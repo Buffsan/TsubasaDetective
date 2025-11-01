@@ -25,9 +25,9 @@ public class DK_Halberd_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1) 
         {
-            GameObject CL_Weapon = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
-        Att = ATT.A2;
-            CL_Weapon.transform.parent = playerController.MainAnimBody.transform;
+            GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
+            Att = ATT.A2;
+            
         }    else if (Att == ATT.A2) 
         { 
         if (skillcount > 0.6)
@@ -40,8 +40,8 @@ public class DK_Halberd_AI : PlayerSkillBase
         }
         else 
         {
-            playerController.isMove(0.3f);
-        }
+                PlayerMove(0.3f);
+            }
 
         }
 

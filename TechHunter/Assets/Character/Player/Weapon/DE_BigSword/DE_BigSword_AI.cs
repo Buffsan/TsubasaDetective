@@ -24,9 +24,8 @@ public class DE_BigSword_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
-            GameObject CL_Weapon = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
+            GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
             Att = ATT.A2;
-            CL_Weapon.transform.parent = playerController.transform;
         }
         else if (Att == ATT.A2)
         {
@@ -40,7 +39,7 @@ public class DE_BigSword_AI : PlayerSkillBase
             }
             else
             {
-                playerController.isMove(0.1f);
+                PlayerMove(0.1f);
             }
 
         }

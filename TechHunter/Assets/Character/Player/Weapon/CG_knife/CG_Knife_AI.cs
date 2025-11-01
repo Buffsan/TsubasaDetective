@@ -33,7 +33,7 @@ public class CG_Knife_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A2) 
         {
-            playerController.isMove(3f);
+            PlayerMove(3);
             if (skillcount > 0.15)
             {playerController.mode = PlayerController.ModeType.M1;
             playerController.movetype = PlayerController.MoveType.Nomal;

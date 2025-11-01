@@ -7,7 +7,12 @@ public class PlayerSkillBase : MonoBehaviour
     public GameObject SkillWeapon;
     public GameObject SlillBullet;
     public PlayerController playerController => PlayerController.Instance;
-
+    
+    public GameObject TargetObject;
+    private void Awake()
+    {
+        TargetObject = playerController.gameObject;
+    }
 
     public int SkillLevel =0;
 
@@ -19,14 +24,37 @@ public class PlayerSkillBase : MonoBehaviour
 
     public float skillcount = 0;
 
+    
+    public GameObject SkillSpawn(GameObject Skill ,GameObject taget) 
+    {
+        GameObject CL_Weapon = Instantiate(Skill, taget.transform.position, Quaternion.identity);
+        CL_Weapon.transform.parent = taget.transform;
+
+        return CL_Weapon;
+    }
+    public GameObject SkillSpawn_Add(GameObject Skill, GameObject Spawntaget,GameObject Parenttaget)
+    {
+        GameObject CL_Weapon = Instantiate(Skill, Parenttaget.transform.position, Quaternion.identity);
+        CL_Weapon.transform.parent = Spawntaget.transform;
+
+        return CL_Weapon;
+    }
+    public void PlayerMove(float speed) 
+    {
+        if (TargetObject != playerController.gameObject) return;
+        playerController.isMove(speed);
+    }
     public virtual void SkillPlay()
     {
 
     }
     public void end()
     {
-        playerController.mode = PlayerController.ModeType.M1;
-        playerController.movetype = PlayerController.MoveType.Nomal;
+        if (TargetObject == playerController.gameObject)
+        {
+            playerController.mode = PlayerController.ModeType.M1;
+            playerController.movetype = PlayerController.MoveType.Nomal;
+        }
 
         Destroy(this.gameObject);
     }

@@ -807,10 +807,9 @@ public class StatusUP
 [System.Serializable]
 public class Relic 
 {
-    public Texture2D MainImage;
+    public string Name;
+    public RelicData data;
      string StatusName = "ˆâ•¨Šl“¾";
-    [TextArea]
-    public string Explanation;
-    public int Rarity = 1;
+    
     
 }

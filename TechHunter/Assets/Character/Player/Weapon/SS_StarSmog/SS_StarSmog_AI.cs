@@ -14,7 +14,7 @@ public class SS_StarSmog_AI : PlayerSkillBase
     }
     private void FixedUpdate()
     {
-        if (playerController.SaveSkillBase != MYskillBase)
+        if (playerController.SaveSkillBase != MYskillBase && TargetObject == playerController.gameObject)
         {
             Destroy(this.gameObject);
         }
@@ -31,7 +31,7 @@ public class SS_StarSmog_AI : PlayerSkillBase
         }
         if (Att == ATT.A2)
         {
-            playerController.isMove(0.3f);
+            PlayerMove(0.3f);
             if (skillcount > 1.5) 
             { 
             skillcount =0;
@@ -41,8 +41,7 @@ public class SS_StarSmog_AI : PlayerSkillBase
         if (Att == ATT.A3)
         {
 
-            GameObject CL_Skill = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
-            CL_Skill.transform.parent = playerController.transform;
+            GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
             Att = ATT.A4;
 
         }
@@ -54,7 +53,7 @@ public class SS_StarSmog_AI : PlayerSkillBase
             }
             else
             {
-                playerController.isMove(0.3f);
+                PlayerMove(0.3f);
             }
         }
 

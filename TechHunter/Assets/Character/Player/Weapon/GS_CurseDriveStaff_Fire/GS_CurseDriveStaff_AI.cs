@@ -17,7 +17,7 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
     }
     private void FixedUpdate()
     {
-        if (playerController.SaveSkillBase != MYskillBase)
+        if (playerController.SaveSkillBase != MYskillBase && TargetObject == playerController.gameObject)
         {
             Destroy(this.gameObject);
         }
@@ -28,7 +28,7 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
-            GameObject CL_Effect = Instantiate(Effect, playerController.gameObject.transform.position, Quaternion.identity);
+            GameObject CL_Effect = Instantiate(Effect,gameObject.transform.position, Quaternion.identity);
             CL_Effect.transform.parent = playerController.transform;
             audioManager.isPlaySE(audioClip);
             Destroy(CL_Effect,5);
@@ -36,7 +36,7 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
         }
         if (Att == ATT.A2)
         {
-            playerController.isMove(0.3f);
+            PlayerMove(0.3f);
             if (skillcount > 1.5)
             {
                 skillcount = 0;
@@ -46,15 +46,14 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
         if (Att == ATT.A3)
         {
 
-            GameObject CL_Skill = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
-            CL_Skill.transform.parent = playerController.transform;
+            GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
 
             GameObject CL_Attack = Instantiate(Bullet, playerController.transform.position, Quaternion.identity);
             CL_Attack.transform.up = playerController.CursorDirection.normalized;
             Rigidbody2D CL_rb = CL_Attack.GetComponent<Rigidbody2D>();
             CL_rb.velocity = playerController.CursorDirection.normalized * 10;
 
-            Destroy(CL_Skill,2);
+            Destroy(CL_Weapon, 2);
 
             Att = ATT.A4;
 
@@ -67,7 +66,7 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
             }
             else
             {
-                playerController.isMove(0.3f);
+                PlayerMove(0.3f);
             }
         }
 

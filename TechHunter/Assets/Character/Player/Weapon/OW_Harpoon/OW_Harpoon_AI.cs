@@ -32,14 +32,15 @@ public class OW_Harpoon_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
+            
             playerController.playerBuff.SpawnBuff(BUFF);
-            GameObject CL_Weapon = Instantiate(SkillWeapon, playerController.transform.position, Quaternion.identity);
+            GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
             Att = ATT.A2;
-            CL_Weapon.transform.parent = playerController.transform;
+            
 
             enemyObject = GameObject.FindGameObjectsWithTag("Enemy");
             enemyList = new List<GameObject>(enemyObject);
-
+            if (enemyList.Count == 0) return;
             foreach (GameObject enemy in enemyObject)
             {
                 float Distance = Vector2.Distance(enemy.transform.position, playerController.transform.position);

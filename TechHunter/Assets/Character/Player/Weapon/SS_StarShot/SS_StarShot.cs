@@ -48,7 +48,7 @@ public class SS_StarShot : MonoBehaviour
             for (int i = 0; i < 3; i++)
             {//Debug.Log("“Š‚°‚é");
 
-                GameObject bullet = Instantiate(Arrow, controller.transform.position, Quaternion.identity);
+                GameObject bullet = Instantiate(Arrow,transform.position, Quaternion.identity);
                 Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
                 Destroy(bullet, 5 + ArrowCount);
 

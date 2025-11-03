@@ -7,7 +7,9 @@ public class PlayerSkillBase : MonoBehaviour
     public GameObject SkillWeapon;
     public GameObject SlillBullet;
     public PlayerController playerController => PlayerController.Instance;
-    
+
+    public Rigidbody2D Targetrb;
+
     public GameObject TargetObject;
     private void Awake()
     {
@@ -43,6 +45,21 @@ public class PlayerSkillBase : MonoBehaviour
     {
         if (TargetObject != playerController.gameObject) return;
         playerController.isMove(speed);
+    }
+    public void PlayerVelocityMove(float speed,Vector2 Direction) 
+    {
+        Vector2 direction = Direction.normalized;
+        if (TargetObject == playerController.gameObject)
+        {
+            playerController.rb.velocity = direction * speed;
+        }
+        else 
+        {
+            if (!Targetrb) Targetrb = TargetObject.GetComponent<Rigidbody2D>();
+            if (!Targetrb) return;
+
+            Targetrb.velocity = direction * speed;
+        }
     }
     public virtual void SkillPlay()
     {

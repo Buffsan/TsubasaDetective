@@ -46,6 +46,7 @@ public class SkillController : MonoBehaviour
     public int ReRollCount = 0;
 
     AllSkilPagel allskillpage;
+    AllSkilPagel allsRelicpage;
     StatusMenu statusMenu;
     ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
     public enum ChoiceCardMode
@@ -124,8 +125,8 @@ public class SkillController : MonoBehaviour
         playerController.movetype = PlayerController.MoveType.Wait;
         AllSkillPages.Add(CL_AllSkillPage);
 
-        allskillpage = CL_AllSkillPage.GetComponent<AllSkilPagel>();
-        allskillpage.skillController = this;
+        allsRelicpage = CL_AllSkillPage.GetComponent<AllSkilPagel>();
+        allsRelicpage.skillController = this;
         CL_AllSkillPage.transform.parent = ResultCanvas.transform;
 
         Change_AllRelicPage();
@@ -145,14 +146,24 @@ public class SkillController : MonoBehaviour
         CL_AllSkillPage.transform.parent = ResultCanvas.transform;
 
         Change_AllSkillPage();
+
+        GameObject CL_AllRelicPage = Instantiate(AllRelicPage);
+        playerController.movetype = PlayerController.MoveType.Wait;
+        AllSkillPages.Add(CL_AllRelicPage);
+
+        allsRelicpage = CL_AllRelicPage.GetComponent<AllSkilPagel>();
+        allsRelicpage.skillController = this;
+        CL_AllRelicPage.transform.parent = ResultCanvas.transform;
+
+        Change_AllRelicPage();
     }
     public void Change_AllRelicPage()
     {
-            if (allskillpage == null) return;
+            if (allsRelicpage == null) return;
         
 
             int i = 0;
-            foreach (var ALL_p in allskillpage.AllSkillPagesList)
+            foreach (var ALL_p in allsRelicpage.AllSkillPagesList)
             {
                 if (playerController.relicDatas[i])
                 {
@@ -172,6 +183,7 @@ public class SkillController : MonoBehaviour
             int i = 0;
             foreach (var ALL_p in allskillpage.AllSkillPagesList)
             {
+                
                 ALL_p.SkillImage.sprite = playerController.skillINFO[i].skillDATA.SkillImage;
                 ALL_p.PageControllText.text = playerController.skillINFO[i].PC_ControllText;
                 ALL_p.LevelText.text = playerController.skillINFO[i].SkillLevel.ToString();

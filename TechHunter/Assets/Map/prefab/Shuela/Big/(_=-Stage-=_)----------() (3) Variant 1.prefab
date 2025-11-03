@@ -30658,7 +30658,7 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: 7a595144ba8077049822c3009245e544, type: 3}
     - target: {fileID: 5743106456970045363, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: stage
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7945993608053462500, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_Tiles.Array.size

@@ -1,13 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Timeline.Actions;
 using UnityEngine;
 
 static class GlobalEvents
 {
     public static event Action<int> OnNextSpot;
-    public static event Action<float> OnPlayerDamage;
+    public static event Action<float,bool> OnPlayerDamage;
     public static event Action<PlayerSkillBase,GameObject> OnSkillUse;
     // Critical発生時のイベント
     // 引数：攻撃対象, ダメージ量, クリティカル倍率など
@@ -17,9 +16,9 @@ static class GlobalEvents
     { 
     OnNextSpot?.Invoke(spotNumber);
     }
-    public static void InvokeOnPlayerDamage(float damage) 
+    public static void InvokeOnPlayerDamage(float damage,bool Invincible) 
     { 
-        OnPlayerDamage?.Invoke(damage);
+        OnPlayerDamage?.Invoke(damage, Invincible);
     }
     public static void InvokeSkillUse(PlayerSkillBase skill , GameObject Skill_AI)
     {

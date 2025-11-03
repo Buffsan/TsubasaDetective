@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Invincible: 0
   BuffNAME: "\u6109\u60A6\uFF3F\u604D\u60DA"
-  BuffTime: 0.5
+  BuffTime: 3
   Regen: 0
   SPEED: 0
   MultiplySPEED: 0
-  ATK: 1
+  ATK: 0
   MultiplyATK: 0.1
   ATKDF: 0
   MultiplyATKDF: 0

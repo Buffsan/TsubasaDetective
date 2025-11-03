@@ -35,6 +35,8 @@ public class PlayerController : PlayerStatus
     public GameObject SpecialBuff;
     public List<SkillInfo> skillINFO = new List<SkillInfo>();
     public List<RelicData> relicDatas = new List<RelicData>();
+    public List<SkillCardData> NomalSkillData = new List<SkillCardData>();
+    public RelicData NoneRelic;
     public GameObject RelicControllerObject;
     public GameObject RelicManagerObject;
     [SerializeField] GameObject HitEffect;
@@ -346,7 +348,7 @@ public class PlayerController : PlayerStatus
         foreach (var relic in relicDatas) 
         { 
         
-            if(relic)index++;
+            if(relic != NoneRelic) index++;
         
         }
         if (index >= 5) return;
@@ -354,7 +356,7 @@ public class PlayerController : PlayerStatus
         foreach (var relic in relicDatas)
         {
 
-            if (!relic) break;
+            if (relic == NoneRelic) break;
             j++;
         }
         relicDatas[j] = relicData;

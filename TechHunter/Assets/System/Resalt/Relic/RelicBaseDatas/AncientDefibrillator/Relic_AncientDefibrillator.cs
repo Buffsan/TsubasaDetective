@@ -32,10 +32,18 @@ public class Relic_AncientDefibrillator : RelicBase_AI
         GlobalEvents.OnNextSpot -= OnNextSpot;
     }
 
-
-    public void OnDamage(float damage) 
+    void RecoveryCoolTime() 
     {
-        if (damage <= 0) return; 
+        foreach (var skill in playerController.skillINFO) 
+        {
+            skill.SkillCardManager.isCoolTime_add(8);
+        }
+    }
+    public void OnDamage(float damage, bool Invincible) 
+    {
+        
+        if (damage <= 0 || Invincible) return; 
+        RecoveryCoolTime();
         if (!useRelic)
         {
             if (playerController.MaxHP * 0.4f > playerController.HP - damage)

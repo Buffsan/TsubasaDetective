@@ -171,13 +171,19 @@ public class SystemManager : MonoBehaviour
         controller.transform.position = Vector2.zero;
 
         int i = 0;
-        foreach (SkillInfo skill in controller.skillINFO) 
+        foreach (SkillInfo skill in controller.skillINFO) //í èÌçUåÇà”äOçÌèú
         {
-            if (i != 0 && i != 1) 
+            bool RemoveSkill = true;
+            foreach (SkillCardData NomalSkill in controller.NomalSkillData) 
             {
-                skill.skillDATA = NoneSkill;
-            }
-                i++;
+                if (skill.skillDATA == NomalSkill)
+                {
+                    
+                    RemoveSkill = false;
+                    break;
+                }
+                
+            }if (RemoveSkill) skill.skillDATA = NoneSkill;
         }
 
         controller.isAddStatus();

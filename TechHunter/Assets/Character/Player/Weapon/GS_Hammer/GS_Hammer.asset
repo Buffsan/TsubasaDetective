@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GS_Hammer
   m_EditorClassIdentifier: 
   attackType: 4
-  Attack: 25
+  Attack: 24
   AttackSpeedTime: 0
   StaggerPower: 6
   ConfusionPower: 1

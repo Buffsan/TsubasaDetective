@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: isRelicPage
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2220771554418093057, guid: 8fbe1a03c44112f4a9982e4a5f2f95c0, type: 3}
+      propertyPath: TargetRectPos
+      value: -660
+      objectReference: {fileID: 0}
     - target: {fileID: 2339516547895854861, guid: 8fbe1a03c44112f4a9982e4a5f2f95c0, type: 3}
       propertyPath: m_IsActive
       value: 0

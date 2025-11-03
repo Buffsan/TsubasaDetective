@@ -30,9 +30,10 @@ public class GS_Tuzigiri_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
-            GameObject CL_Weapon = Instantiate(SkillWeapon, transform.position, Quaternion.identity);
+           
+            GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
             Att = ATT.A2;
-            CL_Weapon.transform.parent = playerController.MainAnimBody.transform;
+            
             Destroy(CL_Weapon, 2);
 
             playerController.playerBuff.SpawnBuff(buffdata);
@@ -56,7 +57,7 @@ public class GS_Tuzigiri_AI : PlayerSkillBase
                 else
                 {
 
-                    playerController.rb.velocity = EnemyDirection.normalized * 20;
+                    PlayerVelocityMove(20,EnemyDirection);
 
                 }
         }

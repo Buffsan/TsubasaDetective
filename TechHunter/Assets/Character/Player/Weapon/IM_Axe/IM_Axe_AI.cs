@@ -26,14 +26,12 @@ public class IM_Axe_AI : PlayerSkillBase
         {
             GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
             Att = ATT.A2;
-            CL_Weapon.transform.parent = playerController.MainAnimBody.transform;
         }
         else if (Att == ATT.A2)
         {
             if (skillcount > 0.5)
             {
-                playerController.mode = PlayerController.ModeType.M1;
-                playerController.movetype = PlayerController.MoveType.Nomal;
+                end();
 
                 //Debug.Log("AAAAA");
                 Destroy(this.gameObject);

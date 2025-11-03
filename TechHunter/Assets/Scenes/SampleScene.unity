@@ -10753,8 +10753,8 @@ MonoBehaviour:
     Coin: 0
   - MainImage: {fileID: 21300000, guid: 43a95e617e189394b941bc126b78f482, type: 3}
     PageName: "\u6B66\u5668\u8ABF\u6574"
-    UpExplanation: "\u30B9\u30AD\u30EB\u306E\u7D4C\u904E\u901F\u5EA6+3.5%"
-    Explanation: "\u5168\u30B9\u30AD\u30EB\u306E\u30AF\u30FC\u30EB\u30BF\u30A4\u30E0\u7D4C\u904E\u901F\u5EA6\u304C3.5%\u901F\u304F\u306A\u308B\u3002\n\u30D0\u30F3\uFF01\u30D0\u30F3\uFF01\u30D0\u30F3\uFF01\uFF01\u6575\u306F\u30B9\u30AD\u30EB\u3092\u98DF\u3089\u3046\u3068\u6B7B\u306C\u3093\u3060\u3088\uFF01\uFF01\uFF01\uFF01\uFF01"
+    UpExplanation: "\u30B9\u30AD\u30EB\u306E\u7D4C\u904E\u901F\u5EA6+4%"
+    Explanation: "\u5168\u30B9\u30AD\u30EB\u306E\u30AF\u30FC\u30EB\u30BF\u30A4\u30E0\u7D4C\u904E\u901F\u5EA6\u304C4%\u901F\u304F\u306A\u308B\u3002\n\u30D0\u30F3\uFF01\u30D0\u30F3\uFF01\u30D0\u30F3\uFF01\uFF01\u6575\u306F\u30B9\u30AD\u30EB\u3092\u98DF\u3089\u3046\u3068\u6B7B\u306C\u3093\u3060\u3088\uFF01\uFF01\uFF01\uFF01\uFF01"
     Rarity: 1
     Attack: 0
     Defense: 0
@@ -10762,7 +10762,7 @@ MonoBehaviour:
     Regen: 0
     RecoveryHP: 0
     Critical: 0
-    Range: 3.5
+    Range: 4
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
@@ -10813,7 +10813,7 @@ MonoBehaviour:
     Coin: 0
   - MainImage: {fileID: 21300000, guid: a1eb9f2cf99b6eb42aae43745c5ac533, type: 3}
     PageName: "\u82B8\u8853\u7684\u306A\u6A21\u5023"
-    UpExplanation: "\u30B9\u30AD\u30EB\u306E\u7D4C\u904E\u901F\u5EA6+10% \u653B\u6483\u529B-10\uFF05"
+    UpExplanation: "\u30B9\u30AD\u30EB\u306E\u7D4C\u904E\u901F\u5EA6+12% \u653B\u6483\u529B-10\uFF05"
     Explanation: "\u30B9\u30AD\u30EB\u306E\u7D4C\u904E\u901F\u5EA6\u3092\u5927\u5E45\u306B\u4E0A\u3052\u308B\u304C\u3001\u653B\u6483\u529B\u304C\u4E0B\u304C\u3063\u3066\u3057\u307E\u3046\u3002\u8E0A\u308A\u5B50\u306F\u898B\u305F\u308A\u7D4C\u9A13\u3057\u305F\u7269\u3092\u5B8C\u74A7\u306B\u6A21\u5023\u3059\u308B\u3053\u3068\u304C\u3067\u304D\u308B\u3002\u3057\u304B\u3057\u3001\u3042\u304F\u307E\u3067\u3082\u8E0A\u308A\u5B50\u3067\u3042\u308B\u306E\u3067\u3001\u653B\u6483\u6027\u3088\u308A\u3082\u3069\u308C\u3060\u3051\u7F8E\u3057\u304F\u6A21\u5023\u3067\u304D\u3066\u3044\u308B\u304B\u3092\u512A\u5148\u3059\u308B\u3002\u6545\u306B\u5A01\u529B\u3082\u4E0B\u304C\u308B\u3002"
     Rarity: 2
     Attack: -10
@@ -10822,16 +10822,16 @@ MonoBehaviour:
     Regen: 0
     RecoveryHP: 0
     Critical: 0
-    Range: 10
+    Range: 12
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
   - MainImage: {fileID: 21300000, guid: ad766aa23a1aa0446aee7aa57d4b05ba, type: 3}
     PageName: "\u6B63\u7FA9\u306E\u5C0E\u304D"
-    UpExplanation: "\u79FB\u52D5\u901F\u5EA6+3.5%\u653B\u6483\u529B+1%"
+    UpExplanation: "\u79FB\u52D5\u901F\u5EA6+3.5%\u653B\u6483\u529B+2%"
     Explanation: "\u79FB\u52D5\u901F\u5EA6\u304C\u4E0A\u6607\u3059\u308B\u3002\u60AA\u3092\u88C1\u304D\u8FFD\u8DE1\u3059\u308B\u305F\u3081\u306E\u5C0E\u304D\uFF08\uFF1F\uFF09\u3092\u690D\u3048\u4ED8\u3051\u3066\u8DB3\u53D6\u308A\u3092\u65E9\u304F\u3059\u308B\u3089\u3057\u3044\u3002\u3088\u304F\u308F\u304B\u3089\u306A\u3044\u304C\u3001\u5C0E\u304D\u306F\u690D\u3048\u4ED8\u3051\u308B\u7269\u3058\u3083\u306A\u304F\u306A\u3044\u304B\uFF1F"
     Rarity: 2
-    Attack: 1
+    Attack: 2
     Defense: 0
     HP: 0
     Regen: 0
@@ -10890,6 +10890,8 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 0f14f0a562b751843b6d144c0f08f7ed, type: 2}
   - Name: "\u9F8D\u306E\u546A\u3044\u3068\u7F8E\u3057\u3044\u795D\u798F"
     data: {fileID: 11400000, guid: ea852aef28f6e914e91f8f097d153b05, type: 2}
+  - Name: "\u4E09\u5F0F\u751F\u4F53\u88C5\u5099\u5927\u7345\u982D\u6642\u8A08"
+    data: {fileID: 11400000, guid: 1b43830c9b43c6841a61e3c5863ddb0c, type: 2}
   SavePage: []
   SaveStatus: []
   Save_RelicPage: []
@@ -129695,6 +129697,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: c879f970851157648bca7bd211531ed0, type: 3}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: NoneRelic
+      value: 
+      objectReference: {fileID: 11400000, guid: 5ce596d6b6961774b9efe99e87aadb5c, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: playerBuff
       value: 
       objectReference: {fileID: 2008148194}
@@ -129731,6 +129737,26 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: relicDatas.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 5ce596d6b6961774b9efe99e87aadb5c, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: relicDatas.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 5ce596d6b6961774b9efe99e87aadb5c, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: relicDatas.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 5ce596d6b6961774b9efe99e87aadb5c, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: relicDatas.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: 5ce596d6b6961774b9efe99e87aadb5c, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: relicDatas.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: 5ce596d6b6961774b9efe99e87aadb5c, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillCards.Array.data[0]
       value: 
       objectReference: {fileID: 1935243555}
@@ -129747,6 +129773,30 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: NomalSkillData.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: NomalSkillData.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: f48c7eacb22734a4b98894294b125336, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: NomalSkillData.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 1184b606bdc97c94eaa40d2b3fde548d, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: NomalSkillData.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 6212f42aa51c77740ab51bb391a35d40, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: NomalSkillData.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: 5402aba11f5628f488869dedd3368a7a, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
+      propertyPath: NomalSkillData.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: 0ffc59e865f24e34b8511f04158045d7, type: 2}
+    - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[0].skillDATA
       value: 
       objectReference: {fileID: 11400000, guid: 6212f42aa51c77740ab51bb391a35d40, type: 2}
@@ -129757,11 +129807,11 @@ PrefabInstance:
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[2].skillDATA
       value: 
-      objectReference: {fileID: 11400000, guid: 7d09470fee5f6d94d8f36ec78a5d136a, type: 2}
+      objectReference: {fileID: 11400000, guid: 820074ac6b1b5d34baad85b79ba01a5c, type: 2}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[3].skillDATA
       value: 
-      objectReference: {fileID: 11400000, guid: 7d09470fee5f6d94d8f36ec78a5d136a, type: 2}
+      objectReference: {fileID: 11400000, guid: 26d64c0de1f960d42859d138f0a7e39f, type: 2}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[4].skillDATA
       value: 

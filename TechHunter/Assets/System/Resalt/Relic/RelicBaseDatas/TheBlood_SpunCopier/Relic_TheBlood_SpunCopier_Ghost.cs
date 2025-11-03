@@ -21,7 +21,7 @@ public class Relic_TheBlood_SpunCopier_Ghost : MonoBehaviour
         if (Phase == 0) 
         {
             Cout += Time.fixedDeltaTime;
-            if (Cout > 5) 
+            if (Cout > 4) 
             {
                 Phase++;
             }

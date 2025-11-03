@@ -51,7 +51,8 @@ public class TG_ShotGun_AI : PlayerSkillBase
         }
         else if (Att == ATT.A2)
         {
-            playerController.rb.velocity = playerController.CursorDirection.normalized * -20;
+
+            PlayerVelocityMove(-20, playerController.CursorDirection);
             
             if (skillcount > 0.1)
             {

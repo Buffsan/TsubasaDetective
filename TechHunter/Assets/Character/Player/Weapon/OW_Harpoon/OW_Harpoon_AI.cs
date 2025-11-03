@@ -43,7 +43,16 @@ public class OW_Harpoon_AI : PlayerSkillBase
             if (enemyList.Count == 0) return;
             foreach (GameObject enemy in enemyObject)
             {
-                float Distance = Vector2.Distance(enemy.transform.position, playerController.transform.position);
+                float Distance =0;
+                if (TargetObject)
+                {
+                     Distance = Vector2.Distance(enemy.transform.position, TargetObject.transform.position);
+                }
+                else 
+                { 
+                     Distance = Vector2.Distance(enemy.transform.position, playerController.transform.position);
+                }
+                
                 //Debug.Log(Distance);
                 if (Distance < SmallDistance)
                 {
@@ -51,7 +60,16 @@ public class OW_Harpoon_AI : PlayerSkillBase
                     SaveTarget = enemy;
                 }
             }
-            EnemyDirection = (Vector2)SaveTarget.transform.position - (Vector2)playerController.gameObject.transform.position;
+            if (TargetObject)
+            {
+                EnemyDirection = (Vector2)SaveTarget.transform.position - (Vector2)TargetObject.transform.position;
+            }
+            else 
+            { 
+             EnemyDirection = (Vector2)SaveTarget.transform.position - (Vector2)playerController.gameObject.transform.position;
+            }
+
+               
             CL_Weapon.transform.up = EnemyDirection.normalized;
             CL_Weapon.transform.Rotate(0, 0, 90);
             
@@ -60,26 +78,31 @@ public class OW_Harpoon_AI : PlayerSkillBase
         {
             if (SaveTarget != null)
             {
-                float TargetDistance = Vector2.Distance((Vector2)SaveTarget.transform.position, (Vector2)playerController.gameObject.transform.position);
+                float TargetDistance =0;
+                if (TargetObject)
+                {
+                     TargetDistance = Vector2.Distance((Vector2)SaveTarget.transform.position, (Vector2)playerController.gameObject.transform.position);
+                }
+                else 
+                { 
+                     TargetDistance = Vector2.Distance((Vector2)SaveTarget.transform.position, (Vector2)playerController.gameObject.transform.position);
+                }
+                    
                 if (skillcount >= 0.25 || TargetDistance < 1)
                 {
-                    playerController.mode = PlayerController.ModeType.M1;
-                    playerController.movetype = PlayerController.MoveType.Nomal;
+                    end();
 
                     //Debug.Log("AAAAA");
                     Destroy(this.gameObject);
                 }
                 else
                 {
-
-                    playerController.rb.velocity = EnemyDirection.normalized * 10;
-
+                    PlayerVelocityMove(10, EnemyDirection);
                 }
             }
             else 
             {
-                playerController.mode = PlayerController.ModeType.M1;
-                playerController.movetype = PlayerController.MoveType.Nomal;
+                end ();
 
                 //Debug.Log("AAAAA");
                 Destroy(this.gameObject);

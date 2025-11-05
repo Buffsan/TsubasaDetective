@@ -31,8 +31,14 @@ public class Relic_Type_III_Bio_EquipmentGreatLionheadClock : RelicBase_AI
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !playerController.SaveSkillBase) 
+        if (Input.GetKeyDown(KeyCode.Space) ) 
         {
+            if (playerController.SaveSkillBase)
+            {
+                NeedleSpawnLing(0.4f + 1, 0);
+            }
+            else 
+            { 
             bool useBuff = false;
             foreach (var buff in playerController.playerBuff.playerBuffs)
             {
@@ -40,6 +46,7 @@ public class Relic_Type_III_Bio_EquipmentGreatLionheadClock : RelicBase_AI
             }
             if (!useBuff) { playerController.playerBuff.SpawnBuff(buffData); playerController.animator.SetBool("madDoge", true); Doge = true; }
            
+            }            
         }
         
     }
@@ -47,9 +54,9 @@ public class Relic_Type_III_Bio_EquipmentGreatLionheadClock : RelicBase_AI
     {
         playerController.animator.SetBool("madDoge", false); 
         Doge = false;
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 3; i++)
         {
-            NeedleSpawnLing(0.5f+i, 0);
+            NeedleSpawnLing(0.4f+i, i);
         }
     }
     public override void BaseAction()
@@ -73,7 +80,7 @@ public class Relic_Type_III_Bio_EquipmentGreatLionheadClock : RelicBase_AI
         for (int i = 0; i < 5 + Plass; i++)
         {
 
-            float angle = (360 / 5 + Plass) * i;
+            float angle = (360 / (5 + Plass)) * i;
             float angleRad = angle * Mathf.Deg2Rad;
 
             float newX = transform.position.x + 2 * Lange * Mathf.Cos(angleRad);

@@ -10645,6 +10645,9 @@ MonoBehaviour:
   - SkillName: "\u540C\u58EB\u3088\u79C1\u306B\u7D9A\u3051"
     Rarity: 2
     skill: {fileID: 11400000, guid: fd41030037d218b459a901a76e84f287, type: 2}
+  - SkillName: "\u30F4\u30A9\u30EB\u30BF"
+    Rarity: 2
+    skill: {fileID: 11400000, guid: dfa4992dc0fdf004f91c1edc484b765f, type: 2}
   StatusUPs:
   - MainImage: {fileID: 21300000, guid: cd059f8ea1dce9148ab5c348307a30ec, type: 3}
     PageName: "\u6226\u95D8\u8A13\u7DF4"
@@ -129807,7 +129810,7 @@ PrefabInstance:
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[2].skillDATA
       value: 
-      objectReference: {fileID: 11400000, guid: 820074ac6b1b5d34baad85b79ba01a5c, type: 2}
+      objectReference: {fileID: 11400000, guid: dfa4992dc0fdf004f91c1edc484b765f, type: 2}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[3].skillDATA
       value: 

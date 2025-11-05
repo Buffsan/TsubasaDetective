@@ -9,6 +9,8 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
     [SerializeField] GameObject Effect;
     [SerializeField] GameObject Bullet;
     [SerializeField] AudioClip audioClip;
+    [SerializeField] bool LookWeapon = false;
+    [SerializeField] GameObject SaveSkill;
     AudioManager audioManager => AudioManager.instance;
     
     void Start()
@@ -28,7 +30,8 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
-            GameObject CL_Effect = Instantiate(Effect,gameObject.transform.position, Quaternion.identity);
+            GameObject CL_Effect = SkillSpawn(Effect, TargetObject);
+            
             CL_Effect.transform.parent = playerController.transform;
             audioManager.isPlaySE(audioClip);
             Destroy(CL_Effect,5);
@@ -47,11 +50,12 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
         {
 
             GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
-
+            
             GameObject CL_Attack = Instantiate(Bullet,transform.position, Quaternion.identity);
+            if (LookWeapon) { SaveSkill = CL_Weapon;Destroy(CL_Attack, 0.1f); }
             CL_Attack.transform.up = playerController.CursorDirection.normalized;
             Rigidbody2D CL_rb = CL_Attack.GetComponent<Rigidbody2D>();
-            CL_rb.velocity = playerController.CursorDirection.normalized * 10;
+            if (!LookWeapon) CL_rb.velocity = playerController.CursorDirection.normalized * 10;
 
             Destroy(CL_Weapon, 2);
 
@@ -60,6 +64,7 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
         }
         if (Att == ATT.A4)
         {
+            if (SaveSkill) SaveSkill.transform.up = playerController.CursorDirection.normalized;
             if (skillcount > 2)
             {
                 end();

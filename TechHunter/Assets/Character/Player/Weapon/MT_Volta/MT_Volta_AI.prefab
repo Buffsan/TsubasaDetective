@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6963618676915210145
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6600339453842674369}
+  - component: {fileID: 2478499925216075502}
+  m_Layer: 0
+  m_Name: MT_Volta_AI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6600339453842674369
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6963618676915210145}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.8055735, y: -0.27491814, z: 0.055603463}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2478499925216075502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6963618676915210145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b7f76a0d3d882e4795b7614efca5249, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SkillWeapon: {fileID: 9062114595084315042, guid: cf757d5098832764390d6d064a0e9e3a, type: 3}
+  SlillBullet: {fileID: 0}
+  Targetrb: {fileID: 0}
+  TargetObject: {fileID: 0}
+  SkillLevel: 0
+  Att: 0
+  skillcount: 0
+  Effect: {fileID: 5488018055924669533, guid: 82ca499c365209543ba6d2f006bc6284, type: 3}
+  Bullet: {fileID: 7093970936227733064, guid: 2a25a7b1022d0dc4eb08e21d591ab373, type: 3}
+  audioClip: {fileID: 8300000, guid: 8c18d3b2cb6ea0348ab67878c930e209, type: 3}
+  LookWeapon: 1
+  SaveSkill: {fileID: 0}

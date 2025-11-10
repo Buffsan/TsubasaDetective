@@ -18,7 +18,7 @@ MonoBehaviour:
   Regen: 0
   SPEED: 0
   MultiplySPEED: 0
-  ATK: 1
+  ATK: 0.1
   MultiplyATK: 0
   ATKDF: 0
   MultiplyATKDF: 0

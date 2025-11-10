@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SystemManager : MonoBehaviour
 {
     [SerializeField] EnemySpawnBase enemySpawn;
     [SerializeField] system_GameModeManager gameModeManager;
     [SerializeField] sytem_GameSpotsController sytem_GameSpotsController;
+    [SerializeField] bool isResetFlag = false;
+    [SerializeField] bool isGameOverMove = false;
     public SkillCardData NoneSkill;
 
     public List<CoinManager> coinManagers = new List<CoinManager>();
@@ -60,11 +63,12 @@ public class SystemManager : MonoBehaviour
         Kardia,
         Pastal,
         Teruseto,
-        Shuela
+        Shuela,
+        Gratohto
 
     }
     public Stage stage = Stage.Ferust;
-    void Start()
+    void Awake()
     {
         skillController = GetComponent<SkillController>();
         if (Instance != null)
@@ -76,11 +80,35 @@ public class SystemManager : MonoBehaviour
             Instance = this;
         }
     }
+    private void OnEnable()
+    {
+        GlobalEvents.OnPlayerDie += OnPlayerDie;
+    }
+
+    private void OnDisable()
+    {
+        // イベント購読を解除（忘れるとバグの原因）
+        GlobalEvents.OnPlayerDie -= OnPlayerDie;
+    }
+    public void OnPlayerDie(float damage)
+    {
+        if (!isGameOverMove) return;
+        SceneManager.LoadScene("GameOverScene");
+    }
 
     // Update is called once per frame
     void Update()
     {
         AllEnemy.RemoveAll(enemy => enemy == null);
+        if (Input.GetKeyDown(KeyCode.Escape)) 
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+        // ビルド後の実行ファイルを終了
+        Application.Quit();
+#endif
+        }
         if (gameMode == GameMode.Nomal)
         {
             if (WaitEnemyDieCount < 1)
@@ -107,10 +135,10 @@ public class SystemManager : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.P)) 
+        if (Input.GetKeyDown(KeyCode.R) && isResetFlag) 
         {
-            //isGameStart();
- 
+            SceneManager.LoadScene("SampleScene");
+
         }
     }
     private void FixedUpdate()
@@ -322,8 +350,9 @@ public class SystemManager : MonoBehaviour
             if (gameModeManager.gameMode == system_GameModeManager.AdventureGameMode.BossBattleSpot && gameModeManager.BattlePhase == 1)
             { 
                 sytem_GameSpotsController.isNext_GameSpotStart();
-                if (stage == Stage.Teruseto) {stage = Stage.Shuela;return; }
+                if (stage == Stage.Teruseto) {stage = Stage.Gratohto; return; }
                 if (stage == Stage.Ferust) { stage = Stage.Teruseto; return; }
+                if (stage == Stage.Shuela) { stage = Stage.Gratohto; return; }
             }
             else 
             { 

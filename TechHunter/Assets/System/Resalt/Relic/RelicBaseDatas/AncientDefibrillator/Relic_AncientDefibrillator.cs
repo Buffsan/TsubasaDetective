@@ -50,7 +50,7 @@ public class Relic_AncientDefibrillator : RelicBase_AI
             {
 
                 useRelic = true;
-                playerController.isRecoveryHP(playerController.MaxHP * 0.4f);
+                playerController.isRecoveryHP(playerController.MaxHP * 0.3f);
                 playerController.playerBuff.SpawnBuff(buffData);
                 systemManager.camera_Controller.Shake(0.2f, 0.4f);
                 audioManager.isPlaySE(clip);

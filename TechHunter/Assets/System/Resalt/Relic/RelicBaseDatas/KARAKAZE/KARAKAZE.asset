@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: KARAKAZE
   m_EditorClassIdentifier: 
   attackType: 2
-  Attack: 12
+  Attack: 14
   AttackSpeedTime: 0
   StaggerPower: 1
   ConfusionPower: 0.1

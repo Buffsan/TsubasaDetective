@@ -45,6 +45,7 @@ public class PlayerSkillBase : MonoBehaviour
     {
         if (TargetObject != playerController.gameObject) return;
         playerController.isMove(speed);
+        playerController.NowSkillMove = speed;
     }
     public void PlayerVelocityMove(float speed,Vector2 Direction) 
     {

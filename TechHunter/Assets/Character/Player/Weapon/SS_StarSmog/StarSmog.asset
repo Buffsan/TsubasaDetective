@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: StarSmog
   m_EditorClassIdentifier: 
   attackType: 3
-  Attack: 9
+  Attack: 11
   AttackSpeedTime: 0
-  StaggerPower: 5
-  ConfusionPower: 0.2
+  StaggerPower: 6
+  ConfusionPower: 0.3
   KnockBackPower: 0
   MaxStack: 0
   HitAudio: {fileID: 8300000, guid: c879d054cb949c545a43ec1542faa99a, type: 3}

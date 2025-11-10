@@ -10,6 +10,7 @@ public class Boss_MoveBase : MonoBehaviour
     public EnemyBase enemyBase;
 
     public List<EnemyContoroller> enemyList = new List<EnemyContoroller>();
+    public ALL_SystemManager all_System => ALL_SystemManager.Instance;
 
     public int AttackNumber = 0;
     public float AttackWaitTime = 0;
@@ -52,6 +53,26 @@ public class Boss_MoveBase : MonoBehaviour
     public virtual void M_Die()
     {
 
+    }
+    public void SpawnObjectNow(GameObject SpawnObject, Vector2 Target, float DestroyTime)
+    {
+        GameObject CL_Object = Instantiate(SpawnObject, Target, Quaternion.identity);
+        Destroy(CL_Object, DestroyTime);
+    }
+    public GameObject SpawnObjectNow_Input(GameObject SpawnObject, Vector2 Target, float DestroyTime)
+    {
+        GameObject CL_Object = Instantiate(SpawnObject, Target, Quaternion.identity);
+        Destroy(CL_Object, DestroyTime);
+        return CL_Object;
+    }
+    public GameObject DengerAreaSpawn(GameObject Effect,Vector2 Pos,float AnimationSpeed) 
+    {
+
+        GameObject CL_dengerArea = Instantiate(Effect,Pos,Quaternion.identity);
+        SaveComponent saveComponent = CL_dengerArea.GetComponent<SaveComponent>();
+        saveComponent.animator.speed = 1.0f / AnimationSpeed;
+        Destroy(CL_dengerArea, AnimationSpeed + 0.2f);
+        return CL_dengerArea;
     }
 
     public void AttackFinish() 

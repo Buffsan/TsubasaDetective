@@ -11,7 +11,7 @@ public class PlayerDamage : MonoBehaviour, IDamageable
 
     [SerializeField] GameObject DamageImage;
     Animator animator;
-
+    [SerializeField] bool isDamageDebucMode = false;
     [SerializeField] SpriteRenderer spriteRenderer;
 
     ALL_SystemManager systemManager => ALL_SystemManager.Instance;
@@ -67,8 +67,9 @@ public class PlayerDamage : MonoBehaviour, IDamageable
     {
         GlobalEvents.InvokeOnPlayerDamage(Attackvalue, mode == Mode.Invincible);
         Debug.Log(mode == Mode.Invincible);
-        if (mode != Mode.Invincible && systemManager.systemManager.gameMode == SystemManager.GameMode.Nomal)
+        if (mode != Mode.Invincible )
         {
+            if (systemManager.systemManager.gameMode != SystemManager.GameMode.Nomal && !isDamageDebucMode) return;
             audiomanager.isPlaySE(DamageClip);
             float AddDamage = Attackvalue - (playerController.AddAtkDF + playerController.playerBuff.DEF_AllBuff) * playerController.playerBuff.MultiplyDEF_AllBuff;
             if (AddDamage > 0)
@@ -86,7 +87,7 @@ public class PlayerDamage : MonoBehaviour, IDamageable
 
             HP_SliderChange();
 
-            if (HP <= 0)
+            if (playerController.HP <= 0)
             {
                 Death();
 
@@ -109,7 +110,8 @@ public class PlayerDamage : MonoBehaviour, IDamageable
     }
 
     public void Death() 
-    { 
+    {
+        GlobalEvents.InvokePlayerDie(1f);
     Debug.Log("Ž€‚ñ‚¾");
     }
 }

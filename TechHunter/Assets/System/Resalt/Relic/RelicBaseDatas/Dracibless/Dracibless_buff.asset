@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Invincible: 0
   BuffNAME: "\u9F8D\u306E\u52A0\u8B77"
-  BuffTime: 3
+  BuffTime: 10
   Regen: 0
   SPEED: 0
   MultiplySPEED: 0

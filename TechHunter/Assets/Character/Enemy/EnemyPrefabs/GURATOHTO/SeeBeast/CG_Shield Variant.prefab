@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7181749114368792746
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 262567436753662335, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2694927100310490297, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: DefoScale
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2694927100310490297, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: charadata
+      value: 
+      objectReference: {fileID: 11400000, guid: 3db9cfe2bc31aec47bc02a7f61450665, type: 2}
+    - target: {fileID: 2694927100310490297, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: LookPlayerDistance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2694927100310490297, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: EnemyMoveBaseObject
+      value: 
+      objectReference: {fileID: 3524220196483176933, guid: 41e08a3cb1386fd49911fc44fbbc36f5, type: 3}
+    - target: {fileID: 2976492181972710024, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d940dbd7485b3e340aeb2afcd412e935, type: 3}
+    - target: {fileID: 5049685221155592329, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.1620073
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049685221155592329, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.6065227
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049685221155592329, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049685221155592329, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049685221155592329, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049685221155592329, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049685221155592329, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049685221155592329, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049685221155592329, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049685221155592329, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5658694210206706563, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5658694210206706563, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5658694210206706563, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5747729073694033841, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_Name
+      value: CG_Shield Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 6912967848970878410, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6912967848970878410, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8971776878087154089, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 9327467357e5aa547ba0d73c9241ded3, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}

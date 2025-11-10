@@ -60,6 +60,12 @@ public class EnemySpawnGroup
         SHUELA_SS_FairyAXE,
         SHUELA_SS_FairyHammer,
         SHUELA_SS_FairyMagic,
+        GRATOHTO_SB_Sardine,
+        GRATOHTO_SB_MiniSardine,
+        GRATOHTO_SB_Squid,
+        GRATOHTO_SB_Crab,
+        GRATOHTO_SB_HermitCrab,
+        GRATOHTO_SB_Krill,
 
 
     }

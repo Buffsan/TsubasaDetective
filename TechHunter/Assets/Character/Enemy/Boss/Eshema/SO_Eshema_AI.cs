@@ -41,7 +41,7 @@ public class SO_Eshema_AI : Boss_MoveBase
     }
     public override void M_Stan()
     {
-        Finish(); AttackWaitTime = 0;StandOk = false;
+        Finish(); AttackWaitTime = 0;StandOk = false; asaltAttackArea.SetActive(false);
         if (myRunningCoroutine != null)
         {
             AttackCount1 = 0;
@@ -54,6 +54,7 @@ public class SO_Eshema_AI : Boss_MoveBase
     public override void M_Con()
     {
         Finish(); AttackWaitTime = 0; StandOk = false;
+        asaltAttackArea.SetActive(false);
         if (myRunningCoroutine != null)
         {
             AttackCount1 = 0;

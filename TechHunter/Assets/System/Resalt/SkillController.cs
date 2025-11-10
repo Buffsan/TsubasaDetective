@@ -944,6 +944,11 @@ public class SkillController : MonoBehaviour
         GameObject CL_Page = Instantiate(SkillPage);
         SkillPageManager pageManager = CL_Page.GetComponent<SkillPageManager>();
 
+        foreach (var playerskill in playerController.skillINFO) 
+        {
+            if (statuspage.skill == playerskill.skillDATA) { pageManager.LevelUpTexts.SetActive(true); }
+        }
+
         SavesSkillPageManager.Add(pageManager);
         SaveSkills.Add(statuspage);
 

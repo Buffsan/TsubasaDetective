@@ -19,6 +19,7 @@ public class PlayerController : PlayerStatus
     public Slider HP_Slider;
     public RectTransform HP_RectTransform;
     public TextMeshProUGUI HP_Text;
+    public float NowSkillMove = 0;
     public bool Dash = false;
     [SerializeField] TextMeshProUGUI CoinText;
     [SerializeField] GameObject Weapon;

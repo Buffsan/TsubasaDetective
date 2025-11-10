@@ -149,9 +149,15 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.SHUELA_SS_FairyAXE,26},
         { EnemySpawnGroup.EnemyType.SHUELA_SS_FairyHammer,27},
         { EnemySpawnGroup.EnemyType.SHUELA_SS_FairyMagic,28},
+        { EnemySpawnGroup.EnemyType.GRATOHTO_SB_Sardine,29},
+        { EnemySpawnGroup.EnemyType.GRATOHTO_SB_MiniSardine,30},
+        { EnemySpawnGroup.EnemyType.GRATOHTO_SB_Squid,31},
+        { EnemySpawnGroup.EnemyType.GRATOHTO_SB_Crab,32},
+        { EnemySpawnGroup.EnemyType.GRATOHTO_SB_HermitCrab,33},
+        { EnemySpawnGroup.EnemyType.GRATOHTO_SB_Krill,34},
 
-    }; 
-
+    };
+   
     public int GetEnemyID(EnemySpawnGroup.EnemyType type)
     {
         if (enemyIdMap.TryGetValue(type, out int id))
@@ -289,7 +295,8 @@ public class Stages
         Kardia,
         Pastal,
         Teruseto,
-        Shuela
+        Shuela,
+        Gratohto
 
     }
     public Stage stage = Stage.Ferust;
@@ -312,7 +319,8 @@ public class BossStage
         Kardia,
         Pastal,
         Teruseto,
-        Shuela
+        Shuela,
+        Gratohto
 
     }
     public Stage stage = Stage.Ferust;

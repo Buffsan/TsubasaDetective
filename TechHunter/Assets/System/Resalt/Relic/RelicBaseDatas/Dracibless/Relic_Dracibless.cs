@@ -10,6 +10,7 @@ public class Relic_Dracibless : RelicBase_AI
     [SerializeField] BuffData buffData;
     [SerializeField] List<AudioClip> AudioClips = new List<AudioClip>();
     [SerializeField] GameObject Effect;
+    [SerializeField] GameObject buffEffect;
     [SerializeField] ParticleSystem particleSystem;
     ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
     float WaitCount = 0;
@@ -41,7 +42,7 @@ public class Relic_Dracibless : RelicBase_AI
         float Score = 0;
         if (isSpaceInput)
         {
-            Score += Time.fixedDeltaTime *2;
+            Score += Time.fixedDeltaTime *3;
         }
         else 
         {
@@ -57,7 +58,7 @@ public class Relic_Dracibless : RelicBase_AI
         {
             
             CoolTimeRecoveryCount += CoolTimeAgein();
-            if (CoolTimeRecoveryCount > 1)
+            if (CoolTimeRecoveryCount > 0.7)
             {
 
                 SkillCardManager SaveCard = null;
@@ -76,7 +77,7 @@ public class Relic_Dracibless : RelicBase_AI
 
                 if (SaveCard != null)
                 {
-                    SaveCard.isCoolTime_add(3);
+                    SaveCard.isCoolTime_add(4);
                     ALL_System.camera_Controller.Shake(0.1f, 0.05f);
                     audioManager.isPlaySE(AudioClips[0]);
                     GameObject CL_Effect = Instantiate(Effect, transform.position, Quaternion.identity);
@@ -94,7 +95,16 @@ public class Relic_Dracibless : RelicBase_AI
     {
         particleSystem.emissionRate = 0;
         if (WaitCount >= 1) {
-            playerController.playerBuff.SpawnBuff(buffData);
+            bool isfindBuff = false;
+            foreach (var buffs in playerController.playerBuff.playerBuffs) 
+            { 
+                if(buffs.buffData == buffData)isfindBuff = true;
+            }
+            if (!isfindBuff) { playerController.playerBuff.SpawnBuff(buffData);
+                GameObject CL_Effect = Instantiate(buffEffect, transform.position, Quaternion.identity);
+                CL_Effect.transform.parent = transform;
+                Destroy(CL_Effect, 13);
+            }
             audioManager.isPlaySE(AudioClips[1]);
             CoolTimeRecoveryCount = 99;
         }

@@ -4882,6 +4882,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d52b2d18e3479244e9759058fdcee1e3, type: 3}
   - {fileID: 8300000, guid: 8baa1735468150e47ab00ed2147e3ce2, type: 3}
   Effect: {fileID: 3258802114965287124, guid: 3903fae808c61a5498b21246bfd832dd, type: 3}
+  buffEffect: {fileID: 9062217971823311353, guid: b377d6313e9e1d242ab57b299e2277e4, type: 3}
   particleSystem: {fileID: 7447076789210472597}
   CoolTimeRecoveryCount: 999
 --- !u!1 &7022159683054123831

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MT_Volta
   m_EditorClassIdentifier: 
   attackType: 3
-  Attack: 76
+  Attack: 86
   AttackSpeedTime: 0
   StaggerPower: 15
   ConfusionPower: 0.4

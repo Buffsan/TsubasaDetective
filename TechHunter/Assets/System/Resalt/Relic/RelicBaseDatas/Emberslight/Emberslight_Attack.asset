@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Emberslight_Attack
   m_EditorClassIdentifier: 
   attackType: 3
-  Attack: 30
+  Attack: 21
   AttackSpeedTime: 0
   StaggerPower: 9
   ConfusionPower: 1

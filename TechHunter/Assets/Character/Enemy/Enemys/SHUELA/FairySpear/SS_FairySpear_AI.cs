@@ -13,7 +13,13 @@ public class SS_FairySpear_AI : EnemyMoveBase
     [SerializeField] GameObject Denger_AttackArea;
     [SerializeField] GameObject Denger_Attackarea1;
     [SerializeField] GameObject AttackArea;
+    [SerializeField] float MaxRandomTime=3;
+    [SerializeField] float MinRandomTime=1;
+    [SerializeField] float MaxRandomTime1=2;
+    [SerializeField] float MinRandomTime1=5;
+    [SerializeField] GameObject SpawnEnemy;
     [SerializeField] float DashSpeed =3;
+    public GameObject Target;
 
     bool one = false;
     Vector2 Direction;
@@ -27,7 +33,30 @@ public class SS_FairySpear_AI : EnemyMoveBase
     [SerializeField] float DashRange = 0.8f;
 
     public float WaitCunt = 0;
+    bool oneSpawn = false;
 
+    SystemManager systemManager => SystemManager.Instance;
+
+    private void Start()
+    {
+        if (!oneSpawn)
+        {
+            if (SpawnEnemy)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    Debug.Log("A");
+                    GameObject CL_Enemy = Instantiate(SpawnEnemy, transform.position, Quaternion.identity);
+                    EnemyContoroller enemyContoroller = CL_Enemy.GetComponent<EnemyContoroller>();
+                    SS_FairySpear_AI sS_FairySpear_AI = enemyContoroller.moveBase.gameObject.GetComponent<SS_FairySpear_AI>();
+                    sS_FairySpear_AI.Target = gameObject;
+                    systemManager.AllEnemy.Add(CL_Enemy);
+                }
+
+            }
+            oneSpawn = true;
+        }
+    }
     public override void EnemyConfusionPlay()
     {
         A_Phase = 0;
@@ -46,7 +75,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
         {
             one = true;
             moveRabge = Random.Range(MinmoveRange, MaxniveRange);
-            RandomTime = Random.Range(1f, 3f);
+            RandomTime = Random.Range(MinmoveRange, MaxniveRange);
             int boolrandom = Random.Range(0, 2);
             if (boolrandom == 0)
             {
@@ -63,14 +92,29 @@ public class SS_FairySpear_AI : EnemyMoveBase
             A_Phase = Random.Range(0, 2);
             WaitCunt = 0;
             enemyBase.moveType = EnemyBase.MoveType.Attack;
-            RandomTime = Random.Range(2f, 5f);
+            RandomTime = Random.Range(MinRandomTime1, MaxRandomTime1);
         }
-
-        enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
-        enemyBase.animator.SetInteger("Anim", 1);
-        enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
-        float angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-        float offset = 100f / (enemyBase.PlayerDistance + 1f) * moveRabge; // ãóó£Ç™âìÇ¢ÇŸÇ«è¨Ç≥Ç≠
+        float angle;
+        float offset;
+        if (Target)
+        {
+            
+            enemyBase.PlayerDistance = Vector2.Distance(Target.transform.position, enemyBase.gameObject.transform.position);
+            enemyBase.animator.SetInteger("Anim", 1);
+            enemyBase.PlayerDirection = Target.transform.position - enemyBase.transform.position;
+            angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
+            offset = 100f / (enemyBase.PlayerDistance + 1f) * moveRabge; // ãóó£Ç™âìÇ¢ÇŸÇ«è¨Ç≥Ç≠
+        }
+        else 
+        {
+            
+            enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
+            enemyBase.animator.SetInteger("Anim", 1);
+            enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
+            angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
+            offset = 100f / (enemyBase.PlayerDistance + 1f) * moveRabge; // ãóó£Ç™âìÇ¢ÇŸÇ«è¨Ç≥Ç≠
+        }
+        
 
         if (trune)
         {
@@ -85,7 +129,15 @@ public class SS_FairySpear_AI : EnemyMoveBase
 
         enemyBase.isPlayerLookBase();
 
+        if (Target)
+        {
+            enemyBase.rb.velocity = direction * enemyBase.SPEED*3;
+        }
+        else 
+        { 
         enemyBase.rb.velocity = direction * enemyBase.SPEED;
+        }
+            
     }
 
     public override void EnemyAttackPlay()

@@ -21,6 +21,7 @@ public class SkillPageManager : MonoBehaviour
     public TextMeshProUGUI TotalTEXT;
 
     public float TargetRectPos = 0;
+    public GameObject LevelUpTexts;
     [SerializeField] AudioClip Clip1;
     [SerializeField] AudioClip Clip2;
 

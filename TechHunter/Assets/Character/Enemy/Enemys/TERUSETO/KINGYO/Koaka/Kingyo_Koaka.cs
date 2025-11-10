@@ -5,6 +5,9 @@ using UnityEngine;
 public class Kingyo_Koaka : EnemyMoveBase
 {
     [SerializeField] GameObject Arrow;
+    [SerializeField] GameObject Target;
+    [SerializeField] EnemyContoroller enemyContoroller;
+    bool TargetMode = false;
 
     PlayerController controller => PlayerController.Instance;
 
@@ -16,6 +19,16 @@ public class Kingyo_Koaka : EnemyMoveBase
     }
     public override void EnemyMovePlay()
     {
+        if(Target)TargetMode = true;
+        if (TargetMode)
+        {
+            Vector2 Direction = Target.transform.position - transform.position;
+            enemyBase.rb.velocity = Direction.normalized * enemyBase.SPEED;
+            enemyBase.isLookDistance();
+            if (!Target) enemyContoroller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Out;
+        }
+        else 
+        { 
         if (!one) {
             Vector2 randomPos = new Vector2 (Random.Range(-1f,1f), Random.Range(-1f, 1f));
             Direction = ((Vector2)controller.transform.position + randomPos) - (Vector2)transform.position;
@@ -24,6 +37,8 @@ public class Kingyo_Koaka : EnemyMoveBase
         
         enemyBase.rb.velocity = Direction.normalized * enemyBase.SPEED;
         enemyBase.isLookDistance();
+        }
+        
     }
     public override void EnemyAttackPlay()
     {

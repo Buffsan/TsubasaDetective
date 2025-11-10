@@ -417,7 +417,7 @@
                 {
                     "name": "",
                     "id": "507f7e8d-3d09-4c25-8afb-922311252874",
-                    "path": "<Keyboard>/e",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -438,8 +438,19 @@
                 },
                 {
                     "name": "",
+                    "id": "14d74b12-a6ef-4ac4-86e6-15bb04d38ab2",
+                    "path": "<Mouse>/forwardButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skill3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "ca927049-082d-477f-90b7-8ee4fa47fa79",
-                    "path": "<Keyboard>/r",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -451,6 +462,17 @@
                     "name": "",
                     "id": "3ba42697-92d8-48e7-93b9-34cb27979f74",
                     "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skill4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "384b4269-5e9a-499d-a61e-6c486f5ae804",
+                    "path": "<Mouse>/backButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

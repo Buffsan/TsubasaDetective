@@ -39,7 +39,7 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
         }
         if (Att == ATT.A2)
         {
-            PlayerMove(0.3f);
+            PlayerMove(0.1f);
             if (skillcount > 1.5)
             {
                 skillcount = 0;

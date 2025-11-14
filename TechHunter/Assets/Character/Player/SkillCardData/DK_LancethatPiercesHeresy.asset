@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb115587ebfd0544b17a03fb5d1cda0, type: 3}
+  m_Name: DK_LancethatPiercesHeresy
+  m_EditorClassIdentifier: 
+  SkillImage: {fileID: 21300000, guid: 169cb83d44dcf034d9dce5ccbc626ee3, type: 3}
+  SkillName: "\u7570\u7AEF\u3092\u8CAB\u304F\u69CD"
+  SkillMessage: "\u30B9\u30AD\u30EB\u767A\u52D5\u6642\u306B\u30AB\u30FC\u30BD\u30EB\u65B9\u5411\u306B\u69CD\u3068\u76FE\u3092\u69CB\u3048\u308B\n\u3066\u7121\u6575\u3092\u5F97\u308B\u3002\u76FE\u306B\u653B\u6483\u304C\u7684\u4E2D\u3059\u308B\u3068\u7121\u6575\u3092\u7372\u5F97\u3057\u3066\u5F37\u3044\u885D\u6483\u6CE2\u3092\u653E\u3061\u53CD\u6483\u3059\u308B\u30020.5\u79D2\u5F8C\u306B\u30AB\u30FC\u30BD\u30EB\u65B9\u5411\u306B\u7121\u6575\u3092\u7372\u5F97\u3057\u306A\u304C\u3089\u7D20\u65E9\u304F\u7A81\u9032\u3057\u5927\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002\n\u3053\u306E\u30B9\u30AD\u30EB\u306E\u6A19\u7684\u306F\u4F55\u304C\u3042\u3063\u3066\u3082\u30AB\u30FC\u30BD\u30EB\u3092\u72D9\u3046\u3002"
+  CoolTime: 26
+  SkillData: {fileID: 7265513495418298091, guid: 5ce86f31620587f47a596a1549ea8566, type: 3}
+  SkillDataList: []
+  MaxStack: 0
+  TotalDamage: 0

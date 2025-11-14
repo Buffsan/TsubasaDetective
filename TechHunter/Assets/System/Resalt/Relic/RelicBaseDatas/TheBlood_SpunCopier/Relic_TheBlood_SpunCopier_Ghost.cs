@@ -8,6 +8,7 @@ public class Relic_TheBlood_SpunCopier_Ghost : MonoBehaviour
     public GameObject playerskillBase;
     public GameObject SaveSkillObject = null;
     PlayerSkillBase playerSkillBase = null;
+    public int HP = 1;
 
     GameObject SaveWeapon = null;
     int Phase = 0;
@@ -60,6 +61,8 @@ public class Relic_TheBlood_SpunCopier_Ghost : MonoBehaviour
     {
         EnemyAttack enemyAttack = other.GetComponent<EnemyAttack>();
         if (!enemyAttack) return;
+        HP--;
+        if (HP > 0) return;
         Destroy(gameObject);
     }
 }

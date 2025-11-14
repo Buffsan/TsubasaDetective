@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: OW_SeaBeastHunting 2
   m_EditorClassIdentifier: 
   attackType: 1
-  Attack: 10
+  Attack: 15
   AttackSpeedTime: 0
   StaggerPower: 5
   ConfusionPower: 1

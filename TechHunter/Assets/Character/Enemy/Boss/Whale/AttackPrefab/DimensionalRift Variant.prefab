@@ -57,6 +57,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4166423388084634971, guid: 39d07999130c94d4a832a9c8d2834ff2, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4166423388084634971, guid: 39d07999130c94d4a832a9c8d2834ff2, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 4166423388084634971, guid: 39d07999130c94d4a832a9c8d2834ff2, type: 3}
       propertyPath: InitialModule.startColor.maxColor.a
       value: 0.7490196
       objectReference: {fileID: 0}
@@ -97,6 +105,14 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7502568146494173173, guid: 39d07999130c94d4a832a9c8d2834ff2, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7502568146494173173, guid: 39d07999130c94d4a832a9c8d2834ff2, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 7502568146494173173, guid: 39d07999130c94d4a832a9c8d2834ff2, type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.61625147
       objectReference: {fileID: 0}
@@ -115,7 +131,7 @@ PrefabInstance:
     - target: {fileID: 7649939173652240680, guid: 39d07999130c94d4a832a9c8d2834ff2, type: 3}
       propertyPath: AttackArea2
       value: 
-      objectReference: {fileID: 6045553796505751289, guid: e529667a19d4a8f4f9016bf7f6dcc270, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 7967846331151238913, guid: 39d07999130c94d4a832a9c8d2834ff2, type: 3}
       propertyPath: m_Name
       value: DimensionalRift Variant

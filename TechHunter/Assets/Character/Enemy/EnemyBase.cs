@@ -144,11 +144,11 @@ public class EnemyBase : MonoBehaviour
     {
         if (target.x < transform.position.x)
         {
-            EnemyAnimBody.transform.localScale = new Vector2(-2.5f, 2.5f);
+            EnemyAnimBody.transform.localScale = new Vector2(-DefoScale, DefoScale);
         }
         else
         {
-            EnemyAnimBody.transform.localScale = new Vector2(2.5f, 2.5f);
+            EnemyAnimBody.transform.localScale = new Vector2(DefoScale, DefoScale);
         }
     }
     public void isLookDistance() 

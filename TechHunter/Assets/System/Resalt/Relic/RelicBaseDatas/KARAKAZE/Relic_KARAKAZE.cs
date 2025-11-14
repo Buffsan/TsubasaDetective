@@ -29,7 +29,7 @@ public class Relic_KARAKAZE : RelicBase_AI
         // イベント購読を解除（忘れるとバグの原因）
         GlobalEvents.OnSkillUse -= OnSkill;
     }
-    private void OnSkill(PlayerSkillBase skillBase,GameObject AI) 
+    private void OnSkill(PlayerSkillBase skillBase,SkillCardData AI) 
     {
         
         ///Debug.Log("スキル検知");

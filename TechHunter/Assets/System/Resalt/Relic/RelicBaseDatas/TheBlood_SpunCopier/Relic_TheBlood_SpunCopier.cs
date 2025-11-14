@@ -16,13 +16,13 @@ public class Relic_TheBlood_SpunCopier : RelicBase_AI
         // イベント購読を解除（忘れるとバグの原因）
         GlobalEvents.OnSkillUse -= OnSkill;
     }
-    private void OnSkill(PlayerSkillBase skillBase, GameObject AI)
+    private void OnSkill(PlayerSkillBase skillBase, SkillCardData AI)
     {
         
         GameObject CL_Ghost = Instantiate(Ghost, transform.position, Quaternion.identity);
         Relic_TheBlood_SpunCopier_Ghost ghost = CL_Ghost.GetComponent<Relic_TheBlood_SpunCopier_Ghost>();
-        
-        ghost.playerskillBase = AI;
+        ghost.HP = (int)AI.CoolTime / 8;
+        ghost.playerskillBase = AI.SkillData;
     }
     
 }

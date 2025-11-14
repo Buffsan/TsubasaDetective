@@ -66,7 +66,7 @@ public class EnemySpawnGroup
         GRATOHTO_SB_Crab,
         GRATOHTO_SB_HermitCrab,
         GRATOHTO_SB_Krill,
-
+        GRATOHTO_SB_Scallop,
 
     }
 

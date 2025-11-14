@@ -127,11 +127,11 @@ public class Boss_Controller : EnemyBase
     {
         if (target.x < transform.position.x)
         {
-            EnemyAnimBody.transform.localScale = new Vector2(-2.5f, 2.5f);
+            EnemyAnimBody.transform.localScale = new Vector2(-DefoScale, DefoScale);
         }
         else
         {
-            EnemyAnimBody.transform.localScale = new Vector2(2.5f, 2.5f);
+            EnemyAnimBody.transform.localScale = new Vector2(DefoScale, DefoScale);
         }
     }
     public void isPlayerLook()
@@ -140,11 +140,11 @@ public class Boss_Controller : EnemyBase
         PlayerDistance = Vector2.Distance(Player.transform.position, transform.position);
         if (Player.transform.position.x < transform.position.x)
         {
-            EnemyAnimBody.transform.localScale = new Vector2(-2.5f, 2.5f);
+            EnemyAnimBody.transform.localScale = new Vector2(-DefoScale, DefoScale);
         }
         else
         {
-            EnemyAnimBody.transform.localScale = new Vector2(2.5f, 2.5f);
+            EnemyAnimBody.transform.localScale = new Vector2(DefoScale, DefoScale);
         }
     }
 }

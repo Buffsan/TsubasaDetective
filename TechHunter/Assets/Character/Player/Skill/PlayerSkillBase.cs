@@ -6,6 +6,7 @@ public class PlayerSkillBase : MonoBehaviour
 {
     public GameObject SkillWeapon;
     public GameObject SlillBullet;
+    public int A_Phase = 0;
     public PlayerController playerController => PlayerController.Instance;
 
     public Rigidbody2D Targetrb;
@@ -26,7 +27,11 @@ public class PlayerSkillBase : MonoBehaviour
 
     public float skillcount = 0;
 
-    
+    public void NextPhase() 
+    {
+        A_Phase ++;
+        skillcount =0;
+    }
     public GameObject SkillSpawn(GameObject Skill ,GameObject taget) 
     {
         GameObject CL_Weapon = Instantiate(Skill, taget.transform.position, Quaternion.identity);
@@ -49,6 +54,7 @@ public class PlayerSkillBase : MonoBehaviour
     }
     public void PlayerVelocityMove(float speed,Vector2 Direction) 
     {
+        playerController.NowSkillMove = speed;
         Vector2 direction = Direction.normalized;
         if (TargetObject == playerController.gameObject)
         {

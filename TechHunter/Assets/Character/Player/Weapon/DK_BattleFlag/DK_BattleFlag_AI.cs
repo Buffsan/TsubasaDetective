@@ -26,13 +26,13 @@ public class DK_BattleFlag_AI : PlayerSkillBase
         }
         if (Att == ATT.A2)
         {
-            if (skillcount > 0.4)
+            if (skillcount > 1)
             {
                 end();
             }
             else
             {
-                PlayerMove(1);
+                PlayerMove(1.5f);
             }
         }
     }

@@ -19,7 +19,7 @@ public class Relic_Type_III_Bio_EquipmentGreatLionheadClock : RelicBase_AI
         // イベント購読を解除（忘れるとバグの原因）
         GlobalEvents.OnSkillUse -= OnSkill;
     }
-    private void OnSkill(PlayerSkillBase skillBase, GameObject AI)
+    private void OnSkill(PlayerSkillBase skillBase, SkillCardData AI)
     {
         bool useBuff = false;
         foreach (var buff in playerController.playerBuff.playerBuffs) 

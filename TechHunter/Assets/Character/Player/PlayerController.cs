@@ -145,7 +145,7 @@ public class PlayerController : PlayerStatus
                 skilltype = SkillYype.Skill5;
                 Skill1 = skillINFO[4].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill1.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill1);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[4].skillDATA);
                 skillINFO[4].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
         }
@@ -167,7 +167,7 @@ public class PlayerController : PlayerStatus
                 skilltype = SkillYype.Skill1;
                 Skill1 = skillINFO[0].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill1.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill1);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[0].skillDATA);
                 skillINFO[0].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
         }
@@ -184,7 +184,7 @@ public class PlayerController : PlayerStatus
                 skilltype = SkillYype.Skill2;
                 Skill2 = skillINFO[1].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill2.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill2);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[1].skillDATA);
                 skillINFO[1].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
         }
@@ -201,7 +201,7 @@ public class PlayerController : PlayerStatus
                 skilltype = SkillYype.Skill3;
                 Skill3 = skillINFO[2].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill3.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill3);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[2].skillDATA);
                 skillINFO[2].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
         }
@@ -217,7 +217,7 @@ public class PlayerController : PlayerStatus
             AttackMoveCount = 0;
             Skill4 = skillINFO[3].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill4.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill4);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[3].skillDATA);
                 skillINFO[3].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
 
@@ -236,7 +236,7 @@ public class PlayerController : PlayerStatus
                 AttackMoveCount = 0;
                 Skill5 = skillINFO[4].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill5.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill5);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[4].skillDATA);
                 skillINFO[4].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
 
@@ -255,7 +255,7 @@ public class PlayerController : PlayerStatus
                 AttackMoveCount = 0;
                 Skill6 = skillINFO[5].skillDATA.SkillData;
                 PlayerSkillBase playerSkillBase = Skill6.GetComponent<PlayerSkillBase>();
-                GlobalEvents.InvokeSkillUse(playerSkillBase, Skill6);
+                GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[5].skillDATA);
                 skillINFO[5].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
             }
 
@@ -589,10 +589,20 @@ public class PlayerController : PlayerStatus
 
         HP_RectTransform.sizeDelta = new Vector2(80+ (MaxHP*1.5f),HP_RectTransform.sizeDelta.y);
     }
-    public void isSpecialMove(float value,Vector2 moveSPinput) 
+    public void isSpecialMove(float value,Vector2 moveSPinput,GameObject target) 
     {
-        rb.velocity = moveSPinput.normalized * (SPEED + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
-        DontMove = 0;
+        if (target == this.gameObject)
+        {
+            rb.velocity = moveSPinput.normalized * (SPEED + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
+            DontMove = 0;
+        }
+        else 
+        {
+            if (!target) return;
+            Rigidbody2D sprb = target.GetComponent<Rigidbody2D>();
+            if (!sprb) return;
+            sprb.velocity = moveSPinput.normalized * value * SPEED;
+        }
     }
     public void isMove(float value) 
     {

@@ -44,6 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2336809674f1bd48a85d8c2f4d578e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttackTime: 0.1
-  AttackNumber: 20
+  AttackTime: 0.15
+  AttackNumber: 5
   AttackArea: {fileID: 1165465272880958092, guid: 254a09fdeb7ec284387706a8cc457297, type: 3}

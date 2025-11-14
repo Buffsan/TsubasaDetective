@@ -155,9 +155,10 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.GRATOHTO_SB_Crab,32},
         { EnemySpawnGroup.EnemyType.GRATOHTO_SB_HermitCrab,33},
         { EnemySpawnGroup.EnemyType.GRATOHTO_SB_Krill,34},
+        { EnemySpawnGroup.EnemyType.GRATOHTO_SB_Scallop,35},
 
-    };
-   
+    }; 
+
     public int GetEnemyID(EnemySpawnGroup.EnemyType type)
     {
         if (enemyIdMap.TryGetValue(type, out int id))

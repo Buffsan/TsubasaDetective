@@ -17,7 +17,7 @@ MonoBehaviour:
   BuffTime: 1
   Regen: 0
   SPEED: 0
-  MultiplySPEED: 0.5
+  MultiplySPEED: 0
   ATK: 0
   MultiplyATK: 0
   ATKDF: 0

@@ -12,6 +12,9 @@ public class Relic_bloodSpear : RelicBase_AI
     [SerializeField] List<AudioClip> audioClips = new List<AudioClip>();
     [SerializeField] BuffData buffsataWeek;
     [SerializeField] GameObject Effect;
+
+    ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
+    public GameObject Player;
    
     float CoolCount = 0;
     bool DashAttack = false;
@@ -35,7 +38,7 @@ public class Relic_bloodSpear : RelicBase_AI
         if (lastDIR != Vector2.zero) 
         {
             Debug.Log(lastDIR);
-            playerController.isSpecialMove(DashSpeed, lastDIR);
+            playerController.isSpecialMove(DashSpeed, lastDIR ,ALL_System.playerController.gameObject);
             if (DashCount > DashTimer && !DashAttack && !playerController.SaveSkillBase || DashCount > DashTimer*2 && DashAttack && !playerController.SaveSkillBase || playerController.SaveSkillBase && DashCount > DashTimer * 2)
             {
                 DashAttack = false;

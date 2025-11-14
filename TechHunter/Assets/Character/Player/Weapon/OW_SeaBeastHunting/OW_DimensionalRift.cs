@@ -31,8 +31,11 @@ public class OW_DimensionalRift : MonoBehaviour
                 animator.Play("”j—ô", 0,0);
                 GameObject CL_AttackArea = Instantiate(AttackArea1,transform.position,Quaternion.identity);
                 Destroy(CL_AttackArea,1f);
-                GameObject CL_AttackArea2 = Instantiate(AttackArea2, transform.position, Quaternion.identity);
-                Destroy(CL_AttackArea2, 0.8f);
+                if (AttackArea2)
+                {
+                    GameObject CL_AttackArea2 = Instantiate(AttackArea2, transform.position, Quaternion.identity);
+                    Destroy(CL_AttackArea2, 0.8f);
+                }
                 AttackCount = 0;
                 audioManager.isPlaySE(clip);
                 Phase++; 

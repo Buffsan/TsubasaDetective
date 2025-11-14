@@ -26,7 +26,7 @@ public class Relic_Dracibless : RelicBase_AI
         // イベント購読を解除（忘れるとバグの原因）
         GlobalEvents.OnSkillUse -= OnSkill;
     }
-    private void OnSkill(PlayerSkillBase skillBase, GameObject AI)
+    private void OnSkill(PlayerSkillBase skillBase, SkillCardData AI)
     {
         isSpaceInput = false;
     }

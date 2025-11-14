@@ -11,11 +11,13 @@ public class SB_Whale_AI : Boss_MoveBase
     float AttackCount1 = 0;
     float saveAngle = 0;
     bool StandOk = false;
+    bool isSerious = false;
 
     [SerializeField] GameObject ARM;
     [SerializeField] GameObject ArmAttackPoint;
     [SerializeField] Animator ARManim;
     [SerializeField] List<GameObject> GunLaser = new List<GameObject>();
+    [SerializeField] AudioClip BossBGM;
 
     [SerializeField] List<AudioClip> audioclips = new List<AudioClip>();
 
@@ -49,7 +51,7 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     public override void M_Stan()
     {
-        Finish(); AttackWaitTime = 0; StandOk = false;
+        Finish(); AttackWaitTime = 0; StandOk = false; asaltAttackArea.SetActive(false);
         if (myRunningCoroutine != null)
         {
             AttackCount1 = 0;
@@ -61,7 +63,7 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     public override void M_Con()
     {
-        Finish(); AttackWaitTime = 0; StandOk = false;
+        Finish(); AttackWaitTime = 0; StandOk = false; asaltAttackArea.SetActive(false);
         if (myRunningCoroutine != null)
         {
             AttackCount1 = 0;
@@ -84,22 +86,26 @@ public class SB_Whale_AI : Boss_MoveBase
 
             if (phase == Phase.P1)
             {
-                /*
-                if (enemyBase.HP < enemyBase.MAXHP / 2)
+                
+                if (enemyBase.HP < enemyBase.MAXHP * 0.65f)
                 {
+                    audioManager.BgmSource.clip = BossBGM;
+                    
                     phase = Phase.P2;
                     AttackWaitTime = 0;
                     enemyBase.moveType = EnemyBase.MoveType.Attack;
-                    enemyBase.attackType = EnemyBase.AttackType.A7;
+                    enemyBase.attackType = EnemyBase.AttackType.A6;
+                    DamageArea.SetActive(true);
+                    isSerious = true;
                 }
-                */
-                if (AttackWaitTime > 1.2)
+                
+                if (AttackWaitTime > 3)
                 {
                     AttackWaitTime = 0;
                     enemyBase.moveType = EnemyBase.MoveType.Attack;
                     enemyBase.rb.velocity = Vector2.zero;
                     float random = Random.RandomRange(1, 5);
-                    //float random = 4;
+                    //float random = 5;
                     if (random == 1)
                     {
                         enemyBase.moveType = EnemyBase.MoveType.Attack;
@@ -138,52 +144,42 @@ public class SB_Whale_AI : Boss_MoveBase
             {
 
 
-                if (AttackWaitTime > 2)
+                if (AttackWaitTime > 1.5)
                 {
                     AttackWaitTime = 0;
                     enemyBase.moveType = EnemyBase.MoveType.Attack;
-
-                    if (AllAttackNumber > 3)
+                    enemyBase.rb.velocity = Vector2.zero;
+                    float random = Random.RandomRange(1, 6);
+                    //float random = 5;
+                    if (random == 1)
                     {
-                        AllAttackNumber = 0;
                         enemyBase.moveType = EnemyBase.MoveType.Attack;
                         enemyBase.attackType = EnemyBase.AttackType.A1;
                     }
-                    else
+                    if (random == 2)
                     {
-                        float random = Random.RandomRange(0, 3);
-                        AllAttackNumber++;
-                        if (random == 1)
-                        {
-                            enemyBase.moveType = EnemyBase.MoveType.Attack;
-                            enemyBase.attackType = EnemyBase.AttackType.A8;
-                        }
-                        if (random == 2)
-                        {
-                            enemyBase.moveType = EnemyBase.MoveType.Attack;
-                            enemyBase.attackType = EnemyBase.AttackType.A6;
-                        }
-                        if (random == 3)
-                        {
-                            enemyBase.moveType = EnemyBase.MoveType.Attack;
-                            enemyBase.attackType = EnemyBase.AttackType.A9;
-                        }
-                        if (random == 4)
-                        {
-                            enemyBase.moveType = EnemyBase.MoveType.Attack;
-                            enemyBase.attackType = EnemyBase.AttackType.A4;
-                        }
-                        if (random == 5)
-                        {
-                            enemyBase.moveType = EnemyBase.MoveType.Attack;
-                            enemyBase.attackType = EnemyBase.AttackType.A3;
-                        }
-                        if (random == 6)
-                        {
-                            enemyBase.moveType = EnemyBase.MoveType.Attack;
-                            enemyBase.attackType = EnemyBase.AttackType.A2;
-                        }
-
+                        enemyBase.moveType = EnemyBase.MoveType.Attack;
+                        enemyBase.attackType = EnemyBase.AttackType.A2;
+                    }
+                    if (random == 3)
+                    {
+                        enemyBase.moveType = EnemyBase.MoveType.Attack;
+                        enemyBase.attackType = EnemyBase.AttackType.A3;
+                    }
+                    if (random == 4)
+                    {
+                        enemyBase.moveType = EnemyBase.MoveType.Attack;
+                        enemyBase.attackType = EnemyBase.AttackType.A4;
+                    }
+                    if (random == 5)
+                    {
+                        enemyBase.moveType = EnemyBase.MoveType.Attack;
+                        enemyBase.attackType = EnemyBase.AttackType.A5;
+                    }
+                    if (random == 6)
+                    {
+                        enemyBase.moveType = EnemyBase.MoveType.Attack;
+                        enemyBase.attackType = EnemyBase.AttackType.A2;
                     }
 
                 }
@@ -214,7 +210,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 A5();
                 break;
             case EnemyBase.AttackType.A6:
-                //A6();
+                A6();
                 break;
             case EnemyBase.AttackType.A7:
                 //A7();
@@ -292,36 +288,39 @@ public class SB_Whale_AI : Boss_MoveBase
                 }
                 else 
                 {
-                    for (int i = 0; i < 50; i++) 
+                    if (isSerious)
                     {
-                        for (int j = 0; j < 6; j++)
+                        for (int i = 0; i < 50; i++)
                         {
-                            Vector2 randomPos= Vector2.zero;
-                            bool ok = false;
-                            float range = 12f;
-                            float minrange = 5.5f;
-                            while (!ok) 
+                            for (int j = 0; j < 6; j++)
                             {
-                                randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range)) ;
-                                if (Mathf.Abs(randomPos.x) > minrange || Mathf.Abs(randomPos.y) > minrange) ok = true;   
+                                Vector2 randomPos = Vector2.zero;
+                                bool ok = false;
+                                float range = 12f;
+                                float minrange = 5.5f;
+                                while (!ok)
+                                {
+                                    randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
+                                    if (Mathf.Abs(randomPos.x) > minrange || Mathf.Abs(randomPos.y) > minrange) ok = true;
+                                }
+                                StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
                             }
-                            StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
                         }
-                    }
-                    for (int i = 0; i < 50; i++)
-                    {
-                        for (int j = 0; j < 4; j++)
+                        for (int i = 0; i < 50; i++)
                         {
-                            Vector2 randomPos = Vector2.zero;
-                            bool ok = false;
-                            float range = 20;
-                            float minrange = 12f;
-                            while (!ok)
+                            for (int j = 0; j < 4; j++)
                             {
-                                randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-                                if (Mathf.Abs(randomPos.x) > minrange || Mathf.Abs(randomPos.y) > minrange) ok = true;
+                                Vector2 randomPos = Vector2.zero;
+                                bool ok = false;
+                                float range = 20;
+                                float minrange = 12f;
+                                while (!ok)
+                                {
+                                    randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
+                                    if (Mathf.Abs(randomPos.x) > minrange || Mathf.Abs(randomPos.y) > minrange) ok = true;
+                                }
+                                StartCoroutine(LiftSpawnLing((float)i / 30 + 2, (Vector2)transform.position + randomPos));
                             }
-                            StartCoroutine(LiftSpawnLing((float)i / 30 + 2, (Vector2)transform.position + randomPos));
                         }
                     }
                     NextPhase();
@@ -382,15 +381,18 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 NextPhase();
 
-                for (int i = 0; i < 5; i++)
+                if (isSerious)
                 {
-                    for (int j = 0; j < 10; j++)
+                    for (int i = 0; i < 5; i++)
                     {
-                        Vector2 randomPos = Vector2.zero;
-                        float range = 12f;
-                        randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
+                        for (int j = 0; j < 10; j++)
+                        {
+                            Vector2 randomPos = Vector2.zero;
+                            float range = 12f;
+                            randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
 
-                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
+                            StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
+                        }
                     }
                 }
             }
@@ -452,20 +454,41 @@ public class SB_Whale_AI : Boss_MoveBase
             if (AttackCount1 > 0.2)
             {
                 AttackCount1 = 0;
-                for (int i = 0; i < 4; i++)
+                if (isSerious)
                 {
-                    // 垂直方向（左右）ベクトル
-                    Vector2 perp = new Vector2(-enemyBase.PlayerDirection.normalized.y, enemyBase.PlayerDirection.normalized.x);
+                    for (int i = 0; i < 10; i++)
+                    {
+                        // 垂直方向（左右）ベクトル
+                        Vector2 perp = new Vector2(-enemyBase.PlayerDirection.normalized.y, enemyBase.PlayerDirection.normalized.x);
 
-                    // 攻撃判定を左右に生成する位置
-                    Vector2 leftPos = (Vector2)transform.position + perp * 0.5f * (i + 3);
-                    Vector2 rightPos = (Vector2)transform.position - perp * 0.5f * (i + 3);
+                        // 攻撃判定を左右に生成する位置
+                        Vector2 leftPos = (Vector2)transform.position + perp * 0.5f * (i + 3);
+                        Vector2 rightPos = (Vector2)transform.position - perp * 0.5f * (i + 3);
 
-                    // 攻撃判定オブジェクトを左右に生成
-                    GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
-                    GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
-                    Destroy(leftAttack, 5);
-                    Destroy(rightAttack, 5);
+                        // 攻撃判定オブジェクトを左右に生成
+                        GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
+                        GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
+                        Destroy(leftAttack, 5);
+                        Destroy(rightAttack, 5);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        // 垂直方向（左右）ベクトル
+                        Vector2 perp = new Vector2(-enemyBase.PlayerDirection.normalized.y, enemyBase.PlayerDirection.normalized.x);
+
+                        // 攻撃判定を左右に生成する位置
+                        Vector2 leftPos = (Vector2)transform.position + perp * 0.5f * (i + 3);
+                        Vector2 rightPos = (Vector2)transform.position - perp * 0.5f * (i + 3);
+
+                        // 攻撃判定オブジェクトを左右に生成
+                        GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
+                        GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
+                        Destroy(leftAttack, 5);
+                        Destroy(rightAttack, 5);
+                    }
                 }
             }
 
@@ -478,7 +501,24 @@ public class SB_Whale_AI : Boss_MoveBase
             if (AttackNumber == 0)
             {
                 AttackNumber++;
-                ChoiseNextPhase(10);
+                if (isSerious)
+                {
+                    ChoiseNextPhase(10);
+                }
+                else 
+                {
+                    int randomnumberAttack = Random.Range(0, 2);
+                    if (randomnumberAttack == 0)
+                    {
+                        ChoiseNextPhase(0);
+                    }
+                    else
+                    {
+                        ChoiseNextPhase(0);
+                        enemyBase.moveType = EnemyBase.MoveType.Attack;
+                        enemyBase.attackType = EnemyBase.AttackType.A1;
+                    }
+                }
             }
             else
             {
@@ -504,10 +544,19 @@ public class SB_Whale_AI : Boss_MoveBase
                 audioManager.isPlaySE(audioclips[2]);
 
                 bool FindPlayerPos = false;
-                while (!FindPlayerPos)
+                int safeCount = 0; // 安全カウンタ
+
+                while (!FindPlayerPos && safeCount < 100)
                 {
-                    Vector2 TargetFindPlayerPos = new Vector2(Random.Range(-4f, 4f) + enemyBase.Player.transform.position.x, Random.Range(-2f, 2f) + enemyBase.Player.transform.position.y);
+                    safeCount++;
+
+                    Vector2 TargetFindPlayerPos = new Vector2(
+                        Random.Range(-4f, 4f) + enemyBase.Player.transform.position.x,
+                        Random.Range(-2f, 2f) + enemyBase.Player.transform.position.y
+                    );
+
                     FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
+
                     if (FindPlayerPos)
                     {
                         targetPos = TargetFindPlayerPos;
@@ -515,7 +564,16 @@ public class SB_Whale_AI : Boss_MoveBase
                         enemyBase.isTargetLook(targetPos);
                     }
                 }
-                
+
+                // 見つからなかったときの代替処理
+                if (!FindPlayerPos)
+                {
+                    // 代替位置を設定（例：現在位置のまま or デフォルト座標）
+                    targetPos = new Vector2 (enemyBase.Player.transform.position.x, enemyBase.Player.transform.position.y+2);
+                    
+                    Debug.LogWarning("Floor not found. Using player position as fallback.");
+                }
+
 
                 enemyBase.transform.position = targetPos;
                 enemyBase.animator.Play("出現", 0, 0);
@@ -581,13 +639,15 @@ public class SB_Whale_AI : Boss_MoveBase
                 NextPhase();
                 audioManager.isPlaySE(audioclips[1]);
 
-                audioManager.isPlaySE(audioclips[1]);
                 all_System.camera_Controller.Shake(0.3f, 0.2f);
                 SpawnObjectNow(Effects[0], transform.position, 3);
 
-                for (int i = 0; i < 50; i++) 
+                if (isSerious)
                 {
-                    StartCoroutine(Ougi(i, targetPos, (float)i/40));
+                    for (int i = 0; i < 50; i++)
+                    {
+                        StartCoroutine(Ougi(i, targetPos, (float)i / 40));
+                    }
                 }
             }
         }
@@ -611,84 +671,205 @@ public class SB_Whale_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("ジャンプ待機", 0, 0);
-
-            GameObject CL_AttackPPP = Instantiate(Denger_AttackArea_Slash, enemyBase.transform.position, Quaternion.identity);
-            CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
-            Destroy(CL_AttackPPP, 1);
-
-            NextPhase();
+            if (attackcount() > 0.2)
+            {
+                enemyBase.animator.Play("ワープ", 0, 0);
+                DamageArea.SetActive(false);
+                audioManager.isPlaySE(audioclips[2]);
+                NextPhase();
+            }
         }
         if (AttackPhase == 1)
         {
-            if (enemyBase.AttackCount > 0.8)
+            if (attackcount() > 1)
             {
-                asaltAttackArea.SetActive(true);
-                enemyBase.animator.Play("歩行", 0, 0);
+                audioManager.isPlaySE(audioclips[2]);
+
+                bool FindPlayerPos = false;
+                int safeCount = 0; // 安全カウンタ
+
+                while (!FindPlayerPos && safeCount < 100)
+                {
+                    safeCount++;
+
+                    Vector2 TargetFindPlayerPos = new Vector2(
+                        Random.Range(-4f, 4f) + enemyBase.Player.transform.position.x,
+                        Random.Range(-2f, 2f) + enemyBase.Player.transform.position.y
+                    );
+
+                    FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
+
+                    if (FindPlayerPos)
+                    {
+                        targetPos = TargetFindPlayerPos;
+                        targetDirection = targetPos - (Vector2)transform.position;
+                        enemyBase.isTargetLook(targetPos);
+                    }
+                }
+
+                // 見つからなかったときの代替処理
+                if (!FindPlayerPos)
+                {
+                    // 代替位置を設定（例：現在位置のまま or デフォルト座標）
+                    targetPos = new Vector2(enemyBase.Player.transform.position.x, enemyBase.Player.transform.position.y + 2);
+                    Debug.LogWarning("Floor not found. Using player position as fallback.");
+                }
+
+
+                enemyBase.transform.position = targetPos;
+                enemyBase.animator.Play("出現", 0, 0);
                 NextPhase();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    for (int j = 0; j < 5; j++)
+                    {
+                        Vector2 randomPos = Vector2.zero;
+                        float range = 6f;
+                        randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
+
+                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
+                    }
+                }
             }
         }
         if (AttackPhase == 2)
         {
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 3;
-            if (enemyBase.AttackCount > 0.7 * (1 + AttackNumber * 0.5))
+            if (attackcount() > 1)
             {
-                enemyBase.animator.Play("ジャンプ待機", 0, 0);
-                asaltAttackArea.SetActive(false);
+                DamageArea.SetActive(true);
                 NextPhase();
             }
-            AttackCount1 += Time.fixedDeltaTime;
-            if (AttackCount1 > 0.04)
-            {
-                AttackCount1 = 0;
-                for (int i = 0; i < 9; i++)
-                {
-                    // 垂直方向（左右）ベクトル
-                    Vector2 perp = new Vector2(-enemyBase.PlayerDirection.normalized.y, enemyBase.PlayerDirection.normalized.x);
-
-                    // 攻撃判定を左右に生成する位置
-                    Vector2 leftPos = (Vector2)transform.position + perp * 0.5f * (i + 3);
-                    Vector2 rightPos = (Vector2)transform.position - perp * 0.5f * (i + 3);
-
-                    // 攻撃判定オブジェクトを左右に生成
-                    GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
-                    GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
-                    Destroy(leftAttack, 5);
-                    Destroy(rightAttack, 5);
-                }
-            }
-
-
         }
         if (AttackPhase == 3)
         {
-            enemyBase.rb.velocity = enemyBase.rb.velocity * 0.6f;
-            int randomValue = Random.Range(0, 2);
-            if (AttackNumber == 0)
+            if (attackcount() > 1)
             {
-                if (randomValue == 0)
+                NextPhase();
+            }
+        }
+        if (AttackPhase == 4)
+        {
+            enemyBase.isPlayerLookBase();
+            enemyBase.animator.Play("攻撃");
+            GameObject CL_denger = DengerAreaSpawn(Denger_4AttackArea, transform.position, 1);
+            CL_denger.transform.up = enemyBase.PlayerDirection.normalized;
+            targetPos = enemyBase.Player.transform.position;
+            NextPhase();
+        }
+        if (AttackPhase == 5)
+        {
+            if (attackcount() > 1)
+            {
+                enemyBase.animator.Play("攻撃待機");
+                GameObject CL_Attack = SpawnObjectNow_Input(AttackArea4, transform.position, 0.1f);
+                CL_Attack.transform.up = enemyBase.PlayerDirection.normalized;
+                NextPhase();
+                audioManager.isPlaySE(audioclips[1]);
+
+                all_System.camera_Controller.Shake(0.3f, 0.2f);
+                SpawnObjectNow(Effects[0], transform.position, 3);
+
+                for (int i = 0; i < 50; i++)
                 {
-                    AttackNumber++;
+                    StartCoroutine(Ougi(i, targetPos, (float)i / 40));
+                }
+
+                
+            }
+        }
+        if(AttackPhase == 6) 
+        {
+            if (attackcount() > 1) 
+            { 
+            AttackNumber++;
+                if (AttackNumber > 3)
+                {
+                    AttackFinish();
+                }
+                else 
+                {
                     ChoiseNextPhase(0);
                 }
-                else
+            }
+        }
+    }
+
+    void A6() 
+    {
+        if (AttackPhase == 0) 
+        {
+            NextPhase();
+
+            all_System.camera_Controller.Shake(1, 0.3f);
+            audioManager.isPlaySE(audioclips[0]);
+            enemyBase.animator.Play("被弾");
+        }
+        if (AttackPhase == 1) 
+        {
+            enemyBase.isPlayerLookBase();
+            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -enemyBase.SPEED;
+            if (attackcount() > 1) 
+            {
+                NextPhase();
+                enemyBase.animator.Play("攻撃");
+            }
+        }
+        if (AttackPhase == 2) 
+        {
+            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -enemyBase.SPEED *0.5f;
+            if (attackcount() > 0.5)
+            {
+                enemyBase.rb.velocity = Vector2.zero;
+                
+                audioManager.isPlaySE(audioclips[2]);
+                enemyBase.animator.Play("消える");
+                NextPhase();
+            }
+        }
+        if (AttackPhase == 3)
+        {
+            if (attackcount() > 5)
+            {
+                targetPos = Vector2.zero;
+                NextPhase();
+            }
+        }
+        if (AttackPhase == 4)
+        {
+            if (attackcount() > 1)
+            {
+                audioManager.isPlaySE(audioclips[2]);
+                audioManager.BgmSource.Play();
+
+
+                enemyBase.transform.position = targetPos;
+                enemyBase.animator.Play("出現", 0, 0);
+
+                NextPhase();
+                
+                for (int i = 0; i < 30; i++)
                 {
-                    if (enemyBase.AttackCount > 0.4)
+                    for (int j = 0; j < 8; j++)
                     {
-                        //Finish();
-                        AttackNumber = 6;
-                        ChoiseNextPhase(0);
-                        enemyBase.attackType = EnemyBase.AttackType.A2;
+                        Vector2 randomPos = Vector2.zero;
+                        float range = 15f;
+                        randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
+
+                        StartCoroutine(LiftSpawnLing((float)i / 7, (Vector2)transform.position + randomPos));
                     }
                 }
             }
-            else
+        }
+        if (AttackPhase == 5)
+        {
+            if (attackcount() > 1)
             {
-                Finish();
+                ChoiseNextPhase(0);
+                enemyBase.moveType = EnemyBase.MoveType.Attack;
+                enemyBase.attackType = EnemyBase.AttackType.A1;
+
             }
-
-
         }
     }
     private IEnumerator MoveInArc()
@@ -848,7 +1029,7 @@ public class SB_Whale_AI : Boss_MoveBase
         Vector2 rotatedDirection = rotation * newDirection; // SavePos方向を基準に角度を回転
         Vector2 newPosition = (Vector2)transform.position + rotatedDirection * AttackDistance; // 回転方向で新しい位置を計算
 
-        SpawnObjectNow(SlashLit,newPosition,3);
+        SpawnObjectNow(SlashLit,newPosition,2);
     }
 }
 

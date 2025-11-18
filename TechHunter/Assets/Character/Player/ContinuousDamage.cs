@@ -5,12 +5,17 @@ using UnityEngine;
 public class ContinuousDamage : MonoBehaviour
 {
     [SerializeField] float AttackTime = 0.2f;
+    [SerializeField] float StartCount = 0;
     float AttackTimeCount = 0;
 
     [SerializeField] int AttackNumber = 0;
     int AttackNumberCount = 0;
 
     [SerializeField] GameObject AttackArea;
+    private void Start()
+    {
+        AttackTimeCount = StartCount;
+    }
     // Start is called before the first frame update
     private void FixedUpdate()
     {

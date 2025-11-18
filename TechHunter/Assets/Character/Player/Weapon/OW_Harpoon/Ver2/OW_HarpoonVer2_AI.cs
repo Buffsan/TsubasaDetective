@@ -6,6 +6,7 @@ public class OW_HarpoonVer2_AI : PlayerSkillBase
 {
     PlayerSkillBase MYskillBase;
     [SerializeField] Animator animator;
+    [SerializeField] GameObject Harpoon;
 
     bool Attacked = false;
 
@@ -17,6 +18,7 @@ public class OW_HarpoonVer2_AI : PlayerSkillBase
     {
         if (playerController.SaveSkillBase != MYskillBase || playerController.SaveSkillBase == null)
         {
+            throwHarpoon();
             Destroy(this.gameObject);
         }
     }
@@ -25,21 +27,23 @@ public class OW_HarpoonVer2_AI : PlayerSkillBase
         skillcount += Time.deltaTime;
         if (Att == ATT.A1)
         {
-            PlayerMove(2f);
+            PlayerMove(2.5f);
             playerController.isCursorDirection();
 
             transform.position = transform.position;
-            transform.up = (Vector2)playerController.CursorDirection;
+            transform.up = new Vector2(0,1);
 
             if (skillcount > 5) 
             {
-                Shot();
+                Att = ATT.A2;
+                throwHarpoon();
+                end();
             }
             //Att = ATT.A2;
         }
         if (Att == ATT.A2)
         {
-            playerController.isMove(0.4f);
+           
             if (skillcount > 0.6f)
             {
                 end();
@@ -47,32 +51,14 @@ public class OW_HarpoonVer2_AI : PlayerSkillBase
 
         }
     }
-
-    void Shot() 
+    public void throwHarpoon() 
     {
-        Attacked = true;
-        float angle = 40;
-        animator.Play("ê[Ç≠ä—Ç≠",0,0);
-        for (int i = 0; i < 5; i++)
-        {
-            GameObject CL_Harpoon = Instantiate(SkillWeapon, transform.position, Quaternion.identity);
-            Rigidbody2D rb = CL_Harpoon.GetComponent<Rigidbody2D>();
-            Vector2 bulletDirection = Quaternion.Euler(0, 0, angle -20*i) * playerController.CursorDirection.normalized;
-            CL_Harpoon.transform.up = bulletDirection;
-            rb.velocity = bulletDirection * 20;
-            Destroy(CL_Harpoon, 0.8f);
-        }
-        Att = ATT.A2;
-        skillcount = 0;
-        end();
+        GameObject CL_Weapon = SpawnObject(Harpoon, TargetObject,5);
+        OW_HarpoonVer2 _HarpoonVer2 = CL_Weapon.GetComponent<OW_HarpoonVer2>();
+
+        _HarpoonVer2.Direction = (Vector2)playerController.CursorDirection;
+        
 
     }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("EnemyArea")&& !Attacked) 
-        {
-            Shot();
-        }
-    }
+    
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SB_Squid
   m_EditorClassIdentifier: 
   NAME: "\u30A4\u30AB\u578B\u6D77\u7363"
-  MAXHP: 2327
+  MAXHP: 1861
   Regen: 0
   MAXMP: 0
   SPEED: 1
@@ -22,7 +22,7 @@ MonoBehaviour:
   GOLD: 34
   XP: 0
   StanHP: 20
-  ConfusionResistance: 1000
+  ConfusionResistance: 800
   Critical: 0
   Range: 0
   ConfusionResistanceRegen: 200

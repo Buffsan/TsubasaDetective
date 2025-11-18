@@ -36,7 +36,7 @@ public class Relic_AncientDefibrillator : RelicBase_AI
     {
         foreach (var skill in playerController.skillINFO) 
         {
-            skill.SkillCardManager.isCoolTime_add(8);
+            skill.SkillCardManager.isCoolTime_add(3);
         }
     }
     public void OnDamage(float damage, bool Invincible) 

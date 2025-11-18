@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GT_Sardine
   m_EditorClassIdentifier: 
   NAME: "\u30A4\u30EF\u30B7\u578B\u6D77\u7363_\u5927\u578B"
-  MAXHP: 1568
+  MAXHP: 1003
   Regen: 0
   MAXMP: 0
   SPEED: 3

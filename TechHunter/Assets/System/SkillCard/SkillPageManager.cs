@@ -60,6 +60,10 @@ public class SkillPageManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && Totch && !DontTotch)
         {
+            foreach (var save in SkillController.SavesSkillPageManager) 
+            {
+                save.Select = false;
+            }
             audio.isPlaySE(Clip2);
             Select = true;
             //Debug.Log("‘I‘ðŠ®—¹");

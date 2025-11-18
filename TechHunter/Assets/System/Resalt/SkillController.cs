@@ -30,8 +30,8 @@ public class SkillController : MonoBehaviour
     public List<Relic> SaveRelics = new List<Relic>();
 
     [HideInInspector] public List<SkillPageManager> SavesSkillPageManager = new List<SkillPageManager>();
-    SkillPageManager ChangeSkillPageManger_save;
-    [HideInInspector] public List<Skill> SaveSkills = new List<Skill>();
+    public SkillPageManager ChangeSkillPageManger_save;
+     public List<Skill> SaveSkills = new List<Skill>();
 
     ALL_SystemManager allSystemManager => ALL_SystemManager.Instance;
 
@@ -610,21 +610,24 @@ public class SkillController : MonoBehaviour
         bool LevelUP = false;
         int index = 0;
         SkillInfo LevelUP_SkillInfo;
+        ChangeSkillPageManger_save = null;
         foreach (SkillPageManager save in SavesSkillPageManager) 
         {//レベルアップできるかの検証
+            
             if (save.Select)
             {
                 ChangeSkillPageManger_save = save;
-            }
-            foreach (SkillInfo skillinfo in playerController.skillINFO)
-            {
-                
-                if (skillinfo.skillDATA == SaveSkills[index].skill && skillinfo.skillDATA != skillNoneData)
-                {
-                    LevelUP = true;
-                    LevelUP_SkillInfo = skillinfo;
+                foreach (SkillInfo skillinfo in playerController.skillINFO)
+                {      
+                    if (skillinfo.skillDATA == SaveSkills[index].skill && skillinfo.skillDATA != skillNoneData)
+                    {
+                        Debug.Log("レベルアップ発見");
+                        LevelUP = true;
+                        LevelUP_SkillInfo = skillinfo;
+                    }
                 }
             }
+            
             index++;
         }
         index = 0;
@@ -676,7 +679,45 @@ public class SkillController : MonoBehaviour
 
             FinChoicePage();
         }
+        
 
+    }
+    public void ChangeSkillPage(int ID) 
+    {
+        int index = 0;
+        foreach (SkillPageManager save in SavesSkillPageManager) 
+        {
+            if (save == ChangeSkillPageManger_save)
+            {
+                playerController.skillINFO[ID].skillDATA = SaveSkills[index].skill;
+                playerController.skillINFO[ID].SkillLevel++;
+                save.move = SkillPageManager.Move.Wait;
+            }
+            else 
+            {
+                save.move = SkillPageManager.Move.Run;
+            }
+
+            Destroy(save.gameObject, 5);
+            index++;
+        }
+        if (AllSkillPages.Count != 0)
+        {
+            foreach (var a in AllSkillPages)
+            {
+                AllSkilPagel allSkil = a.GetComponent<AllSkilPagel>();
+                allSkil.move = AllSkilPagel.Move.Run;
+
+                Destroy(a, 5);
+            }
+        }
+
+        AllSkillPages.Clear();
+        SaveSkills.Clear();
+        SavesSkillPageManager.Clear();
+        FinChoicePage();
+
+       
     }
     void Min_ChoicePage() 
     {
@@ -704,6 +745,8 @@ public class SkillController : MonoBehaviour
                     {
                         if (skillinfo.skillDATA == skillNoneData)
                         {
+                            
+                            Debug.Log(SaveSkills[index].skill + "確認");
                             systemManager.gameMode = SystemManager.GameMode.Goal;
                             playerController.movetype = PlayerController.MoveType.Nomal;
                             systemManager.mode = SystemManager.ModeType.M1;
@@ -763,7 +806,7 @@ public class SkillController : MonoBehaviour
 
         //設置間隔 -500 0 500
         //500 1000 1500
-        int TargetPos = 480 * value - 400;
+        int TargetPos = 480 * value - 350;
         Debug.Log(TargetPos);
         pageManager.TargetRectPos = TargetPos;
     }
@@ -972,7 +1015,7 @@ public class SkillController : MonoBehaviour
         //設置間隔 -500 0 500
         //500 1000 1500
         int TargetPos = 480 * value -220;
-        Debug.Log(TargetPos);
+        //Debug.Log(TargetPos);
         pageManager.TargetRectPos = TargetPos;
         
   }

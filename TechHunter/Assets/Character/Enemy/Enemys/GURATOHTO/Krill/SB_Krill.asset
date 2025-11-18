@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SB_Krill
   m_EditorClassIdentifier: 
   NAME: "\u30AA\u30AD\u30A2\u30DF\u578B\u6D77\u7363"
-  MAXHP: 140
+  MAXHP: 195
   Regen: 0
   MAXMP: 0
   SPEED: 3

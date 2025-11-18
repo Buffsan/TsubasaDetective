@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Emberslight_Attack 2
   m_EditorClassIdentifier: 
   attackType: 3
-  Attack: 3
+  Attack: 1
   AttackSpeedTime: 0
   StaggerPower: 0
-  ConfusionPower: 1
+  ConfusionPower: 0.1
   KnockBackPower: 0
   MaxStack: 0
   HitAudio: {fileID: 8300000, guid: 2493cc64b1a333148a18e518609ebc19, type: 3}

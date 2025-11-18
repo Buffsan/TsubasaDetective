@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: SB_Whale
   m_EditorClassIdentifier: 
   NAME: "\u30AF\u30B8\u30E9\u578B\u6D77\u7363"
-  MAXHP: 21821
+  MAXHP: 17456
   Regen: 0
   MAXMP: 0
   SPEED: 1
-  ATK: 10
+  ATK: 8
   ATKDF: 7
   GOLD: 1299
   XP: 0

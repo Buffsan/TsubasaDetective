@@ -95,7 +95,7 @@ public class SB_Whale_AI : Boss_MoveBase
                     AttackWaitTime = 0;
                     enemyBase.moveType = EnemyBase.MoveType.Attack;
                     enemyBase.attackType = EnemyBase.AttackType.A6;
-                    DamageArea.SetActive(true);
+                    DamageArea.SetActive(false);
                     isSerious = true;
                 }
                 
@@ -845,6 +845,8 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 enemyBase.transform.position = targetPos;
                 enemyBase.animator.Play("èoåª", 0, 0);
+                DamageArea.SetActive(true);
+                audioManager.BgmSource.Play();
 
                 NextPhase();
                 

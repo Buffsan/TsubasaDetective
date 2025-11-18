@@ -90,12 +90,19 @@ public class SkillItemHand : MonoBehaviour, IPointerDownHandler,IPointerUpHandle
     {
         if (skilPagel.ChoicePage == null)
         {
-            Debug.Log("‰Ÿ‚·");
-            PushButton = true;
-            skilPagel.ChoicePage = this.gameObject;
-            skilPagel._ID_ChoiceNumber = _ID_Number;
+            if (ALL_System.skillController.ChangeSkillPageManger_save == null)
+            {
+                Debug.Log("‰Ÿ‚·");
+                PushButton = true;
+                skilPagel.ChoicePage = this.gameObject;
+                skilPagel._ID_ChoiceNumber = _ID_Number;
 
-            ALL_System.skillController.ClickSkillFrame(_ID_Number);
+                ALL_System.skillController.ClickSkillFrame(_ID_Number);
+            }
+            else 
+            {
+                ALL_System.skillController.ChangeSkillPage(_ID_Number);
+            }
            // My.raycastTarget = false;
         }
     }

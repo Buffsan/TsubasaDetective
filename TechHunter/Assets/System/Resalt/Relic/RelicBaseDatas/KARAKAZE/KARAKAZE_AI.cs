@@ -44,7 +44,7 @@ public class KARAKAZE_AI : MonoBehaviour
                     
                     Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
                     rb.velocity = Direction.normalized * 12;
-                    Destroy(CL_Slash,0.3f);
+                    Destroy(CL_Slash,1f);
                 }
                 
                 

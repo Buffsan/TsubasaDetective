@@ -52,4 +52,6 @@ MonoBehaviour:
   Effect: {fileID: 1900503562966374143, guid: bd8b25c712496c549a78ae1ad059a347, type: 3}
   Attack: {fileID: 7850193990395036599, guid: 9c317812765c64f4892d178d9ddc6d8d, type: 3}
   Doge: 0
+  Effect1: {fileID: 6653816983156286485, guid: d1d77f48f25eb5a42989f09f720b501c, type: 3}
+  AttackArea1: {fileID: 4243717845304505615, guid: 79cc098349b9eeb479de87cc2e6d0b9d, type: 3}
   CerseCount: 0

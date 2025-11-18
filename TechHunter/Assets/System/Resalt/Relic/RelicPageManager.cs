@@ -14,7 +14,7 @@ public class RelicPageManager : MonoBehaviour
     public TextMeshProUGUI Explanation;
     public Image MainImage;
     [Space]
-
+    [SerializeField] float xAddpos = 90;
     public float TargetRectPos = 0;
     [SerializeField] AudioClip Clip1;
     [SerializeField] AudioClip Clip2;
@@ -85,7 +85,7 @@ public class RelicPageManager : MonoBehaviour
     }
     void isRun()
     {
-        rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 60, 380);
+        rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + xAddpos, 380);
         animator.SetInteger("Anim", 0);
     }
     void isMove()
@@ -93,7 +93,7 @@ public class RelicPageManager : MonoBehaviour
         if (rect.transform.localPosition.x < TargetRectPos)
         {
 
-            rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 70, 380);
+            rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + xAddpos, 380);
 
         }
         else

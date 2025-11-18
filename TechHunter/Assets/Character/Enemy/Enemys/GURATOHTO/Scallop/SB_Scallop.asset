@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SB_Scallop
   m_EditorClassIdentifier: 
   NAME: "\u30DB\u30BF\u30C6\u578B\u6D77\u7363"
-  MAXHP: 4300
+  MAXHP: 3136
   Regen: 0
   MAXMP: 0
   SPEED: 2
@@ -22,7 +22,7 @@ MonoBehaviour:
   GOLD: 67
   XP: 0
   StanHP: 10
-  ConfusionResistance: 2000
+  ConfusionResistance: 1500
   Critical: 0
   Range: 0
   ConfusionResistanceRegen: 60

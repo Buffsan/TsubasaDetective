@@ -5,6 +5,7 @@ using UnityEngine;
 public class Relic_TheBlood_SpunCopier_Ghost : MonoBehaviour
 {
     [SerializeField] Animator animator;
+    public float WaitTime = 4;
     public GameObject playerskillBase;
     public GameObject SaveSkillObject = null;
     PlayerSkillBase playerSkillBase = null;
@@ -22,7 +23,7 @@ public class Relic_TheBlood_SpunCopier_Ghost : MonoBehaviour
         if (Phase == 0) 
         {
             Cout += Time.fixedDeltaTime;
-            if (Cout > 4) 
+            if (Cout > WaitTime) 
             {
                 Phase++;
             }

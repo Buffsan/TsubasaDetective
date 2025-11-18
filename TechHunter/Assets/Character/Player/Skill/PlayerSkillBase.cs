@@ -46,6 +46,18 @@ public class PlayerSkillBase : MonoBehaviour
 
         return CL_Weapon;
     }
+    public GameObject SpawnObject(GameObject Skill, GameObject target , float destroyTime) 
+    {
+        GameObject CL_Weapon = Instantiate(Skill, target.transform.position, Quaternion.identity);
+        if (destroyTime > 0) 
+        {
+            Destroy(CL_Weapon, destroyTime);
+        }
+        
+
+        return CL_Weapon;
+
+    }
     public void PlayerMove(float speed) 
     {
         if (TargetObject != playerController.gameObject) return;

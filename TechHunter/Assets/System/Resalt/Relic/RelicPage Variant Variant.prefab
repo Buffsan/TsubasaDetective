@@ -781,8 +781,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4279708221
-  m_fontColor: {r: 0.23773581, g: 0.16583456, b: 0.09105728, a: 1}
+    rgba: 4278589223
+  m_fontColor: {r: 0.15471691, g: 0.09005692, b: 0.025396919, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -799,8 +799,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3
-  m_fontSizeBase: 3
+  m_fontSize: 2.8
+  m_fontSizeBase: 2.8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1176,6 +1176,7 @@ MonoBehaviour:
   MainExplanation: {fileID: 1677991515326163182}
   Explanation: {fileID: 1677991515326163182}
   MainImage: {fileID: 8543921290809636583}
+  xAddpos: 80
   TargetRectPos: 0
   Clip1: {fileID: 8300000, guid: 469ffcf0be31c9044becbc446b60a249, type: 3}
   Clip2: {fileID: 8300000, guid: 2493cc64b1a333148a18e518609ebc19, type: 3}

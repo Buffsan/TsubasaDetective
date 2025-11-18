@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: KARAKAZE
   m_EditorClassIdentifier: 
   attackType: 2
-  Attack: 14
+  Attack: 25
   AttackSpeedTime: 0
   StaggerPower: 1
-  ConfusionPower: 0.1
+  ConfusionPower: 0.5
   KnockBackPower: 0
   MaxStack: 0
   HitAudio: {fileID: 8300000, guid: 2493cc64b1a333148a18e518609ebc19, type: 3}

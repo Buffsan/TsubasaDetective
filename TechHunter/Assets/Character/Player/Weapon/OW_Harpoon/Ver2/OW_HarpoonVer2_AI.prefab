@@ -94,7 +94,6 @@ GameObject:
   m_Component:
   - component: {fileID: 16831500057253684}
   - component: {fileID: 4717580979984253132}
-  - component: {fileID: 8010899227891150750}
   - component: {fileID: 6136171131235064032}
   - component: {fileID: 950345622845214567}
   m_Layer: 0
@@ -134,23 +133,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillWeapon: {fileID: 572656981946884804, guid: 01ea7288a0386754a9023b9706f99e88, type: 3}
   SlillBullet: {fileID: 0}
+  A_Phase: 0
+  Targetrb: {fileID: 0}
+  TargetObject: {fileID: 0}
+  SkillLevel: 0
   Att: 0
   skillcount: 0
   animator: {fileID: 6136171131235064032}
---- !u!114 &8010899227891150750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8807019882431713610}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67d94abb50391f34f9365c5bd1ab9b75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weapondata: {fileID: 11400000, guid: 5cdf205a14c10f644aac23694e70d2af, type: 2}
-  AgeinAttack: 0
+  Harpoon: {fileID: 6913128917144544171, guid: a970d3df72545414295e06064bc4d9ff, type: 3}
 --- !u!95 &6136171131235064032
 Animator:
   serializedVersion: 5

@@ -15,7 +15,7 @@ MonoBehaviour:
   attackType: 0
   Attack: 30
   AttackSpeedTime: 0
-  StaggerPower: 3
+  StaggerPower: 9
   ConfusionPower: 0.4
   KnockBackPower: 0
   MaxStack: 0

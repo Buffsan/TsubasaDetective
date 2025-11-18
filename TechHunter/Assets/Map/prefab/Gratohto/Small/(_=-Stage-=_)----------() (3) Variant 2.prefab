@@ -48066,6 +48066,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5743106456970045363, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
+      propertyPath: BGM
+      value: 
+      objectReference: {fileID: 8300000, guid: 38516a108f2cb6a4790b2d1402681964, type: 3}
     - target: {fileID: 7945993608053462500, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_Tiles.Array.size
       value: 0

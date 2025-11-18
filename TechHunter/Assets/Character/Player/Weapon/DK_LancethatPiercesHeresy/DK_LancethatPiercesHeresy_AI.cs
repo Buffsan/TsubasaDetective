@@ -33,7 +33,7 @@ public class DK_LancethatPiercesHeresy_AI : PlayerSkillBase
         }
         if (A_Phase == 1) 
         {
-            PlayerMove(0.12f);
+            PlayerMove(0.08f);
             if (skillcount > 0.5f) 
             {
                 NextPhase();

@@ -165,8 +165,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 1198549048848149598}
+  WaitTime: 2
   playerskillBase: {fileID: 0}
   SaveSkillObject: {fileID: 0}
+  HP: 1
 --- !u!95 &1198549048848149598
 Animator:
   serializedVersion: 5

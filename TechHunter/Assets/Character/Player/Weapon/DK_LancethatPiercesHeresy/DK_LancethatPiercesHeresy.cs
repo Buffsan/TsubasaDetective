@@ -69,9 +69,10 @@ public class DK_LancethatPiercesHeresy : MonoBehaviour
     {
         if (!Guard) return;
         EnemyAttack enemyAttack = other.GetComponent<EnemyAttack>();
-        Debug.Log("1");
+        //Debug.Log("1");
         if (!enemyAttack) return;
-        Debug.Log("2");
+        //Debug.Log("2");
+        GlobalEvents.InvokeOnPlayerDamage(0, true);
         GameObject CL_AttackArea = Instantiate(AttackArea, transform.position,Quaternion.identity);
         Destroy(CL_AttackArea, 0.1f);
     }

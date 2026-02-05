@@ -10,6 +10,8 @@ public class KARAKAZE_AI : MonoBehaviour
     [SerializeField] Animator animator;
     [SerializeField] bool SlashSpawn = false;
 
+    [SerializeField] float SlashRange = 3;
+
     PlayerController playerController => PlayerController.Instance;
 
     int Phase = 0;
@@ -44,7 +46,7 @@ public class KARAKAZE_AI : MonoBehaviour
                     
                     Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
                     rb.velocity = Direction.normalized * 12;
-                    Destroy(CL_Slash,1f);
+                    Destroy(CL_Slash,SlashRange);
                 }
                 
                 

@@ -12,7 +12,7 @@ public class Relic_KARAKAZE : RelicBase_AI
     bool Stop = false;
 
     [SerializeField] float Max_Caurse_Count = 15;
-    [SerializeField] List<float> Carse_Level = new List<float>();
+    [SerializeField] List<float> Cerse_Level = new List<float>();
     ALL_SystemManager aLL_System => ALL_SystemManager.Instance;
 
     [SerializeField]float CerseCount = 0;
@@ -48,14 +48,16 @@ public class Relic_KARAKAZE : RelicBase_AI
                     if (i == 1) CerseCount += 3.5f;
                     if (i == 2) CerseCount += 5;
                 }
-                if (CerseCount > Carse_Level[1])
+                if (CerseCount > Cerse_Level[0])
                 {
-                    Instantiate(KARAKAZE[1], transform.position, Quaternion.identity);
+                    int CersePhase = 0;
+                    foreach (var Levels in Cerse_Level)
+                    {
+                        if (CerseCount > Levels) CersePhase++;
+                    }
+                    Instantiate(KARAKAZE[CersePhase], transform.position, Quaternion.identity);
                 }
-                else if (CerseCount > Carse_Level[0])
-                {
-                    Instantiate(KARAKAZE[0], transform.position, Quaternion.identity);
-                }
+                
                 GameObject CL_Bourei = Instantiate(Bourei, transform.position, Quaternion.identity);
                 Destroy(CL_Bourei, 3);
                 i++;

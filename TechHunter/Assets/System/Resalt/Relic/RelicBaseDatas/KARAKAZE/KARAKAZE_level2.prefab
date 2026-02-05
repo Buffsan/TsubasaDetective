@@ -72,6 +72,7 @@ MonoBehaviour:
   Bourei: {fileID: 1929615675131732519, guid: 7e67f585b74785c4a874297433fa9681, type: 3}
   animator: {fileID: 6364078184216187261}
   SlashSpawn: 1
+  SlashRange: 0.2
 --- !u!1 &5557939743008989498
 GameObject:
   m_ObjectHideFlags: 0
@@ -120,6 +121,7 @@ MonoBehaviour:
   weapondata: {fileID: 11400000, guid: ddc73dce46fa9f04a8d1b04498338333, type: 2}
   skillcarddata: {fileID: 0}
   AttackLevel: 0
+  isCriticulUse: 1
   AgeinAttack: 0
 --- !u!61 &2744922325572165839
 BoxCollider2D:

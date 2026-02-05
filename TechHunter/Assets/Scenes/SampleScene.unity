@@ -12020,6 +12020,10 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: fbca6dc24c4d8944281e5f63827f6ad2, type: 2}
   - Name: "\u30CD\u30A4\u30E4\u30A2\u30E4\u30A2\u306E\u5148\u89E6\u308C"
     data: {fileID: 11400000, guid: e8f635e6a0218584881bad482db1a558, type: 2}
+  - Name: "\u602A\u9CE5\u6BBA\u3057\u306E\u738B\u51A0"
+    data: {fileID: 11400000, guid: fd0bdddeb03ecec4c80339186ca37d45, type: 2}
+  - Name: "Dcorp\u6226\u95D8\u652F\u63F4\u7AEF\u672B"
+    data: {fileID: 11400000, guid: bead82ea456bc6041a58ae92d6110735, type: 2}
   SavePage: []
   SaveStatus: []
   Save_RelicPage: []

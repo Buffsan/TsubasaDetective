@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Attack_PlumeOfFarwust 1
   m_EditorClassIdentifier: 
   attackType: 0
-  Attack: 25
+  Attack: 5
   AttackSpeedTime: 0
-  StaggerPower: 25
+  StaggerPower: 7
   ConfusionPower: 1
   KnockBackPower: 0
   MaxStack: 0

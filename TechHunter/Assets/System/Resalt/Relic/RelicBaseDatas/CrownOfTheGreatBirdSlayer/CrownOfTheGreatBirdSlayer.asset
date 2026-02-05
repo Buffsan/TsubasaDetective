@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5350f31428789b94589b208b814222cc, type: 3}
+  m_Name: CrownOfTheGreatBirdSlayer
+  m_EditorClassIdentifier: 
+  RelicName: "\u602A\u9CE5\u6BBA\u3057\u306E\u738B\u51A0"
+  RelicDataObject: {fileID: 5565581867449916653, guid: dd3c49986184aa849ae1111036cc5f62, type: 3}
+  RelicImage: {fileID: 21300000, guid: ae965b3f620ca494c89fbe04fd2433b3, type: 3}
+  Explanation: "\u4E00\u5B9A\u8DDD\u96E2\u79FB\u52D5\u3059\u308B\u305F\u3073\u306B\u30E9\u30F3\u30C0\u30E0\u306A\u6575\u306B\u7121\u9650\u306B\u8CAB\u901A\u3059\u308B\u7FBD\u3092\u6295\u64F2\u3059\u308B\u3002\n\u7FBD\u309220\u672C\u6295\u64F2\u3059\u308B\u305F\u3073\u306B\u7FBD\u3067\u5F62\u6210\u3055\u308C\u305F\u5F37\u529B\u306A\u8D64\u3044\u65AC\u6483\u3092\u767A\u5C04\u3059\u308B\u3002\n\n\u3053\u306E\u738B\u51A0\u3092\u898B\u308B\u5EA6\u306B\u8D64\u3044\u30ED\u30FC\u30D6\u3092\u7FBD\u7E54\u3063\u305F\u3042\u3044\u3064\u304C\u76EE\u306B\u6D6E\u304B\u3076\u3002\u672C\u5F53\u306B\u3080\u304B\u3064\u304F\uFF01\uFF01"
+  stage: 0

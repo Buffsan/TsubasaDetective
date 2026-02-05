@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6930772407130858414
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4009418153693971872}
+  - component: {fileID: 9133173570502185171}
+  m_Layer: 0
+  m_Name: TG_WarJuice_AI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4009418153693971872
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6930772407130858414}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.2431732, y: -0.11406905, z: -0.005604349}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9133173570502185171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6930772407130858414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7458379d572b3f42b6b473d4cb98a15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SkillWeapon: {fileID: 8365610371535143347, guid: a2f143f10598b7f48874100627c4fde2, type: 3}
+  SlillBullet: {fileID: 0}
+  Att: 0
+  skillcount: 0
+  BuffData: {fileID: 11400000, guid: b03375c73fba9d041a92cc60baf70a94, type: 2}
+  audioClip: {fileID: 8300000, guid: 3e9104251791a2b49ab076151b8bd4d3, type: 3}
+  Effect: {fileID: 70633589638429284, guid: bc2b64dbe69e1924e9515711d4b73136, type: 3}

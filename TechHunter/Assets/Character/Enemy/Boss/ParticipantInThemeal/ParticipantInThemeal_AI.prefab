@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2380117987387405870
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5638077648715021390}
+  - component: {fileID: 8477485321618130023}
+  m_Layer: 0
+  m_Name: ParticipantInThemeal_AI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5638077648715021390
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2380117987387405870}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.0886774, y: 1.4982505, z: -0.013765897}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8477485321618130023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2380117987387405870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2da0c03d665da742a75aab53df11f2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnemyName: "\u4F1A\u98DF\u8005"
+  enemyBase: {fileID: 0}
+  AttackNumber: 0
+  AttackWaitTime: 0
+  AllAttackNumber: 0
+  AttackPhase: 0
+  SaveVolume: 0
+  phase: 0
+  targetPos: {fileID: 0}
+  duration: 1
+  arcHeight: 3
+  AttackAreas:
+  - {fileID: 4571655906799280998, guid: e020c9d367875734fa7d9611debb9516, type: 3}
+  enemyAttacks: []
+  CarseSlash: {fileID: 5193073683184882753, guid: 1a4783d83bb4d9d458d5e9634a3e7ffb, type: 3}
+  BigCarseSlash: {fileID: 2962967492174352766, guid: 37230b1e1ce11754d9acfe8af821f08e, type: 3}
+  PPPAttack: {fileID: 520444690567741310, guid: 626ceecc7ff4f024db100e5ff5fbcd79, type: 3}
+  PPPAttack1: {fileID: 520444690567741310, guid: e50319ecbfbf2a541bf859e37986ddd4, type: 3}
+  RockNeedle: {fileID: 2218436625401236047, guid: e57302ff6772a8a498ffbbfccb56c502, type: 3}

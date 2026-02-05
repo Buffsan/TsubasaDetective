@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &5923628429248188049
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4009418153693971872, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.9938002
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009418153693971872, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.9472249
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009418153693971872, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.005604349
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009418153693971872, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009418153693971872, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009418153693971872, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009418153693971872, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009418153693971872, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009418153693971872, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009418153693971872, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6930772407130858414, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: m_Name
+      value: TG_WhiskeylHigh_AI Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 9133173570502185171, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: Effect
+      value: 
+      objectReference: {fileID: 70633589638429284, guid: 28f99eaf3e48dc748a17c0bbcacf5099, type: 3}
+    - target: {fileID: 9133173570502185171, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: BuffData
+      value: 
+      objectReference: {fileID: 11400000, guid: 169a15c35c66136488901fdc39aeba71, type: 2}
+    - target: {fileID: 9133173570502185171, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: DrinkTYPE
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9133173570502185171, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: SkillWeapon
+      value: 
+      objectReference: {fileID: 3637707798951723239, guid: 5f11637edc658ab4dbd1b639001976a4, type: 3}
+    - target: {fileID: 9133173570502185171, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}
+      propertyPath: WhiskeyHigh_Bounas
+      value: 
+      objectReference: {fileID: 2390771983532766479, guid: 3ffaaedea3f3d1a4aa20aed1dec4163a, type: 3}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8b9106e7a70afc149ad03e95f4ffa2f6, type: 3}

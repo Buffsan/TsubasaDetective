@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5350f31428789b94589b208b814222cc, type: 3}
+  m_Name: Blood
+  m_EditorClassIdentifier: 
+  RelicName: "\u8840\u306B\u6109\u60A6\u3059\u308B\u69CD"
+  RelicDataObject: {fileID: 2352671852725730948, guid: 9ee65781fe3cfe84d91e152929e3e9ab, type: 3}
+  RelicImage: {fileID: 21300000, guid: 65dc1736d9395e4499c63c03a9a3e169, type: 3}
+  Explanation: "\u79FB\u52D5\u30AD\u30FC\u3092\u540C\u3058\u65B9\u5411\u306B\u7D20\u65E9\u304F2\u56DE\u5165\u529B\u3059\u308B\u3068\u305D\u306E\u65B9\u5411\u306B\u69CD\u3092\u6301\u3061\u306A\u304C\u3089\u7A81\u9032\u3057\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002\n\u56DE\u907F\u3084\u30B9\u30AD\u30EB\u3092\u631F\u3093\u3067\u304B\u3089\u767A\u52D5\u3059\u308B\u3068\u5F37\u5316\u3055\u308C\u305F\u884C\u52D5\u306B\u5909\u5316\u3057\u7121\u6575\u30923\u79D2\u5F97\u3066\u3001\u653B\u6483\u529B\u4E0A\u6607+10%\u30920.5\u79D2\u5F97\u308B\u3002\n\u3053\u306E\u7A81\u9032\u306F\u8A60\u5531\u306A\u3069\u306E\u30B9\u30AD\u30EB\u3092\u4E2D\u65AD\u305B\u305A\u306B\u767A\u52D5\u3067\u304D\u308B\u3002"
+  stage: 4

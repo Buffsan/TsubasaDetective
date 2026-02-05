@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d42d20b8c49a03e4abb8277ae9ed1aef, type: 3}
+  m_Name: Partici
+  m_EditorClassIdentifier: 
+  CharaName: "\u6B8B\u98EF\u5927\u611F\u8B1D\u796D\u4F1A\u98DF\u8005"
+  StageName: "\u30C6\u30EB\u30BB\u30C8\u4E8C\u5C64"
+  CharaImage128: {fileID: 21300000, guid: 061a9b00fe238c64680b2d6d7d9dce8b, type: 3}

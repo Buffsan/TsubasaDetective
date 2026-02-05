@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb115587ebfd0544b17a03fb5d1cda0, type: 3}
+  m_Name: GS_Flamethrower
+  m_EditorClassIdentifier: 
+  SkillImage: {fileID: 21300000, guid: 044ae80c6303394488d0d0e3e3fa1c3b, type: 3}
+  SkillName: "\u706B\u708E\u653E\u5C04"
+  SkillMessage: "\u30AB\u30FC\u30BD\u30EB\u65B9\u5411\u306B<color=#CC4400>5\u79D2\u9593\u706B\u708E\u3092\u653E\u5C04\u3059\u308B\u3002</color>\n\u30AF\u30FC\u30EB\u30BF\u30A4\u30E0\u304C\u9577\u3044\u3002"
+  CoolTime: 49
+  SkillData: {fileID: 2480739150426000362, guid: 7b9b7e94dbe8f7e499647b507248893d, type: 3}
+  SkillDataList: []
+  MaxStack: 0
+  TotalDamage: 172

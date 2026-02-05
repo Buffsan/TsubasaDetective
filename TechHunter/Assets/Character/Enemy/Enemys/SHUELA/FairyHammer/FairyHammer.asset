@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
+  m_Name: FairyHammer
+  m_EditorClassIdentifier: 
+  NAME: "\u5996\u7CBE\u6226\u69CC\u5175"
+  MAXHP: 417
+  Regen: 0
+  MAXMP: 0
+  SPEED: 1.5
+  ATK: 10
+  ATKDF: 4
+  GOLD: 15
+  XP: 0
+  StanHP: 8
+  ConfusionResistance: 140
+  Critical: 0
+  Range: 0
+  ConfusionResistanceRegen: 15

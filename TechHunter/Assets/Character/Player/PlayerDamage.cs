@@ -1,0 +1,117 @@
+using JetBrains.Annotations;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerDamage : MonoBehaviour, IDamageable
+{
+    [SerializeField] PlayerController playerController;
+    [SerializeField] AudioClip DamageClip;
+    [SerializeField] BuffData DamageBuff;
+
+    [SerializeField] GameObject DamageImage;
+    Animator animator;
+    [SerializeField] bool isDamageDebucMode = false;
+    [SerializeField] SpriteRenderer spriteRenderer;
+
+    ALL_SystemManager systemManager => ALL_SystemManager.Instance;
+
+    public enum Mode
+    {
+
+        Nomal,
+        Invincible
+
+    }
+    public Mode mode = Mode.Nomal;
+
+    float InvincibleCount = 0;
+    public float InvincibleTime = 0;
+
+    AudioManager audiomanager => AudioManager.instance;
+
+    public float HP;
+    public float DF;
+    public float Stan;
+    public float Regen;
+    public float AddRegen;
+
+    float StanCount = 0;
+    float DieCount = 0;
+
+    Vector2 SavePos;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        HP = playerController.charadata.MAXHP;
+        DF = playerController.charadata.ATKDF;
+        Stan = playerController.charadata.StanHP;
+        Regen = playerController.charadata.Regen;
+
+        animator = DamageImage.GetComponent<Animator>();    
+    }
+    private void FixedUpdate() 
+    {
+        if (mode == Mode.Invincible)
+        {
+            InvincibleCount += Time.deltaTime;
+            if (InvincibleTime < InvincibleCount) 
+            { 
+            mode = Mode.Nomal;
+                InvincibleCount = 0;
+            }
+        }
+    }
+    public void Damage(float Attackvalue, float Stanvalue, float value2, bool value3)
+    {
+        GlobalEvents.InvokeOnPlayerDamage(Attackvalue, mode == Mode.Invincible);
+        //Debug.Log(mode == Mode.Invincible);
+        if (mode != Mode.Invincible )
+        {
+            if (systemManager.systemManager.gameMode != SystemManager.GameMode.Nomal && !isDamageDebucMode) return;
+            audiomanager.PlaySE(DamageClip);
+            float AddDamage = Attackvalue - (playerController.AddAtkDF + playerController.playerBuff.DEF_AllBuff) * playerController.playerBuff.MultiplyDEF_AllBuff;
+            if (AddDamage > 0)
+            {
+                playerController.HP -= AddDamage;
+                playerController.playerBuff.SpawnBuff(DamageBuff);
+
+                animator.Play("É_ÉÅÅ[ÉW");
+            }
+            else 
+            {
+                playerController.HP -= 1;
+                playerController.playerBuff.SpawnBuff(DamageBuff);
+            }
+
+            HP_SliderChange();
+
+            if (playerController.HP <= 0)
+            {
+                Death();
+
+            }
+        }
+        
+
+    }
+    public void HP_SliderChange() 
+    {
+        playerController.HP_Slider.value = playerController.HP / playerController.MaxHP;
+    }
+    public void SetInvincible(float Time) 
+    { 
+    
+        mode = Mode.Invincible;
+        InvincibleCount = 0;
+        InvincibleTime = Time;
+
+    }
+
+    public void Death() 
+    {
+        GlobalEvents.InvokePlayerDie(1f);
+    Debug.Log("éÄÇÒÇæ");
+    }
+}

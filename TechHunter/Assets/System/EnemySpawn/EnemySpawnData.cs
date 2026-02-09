@@ -73,7 +73,12 @@ public class EnemySpawnGroup
         CG_Heavy_Shield,
         CG_Tank,
             CG_Crrier,
-        CG_CaptainKnight
+        CG_CaptainKnight,
+        TERUSETO_KINGYO_LeaderWakin,
+        TERUSETO_KINGYO_OORanchu,
+        TERUSETO_KINGYO_Ranchu,
+        TERUSETO_KINGYO_Tanchou,
+        TERUSETO_KINGYO_Zikin
 
     }
 

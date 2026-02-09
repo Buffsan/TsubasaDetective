@@ -4890,7 +4890,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3307683575190189216, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_Name
-      value: (_=-Stage-=_)----------() Variant 2
+      value: (_=-Stage-=_)----------() Variant 10
       objectReference: {fileID: 0}
     - target: {fileID: 3664666186379655610, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -42712,6 +42712,10 @@ PrefabInstance:
       propertyPath: m_Tiles.Array.data[1567].second.m_TileObjectToInstantiateIndex
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 5743106456970045363, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
+      propertyPath: BGM
+      value: 
+      objectReference: {fileID: 8300000, guid: 77609ec7a93933547afbce7d56a81307, type: 3}
     - target: {fileID: 7945993608053462500, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_Tiles.Array.size
       value: 15

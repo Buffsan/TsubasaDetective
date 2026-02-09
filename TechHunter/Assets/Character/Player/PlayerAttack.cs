@@ -39,7 +39,7 @@ public class PlayerAttack : MonoBehaviour
                 {
                     if (AgeinAttack) { EnemyData.Add(other.gameObject); }
                     
-                    audioManager.PlaySE(weapondata.HitAudio);
+                    if(weapondata.HitAudio) audioManager.PlaySE(weapondata.HitAudio);
                     float CriticalRandom = Random.Range(0f, 100f);
                     if (controller.AddCritical+controller.Critical <= CriticalRandom || !isCriticulUse)
                     {

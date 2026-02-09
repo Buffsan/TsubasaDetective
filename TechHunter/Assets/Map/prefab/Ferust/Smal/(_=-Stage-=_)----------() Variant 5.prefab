@@ -40928,6 +40928,10 @@ PrefabInstance:
       propertyPath: m_Tiles.Array.data[8].second.m_TileObjectToInstantiateIndex
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 5743106456970045363, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
+      propertyPath: BGM
+      value: 
+      objectReference: {fileID: 8300000, guid: 77609ec7a93933547afbce7d56a81307, type: 3}
     - target: {fileID: 7086044250519889130, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_Tiles.Array.size
       value: 17

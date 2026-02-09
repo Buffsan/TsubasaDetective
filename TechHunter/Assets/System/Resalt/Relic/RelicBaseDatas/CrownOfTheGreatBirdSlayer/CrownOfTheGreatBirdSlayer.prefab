@@ -47,7 +47,7 @@ MonoBehaviour:
   AttackObject: {fileID: 0}
   Hane: {fileID: 5156929789043970271, guid: 0c18d187932e46e4b94dce6321c4631a, type: 3}
   Slash: {fileID: 6114528373985966251, guid: f9ef400be87a79f47b28a33dbae3391a, type: 3}
-  SpawnHaneDistance: 3
+  SpawnHaneDistance: 3.5
   HaneSpeed: 12
   SlashSpeed: 15
-  SlashAttackCount: 20
+  SlashAttackCount: 30

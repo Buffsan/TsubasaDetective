@@ -5,6 +5,11 @@ using UnityEngine;
 public class AI_CGshield : EnemyMoveBase
 {
     [SerializeField] GameObject Arrow;
+    [SerializeField] float AttackFinishWaitTime = 1;
+
+    [SerializeField] float AttackWaitTime1 = 1.5f;
+    [SerializeField] float AttackWaitTime2 = 1;
+    [SerializeField] float AttackWaitTime3 = 0.3f;
     public override void EnemyAttackPlay()
     {
         enemyBase.AttackCount += Time.deltaTime;
@@ -18,7 +23,7 @@ public class AI_CGshield : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
             enemyBase.isPlayerLookBase();
-            if (enemyBase.AttackCount > 1.5)
+            if (enemyBase.AttackCount > AttackWaitTime1)
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
@@ -27,8 +32,8 @@ public class AI_CGshield : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
             enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 1.3f;
-            if (enemyBase.AttackCount > 1)
+            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+            if (enemyBase.AttackCount > AttackWaitTime2)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;
                 enemyBase.AttackCount = 0;
@@ -37,7 +42,7 @@ public class AI_CGshield : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M4)
         {
             enemyBase.rb.velocity = new Vector2(enemyBase.rb.velocity.x * 0.5f, enemyBase.rb.velocity.y * 0.5f);
-            if (enemyBase.AttackCount > 0.3)
+            if (enemyBase.AttackCount > AttackWaitTime3)
             {
                 enemyBase.mode = EnemyBase.ModeType.M5;
                 enemyBase.AttackCount = 0;
@@ -58,7 +63,7 @@ public class AI_CGshield : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M6)
         {
             
-            if (enemyBase.AttackCount > 1)
+            if (enemyBase.AttackCount > AttackFinishWaitTime)
             {
                 enemyBase.mode = EnemyBase.ModeType.M1;
                 enemyBase.AttackCount = 0;

@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &4040416117912694418
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 730871692371801801, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 730871692371801801, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 924208597247462751, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: b4cebe348bb1c2445a3fa9aeb468ab73, type: 2}
+    - target: {fileID: 3530256813258627747, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530256813258627747, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907752524949465397, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.493732
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907752524949465397, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.5684563
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907752524949465397, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907752524949465397, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907752524949465397, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907752524949465397, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907752524949465397, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907752524949465397, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907752524949465397, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907752524949465397, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5551560990742475825, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_Name
+      value: KINGYO_LeaderKoaka Variant Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 6061310974503248545, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b8e4f031c28542f4496fcf32baed4e1e, type: 3}
+    - target: {fileID: 6228350732863945340, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7700808468844495170, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: Koaka
+      value: 
+      objectReference: {fileID: 8181628627559617851, guid: a1a8ec1aeb3dcf0488760c2be2e8beda, type: 3}
+    - target: {fileID: 9001014436334237195, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: charadata
+      value: 
+      objectReference: {fileID: 11400000, guid: 643b302dd32e08245ae948ad41d0e701, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}

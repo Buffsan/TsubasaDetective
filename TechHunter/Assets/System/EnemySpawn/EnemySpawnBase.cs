@@ -110,6 +110,7 @@ public class EnemySpawnBase : MonoBehaviour
         }
 
         TileMap_Controller randomTileMap_C = map_sp[Random.Range(0, map_sp.Count)];
+        ALL_System.camera_Controller.MoveCamera = new Vector3(randomTileMap_C.MoveCamera.x,30,-10);
         GameObject CL_Map = Instantiate(randomTileMap_C.gameObject);
 
          Seve_TileMap_C = CL_Map.GetComponent<TileMap_Controller>();
@@ -174,8 +175,13 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.CG_Heavy_Shield,39},
         { EnemySpawnGroup.EnemyType.CG_Tank,40},
         { EnemySpawnGroup.EnemyType.CG_Crrier,41},
-        { EnemySpawnGroup.EnemyType.CG_CaptainKnight,42}
-        
+        { EnemySpawnGroup.EnemyType.CG_CaptainKnight,42},
+        { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_LeaderWakin,43},
+        { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_OORanchu,44},
+        { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_Ranchu,45},
+        { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_Tanchou,46},
+        { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_Zikin,47},
+
 
     }; 
 

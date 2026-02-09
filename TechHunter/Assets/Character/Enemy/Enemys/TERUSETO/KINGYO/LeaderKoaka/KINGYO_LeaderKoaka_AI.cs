@@ -7,6 +7,7 @@ using static UnityEngine.GraphicsBuffer;
 public class KINGYO_LeaderKoaka_AI : EnemyMoveBase
 {
     [SerializeField] GameObject Koaka;
+    [SerializeField] int SpawnEnemyNumber = 16;
 
     int Phase = 0;
 
@@ -96,7 +97,7 @@ public class KINGYO_LeaderKoaka_AI : EnemyMoveBase
 
                 // 反対方向に20m（単位）離れた座標を計算
                 Vector2 targetPos = (Vector2)transform.position + direction * 10f;
-                for (int i = 0; i < 16; i++)
+                for (int i = 0; i < SpawnEnemyNumber; i++)
                 {
                     Vector2 randomPos = new Vector2(Random.Range(-3f, 3), Random.Range(-2f, 2));
                     GameObject CL_koaka = SpawnNoListEnemy(Koaka, targetPos + randomPos, Quaternion.identity);

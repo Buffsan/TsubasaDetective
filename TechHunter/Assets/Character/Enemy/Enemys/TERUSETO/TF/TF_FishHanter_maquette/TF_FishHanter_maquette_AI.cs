@@ -6,6 +6,8 @@ public class TF_FishHanter_maquette_AI : EnemyMoveBase
 {
     [SerializeField] GameObject Arrow;
     [SerializeField] GameObject Laser;
+
+    [SerializeField] GameObject AttackPoint;
     public override void EnemyStanPlay()
     {
         Laser.SetActive(false);

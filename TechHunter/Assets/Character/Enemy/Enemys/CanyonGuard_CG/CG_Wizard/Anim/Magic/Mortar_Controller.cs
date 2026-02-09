@@ -12,6 +12,9 @@ public class Mortar_Controller : MonoBehaviour
     [SerializeField] GameObject particle;
     [SerializeField] GameObject NewSpase;
     [SerializeField] ParticleSystem particlesystem;
+
+    [SerializeField] GameObject FireEffect;
+    
     public EnemyBase enemyBase;
 
     public enum BulletType 
@@ -93,6 +96,9 @@ public class Mortar_Controller : MonoBehaviour
             enemyAttack.enemyBase = enemyBase;
             circle.radius = RagiSize;
             Destroy(CL_AttackArea,0.05f);
+
+                GameObject CL_Effect = Instantiate(FireEffect, Bullet.transform.position, Quaternion.identity);
+                Destroy(CL_Effect, 2);
             }
 
             Destroy(gameObject);

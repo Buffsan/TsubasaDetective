@@ -10,7 +10,9 @@ public class TT_LightningDriveStaff : MonoBehaviour
 
     [SerializeField] Animator animator;
     [SerializeField] GameObject Bullet;
+    [SerializeField] GameObject Bullet2;
     [SerializeField] AudioClip AudioClip;
+    [SerializeField] RelicData bioBattery;
     PlayerController controller => PlayerController.Instance;
     AudioManager audioManager => AudioManager.instance;
     // Start is called before the first frame update
@@ -48,11 +50,32 @@ public class TT_LightningDriveStaff : MonoBehaviour
                 Phase = 2;
                 AttackCont =0;
 
-                GameObject CL_Bullet = Instantiate(Bullet,transform.position,Quaternion.identity);
-                Rigidbody2D rb = CL_Bullet.GetComponent<Rigidbody2D>();
+                bool bio_Battery = false;
+                foreach (var relic in controller.relicDatas) 
+                {
+                    if (relic.RelicName == bioBattery.RelicName) 
+                    { 
+                    bio_Battery = true;
+                    }
+                }
 
-                CL_Bullet.transform.up = controller.CursorDirection;
-                rb.velocity = controller.CursorDirection.normalized * 15;
+                if (bio_Battery)
+                {
+                    GameObject CL_Bullet = Instantiate(Bullet2, transform.position, Quaternion.identity);
+                    Rigidbody2D rb = CL_Bullet.GetComponent<Rigidbody2D>();
+
+                    CL_Bullet.transform.up = controller.CursorDirection;
+                    rb.velocity = controller.CursorDirection.normalized * 22;
+                }
+                else 
+                { 
+                    GameObject CL_Bullet = Instantiate(Bullet,transform.position,Quaternion.identity);
+                    Rigidbody2D rb = CL_Bullet.GetComponent<Rigidbody2D>();
+
+                    CL_Bullet.transform.up = controller.CursorDirection;
+                    rb.velocity = controller.CursorDirection.normalized * 15;
+                }
+                
             }
         }
         if (Phase == 2) 

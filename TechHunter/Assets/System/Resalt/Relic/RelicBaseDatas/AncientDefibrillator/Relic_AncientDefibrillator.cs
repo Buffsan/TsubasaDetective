@@ -55,6 +55,7 @@ public class Relic_AncientDefibrillator : RelicBase_AI
                 systemManager.camera_Controller.Shake(0.2f, 0.4f);
                 audioManager.PlaySE(clip);
                 GameObject CL_Effect = Instantiate(Effect, transform.position, Quaternion.identity);
+                CL_Effect.transform.parent = playerController.transform;
                 Destroy(CL_Effect, 8);
                 GameObject CL_Effect1 = Instantiate(Effect_Relic, transform.position, Quaternion.identity);
                 Destroy(CL_Effect1, 2);

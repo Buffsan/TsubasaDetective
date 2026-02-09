@@ -50,6 +50,6 @@ MonoBehaviour:
   Add_Criticul_RecoveryNumber: 4
   RecoveryHP: 1
   RecoveryCount: 0
-  SHOT_LIMIT: 0.2
+  SHOT_LIMIT: 0.4
   audioClip: {fileID: 8300000, guid: 66f9b6598d0f6bf47b93d69a0b5ab4e2, type: 3}
   Effect: {fileID: 2170882871748492705, guid: 64fad377cee4de840a42add285f1a7fd, type: 3}

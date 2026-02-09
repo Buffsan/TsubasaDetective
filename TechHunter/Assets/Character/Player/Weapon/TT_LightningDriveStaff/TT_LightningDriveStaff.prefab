@@ -69,7 +69,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 523619112785479405}
   Bullet: {fileID: 5954792058380449925, guid: f8cfa8266a42dc34e9cdd257d2f49af2, type: 3}
+  Bullet2: {fileID: 5954792058380449925, guid: 458101df07ac3aa42a7375ce639f75c2, type: 3}
   AudioClip: {fileID: 8300000, guid: 66f9b6598d0f6bf47b93d69a0b5ab4e2, type: 3}
+  bioBattery: {fileID: 11400000, guid: 1cfb9df3ed734f848b4ac86cc9f0d551, type: 2}
 --- !u!1 &8864448842123948194
 GameObject:
   m_ObjectHideFlags: 0

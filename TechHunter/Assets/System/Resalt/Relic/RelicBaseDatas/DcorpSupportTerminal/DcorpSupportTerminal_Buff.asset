@@ -19,7 +19,7 @@ MonoBehaviour:
   SPEED: 0
   MultiplySPEED: 0
   ATK: 0
-  MultiplyATK: 2
-  ATKDF: 5
+  MultiplyATK: 1.5
+  ATKDF: 3
   MultiplyATKDF: 0
   Multiply_CoolTimeBuff: 0

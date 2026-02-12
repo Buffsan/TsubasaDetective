@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyspawn: {fileID: 0}
   enemyspawnGroup:
-  - enemyType: 43
+  - enemyType: 40
     SpawnNumber: 1
   - enemyType: 11
     SpawnNumber: 2

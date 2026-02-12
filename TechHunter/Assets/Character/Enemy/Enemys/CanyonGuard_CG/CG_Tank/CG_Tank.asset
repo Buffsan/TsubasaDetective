@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: CG_Tank
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 720
+  MAXHP: 545
   Regen: 0
   MAXMP: 0
   SPEED: 1
   ATK: 5
   ATKDF: 10
-  GOLD: 100
+  GOLD: 33
   XP: 0
   StanHP: 20
   ConfusionResistance: 520

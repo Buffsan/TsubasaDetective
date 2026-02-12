@@ -62,7 +62,7 @@ public class Boss_Controller : EnemyBase
     void HP_TextChange() 
     {
 
-        HPtext.text = MAXHP + "/" + HP; 
+        HPtext.text = HP + "/" + MAXHP; 
 
     }
     // Update is called once per frame

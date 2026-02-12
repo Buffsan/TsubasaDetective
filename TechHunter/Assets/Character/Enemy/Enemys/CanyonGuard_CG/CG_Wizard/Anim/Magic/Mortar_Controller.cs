@@ -93,8 +93,8 @@ public class Mortar_Controller : MonoBehaviour
             GameObject CL_AttackArea = Instantiate(AttackArea, Bullet.transform.position, Quaternion.identity);
             CircleCollider2D circle = CL_AttackArea.GetComponent<CircleCollider2D>();
             EnemyAttack enemyAttack = CL_AttackArea.GetComponent<EnemyAttack>();
-            enemyAttack.enemyBase = enemyBase;
-            circle.radius = RagiSize;
+            if(enemyAttack)enemyAttack.enemyBase = enemyBase;
+            if(circle) circle.radius = RagiSize;
             Destroy(CL_AttackArea,0.05f);
 
                 GameObject CL_Effect = Instantiate(FireEffect, Bullet.transform.position, Quaternion.identity);

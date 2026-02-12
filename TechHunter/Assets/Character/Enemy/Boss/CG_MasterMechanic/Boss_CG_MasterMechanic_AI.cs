@@ -37,13 +37,14 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
         AllAttackNumber = 0;
         AttackWaitTime = 99;
         AttackNumber = 0;
-
+        AsaltAttackBody.SetActive(false);
     }
     public override void M_Stan()
     {
         AllAttackNumber = 0;
         AttackWaitTime = 99;
         AttackNumber = 0;
+        AsaltAttackBody.SetActive(false);
     }
 
     public override void M_Die()
@@ -309,7 +310,6 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             for (int i = 0; i < 10; i++)
             {
                 StartCoroutine(ShotMoter((float)i / 3));
-
             }
             NextPhase();
         }

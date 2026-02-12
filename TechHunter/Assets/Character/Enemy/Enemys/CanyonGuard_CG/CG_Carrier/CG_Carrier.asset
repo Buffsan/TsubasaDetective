@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: CG_Carrier
   m_EditorClassIdentifier: 
   NAME: "\u30E9\u30B9\u30C8\u30DB\u30EA\u30C7\u30FC"
-  MAXHP: 655
+  MAXHP: 575
   Regen: 0
   MAXMP: 0
   SPEED: 3
   ATK: 6
   ATKDF: 0
-  GOLD: 37
+  GOLD: 14
   XP: 0
   StanHP: 20
   ConfusionResistance: 300

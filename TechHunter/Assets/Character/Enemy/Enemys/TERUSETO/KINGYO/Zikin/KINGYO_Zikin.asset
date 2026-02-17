@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: KINGYO_Zikin
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 680
+  MAXHP: 390
   Regen: 0
   MAXMP: 0
   SPEED: 1

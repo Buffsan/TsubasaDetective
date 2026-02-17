@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttackObject: {fileID: 0}
   Thender: {fileID: 2080077542720005691, guid: e256644e4b3b87a46a330fbf19d19e50, type: 3}
+  Thender2: {fileID: 2080077542720005691, guid: de818518c1e871440961bddb46c00d5f, type: 3}
   DestroyTime: 0.2
   SPAWN_NUMBER: 0
   relicData: {fileID: 11400000, guid: 1cfb9df3ed734f848b4ac86cc9f0d551, type: 2}

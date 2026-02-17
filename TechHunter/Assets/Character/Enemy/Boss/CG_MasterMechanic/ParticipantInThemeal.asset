@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ParticipantInThemeal
   m_EditorClassIdentifier: 
   NAME: "\u7A81\u7834\u88C5\u7532\u8ECA"
-  MAXHP: 6112
+  MAXHP: 5112
   Regen: 0
   MAXMP: 0
   SPEED: 0.5

@@ -43,7 +43,7 @@ public class GS_KIRIKAESI : MonoBehaviour
                 audioManager.PlaySE(Clip);
                 Type = 1;
                 skillcount = 0;
-                playerController.playerDamage.SetInvincible(1f);
+                //playerController.playerDamage.SetInvincible(1f);
             }
             else
             {

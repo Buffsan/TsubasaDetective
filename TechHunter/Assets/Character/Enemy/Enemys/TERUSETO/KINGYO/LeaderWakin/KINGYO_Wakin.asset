@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: KINGYO_Wakin
   m_EditorClassIdentifier: 
   NAME: "\u30EF\u30AD\u30F3"
-  MAXHP: 2168
+  MAXHP: 1068
   Regen: 0
   MAXMP: 0
   SPEED: 2

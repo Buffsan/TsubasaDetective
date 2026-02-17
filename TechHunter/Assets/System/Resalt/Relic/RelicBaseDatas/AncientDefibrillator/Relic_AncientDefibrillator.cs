@@ -43,7 +43,7 @@ public class Relic_AncientDefibrillator : RelicBase_AI
     {
         
         if (damage <= 0 || Invincible) return; 
-        RecoveryCoolTime();
+        //RecoveryCoolTime();
         if (!useRelic)
         {
             if (playerController.MaxHP * 0.4f > playerController.HP - damage)

@@ -7,6 +7,7 @@ public class Relic_BioBattery_AI : RelicBase_AI
 {
 
     [SerializeField] GameObject Thender;
+    [SerializeField] GameObject Thender2;
     [SerializeField] float DestroyTime = 0.2f;
     [SerializeField] int SPAWN_NUMBER = 0;
     [SerializeField] RelicData relicData;
@@ -49,14 +50,26 @@ public class Relic_BioBattery_AI : RelicBase_AI
     {
 
         yield return new WaitForSeconds(WaitTime);
-
-        
-        for (int i = 0; i < number; i++)
+        if (number > 3)
         {
-            GameObject CL_Thender = Instantiate(Thender, transform.position, Quaternion.identity);
-            CL_Thender.transform.localScale = Vector2.one * size;
-            CL_Thender.transform.Rotate(0, 0, Random.Range(0, 360));
-            Destroy(CL_Thender, DestroyTime);
+            for (int i = 0; i < 3; i++)
+            {
+                GameObject CL_Thender = Instantiate(Thender2, transform.position, Quaternion.identity);
+                CL_Thender.transform.localScale = Vector2.one * size;
+                CL_Thender.transform.Rotate(0, 0, Random.Range(0, 360));
+                Destroy(CL_Thender, DestroyTime);
+            }
+        }
+        else
+        {
+
+            for (int i = 0; i < number; i++)
+            {
+                GameObject CL_Thender = Instantiate(Thender, transform.position, Quaternion.identity);
+                CL_Thender.transform.localScale = Vector2.one * size;
+                CL_Thender.transform.Rotate(0, 0, Random.Range(0, 360));
+                Destroy(CL_Thender, DestroyTime);
+            }
         }
 
     }

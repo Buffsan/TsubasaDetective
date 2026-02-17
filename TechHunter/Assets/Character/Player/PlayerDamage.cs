@@ -53,6 +53,7 @@ public class PlayerDamage : MonoBehaviour, IDamageable
     }
     private void FixedUpdate() 
     {
+        /*
         if (mode == Mode.Invincible)
         {
             InvincibleCount += Time.deltaTime;
@@ -61,7 +62,7 @@ public class PlayerDamage : MonoBehaviour, IDamageable
             mode = Mode.Nomal;
                 InvincibleCount = 0;
             }
-        }
+        }*/
     }
     public void Damage(float Attackvalue, float Stanvalue, float value2, bool value3)
     {

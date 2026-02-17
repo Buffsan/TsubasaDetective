@@ -18,7 +18,7 @@ MonoBehaviour:
   MAXMP: 0
   SPEED: 1
   ATK: 12
-  ATKDF: 40
+  ATKDF: 15
   GOLD: 56
   XP: 6
   StanHP: 10

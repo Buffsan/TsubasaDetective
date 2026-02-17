@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: KINGYO_GinrinsanshokuWakin
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 17002
+  MAXHP: 7850
   Regen: 0
   MAXMP: 0
   SPEED: 3
-  ATK: 6
-  ATKDF: 15
+  ATK: 13
+  ATKDF: 20
   GOLD: 2102
   XP: 0
   StanHP: 30
-  ConfusionResistance: 2220
+  ConfusionResistance: 2900
   Critical: 0
   Range: 0
   ConfusionResistanceRegen: 2000

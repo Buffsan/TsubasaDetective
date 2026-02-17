@@ -275,13 +275,14 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
 
             SaveDirection = enemyBase.playerController.transform.position - transform.position;
             denger.transform.up = SaveDirection;
-            AsaltAttackBody.SetActive(true);
+            
             NextPhase();
         }
         if (AttackPhase == 1)
         {
             if (attackcount() > 2)
             {
+                AsaltAttackBody.SetActive(true);
                 NextPhase();
             }
         }

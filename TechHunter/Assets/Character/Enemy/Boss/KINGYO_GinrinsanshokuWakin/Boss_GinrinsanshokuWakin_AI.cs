@@ -96,17 +96,24 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
 
             if (phase == Phase.P1)
             {
-
+                
 
                 if (AttackWaitTime > 3.5f)
                 {
+
+                    
+
                     SpawnCount++;
                     int random = 0;
                     
                     random = Random.RandomRange(1, 5);
                     AttackWaitTime = 0;
                     enemyBase.moveType = EnemyBase.MoveType.Attack;
-
+                    if (!flag)
+                    {
+                        flag = true;
+                        random = 2;
+                    }
                     if (enemyBase.HP < enemyBase.MAXHP * 0.5f)
                     {
 

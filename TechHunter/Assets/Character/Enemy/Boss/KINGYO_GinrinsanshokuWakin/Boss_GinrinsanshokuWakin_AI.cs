@@ -112,7 +112,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
                     if (!flag)
                     {
                         flag = true;
-                        random = 2;
+                        random = 4;
                     }
                     if (enemyBase.HP < enemyBase.MAXHP * 0.5f)
                     {

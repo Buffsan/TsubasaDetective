@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Tanchou
   m_EditorClassIdentifier: 
   NAME: "\u30BF\u30F3\u30C1\u30E7\u30A6"
-  MAXHP: 2000
+  MAXHP: 950
   Regen: 0
   MAXMP: 0
-  SPEED: 2
+  SPEED: 2.5
   ATK: 15
   ATKDF: 0
-  GOLD: 45
+  GOLD: 35
   XP: 0
   StanHP: 14
   ConfusionResistance: 4200

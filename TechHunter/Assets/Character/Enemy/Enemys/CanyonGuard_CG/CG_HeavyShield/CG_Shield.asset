@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: CG_Shield
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 250
+  MAXHP: 280
   Regen: 0
   MAXMP: 0
-  SPEED: 1
+  SPEED: 2
   ATK: 12
-  ATKDF: 15
+  ATKDF: 10
   GOLD: 56
   XP: 6
-  StanHP: 10
+  StanHP: 15
   ConfusionResistance: 120
   Critical: 0
   Range: 0

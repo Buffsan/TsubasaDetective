@@ -7,6 +7,7 @@ public class TF_FishHanter_Shield_AI : EnemyMoveBase
     [SerializeField] GameObject RockNeedle;
     [SerializeField] float baseDistance = 0.5f;
     [SerializeField] float randomOffset = 0.5f;
+    [SerializeField] int RockNumbber = 20;
 
     
     public override void EnemyAttackPlay()
@@ -54,7 +55,7 @@ public class TF_FishHanter_Shield_AI : EnemyMoveBase
             enemyAttack.enemyBase = enemyBase;
             Destroy(CL_Attack, 0.01f);
 
-            for (int i = 0; i < 20; i++) 
+            for (int i = 0; i < RockNumbber; i++) 
             {
                 StartCoroutine(PlaceObject(i, enemyBase.transform.position.normalized, enemyBase.Player.transform.position.normalized));
             }

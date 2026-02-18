@@ -120,6 +120,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6032076376032965033, guid: 486d301fef7f02d48980d296fdc8f03b, type: 3}
+      propertyPath: RockNumbber
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 6032076376032965033, guid: 486d301fef7f02d48980d296fdc8f03b, type: 3}
+      propertyPath: randomOffset
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6231784669247525140, guid: 486d301fef7f02d48980d296fdc8f03b, type: 3}
       propertyPath: m_LocalScale.x
       value: 5

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SS_FairyAxe
   m_EditorClassIdentifier: 
   NAME: "\u5996\u7CBE\u69CD\u5175"
-  MAXHP: 244
+  MAXHP: 214
   Regen: 0
   MAXMP: 0
   SPEED: 1

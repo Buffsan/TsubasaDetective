@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 434717913220577948}
   - component: {fileID: 6116136954907596628}
+  - component: {fileID: 1451960433847902078}
   m_Layer: 0
   m_Name: "\u7121\u984C636_20250221180005"
   m_TagString: Untagged
@@ -84,6 +85,24 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1451960433847902078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 962166060569801134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2336809674f1bd48a85d8c2f4d578e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AttackTime: 1
+  StartCount: 0
+  BaseRotateObject: {fileID: 4542234020707594975}
+  AttackDieTime: 0.1
+  AttackNumber: 3
+  AttackArea: {fileID: 3364974679849426440, guid: c654636535600df489aedb25466006ff, type: 3}
 --- !u!1 &4542234020707594975
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,6 +180,9 @@ MonoBehaviour:
   Clip2: {fileID: 8300000, guid: fb980fd010b748a4b98a5a1df705bfea, type: 3}
   LaserEffect: {fileID: 751265387126103208, guid: fd0b27ce1ccc77b4dabe241d32485436, type: 3}
   AttackArea: {fileID: 6319202451126645016, guid: 6853ef76053507241ba3cf5aedf3f2c5, type: 3}
+  LaserCounts0: 0.8
+  LaserCounts1: 0.05
+  LaserCounts2: 3
 --- !u!1 &6982822750575039252
 GameObject:
   m_ObjectHideFlags: 0

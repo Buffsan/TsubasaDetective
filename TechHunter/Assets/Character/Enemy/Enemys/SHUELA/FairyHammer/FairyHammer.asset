@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FairyHammer
   m_EditorClassIdentifier: 
   NAME: "\u5996\u7CBE\u6226\u69CC\u5175"
-  MAXHP: 417
+  MAXHP: 317
   Regen: 0
   MAXMP: 0
   SPEED: 1.5

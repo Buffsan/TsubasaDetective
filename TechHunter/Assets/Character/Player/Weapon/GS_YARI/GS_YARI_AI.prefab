@@ -46,6 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillWeapon: {fileID: 4488436296799460301, guid: fa46ee863ca5be0499318942b4f6b485, type: 3}
   SlillBullet: {fileID: 0}
+  A_Phase: 0
+  Targetrb: {fileID: 0}
+  TargetObject: {fileID: 0}
   SkillLevel: 0
   Att: 0
   skillcount: 0
+  SkillWeapon1: {fileID: 6380419724837358306, guid: 0f408c81e319b614db34805fa51af56b, type: 3}
+  SkillWeapon2: {fileID: 6726159796180945111, guid: 6210c7ab757d51c418dd00e2d7549c90, type: 3}
+  relicData: {fileID: 11400000, guid: 235567277fe1b434fa1d1351d966f40d, type: 2}
+  ConboNumber: 0

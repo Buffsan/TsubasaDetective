@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1e924b2fa6ebb746bead68891821a97, type: 3}
+  m_Name: Teruseto_2
+  m_EditorClassIdentifier: 
+  StageName: "\u30AD\u30F3\u30AE\u30E7\u306E\u5DE3\u7A9F"
+  StageDifficultyStar: 4
+  BossDifficultyStar: 4
+  StageImage: {fileID: 21300000, guid: b58b814cda177d14191d10fc051733d7, type: 3}
+  BossImage: {fileID: 21300000, guid: cc74f110f780d8a4c8fa6e1907d4312f, type: 3}
+  charadata: {fileID: 11400000, guid: 850fbe771ff217240bedadcbb63d2ab5, type: 2}
+  stage: 5
+  stageNumber: 2
+  explaination: 

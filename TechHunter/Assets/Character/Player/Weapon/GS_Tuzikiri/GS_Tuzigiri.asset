@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GS_Tuzigiri
   m_EditorClassIdentifier: 
   attackType: 0
-  Attack: 8
+  Attack: 9
   AttackSpeedTime: 0
   StaggerPower: 0
   ConfusionPower: 1

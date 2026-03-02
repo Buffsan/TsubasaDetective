@@ -76,6 +76,7 @@ public class SystemManager : MonoBehaviour
     public Stage stage = Stage.Ferust;
     void Awake()
     {
+        Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
         skillController = GetComponent<SkillController>();
         if (Instance != null)
         {

@@ -95,6 +95,19 @@ public class charaDamage : MonoBehaviour, IDamageable
         ConfusionHP = enemyBase.ConfusionHP;
         enemyBase.Confusion_Slider.value = 1 - (ConfusionHP / enemyBase.ConfusionHP);
     }
+
+    public void RecoveryConfusionHP(float Value) 
+    {
+        if (enemyBase.ConfusionHP > ConfusionHP + Value)
+        {
+            //ConfusionHP += Time.deltaTime;
+            ConfusionHP += Value;
+        }
+        else 
+        {
+            ConfusionHP = enemyBase.ConfusionHP;
+        }
+    }
     private void FixedUpdate()
     {
 

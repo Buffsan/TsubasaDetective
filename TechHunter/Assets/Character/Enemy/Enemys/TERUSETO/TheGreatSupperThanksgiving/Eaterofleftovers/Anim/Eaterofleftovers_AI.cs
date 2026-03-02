@@ -35,7 +35,7 @@ public class Eaterofleftovers_AI : EnemyMoveBase
     }
     public override void EnemyStanPlay()
     {
-        enemyBase.DamageBody.SetActive(false); Debug.Log("ç¨óê");
+        enemyBase.DamageBody.SetActive(false); //Debug.Log("ç¨óê");
     }
     public override void EnemyMovePlay()
     {

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: SS_StarMagician
   m_EditorClassIdentifier: 
   NAME: "\u661F\u306E\u9B54\u8853\u5E2B"
-  MAXHP: 443
+  MAXHP: 343
   Regen: 0
   MAXMP: 0
   SPEED: 1
-  ATK: 4
+  ATK: 3
   ATKDF: 2
   GOLD: 12
   XP: 0

@@ -476,7 +476,7 @@ public class SS_AI_Sophia : Boss_MoveBase
     }
     void A7() 
     {
-        
+        enemyBase.CharaDamage.RecoveryConfusionHP(100);
         //œa¯‚Æ‘å¯‰_
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {

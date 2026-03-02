@@ -9,6 +9,7 @@ public class SkillController : MonoBehaviour
     [SerializeField] GameObject Page;
     [SerializeField] GameObject SkillPage;
     [SerializeField] GameObject RelicPage;
+    [SerializeField] GameObject StagePage;
     [SerializeField] GameObject AllSkillPage;
     [SerializeField] GameObject AllRelicPage;
     [SerializeField] GameObject SkillChoiseEffect;
@@ -22,10 +23,10 @@ public class SkillController : MonoBehaviour
     public List<Skill> SkillList = new List<Skill>();
     public List<StatusUP> StatusUPs = new List<StatusUP>();
     public List<Relic> Relics = new List<Relic>();
+    public List<StagePageData> Stages = new List<StagePageData>();
 
     [HideInInspector] public List<PageManager> SavePage = new List<PageManager>();
     public List<StatusUP> SaveStatus = new List<StatusUP>();
-
 
     [HideInInspector] public List<RelicPageManager> Save_RelicPage = new List<RelicPageManager>();
     public List<Relic> SaveRelics = new List<Relic>();
@@ -34,6 +35,8 @@ public class SkillController : MonoBehaviour
     public SkillPageManager ChangeSkillPageManger_save;
      public List<Skill> SaveSkills = new List<Skill>();
 
+    [HideInInspector] public List<StagePageManager> SaveStageManager = new List<StagePageManager>();
+    public List<StagePageData> SaveStagePages = new List<StagePageData>();
     ALL_SystemManager allSystemManager => ALL_SystemManager.Instance;
 
     [SerializeField] TextMeshProUGUI ReRollText;
@@ -42,6 +45,7 @@ public class SkillController : MonoBehaviour
     StatusUP SaveStatusUP;
     Skill SaveSkill;
     Relic SaveRelic;
+    StagePageData SaveStage;
 
     public int Max_skillCount = 0;
     float ReRollCost = 0;
@@ -86,6 +90,10 @@ public class SkillController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.B) && ALL_System.systemManager.gameSystemMode == SystemManager.GameSystemMODE.Debug)
             {
                 All_StartRelicPageSpawn();
+            }
+            if (Input.GetKeyDown(KeyCode.V) && ALL_System.systemManager.gameSystemMode == SystemManager.GameSystemMODE.Debug)
+            {
+                isStartStagePageChoice();
             }
         }
         if (systemManager.gameMode == SystemManager.GameMode.Result)
@@ -364,6 +372,62 @@ public class SkillController : MonoBehaviour
         }
     }
 
+    public void isStartStagePageChoice()
+    {
+        if (systemManager.stageNumber >= 2) return;
+        if (gameModeManager.gameMode != system_GameModeManager.AdventureGameMode.StartSpot)
+        {
+            ReRollAnim.Play("消える");
+            SkipAnim.Play("消える");
+        }
+        playerController.movetype = PlayerController.MoveType.Wait;
+        cardMode = ChoiceCardMode.Status;
+
+        
+        //もともとあったページの削除
+        foreach (var save in SaveStageManager)
+        {
+            save.move = StagePageManager.Move.Run;
+            Destroy(save.gameObject, 5);
+
+        }
+        SavePage.Clear();
+        SaveStatus.Clear();
+
+        List<StagePageData> NowPage = new List<StagePageData>();
+        //三枚を条件に遇うように選出
+        for (int i = 0; i < 3; i++)
+        {
+            bool Set = false;
+
+            List<StagePageData> SaveStages_Choise = new List<StagePageData>();
+            foreach (var s in Stages)
+            {
+                if (s.stageNumber == systemManager.stageNumber + 1) SaveStages_Choise.Add(s);
+            }
+
+            while (!Set)
+            {
+                SaveStage = SaveStages_Choise[Random.Range(0, SaveStages_Choise.Count)];
+
+                int j = 0;
+                foreach (var a in NowPage)
+                {
+                    if (a == SaveStage)
+                    {
+                        j++;
+                    }
+
+                }
+                if (j == 0)
+                {
+                    Set = true;
+                }
+            }
+            NowPage.Add(SaveStage);
+            isStagePage(SaveStage, i);
+        }
+    }
     public void isStart_RelicPageChoice()//レリックページの抽選
     {
         ReRollAnim.Play("出現");
@@ -550,6 +614,7 @@ public class SkillController : MonoBehaviour
             ALL_System.system_GameStartController.NextPhase();
 
         }
+        
 
         cardMode = ChoiceCardMode.None;
         int index = 0;
@@ -590,9 +655,54 @@ public class SkillController : MonoBehaviour
         }
         AllSkillPages.Clear();
 
+        if (ALL_System.system_GameModeManager.gameMode == system_GameModeManager.AdventureGameMode.BossBattleSpot)
+        {
+            isStartStagePageChoice();
+        }
+
 
         Save_RelicPage.Clear();
         SaveRelics.Clear();
+    }
+    public void ChoiceStagePage()
+    {
+        playerController.movetype = PlayerController.MoveType.Nomal;
+        ReRollAnim.Play("消える");
+        SkipAnim.Play("消える");
+        playerController.rb.velocity = Vector2.zero;
+
+        
+
+        cardMode = ChoiceCardMode.None;
+        int index = 0;
+        foreach (var save in SaveStageManager)
+        {
+
+            if (save.Select)
+            {
+                save.move = StagePageManager.Move.Wait;
+
+                systemManager.nextStage[systemManager.stageNumber + 1] = SaveStagePages[index].stage;
+
+                //Debug.Log("statusセット");
+                systemManager.gameMode = SystemManager.GameMode.Goal;
+                playerController.movetype = PlayerController.MoveType.Nomal;
+                systemManager.mode = SystemManager.ModeType.M1;
+
+            }
+            else
+            {
+                save.move = StagePageManager.Move.Run;
+            }
+            index++;
+
+            Destroy(save.gameObject, 5);
+
+        }
+
+        
+        SaveStageManager.Clear();
+        SaveStagePages.Clear();
     }
     public void ChoiceSkillPage()//スキルページの選択
     {
@@ -1035,7 +1145,55 @@ public class SkillController : MonoBehaviour
 
 
     }
+    void isStagePage(StagePageData statuspage, int value)
+    {
+        //-----------------ステージページ生成
+        GameObject CL_Page = Instantiate(StagePage);
+        StagePageManager pageManager = CL_Page.GetComponent<StagePageManager>();
 
+        SaveStageManager.Add(pageManager);
+        SaveStagePages.Add(statuspage);
+
+
+        pageManager.SkillController = this;
+
+        Animator animator = CL_Page.GetComponent<Animator>();
+        RectTransform rect = CL_Page.GetComponent<RectTransform>();
+        CL_Page.transform.parent = ResultCanvas.transform;
+
+        pageManager.MainName.text = "ステージ選択";
+        pageManager.Name.text = statuspage.StageName;
+        pageManager.BossIMage.sprite = statuspage.BossImage;
+        pageManager.MainExplanation.text = statuspage.explaination;
+        pageManager.MainImage.sprite = statuspage.StageImage;
+        pageManager.BossMAXHP.text = statuspage.charadata.MAXHP.ToString();
+        
+
+        for (int i = 0; i < pageManager.StageDifficultyStar.Count; i++) 
+        { 
+        if(statuspage.StageDifficultyStar > i) 
+            {
+                pageManager.StageDifficultyStar[i].sprite = pageManager.Star;
+            }
+        }
+        for (int i = 0; i < pageManager.BossDifficultyStar.Count; i++)
+        {
+            if (statuspage.BossDifficultyStar > i)
+            {
+                pageManager.BossDifficultyStar[i].sprite = pageManager.Star;
+            }
+        }
+
+        rect.transform.position = new Vector2(-1200, 400);
+
+        //設置間隔 -500 0 500
+        //500 1000 1500
+        int TargetPos = 600 * value - 700;
+        //Debug.Log(TargetPos);
+        pageManager.TargetRectPos = TargetPos;
+
+        
+    }
 
     void isSkillPage(Skill statuspage, int value)
     {

@@ -171,7 +171,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
             {
 
 
-                if (AttackWaitTime > 2)
+                if (AttackWaitTime > 2.5f)
                 {
                     SpawnCount++;
                     int random = 0;

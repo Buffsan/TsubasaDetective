@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: KINGYO_GinrinsanshokuWakin
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 7850
+  MAXHP: 6750
   Regen: 0
   MAXMP: 0
   SPEED: 3

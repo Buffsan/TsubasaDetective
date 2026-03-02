@@ -7,6 +7,9 @@ public class ContinuousDamage : MonoBehaviour
 {
     [SerializeField] float AttackTime = 0.2f;
     [SerializeField] float StartCount = 0;
+
+    [SerializeField] GameObject BaseRotateObject;
+    [SerializeField] float AttackDieTime = 0.1f;
     float AttackTimeCount = 0;
 
     [SerializeField] int AttackNumber = 0;
@@ -26,7 +29,15 @@ public class ContinuousDamage : MonoBehaviour
             AttackNumberCount++;
             AttackTimeCount = 0;
 
-            AttackPool.Instance.Get(AttackArea, transform.position, Quaternion.identity, 0.1f);
+            if (BaseRotateObject)
+            {
+                AttackPool.Instance.Get(AttackArea, transform.position, Quaternion.Euler(BaseRotateObject.transform.eulerAngles), AttackDieTime);
+            }
+            else 
+            { 
+                AttackPool.Instance.Get(AttackArea, transform.position, Quaternion.identity, AttackDieTime);
+            }
+
            
             if (AttackNumberCount > AttackNumber) 
             {

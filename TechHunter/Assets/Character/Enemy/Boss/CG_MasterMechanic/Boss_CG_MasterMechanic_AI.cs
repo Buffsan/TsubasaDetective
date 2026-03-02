@@ -257,6 +257,10 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             {
                 StartCoroutine(ShotArrow((float)i / 5));
             }
+            for (int i = 0; i <5; i++)
+            {
+                StartCoroutine(ShotMoter((float)i / 2));
+            }
             NextPhase();
         }
         if (AttackPhase == 2)
@@ -308,7 +312,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
         }
         if (AttackPhase == 1)
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 12; i++)
             {
                 StartCoroutine(ShotMoter((float)i / 3));
             }

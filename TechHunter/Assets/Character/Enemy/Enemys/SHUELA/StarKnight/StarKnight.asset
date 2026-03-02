@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: StarKnight
   m_EditorClassIdentifier: 
   NAME: "\u661F\u306E\u9A0E\u58EB"
-  MAXHP: 660
+  MAXHP: 565
   Regen: 0
   MAXMP: 0
   SPEED: 3

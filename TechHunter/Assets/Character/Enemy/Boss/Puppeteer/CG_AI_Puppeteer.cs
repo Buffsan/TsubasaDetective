@@ -79,6 +79,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     }
     public void FixedUpdate()
     {
+        if (enemyBase.status == EnemyBase.Status.MovieStay) return;
         if (!Astrobool)
         {
             if (AstroCount > 40)

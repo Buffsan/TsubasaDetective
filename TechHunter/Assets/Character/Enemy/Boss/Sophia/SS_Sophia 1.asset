@@ -25,4 +25,4 @@ MonoBehaviour:
   ConfusionResistance: 1200
   Critical: 0
   Range: 0
-  ConfusionResistanceRegen: 90
+  ConfusionResistanceRegen: 60

@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: CG_CaptainKnight
   m_EditorClassIdentifier: 
   NAME: "\u30AD\u30E3\u30CB\u30AA\u30F3\u30AC\u30FC\u30C9\u306E\u30EA\u30FC\u30C0\u30FC"
-  MAXHP: 391
+  MAXHP: 381
   Regen: 0
   MAXMP: 0
   SPEED: 1
   ATK: 4
-  ATKDF: 5
+  ATKDF: 2
   GOLD: 43
   XP: 0
   StanHP: 10

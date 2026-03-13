@@ -68,6 +68,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
         AttackWaitTime = 99;
         AttackNumber = 0;
         jampAsalt = false;
+        AttackPhase = 0;
     }
     public override void M_Stan()
     {
@@ -75,6 +76,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
         AttackWaitTime = 99;
         AttackNumber = 0;
         jampAsalt = false;
+        AttackPhase = 0;
     }
 
     public override void M_Die()

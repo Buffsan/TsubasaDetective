@@ -8,6 +8,8 @@ public class SkillController : MonoBehaviour
     [SerializeField] GameObject StatusMenuObject;
     [SerializeField] GameObject Page;
     [SerializeField] GameObject SkillPage;
+    [SerializeField] float SkillPagesDistanse;
+    [SerializeField] float SkillPageStartPos;
     [SerializeField] GameObject RelicPage;
     [SerializeField] GameObject StagePage;
     [SerializeField] GameObject AllSkillPage;
@@ -1232,7 +1234,7 @@ public class SkillController : MonoBehaviour
 
         //ê›íuä‘äu -500 0 500
         //500 1000 1500
-        int TargetPos = 480 * value -220;
+        float TargetPos = SkillPagesDistanse * value + SkillPageStartPos;
         //Debug.Log(TargetPos);
         pageManager.TargetRectPos = TargetPos;
         

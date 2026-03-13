@@ -14,14 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyspawn: {fileID: 0}
   enemyspawnGroup:
-  - enemyType: 26
-    SpawnNumber: 19
+  - enemyType: 38
+    SpawnNumber: 1
   - enemyType: 27
-    SpawnNumber: 10
-  - enemyType: 25
-    SpawnNumber: 2
-  - enemyType: 29
-    SpawnNumber: 2
-  - enemyType: 28
-    SpawnNumber: 2
+    SpawnNumber: 1
+  - enemyType: 24
+    SpawnNumber: 1
+  - enemyType: 50
+    SpawnNumber: 1
   StageLevel: 3

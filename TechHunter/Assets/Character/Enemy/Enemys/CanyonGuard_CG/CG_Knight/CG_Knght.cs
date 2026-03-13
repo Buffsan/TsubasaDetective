@@ -32,7 +32,7 @@ public class CG_Knght : EnemyBase
     void isConfusion() 
     {
         animator.SetBool("Damage", true);
-        if (ConfusionTimer+3 > StanCount)
+        if (ConfusionknockBackTimer+3 > StanCount)
         {
             StanCount += Time.deltaTime;
         }

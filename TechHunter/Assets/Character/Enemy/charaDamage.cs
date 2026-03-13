@@ -128,7 +128,7 @@ public class charaDamage : MonoBehaviour, IDamageable
 
         if (enemyBase.status == EnemyBase.Status.ConfusionResistance)
         {
-            if (StanCount < 3 + enemyBase.playerController.ConfusionTime)
+            if (StanCount < 3 + enemyBase.playerController.ConfusionTime + enemyBase.ConfusionAddTime)
             {
                 StanCount += Time.fixedDeltaTime;
                 float randomY = Random.Range(-0.1f, 0.1f);

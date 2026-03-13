@@ -13,6 +13,6 @@ public class StagePageData : ScriptableObject
     public charadata charadata;
     public SystemManager.Stage stage;
     public int stageNumber = 0;
-    [Space]
+    [TextArea]
     public string explaination;
 }

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1e924b2fa6ebb746bead68891821a97, type: 3}
+  m_Name: Pastal_1
+  m_EditorClassIdentifier: 
+  StageName: "\u594F\u306E\u68EE"
+  StageDifficultyStar: 5
+  BossDifficultyStar: 3
+  StageImage: {fileID: 21300000, guid: db118b4382c772f4ebf45c78100588ed, type: 3}
+  BossImage: {fileID: 21300000, guid: 5e3dcc818fb86ac41ba3571d42030199, type: 3}
+  charadata: {fileID: 11400000, guid: cec3b7ea4411eee4aaf0e1fc372f1eed, type: 2}
+  stage: 4
+  stageNumber: 1
+  explaination: "\u4EBA\u9593\u3092\u6750\u6599\u306B\u201C\u97F3\u201D\u3092\u594F\u3067\u308B\u6B8B\u5FCD\u306A\u6F14\u594F\u8005\u2015\u2015\u5F71\u98DF\u3044\u304C\u4F4F\u307E\u3046\u68EE\u3002\n\u5F7C\u3089\u306F\u5E38\u306B\u3001\u6700\u5F8C\u306E\u697D\u5668\u306B\u3075\u3055\u308F\u3057\u3044\u7D20\u6750\u3092\u63A2\u3057\u3066\u3044\u308B\u3002\n\u305D\u308C\u306F\u2015\u2015\u304D\u3063\u3068\u3001\u3042\u306A\u305F\u3060\u3002\n\u68EE\u3067\u602A\u3057\u3044\u5149\u3092\u898B\u305F\u3089\u3001\u3059\u3050\u306B\u7269\u9670\u3078\u96A0\u308C\u308D\u3002\u305D\u308C\u306F\u201C\u5275\u4F5C\u201D\u306E\u5408\u56F3\u3002\u540C\u65CF\u3067\u3059\u3089\u6050\u308C\u308B\u6307\u63EE\u8005\u306B\u3001\u6C7A\u3057\u3066\u898B\u3064\u304B\u308B\u306A\u3002"

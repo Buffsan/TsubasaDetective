@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1e924b2fa6ebb746bead68891821a97, type: 3}
   m_Name: Ferust_2
   m_EditorClassIdentifier: 
-  StageName: "\u30D5\u30A1\u30FC\u30A6\u30FC\u30B9\u30C8\uFF12\u5C64"
+  StageName: "\u30AD\u30E3\u30CB\u30AA\u30F3\u30AC\u30FC\u30C9\u306E\u6839\u57CE"
   StageDifficultyStar: 1
   BossDifficultyStar: 5
   StageImage: {fileID: 21300000, guid: a2171448b0a643b46a05eee5e1f2de46, type: 3}

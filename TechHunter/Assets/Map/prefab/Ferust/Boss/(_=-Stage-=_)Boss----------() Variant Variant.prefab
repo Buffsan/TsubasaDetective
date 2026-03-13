@@ -234,6 +234,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 7e794fb16fdf59d49b175e66fbe70e40, type: 2}
     - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
+      propertyPath: CharaDamage
+      value: 
+      objectReference: {fileID: 975763521935586801}
+    - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
       propertyPath: CutSceneData
       value: 
       objectReference: {fileID: 11400000, guid: 0c4992ba3ca7acd4eb51de8dd705961e, type: 2}
@@ -270,6 +274,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1560399e849ab07438ec40795c604e39, type: 3}
+--- !u!114 &975763521935586801 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1615719787385386562, guid: 1560399e849ab07438ec40795c604e39, type: 3}
+  m_PrefabInstance: {fileID: 2010482673053451187}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ccdf20b8f51c5941ac639b64c45fe38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1031793186823321177 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1564720740331714026, guid: 1560399e849ab07438ec40795c604e39, type: 3}

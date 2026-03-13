@@ -5,6 +5,7 @@ using UnityEngine;
 public class CG_Sniper : EnemyMoveBase
 {
     [SerializeField] GameObject Arrow;
+    [SerializeField] float BulletSpeed = 1.8f;
     public override void EnemyAttackPlay()
     {
         enemyBase.AttackCount += Time.deltaTime;
@@ -58,7 +59,7 @@ public class CG_Sniper : EnemyMoveBase
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
-        rb.velocity = enemyBase.PlayerDirection.normalized * 1.8f;
+        rb.velocity = enemyBase.PlayerDirection.normalized * BulletSpeed;
 
         EnemyAttack enemyAttack = CL_Arrow.GetComponent<EnemyAttack>();
         enemyAttack.enemyBase = enemyBase;

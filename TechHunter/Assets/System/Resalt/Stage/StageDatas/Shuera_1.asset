@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1e924b2fa6ebb746bead68891821a97, type: 3}
   m_Name: Shuera_1
   m_EditorClassIdentifier: 
-  StageName: "\u30B7\u30E5\u30A8\u30E9\uFF11\u5C64"
+  StageName: "\u5DE1\u793C\u8857\u9053"
   StageDifficultyStar: 2
   BossDifficultyStar: 2
   StageImage: {fileID: 21300000, guid: a005b06b57256ec43a84b76246174589, type: 3}
@@ -20,4 +20,4 @@ MonoBehaviour:
   charadata: {fileID: 11400000, guid: f09647ad6f817d84b8eaff1fd63da44c, type: 2}
   stage: 6
   stageNumber: 1
-  explaination: 
+  explaination: "\u4E16\u754C\u6700\u5927\u5B97\u6559\u30FB\u30B7\u30E5\u30A8\u30E9\u6559\u306E\u5DE1\u793C\u8857\u9053\u3002\n\u6559\u5F92\u305F\u3061\u306F\u7948\u308A\u3068\u5171\u306B\u3001\u6FC0\u3057\u3044\u9B54\u6CD5\u5F3E\u5E55\u3092\u653E\u3064\u3002\n\n\u3060\u304C\u3001\u305D\u306E\u8EAB\u306F\u8106\u3044\u3002\n\u6483\u305F\u308C\u308B\u524D\u306B\u6483\u3061\u629C\u3051\u3002"

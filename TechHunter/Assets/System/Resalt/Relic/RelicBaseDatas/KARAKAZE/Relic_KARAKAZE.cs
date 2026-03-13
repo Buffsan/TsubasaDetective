@@ -55,6 +55,10 @@ public class Relic_KARAKAZE : RelicBase_AI
                     {
                         if (CerseCount > Levels) CersePhase++;
                     }
+                    if (CersePhase >= KARAKAZE.Count)
+                    {
+                        CersePhase = KARAKAZE.Count - 1;
+                    }
                     Instantiate(KARAKAZE[CersePhase], transform.position, Quaternion.identity);
                 }
                 

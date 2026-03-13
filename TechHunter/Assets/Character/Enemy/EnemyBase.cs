@@ -23,9 +23,11 @@ public class EnemyBase : MonoBehaviour
     public Animator animator;
     public Animator animator2;
     public float StanTime = 0.1f;
-    public float ConfusionTimer = 0.2f;
+    public float ConfusionknockBackTimer = 0.2f;
+    public float ConfusionAddTime = 0;
     public float StanCount = 0;
     public float LookPlayerDistance = 1;
+    public GameObject Sliders;
     public Slider HP_Slider;
     public Slider Confusion_Slider;
     public charaDamage CharaDamage;

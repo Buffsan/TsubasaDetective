@@ -212,9 +212,20 @@ public class SS_FairySpear_AI : EnemyMoveBase
 
                 }
             }
-            else 
+            else if (AttackPhase == 1)
             {
                 Fire(PlayerDirSave.normalized);
+                enemyBase.animator.SetInteger("Anim", 3);
+                enemyBase.AttackCount = 0;
+                enemyBase.mode = EnemyBase.ModeType.M5;
+            }
+            else if (AttackPhase == 2)
+            {
+                // 発射方向を正規化
+                PlayerDirSave = PlayerDirSave.normalized;
+
+                // 中心・左・右の3方向を作る
+                ShootBullet(PlayerDirSave); // 中心
                 enemyBase.animator.SetInteger("Anim", 3);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M5;

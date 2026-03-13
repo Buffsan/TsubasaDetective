@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &2830137281801109454
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1942815524210930416, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: ffad16bf35ec2b541995dc0f1bb26ad3, type: 2}
+    - target: {fileID: 2018075875379857766, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2018075875379857766, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314312032125933210, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.05611
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314312032125933210, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.532635
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314312032125933210, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314312032125933210, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314312032125933210, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314312032125933210, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314312032125933210, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314312032125933210, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314312032125933210, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314312032125933210, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2651426983380647175, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: Arrow
+      value: 
+      objectReference: {fileID: 8202069292124003101, guid: 93cae2c22519600469e4de7d196f6b9a, type: 3}
+    - target: {fileID: 2651426983380647175, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: AttackPhase
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4632723256143431123, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4772457192849251598, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_Size.x
+      value: 0.92
+      objectReference: {fileID: 0}
+    - target: {fileID: 4772457192849251598, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_Size.y
+      value: 0.92
+      objectReference: {fileID: 0}
+    - target: {fileID: 4772457192849251598, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4f1959a348daf7646bccf7d4ed5b8898, type: 3}
+    - target: {fileID: 4772457192849251598, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6570239420898085790, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: m_Name
+      value: FairyChief Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696423404834228644, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: charadata
+      value: 
+      objectReference: {fileID: 11400000, guid: 4205ab9d9f83ae542ab8a777f6f3b5ec, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}

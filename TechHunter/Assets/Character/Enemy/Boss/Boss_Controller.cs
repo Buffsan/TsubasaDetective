@@ -125,7 +125,7 @@ public class Boss_Controller : EnemyBase
     void isConfusion()
     {
         animator.SetBool("Damage", true);
-        if (ConfusionTimer + 3 > StanCount)
+        if (ConfusionknockBackTimer + 3 + ConfusionAddTime + playerController.ConfusionTime> StanCount)
         {
             StanCount += Time.deltaTime;
         }

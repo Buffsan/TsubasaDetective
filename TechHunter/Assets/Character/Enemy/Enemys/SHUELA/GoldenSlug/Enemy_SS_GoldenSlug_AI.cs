@@ -38,6 +38,7 @@ public class Enemy_SS_GoldenSlug_AI : EnemyMoveBase
                 enemyBase.AttackCount = 0;
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
                 saveArrow = SpawnObjectNow_Input(Arrow, transform.position, 60);
+                saveArrow.transform.parent = transform;
             }
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)

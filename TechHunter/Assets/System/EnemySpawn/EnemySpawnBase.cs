@@ -181,6 +181,13 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_Ranchu,45},
         { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_Tanchou,46},
         { EnemySpawnGroup.EnemyType.TERUSETO_KINGYO_Zikin,47},
+        { EnemySpawnGroup.EnemyType.SHUELA_SS_FairyChief,48},
+        { EnemySpawnGroup.EnemyType.SHUELA_SS_FairySpellBlade,49},
+        { EnemySpawnGroup.EnemyType.SHUELA_SS_MagicAcademyApprentice,50},
+        { EnemySpawnGroup.EnemyType.PASTAL_SE_MountainRangeTrapezoid,51},
+        { EnemySpawnGroup.EnemyType.PASTAL_SE_ArmorTriangle,52},
+        { EnemySpawnGroup.EnemyType.PASTAL_SE_Conductor,53},
+        { EnemySpawnGroup.EnemyType.PASTAL_SE_GrowthSector,54},
 
 
     }; 

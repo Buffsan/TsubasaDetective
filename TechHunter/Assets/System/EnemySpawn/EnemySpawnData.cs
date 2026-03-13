@@ -78,8 +78,14 @@ public class EnemySpawnGroup
         TERUSETO_KINGYO_OORanchu,
         TERUSETO_KINGYO_Ranchu,
         TERUSETO_KINGYO_Tanchou,
-        TERUSETO_KINGYO_Zikin
-
+        TERUSETO_KINGYO_Zikin,
+        SHUELA_SS_FairyChief,
+        SHUELA_SS_FairySpellBlade,
+        SHUELA_SS_MagicAcademyApprentice,
+        PASTAL_SE_MountainRangeTrapezoid,
+        PASTAL_SE_ArmorTriangle,
+        PASTAL_SE_Conductor,
+        PASTAL_SE_GrowthSector,
     }
 
     

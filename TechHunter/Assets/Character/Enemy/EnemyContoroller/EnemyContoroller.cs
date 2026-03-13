@@ -41,7 +41,7 @@ public class EnemyContoroller : EnemyBase
     void ConfusionActive()
     {
         animator.SetBool("Damage", true);
-        if (ConfusionTimer + 3 + playerController.ConfusionTime > StanCount)
+        if (ConfusionknockBackTimer + 3 + playerController.ConfusionTime + ConfusionAddTime > StanCount)
         {
             moveBase.EnemyConfusionPlay();
             StanCount += Time.deltaTime;

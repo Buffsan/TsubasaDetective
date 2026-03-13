@@ -17,6 +17,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3767923143545750091, guid: d75d7855c200e52468d982edd94103bb, type: 3}
+      propertyPath: StanTime
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3767923143545750091, guid: d75d7855c200e52468d982edd94103bb, type: 3}
       propertyPath: Choice_MoveToBase
       value: 0
       objectReference: {fileID: 0}

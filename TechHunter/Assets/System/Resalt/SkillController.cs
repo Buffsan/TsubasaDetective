@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SkillController : MonoBehaviour
 {
+    [SerializeField] Animator BookAnimator;
     [SerializeField] GameObject ResultCanvas;
     [SerializeField] GameObject StatusMenuObject;
     [SerializeField] GameObject Page;
@@ -133,19 +134,70 @@ public class SkillController : MonoBehaviour
             }
         }
     }
+
+    void PlayAnims(bool Spawn) 
+    {
+        if (Spawn)
+        {
+            ReRollAnim.Play("出現", 0, 0);
+            SkipAnim.Play("出現", 0, 0);
+            BookAnimator.Play("出現", 1);
+            BookAnimator.Play("めくる", 0, 0);
+        }
+        else 
+        {
+            ReRollAnim.Play("消える");
+            SkipAnim.Play("消える");
+            BookAnimator.Play("消失", 1);
+        }
+    }
+    void PlayRelicAnims(bool Spawn)
+    {
+        if (Spawn)
+        {
+            ReRollAnim.Play("出現", 0, 0);
+            SkipAnim.Play("出現", 0, 0);
+            BookAnimator.Play("出現", 1);
+            BookAnimator.Play("石出現", 2);
+            BookAnimator.Play("設置", 0, 0);
+        }
+        else
+        {
+            ReRollAnim.Play("消える");
+            SkipAnim.Play("消える");
+            BookAnimator.Play("消失", 1);
+            BookAnimator.Play("石消失", 2);
+        }
+    }
+
+    void SpawnAllPages() 
+    {
+        GameObject CL_AllSkillPage = Instantiate(AllSkillPage);
+        playerController.movetype = PlayerController.MoveType.Wait;
+        AllSkillPages.Add(CL_AllSkillPage);
+
+        allskillpage = CL_AllSkillPage.GetComponent<AllSkilPagel>();
+        allskillpage.skillController = this;
+        CL_AllSkillPage.transform.parent = ResultCanvas.transform;
+
+        Change_AllSkillPage();
+
+        GameObject CL_AllRelicPage = Instantiate(AllRelicPage);
+        playerController.movetype = PlayerController.MoveType.Wait;
+        AllSkillPages.Add(CL_AllRelicPage);
+
+        allsRelicpage = CL_AllRelicPage.GetComponent<AllSkilPagel>();
+        allsRelicpage.skillController = this;
+        CL_AllRelicPage.transform.parent = ResultCanvas.transform;
+
+        Change_AllRelicPage();
+    }
     public void All_StartRelicPageSpawn() 
     {
         isStart_RelicPageChoice();
 
-        ReRollAnim.Play("出現", 0, 0);
-        SkipAnim.Play("出現", 0, 0);
-        GameObject CL_AllSkillPage = Instantiate(AllRelicPage);
-        playerController.movetype = PlayerController.MoveType.Wait;
-        AllSkillPages.Add(CL_AllSkillPage);
-
-        allsRelicpage = CL_AllSkillPage.GetComponent<AllSkilPagel>();
-        allsRelicpage.skillController = this;
-        CL_AllSkillPage.transform.parent = ResultCanvas.transform;
+        PlayRelicAnims(true);
+        SpawnAllPages();
 
         Change_AllRelicPage();
     }
@@ -166,25 +218,10 @@ public class SkillController : MonoBehaviour
             ReRollAnim.Play("出現", 0, 0);
             SkipAnim.Play("出現", 0, 0);
         }
-        GameObject CL_AllSkillPage = Instantiate(AllSkillPage);
-        playerController.movetype = PlayerController.MoveType.Wait;
-        AllSkillPages.Add(CL_AllSkillPage);
-
-        allskillpage = CL_AllSkillPage.GetComponent<AllSkilPagel>();
-        allskillpage.skillController = this;
-        CL_AllSkillPage.transform.parent = ResultCanvas.transform;
-
-        Change_AllSkillPage();
-
-        GameObject CL_AllRelicPage = Instantiate(AllRelicPage);
-        playerController.movetype = PlayerController.MoveType.Wait;
-        AllSkillPages.Add(CL_AllRelicPage);
-
-        allsRelicpage = CL_AllRelicPage.GetComponent<AllSkilPagel>();
-        allsRelicpage.skillController = this;
-        CL_AllRelicPage.transform.parent = ResultCanvas.transform;
-
-        Change_AllRelicPage();
+        
+        BookAnimator.Play("出現", 1);
+        BookAnimator.Play("めくる", 0, 0);
+        SpawnAllPages();
     }
     public void Change_AllRelicPage()
     {
@@ -227,9 +264,17 @@ public class SkillController : MonoBehaviour
         cardMode = ChoiceCardMode.Skill;
         if (gameModeManager.gameMode != system_GameModeManager.AdventureGameMode.StartSpot)
         {
-            
-            ReRollAnim.Play("出現");
-            SkipAnim.Play("出現");
+
+            PlayAnims(true);
+        }
+
+        if (statusMenu == null)
+        {
+            GameObject CL_MenuObject = Instantiate(StatusMenuObject, new Vector3(-1000, 0, 0), Quaternion.identity);
+            statusMenu = CL_MenuObject.GetComponent<StatusMenu>();
+            CL_MenuObject.transform.parent = ResultCanvas.transform;
+
+            statusMenu.SetStatus();
         }
 
         foreach (SkillPageManager save in SavesSkillPageManager)
@@ -287,8 +332,7 @@ public class SkillController : MonoBehaviour
     {
         if (gameModeManager.gameMode != system_GameModeManager.AdventureGameMode.StartSpot)
         {
-            ReRollAnim.Play("出現");
-            SkipAnim.Play("出現");
+            PlayAnims(true);
         }
         playerController.movetype = PlayerController.MoveType.Wait;
         cardMode = ChoiceCardMode.Status;
@@ -371,6 +415,7 @@ public class SkillController : MonoBehaviour
             }
             NowPage.Add(SaveStatusUP);
             isStatusPage(SaveStatusUP, i);
+            SpawnAllPages();
         }
     }
 
@@ -379,8 +424,7 @@ public class SkillController : MonoBehaviour
         if (systemManager.stageNumber >= 2) return;
         if (gameModeManager.gameMode != system_GameModeManager.AdventureGameMode.StartSpot)
         {
-            ReRollAnim.Play("消える");
-            SkipAnim.Play("消える");
+            PlayAnims(false);
         }
         playerController.movetype = PlayerController.MoveType.Wait;
         cardMode = ChoiceCardMode.Status;
@@ -432,12 +476,19 @@ public class SkillController : MonoBehaviour
     }
     public void isStart_RelicPageChoice()//レリックページの抽選
     {
-        ReRollAnim.Play("出現");
-        SkipAnim.Play("出現");
+        PlayRelicAnims(true);
         playerController.movetype = PlayerController.MoveType.Wait;
         cardMode = ChoiceCardMode.Relic;
 
-       
+        if (statusMenu == null)
+        {
+            GameObject CL_MenuObject = Instantiate(StatusMenuObject, new Vector3(-1000, 0, 0), Quaternion.identity);
+            statusMenu = CL_MenuObject.GetComponent<StatusMenu>();
+            CL_MenuObject.transform.parent = ResultCanvas.transform;
+
+            statusMenu.SetStatus();
+        }
+
         //もともとあったページの削除
         foreach (RelicPageManager save in Save_RelicPage)
         {
@@ -485,8 +536,7 @@ public class SkillController : MonoBehaviour
     public void ChoicePage()
     {
         playerController.movetype = PlayerController.MoveType.Nomal;
-        ReRollAnim.Play("消える");
-        SkipAnim.Play("消える");
+        
         playerController.rb.velocity = Vector2.zero;
 
         if (statusMenu != null)
@@ -560,6 +610,11 @@ public class SkillController : MonoBehaviour
         }
         SavePage.Clear();
         SaveStatus.Clear();
+        if (ALL_System.system_GameModeManager.BattlePhase != 2 && ALL_System.system_GameModeManager.gameMode != system_GameModeManager.AdventureGameMode.BossBattleSpot)
+        {
+            AllRunSkillPages();
+            PlayAnims(false);
+        }
     }
 
     public void SkipPage()
@@ -568,9 +623,26 @@ public class SkillController : MonoBehaviour
         playerController.movetype = PlayerController.MoveType.Nomal;
         systemManager.mode = SystemManager.ModeType.M1;
         SkillChoiseEffect.SetActive(false);
-        AllRunSkillPage();
+        AllRunSkillPages();
         ChoicePage();
         ChoiceRelicPage();
+        ChoiceSkillPage();
+    }
+    public void AllRunSkillPages() 
+    {
+        ChangeSkillPageManger_save = null;
+        
+        if (AllSkillPages.Count != 0)
+        {
+            foreach (var a in AllSkillPages)
+            {
+                AllSkilPagel allSkil = a.GetComponent<AllSkilPagel>();
+                allSkil.move = AllSkilPagel.Move.Run;
+
+                Destroy(a, 5);
+            }
+        }
+        AllSkillPages.Clear();
     }
     public void AllRunSkillPage()
     {
@@ -607,8 +679,8 @@ public class SkillController : MonoBehaviour
     public void ChoiceRelicPage() 
     {
         playerController.movetype = PlayerController.MoveType.Nomal;
-        ReRollAnim.Play("消える");
-        SkipAnim.Play("消える");
+        PlayRelicAnims(false);
+        
         playerController.rb.velocity = Vector2.zero;
 
         if (ALL_System.system_GameStartController != null)
@@ -645,32 +717,26 @@ public class SkillController : MonoBehaviour
 
         }
 
-        if (AllSkillPages.Count != 0)
-        {
-            foreach (var a in AllSkillPages)
-            {
-                AllSkilPagel allSkil = a.GetComponent<AllSkilPagel>();
-                allSkil.move = AllSkilPagel.Move.Run;
-
-                Destroy(a, 5);
-            }
-        }
-        AllSkillPages.Clear();
+        
 
         if (ALL_System.system_GameModeManager.gameMode == system_GameModeManager.AdventureGameMode.BossBattleSpot)
         {
             isStartStagePageChoice();
         }
-
-
+        if (statusMenu != null)
+        {
+            statusMenu.move = StatusMenu.Move.Run;
+            Destroy(statusMenu.gameObject, 2);
+            statusMenu = null;
+        }
+        AllRunSkillPages();
         Save_RelicPage.Clear();
         SaveRelics.Clear();
     }
     public void ChoiceStagePage()
     {
         playerController.movetype = PlayerController.MoveType.Nomal;
-        ReRollAnim.Play("消える");
-        SkipAnim.Play("消える");
+        PlayAnims(false);
         playerController.rb.velocity = Vector2.zero;
 
         
@@ -710,6 +776,14 @@ public class SkillController : MonoBehaviour
     {
         bool isMaxSkill = false;
         Max_skillCount = 0;
+
+        if (statusMenu != null)
+        {
+            statusMenu.move = StatusMenu.Move.Run;
+            Destroy(statusMenu.gameObject, 2);
+            statusMenu = null;
+        }
+
         foreach (SkillInfo skillInfo in playerController.skillINFO) 
         {
             if (skillInfo.skillDATA != skillNoneData) 
@@ -737,8 +811,7 @@ public class SkillController : MonoBehaviour
     void FinChoicePage() 
     {
         playerController.movetype = PlayerController.MoveType.Nomal;
-        ReRollAnim.Play("消える");
-        SkipAnim.Play("消える");
+        PlayAnims(false);
         cardMode = ChoiceCardMode.None;
         playerController.rb.velocity = Vector2.zero;
 
@@ -829,6 +902,7 @@ public class SkillController : MonoBehaviour
             SavesSkillPageManager.Clear();
 
             FinChoicePage();
+            
         }
         
 
@@ -958,7 +1032,8 @@ public class SkillController : MonoBehaviour
 
         //設置間隔 -500 0 500
         //500 1000 1500
-        int TargetPos = 480 * value - 350;
+        //int TargetPos = 480 * value - 350;
+        float TargetPos = SkillPagesDistanse * value + SkillPageStartPos;
         //Debug.Log(TargetPos);
         pageManager.TargetRectPos = TargetPos;
     }
@@ -1005,7 +1080,8 @@ public class SkillController : MonoBehaviour
 
         //設置間隔 -500 0 500
         //500 1000 1500
-        int TargetPos = 480 * value - 700;
+        float TargetPos = SkillPagesDistanse * value + SkillPageStartPos;
+        //int TargetPos = 480 * value - 700;
         //Debug.Log(TargetPos);
         pageManager.TargetRectPos = TargetPos;
         int NumverStringCount = 0;

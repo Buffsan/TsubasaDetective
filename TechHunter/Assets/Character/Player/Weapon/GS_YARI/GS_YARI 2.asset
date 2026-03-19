@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: GS_YARI 2
   m_EditorClassIdentifier: 
   attackType: 4
-  Attack: 11
+  Attack: 5
   AttackSpeedTime: 0
-  StaggerPower: 1
-  ConfusionPower: 0.7
+  StaggerPower: 5
+  ConfusionPower: 1
   KnockBackPower: 0
   MaxStack: 0
   HitAudio: {fileID: 8300000, guid: cfd6bcbd226a4dd42be7b1ad7c432bad, type: 3}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GS_YARI 1
   m_EditorClassIdentifier: 
   attackType: 1
-  Attack: 4
+  Attack: 2
   AttackSpeedTime: 0
   StaggerPower: 7
   ConfusionPower: 0.7

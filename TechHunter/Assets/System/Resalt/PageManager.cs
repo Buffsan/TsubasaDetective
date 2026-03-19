@@ -58,6 +58,8 @@ public class PageManager : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rect = GetComponent<RectTransform>();
+
+        animator.SetBool("Wait", true);
     }
 
     // Update is called once per frame
@@ -104,27 +106,17 @@ public class PageManager : MonoBehaviour
         animator.SetInteger("Anim", 0);
     }
     void isMove() 
-    { 
-    if (rect.transform.localPosition.x < TargetRectPos)
-            {
+    {
+        rect.transform.localPosition = new Vector2(TargetRectPos, 300);
 
-                rect.transform.localPosition = new Vector2(rect.transform.localPosition.x+ 70, 320);
-
-            }
-            else 
-            {
-            rect.transform.localPosition = new Vector2( TargetRectPos,320);
-
-            SelectAfter = false;
-                if (Totch)
-                {
-                    animator.SetInteger("Anim",2);
-                }
-                else
-                {
-                    animator.SetInteger("Anim", 1);
-                }
-            }
+        if (Totch)
+        {
+            animator.SetInteger("Anim", 2);
+        }
+        else
+        {
+            animator.SetInteger("Anim", 1);
+        }
     }
     public void OnPointerEnter(BaseEventData eventData)
     {

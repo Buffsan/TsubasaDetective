@@ -55,6 +55,8 @@ public class SkillPageManager : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rect = GetComponent<RectTransform>();
+
+        animator.SetBool("Wait", true);
     }
 
     // Update is called once per frame
@@ -98,21 +100,15 @@ public class SkillPageManager : MonoBehaviour
     }
     void isRun()
     {
-        rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 60, 320);
+        rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 60, 300);
         DontTotch = true;
+        animator.SetBool("Wait", false);
         animator.SetInteger("Anim", 0);
     }
     void isMove()
     {
-        if (rect.transform.localPosition.x < TargetRectPos)
-        {
-
-            rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 70, 320);
-
-        }
-        else
-        {
-            rect.transform.localPosition = new Vector2(TargetRectPos, 320);
+        
+            rect.transform.localPosition = new Vector2(TargetRectPos, 300);
 
             if (Totch)
             {
@@ -122,7 +118,7 @@ public class SkillPageManager : MonoBehaviour
             {
                 animator.SetInteger("Anim", 1);
             }
-        }
+        
     }
     public void OnPointerEnter(BaseEventData eventData)
     {

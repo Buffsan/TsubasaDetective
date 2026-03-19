@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0, y: 40.99}
-  m_SizeDelta: {x: 42.24, y: 7.5}
+  m_AnchoredPosition: {x: -0, y: 34.6}
+  m_SizeDelta: {x: 45.1, y: 7.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7605787772172874906
 CanvasRenderer:
@@ -74,8 +74,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280367956
-  m_fontColor: {r: 0.3283019, g: 0.23042093, b: 0.12822355, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -98,7 +98,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -302,7 +302,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -12.6, y: 0.3}
+  m_AnchoredPosition: {x: -12.6, y: -8.82}
   m_SizeDelta: {x: 11.2, y: 6.12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9108013469297866949
@@ -342,8 +342,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280367956
-  m_fontColor: {r: 0.3283019, g: 0.23042093, b: 0.12822355, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -366,7 +366,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -437,8 +437,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0, y: 6}
-  m_SizeDelta: {x: 38.03, y: 2.82}
+  m_AnchoredPosition: {x: 12.5, y: -10.46}
+  m_SizeDelta: {x: 37.8, y: 2.82}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6574646229074049582
 CanvasRenderer:
@@ -741,8 +741,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.24, y: -13.9}
-  m_SizeDelta: {x: 37.1, y: 22.6}
+  m_AnchoredPosition: {x: 0.9, y: -26.6}
+  m_SizeDelta: {x: 40, y: 28.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8962906150451214719
 CanvasRenderer:
@@ -781,8 +781,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278589223
-  m_fontColor: {r: 0.15471691, g: 0.09005692, b: 0.025396919, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -913,7 +913,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 897a0fa9a36461b42bab0d8c72582496, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 876fc178c84525e44bc66ee3a7ea5051, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1078,7 +1078,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 22.799995}
+  m_AnchoredPosition: {x: 0, y: 11.72}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5315461900687404679
@@ -1148,8 +1148,8 @@ RectTransform:
   m_GameObject: {fileID: 8957845861698076887}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 7.5, y: 7.5, z: 7.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1201799165094243616}
   m_Father: {fileID: 0}
@@ -1178,8 +1178,8 @@ MonoBehaviour:
   MainImage: {fileID: 8543921290809636583}
   xAddpos: 80
   TargetRectPos: 0
-  Clip1: {fileID: 8300000, guid: 469ffcf0be31c9044becbc446b60a249, type: 3}
-  Clip2: {fileID: 8300000, guid: 2493cc64b1a333148a18e518609ebc19, type: 3}
+  Clip1: {fileID: 8300000, guid: 8e6271e13cf3fb442bb032e5eb53d8a7, type: 3}
+  Clip2: {fileID: 8300000, guid: 8e6271e13cf3fb442bb032e5eb53d8a7, type: 3}
   TriggerCanvas: {fileID: 7945983556049633078}
   DontTotch: 0
   move: 0

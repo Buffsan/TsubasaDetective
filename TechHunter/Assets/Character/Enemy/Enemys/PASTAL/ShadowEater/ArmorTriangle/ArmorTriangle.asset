@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ArmorTriangle
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 573
+  MAXHP: 653
   Regen: 0
   MAXMP: 0
   SPEED: 2
@@ -21,8 +21,8 @@ MonoBehaviour:
   ATKDF: 1
   GOLD: 25
   XP: 0
-  StanHP: 2
-  ConfusionResistance: 500
+  StanHP: 12
+  ConfusionResistance: 700
   Critical: 0
   Range: 0
   ConfusionResistanceRegen: 5

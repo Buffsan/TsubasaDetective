@@ -117,7 +117,7 @@ public class StatusMenu : MonoBehaviour
         if (rect.transform.localPosition.x < SetPosition.x)
         {
 
-            rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 70, 0);
+            rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 200, 0);
 
         }
         else

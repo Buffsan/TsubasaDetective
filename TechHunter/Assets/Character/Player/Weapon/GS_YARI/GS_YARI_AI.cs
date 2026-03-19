@@ -70,14 +70,14 @@ public class GS_YARI_AI : PlayerSkillBase
             }
             if (ConboNumber == 2) 
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     StartCoroutine(RateAttack((float)i / 8));
                 }
             }
             if (ConboNumber == 3)
             {
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < 6; i++)
                 {
                     StartCoroutine(RateAttack((float)i / 12));
                 }

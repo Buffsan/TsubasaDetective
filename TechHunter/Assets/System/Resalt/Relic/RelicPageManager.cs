@@ -47,6 +47,8 @@ public class RelicPageManager : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rect = GetComponent<RectTransform>();
+
+        animator.SetBool("RelicWait", true);
     }
 
     // Update is called once per frame
@@ -92,24 +94,16 @@ public class RelicPageManager : MonoBehaviour
     }
     void isMove()
     {
-        if (rect.transform.localPosition.x < TargetRectPos)
+        rect.transform.localPosition = new Vector2(TargetRectPos, 300);
+        TriggerCanvas.SetActive(true);
+
+        if (Totch)
         {
-
-            rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + xAddpos, 380);
-
+            animator.SetInteger("Anim", 2);
         }
         else
         {
-            rect.transform.localPosition = new Vector2(TargetRectPos, 380);
-            TriggerCanvas.SetActive(true);
-            if (Totch)
-            {
-                animator.SetInteger("Anim", 2);
-            }
-            else
-            {
-                animator.SetInteger("Anim", 1);
-            }
+            animator.SetInteger("Anim", 1);
         }
     }
     public void OnPointerEnter(BaseEventData eventData)

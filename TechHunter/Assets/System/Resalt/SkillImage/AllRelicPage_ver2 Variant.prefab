@@ -911,7 +911,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2220771554418093057, guid: 8fbe1a03c44112f4a9982e4a5f2f95c0, type: 3}
       propertyPath: TargetRectPos
-      value: -730
+      value: -750
       objectReference: {fileID: 0}
     - target: {fileID: 2220771554418093057, guid: 8fbe1a03c44112f4a9982e4a5f2f95c0, type: 3}
       propertyPath: AllSkillPagesList.Array.size
@@ -1067,15 +1067,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248526937117896198, guid: 8fbe1a03c44112f4a9982e4a5f2f95c0, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.85
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 4248526937117896198, guid: 8fbe1a03c44112f4a9982e4a5f2f95c0, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.85
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 4248526937117896198, guid: 8fbe1a03c44112f4a9982e4a5f2f95c0, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.85
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 4248526937117896198, guid: 8fbe1a03c44112f4a9982e4a5f2f95c0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 350
       objectReference: {fileID: 0}
     - target: {fileID: 4248526937117896198, guid: 8fbe1a03c44112f4a9982e4a5f2f95c0, type: 3}
       propertyPath: m_ConstrainProportionsScale

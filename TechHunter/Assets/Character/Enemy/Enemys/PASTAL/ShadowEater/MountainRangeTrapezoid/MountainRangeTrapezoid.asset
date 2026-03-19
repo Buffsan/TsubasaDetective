@@ -21,8 +21,8 @@ MonoBehaviour:
   ATKDF: 2
   GOLD: 30
   XP: 0
-  StanHP: 7
-  ConfusionResistance: 750
+  StanHP: 11
+  ConfusionResistance: 900
   Critical: 0
   Range: 0
   ConfusionResistanceRegen: 5

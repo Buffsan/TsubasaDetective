@@ -11,7 +11,7 @@ public class SE_Conductor_Minion : MonoBehaviour
     
     private void FixedUpdate()
     {
-        if(!MainObject)Destroy(this);
+        if(!MainObject)Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

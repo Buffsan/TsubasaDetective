@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb115587ebfd0544b17a03fb5d1cda0, type: 3}
+  m_Name: SFC_Sniping
+  m_EditorClassIdentifier: 
+  SkillImage: {fileID: 21300000, guid: 80bc79e1739746d47a6ff10002abf7ed, type: 3}
+  SkillName: "\u72D9\u6483"
+  SkillMessage: "\u5927\u304D\u306A\u9699\u306E\u5F8C\u306B\u7D76\u5927\u306A\u5A01\u529B\u3092\u8A87\u308B\u30B9\u30CA\u30A4\u30D1\u30FC\u30E9\u30A4\u30D5\u30EB\u3092\u5C04\u6483\u3059\u308B\u3002\u3042\u307E\u308A\u306E\u91CD\u91CF\u304B\u3089\u6B66\u5668\u3092\u50BE\u3051\u308B\u4E8B\u304C\u3067\u304D\u305A\u3001\u771F\u6A2A\u3057\u304B\u72D9\u3046\u3053\u3068\u304C\u3067\u304D\u306A\u3044\u3002\u6B66\u5668\u3092\u6301\u3063\u3066\u3044\u308B\u6700\u4E2D\u3001\u89E3\u9664\u4E0D\u53EF\u80FD\u306E\u6E1B\u901F\u30C7\u30D0\u30D5\u3092\u5F97\u308B\u3002\n\u201C\u8AB0\u3082\u304C\u601D\u3046\u3060\u308D\u3046\u3002\u4EBA\u9593\u306E\u6642\u4EE3\u304C\u3084\u3063\u3066\u304D\u305F\u3063\u3066\u3053\u3068\u3092\u201D"
+  CoolTime: 45
+  SkillData: {fileID: 9012987668209382951, guid: 590668f27c92e214ca416502eadba184, type: 3}
+  SkillDataList: []
+  MaxStack: 0
+  TotalDamage: 560

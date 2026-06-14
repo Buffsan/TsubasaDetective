@@ -95,16 +95,13 @@ public class Relic_Dracibless : RelicBase_AI
     {
         particleSystem.emissionRate = 0;
         if (WaitCount >= 1) {
-            bool isfindBuff = false;
-            foreach (var buffs in playerController.playerBuff.playerBuffs) 
-            { 
-                if(buffs.buffData == buffData)isfindBuff = true;
-            }
-            if (!isfindBuff) { playerController.playerBuff.SpawnBuff(buffData);
-                GameObject CL_Effect = Instantiate(buffEffect, transform.position, Quaternion.identity);
-                CL_Effect.transform.parent = transform;
-                Destroy(CL_Effect, 13);
-            }
+            
+            playerController.playerBuff.SpawnOrRefreshBuff(buffData);
+            GameObject CL_Effect = Instantiate(buffEffect, transform.position, Quaternion.identity);
+            CL_Effect.transform.parent = transform;
+            Destroy(CL_Effect, 13);
+
+
             audioManager.PlaySE(AudioClips[1]);
             CoolTimeRecoveryCount = 99;
         }

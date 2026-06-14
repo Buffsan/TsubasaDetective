@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttackObject: {fileID: 0}
-  RandomRecovery: 10
+  RandomRecovery: 18
   buffData: {fileID: 0}
   clip: {fileID: 0}
   Effect: {fileID: 7858405061551261813}

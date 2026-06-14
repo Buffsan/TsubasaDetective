@@ -85,7 +85,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &1799683250042952343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,6 +120,7 @@ MonoBehaviour:
   NomalColor: {r: 0.9960785, g: 0.12941177, b: 0, a: 1}
   CriticulColor: {r: 1, g: 0.83414143, b: 0.5707547, a: 1}
   Criticul: 0
+  lifeTime: 0.5
 --- !u!1 &6827280433076271447
 GameObject:
   m_ObjectHideFlags: 0

@@ -6267,8 +6267,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -357.51, y: -13.16}
-  m_SizeDelta: {x: 103.46, y: 100}
+  m_AnchoredPosition: {x: -381.6, y: -0.6}
+  m_SizeDelta: {x: 87.7, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3532168039501501838
 GameObject:
@@ -6525,7 +6525,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -487.1}
-  m_SizeDelta: {x: 257.6, y: 15}
+  m_SizeDelta: {x: 245, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &139104577139167631
 MonoBehaviour:
@@ -11794,9 +11794,11 @@ MonoBehaviour:
   animator: {fileID: 0}
   animator2: {fileID: 0}
   StanTime: 0.1
-  ConfusionTimer: 0.2
+  ConfusionknockBackTimer: 0.2
+  ConfusionAddTime: 0
   StanCount: 0
   LookPlayerDistance: 1
+  Sliders: {fileID: 0}
   HP_Slider: {fileID: 14205757930710054}
   Confusion_Slider: {fileID: 139104577139167631}
   CharaDamage: {fileID: 0}
@@ -12155,7 +12157,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -487.1}
-  m_SizeDelta: {x: 257.6, y: 15}
+  m_SizeDelta: {x: 245, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &14205757930710054
 MonoBehaviour:

@@ -11,6 +11,7 @@ public class SystemManager : MonoBehaviour
     [SerializeField] sytem_GameSpotsController sytem_GameSpotsController;
     [SerializeField] bool isResetFlag = false;
     [SerializeField] bool isGameOverMove = false;
+    [SerializeField] StagePhaseController stagePhase;
     public SkillCardData NoneSkill;
     public Animator shopWindowAnimator;
     
@@ -257,6 +258,7 @@ public class SystemManager : MonoBehaviour
     }
     void isStart()//ゲームの開始
     {
+        
         foreach (SkillInfo skill in controller.skillINFO) 
         {//クールタイム全回復
             skill.SkillCardManager.isCoolTime_add(skill.SkillCardManager.CoolTime);
@@ -349,7 +351,7 @@ public class SystemManager : MonoBehaviour
             if (mode == ModeType.M1)
             {
 
-
+                stagePhase.ChangeUI(gameModeManager.BattlePhase);
                 enemySpawn.isMapSpawn();
 
                 //controller.isStartPointMove();

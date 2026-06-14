@@ -21,12 +21,8 @@ public class Relic_Type_III_Bio_EquipmentGreatLionheadClock : RelicBase_AI
     }
     private void OnSkill(PlayerSkillBase skillBase, SkillCardData AI)
     {
-        bool useBuff = false;
-        foreach (var buff in playerController.playerBuff.playerBuffs) 
-        {
-            if (buff.buffData == buffData) { Destroy(buff.gameObject); useBuff = true; }
-        }
-        if (!useBuff) return;
+       
+        if (!playerController.playerBuff.HasBuff(buffData)) return;
         Reset();
     }
     private void Update()
@@ -39,12 +35,8 @@ public class Relic_Type_III_Bio_EquipmentGreatLionheadClock : RelicBase_AI
             }
             else 
             { 
-            bool useBuff = false;
-            foreach (var buff in playerController.playerBuff.playerBuffs)
-            {
-                if (buff.buffData == buffData) useBuff = true;
-            }
-            if (!useBuff) { playerController.playerBuff.SpawnBuff(buffData); playerController.animator.SetBool("madDoge", true); Doge = true; }
+            
+            if (!playerController.playerBuff.HasBuff(buffData)) { playerController.playerBuff.SpawnBuff(buffData); playerController.animator.SetBool("madDoge", true); Doge = true; }
            
             }            
         }
@@ -62,12 +54,8 @@ public class Relic_Type_III_Bio_EquipmentGreatLionheadClock : RelicBase_AI
     public override void BaseAction()
     {
         if (!Doge) return;
-        bool useBuff = false;
-        foreach (var buff in playerController.playerBuff.playerBuffs)
-        {
-            if (buff.buffData == buffData) useBuff = true;
-        }
-        if (!useBuff) { Reset(); }
+       
+        if (!playerController.playerBuff.HasBuff(buffData)) { Reset(); }
     }
     public void SpawnRockNeedle(Vector2 pos)
     {

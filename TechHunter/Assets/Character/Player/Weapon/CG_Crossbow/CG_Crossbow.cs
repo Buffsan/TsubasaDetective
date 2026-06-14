@@ -8,6 +8,11 @@ public class CG_Crossbow : MonoBehaviour
     [SerializeField] AudioClip Clip;
     [SerializeField] GameObject AttackPont;
 
+    [SerializeField] float BulletSpeed = 4;
+    [SerializeField] float DefaltRotateAngleBullet = 90;
+    [SerializeField] float DefaltRotateAngle = 90;
+    [SerializeField] float DestroyBulletTime = 10;
+
     AudioManager manager => AudioManager.instance;
 
     int ArrowCount = 0;
@@ -27,7 +32,7 @@ public class CG_Crossbow : MonoBehaviour
     {
         controller.isCursorDirection();
         transform.up = controller.CursorDirection;
-        transform.Rotate(0, 0, 90);
+        transform.Rotate(0, 0, DefaltRotateAngle);
 
         AttackCount += Time.deltaTime;
         if (ArrowCount == 0) 
@@ -39,11 +44,11 @@ public class CG_Crossbow : MonoBehaviour
             controller.isCursorDirection();
 
             CL_Arrow.transform.up = controller.CursorDirection.normalized;
-            CL_Arrow.transform.Rotate(0,0,90);
+            CL_Arrow.transform.Rotate(0,0, DefaltRotateAngleBullet);
 
             manager.PlaySE(Clip);
-            Destroy(CL_Arrow, 10);
-            rb.velocity = controller.CursorDirection.normalized * 4;
+            Destroy(CL_Arrow, DestroyBulletTime);
+            rb.velocity = controller.CursorDirection.normalized * BulletSpeed;
         }
         if (AttackCount > 1) 
         { 

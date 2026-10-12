@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d31d7a83ca4fc642b6e0247e046e096, type: 3}
+  m_Name: New Status Effect Attack
+  m_EditorClassIdentifier: 
+  effecttype: 1
+  PoisonEffectPrefab: {fileID: 4577809016751947276, guid: 2ef5f00a40fd06f47bebd4993034a8e2, type: 3}
+  Duration: 0.5
+  number: 1
+  TickTime: 1
+  EffectObject: {fileID: 0}
+  audioClips: []
+  AttackBuff: 0
+  MultiplyAttackBuff: 0
+  DEFBuff: 0
+  MultiplyDEFBuff: 0
+  SpeedBuff: 0
+  MultiplySpeedBuff: 0

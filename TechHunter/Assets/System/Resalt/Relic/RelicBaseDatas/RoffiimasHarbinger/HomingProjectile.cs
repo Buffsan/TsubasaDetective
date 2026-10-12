@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 
 public class HomingProjectile : MonoBehaviour
 {
@@ -23,18 +21,18 @@ public class HomingProjectile : MonoBehaviour
     {
         if (TargetObject)
         {
-            
+
             Count += Time.fixedDeltaTime;
-            if(rb.velocity.magnitude > 0.02)rb.velocity = rb.velocity * 0.8f;
+            if (rb != null && rb.velocity.sqrMagnitude > 0.0004f) rb.velocity *= 0.8f;
             if (Count < HomingStartTime) return;
 
             Vector2 TargetDirection = DirectionMath(TargetObject);
-            rb.velocity = TargetDirection * Speed;
+            if (rb != null) rb.velocity = TargetDirection * Speed;
         }
-        else 
+        else
         {
             destroyCount += Time.fixedDeltaTime;
-            if (destroyCount > NoneTarget_DestroyTime) 
+            if (destroyCount > NoneTarget_DestroyTime)
             {
                 Destroy(gameObject);
             }
@@ -42,31 +40,35 @@ public class HomingProjectile : MonoBehaviour
     }
     Vector2 DirectionMath(GameObject TgameObject)
     {
-    
+
         Vector2 direction = TgameObject.transform.position - transform.position;
         direction = direction.normalized;
         return direction;
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.gameObject.CompareTag("EnemyArea")|| attacked) return;
-        
+        if (!other.gameObject.CompareTag("EnemyArea") || attacked) return;
+
         IDamageable damageable = other.GetComponent<IDamageable>();
         if (damageable == null) return;
         attacked = true;
-        var emission = particleSystem.emission;
-        emission.rateOverTime = 0;
-        particleSystem.gameObject.transform.SetParent(null);
-        Destroy(particleSystem.gameObject, 2);
-        SpawnObject(SpawnAttack,SpawnAttack_destroyTime);
+        if (particleSystem != null)
+        {
+            var emission = particleSystem.emission;
+            emission.rateOverTime = 0;
+            particleSystem.transform.SetParent(null, true);
+            Destroy(particleSystem.gameObject, 2f);
+        }
+        SpawnObject(SpawnAttack, SpawnAttack_destroyTime);
         SpawnObject(Effect, 3);
         Destroy(gameObject);
-        
+
     }
-    void SpawnObject(GameObject spawnObject,float dellcount) 
+    void SpawnObject(GameObject spawnObject, float dellcount)
     {
+        if (spawnObject == null) return;
         GameObject CL_Attack = Instantiate(spawnObject, transform.position, Quaternion.identity);
         Destroy(CL_Attack, dellcount);
     }
-    
+
 }

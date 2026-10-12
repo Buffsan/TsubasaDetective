@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d9db937061371a418fa7ad9233fd38b, type: 3}
   m_Name: OW_Harpoon
   m_EditorClassIdentifier: 
+  statusEffects: []
   attackType: 1
-  Attack: 14
+  Attack: 12
   AttackSpeedTime: 0.5
   StaggerPower: 10
   ConfusionPower: 1.3

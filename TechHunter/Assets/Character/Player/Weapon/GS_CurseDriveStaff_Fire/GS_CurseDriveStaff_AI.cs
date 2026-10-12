@@ -14,6 +14,8 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
     [SerializeField] float DestroyTime = 2;
     [SerializeField] float BulletSpeed = 10;
     [SerializeField] float EISYOU_Time = 1.5f;
+    [SerializeField] bool SHOT = true;
+    [SerializeField] float LookTime = 2;
     AudioManager audioManager => AudioManager.instance;
     ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
     
@@ -53,15 +55,20 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
         if (Att == ATT.A3)
         {
             Att = ATT.A4;
-            if (!SkillWeapon) return;
             GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
-            
-            GameObject CL_Attack = Instantiate(Bullet,transform.position, Quaternion.identity);
-            if (LookWeapon) { SaveSkill = CL_Weapon;Destroy(CL_Attack, 0.1f); }
-            CL_Attack.transform.up = playerController.CursorDirection.normalized;
-            Rigidbody2D CL_rb = CL_Attack.GetComponent<Rigidbody2D>();
-            ALL_System.camera_Controller.Shake(0.2f,0.2f);
-            if (!LookWeapon && CL_rb) CL_rb.velocity = playerController.CursorDirection.normalized * BulletSpeed;
+            if (!SkillWeapon) return;
+            if (SHOT)
+            {
+                
+
+
+                GameObject CL_Attack = Instantiate(Bullet, transform.position, Quaternion.identity);
+                if (LookWeapon) { SaveSkill = CL_Weapon; Destroy(CL_Attack, 0.1f); }
+                CL_Attack.transform.up = playerController.CursorDirection.normalized;
+                Rigidbody2D CL_rb = CL_Attack.GetComponent<Rigidbody2D>();
+                ALL_System.camera_Controller.Shake(0.2f, 0.2f);
+                if (!LookWeapon && CL_rb) CL_rb.velocity = playerController.CursorDirection.normalized * BulletSpeed;
+            }
 
             Destroy(CL_Weapon, DestroyTime);
 
@@ -71,7 +78,7 @@ public class GS_CurseDriveStaff_AI : PlayerSkillBase
         if (Att == ATT.A4)
         {
             if (SaveSkill) SaveSkill.transform.up = playerController.CursorDirection.normalized;
-            if (skillcount > 2)
+            if (skillcount > LookTime)
             {
                 end();
             }

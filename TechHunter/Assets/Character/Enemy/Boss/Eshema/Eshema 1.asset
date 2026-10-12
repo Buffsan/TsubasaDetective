@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NAME: "\u30A8\u30B7\u30A7\u30DE"
   MAXHP: 12000
+  enemyStrength: 4
   Regen: 0
   MAXMP: 0
   SPEED: 8

@@ -15,6 +15,7 @@ public class IM_SmokeBullet : MonoBehaviour
     [SerializeField] float AttackCountNumber = 5;
     [SerializeField] float AttackTime = 0.4f;
     [SerializeField] float DestroyTime = 5;
+    [SerializeField] float EffectDieTime = 4;
 
     float AttackCount = 0;
     int AttackNumber = 0;
@@ -53,7 +54,7 @@ public class IM_SmokeBullet : MonoBehaviour
             GameObject CL_AttackArea = Instantiate(AttackArea,transform.position,Quaternion.identity);
             Destroy(CL_AttackArea,0.1f);
             GameObject CL_SmogEffect = Instantiate(SmogEffect, transform.position, Quaternion.identity);
-            //Destroy(SmogEffect, 4f);
+            Destroy(SmogEffect, EffectDieTime);
             Destroy(Body);
             Destroy(gameObject, DestroyTime);
             particleSystem.emissionRate = 0;

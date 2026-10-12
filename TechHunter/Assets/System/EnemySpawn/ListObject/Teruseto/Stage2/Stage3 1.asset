@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyspawn: {fileID: 0}
   enemyspawnGroup:
   - enemyType: 47
-    SpawnNumber: 15
+    SpawnNumber: 5
   - enemyType: 46
     SpawnNumber: 2
   - enemyType: 48

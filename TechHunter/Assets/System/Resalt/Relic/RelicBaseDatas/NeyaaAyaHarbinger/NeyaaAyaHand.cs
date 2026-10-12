@@ -13,14 +13,18 @@ public class NeyaaAyaHand : MonoBehaviour
     [SerializeField] Vector2 TargetPos = Vector2.zero;
     [SerializeField] GameObject Attack;
     [SerializeField] Sprite newHand;
+    [SerializeField] float MAXSPEED = 30;
+    [SerializeField] float ReturnTimeout = 5f;
+    float returnElapsed;
     PlayerController playerController => PlayerController.Instance;
     [SerializeField] float WaitTime = 0.5f;
     float waitCount = 0;
     // Start is called before the first frame update
-    [SerializeField]int Phase = 0;
+    [SerializeField] int Phase = 0;
+    SystemManager systemManager => SystemManager.Instance;
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -28,8 +32,24 @@ public class NeyaaAyaHand : MonoBehaviour
     {
         if (Phase == 0)
         {
-            TargetPos = playerController.cursorController.MousePos;
+            //TargetPos = playerController.cursorController.MousePos;
+            if (systemManager == null || systemManager.AllEnemy == null || systemManager.AllEnemy.Count == 0)
+            {
+                Destroy(gameObject);
+                return;
+            }
 
+            // 破棄済み要素を選んだ場合にも安全に対象を決定する。
+            GameObject enemy = null;
+            int start = Random.Range(0, systemManager.AllEnemy.Count);
+            for (int i = 0; i < systemManager.AllEnemy.Count; i++)
+            {
+                GameObject candidate = systemManager.AllEnemy[(start + i) % systemManager.AllEnemy.Count];
+                if (candidate != null) { enemy = candidate; break; }
+            }
+            if (enemy == null) { Destroy(gameObject); return; }
+
+            TargetPos = enemy.transform.position;
             Vector2 dir = TargetPos - (Vector2)Head.transform.position;
             Head.transform.up = dir;
 
@@ -41,7 +61,10 @@ public class NeyaaAyaHand : MonoBehaviour
             Vector2 dir = TargetPos - (Vector2)Head.transform.position;
             float targetDistance = dir.magnitude;
 
-            resultUpSpeed += upSpeed * Time.fixedDeltaTime;
+            resultUpSpeed = Mathf.Min(MAXSPEED, resultUpSpeed + upSpeed * Time.fixedDeltaTime);
+
+
+
             rb.velocity = dir.normalized * resultUpSpeed;
 
             if (targetDistance < 0.4f)
@@ -52,7 +75,7 @@ public class NeyaaAyaHand : MonoBehaviour
                     Quaternion.identity,
                     0.1f
                 );
-  
+
                 HeadSprite.sprite = newHand;
                 rb.velocity = Vector2.zero;
                 Phase++;
@@ -62,21 +85,25 @@ public class NeyaaAyaHand : MonoBehaviour
         if (Phase == 2)
         {
             waitCount += Time.fixedDeltaTime;
-            if (waitCount > WaitTime) 
+            if (waitCount > WaitTime)
             {
                 Phase++;
                 waitCount = 0;
             }
         }
-        if (Phase == 3) 
+        if (Phase == 3)
         {
-            Vector2 Direction = (Vector2)transform.position - (Vector2)Head.transform.position;
-            float targetDistanse = Vector2.Distance(transform.position, Head.transform.position);
-            rb.velocity = Direction;
-            if (targetDistanse < 0.1)
+            Vector2 direction = (Vector2)transform.position - (Vector2)Head.transform.position;
+            float distance = direction.magnitude;
+            returnElapsed += Time.fixedDeltaTime;
+            if (distance <= 0.3f || returnElapsed >= ReturnTimeout)
             {
+                rb.velocity = Vector2.zero;
                 Destroy(gameObject);
+                return;
             }
+            // 到達直前に減速し、行き過ぎと微小速度による取り残しを防止。
+            rb.velocity = direction.normalized * Mathf.Min(MAXSPEED, distance / Time.fixedDeltaTime);
         }
         NeckPosMove();
 

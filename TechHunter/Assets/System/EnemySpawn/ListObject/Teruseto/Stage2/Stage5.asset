@@ -25,5 +25,5 @@ MonoBehaviour:
   - enemyType: 48
     SpawnNumber: 12
   - enemyType: 47
-    SpawnNumber: 10
+    SpawnNumber: 5
   StageLevel: 5

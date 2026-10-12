@@ -47,6 +47,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 0}
   charadata: {fileID: 11400000, guid: 2c7adeed74cee554fb98def66a46739f, type: 2}
+  attackableFactions: 0
+  attackPlayer: 1
+  canAttackSelf: 0
   dellCondition: 0
 --- !u!61 &6187530133291000827
 BoxCollider2D:
@@ -165,6 +168,10 @@ PrefabInstance:
       propertyPath: animator
       value: 
       objectReference: {fileID: 2181593446040049530}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: factions
+      value: 3120
+      objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: moveBase
       value: 

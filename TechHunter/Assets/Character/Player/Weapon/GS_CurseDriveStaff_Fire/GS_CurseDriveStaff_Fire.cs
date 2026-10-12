@@ -6,9 +6,11 @@ public class GS_CurseDriveStaff_Fire : MonoBehaviour
 {
     [SerializeField] GameObject Attack;
     [SerializeField] GameObject Effect;
-
     [SerializeField] GameObject Fire;
 
+    [SerializeField] int FIRE_COUNT = 10;
+     const float FIRE_SPAWN_RANGE_X = 6;
+     const float FIRE_SPAWN_RANGE_Y = 6;
     float AttackTime = 0.65f;
     float AttackCount = 0;
 
@@ -37,9 +39,9 @@ public class GS_CurseDriveStaff_Fire : MonoBehaviour
             GameObject CL_Attack = Instantiate(Attack, transform.position, Quaternion.identity);
             Destroy(CL_Attack, 0.2f);
 
-            for (int i = 0; i < 10; i++) 
+            for (int i = 0; i < FIRE_COUNT; i++) 
             {
-                Vector2 NowPos = (Vector2)transform.position + new Vector2(Random.RandomRange(-3f, 3f), Random.RandomRange(-3f, 3f));
+                Vector2 NowPos = (Vector2)transform.position + new Vector2(Random.RandomRange(-FIRE_SPAWN_RANGE_X, FIRE_SPAWN_RANGE_X), Random.RandomRange(-FIRE_SPAWN_RANGE_Y, FIRE_SPAWN_RANGE_Y));
                 Instantiate(Fire, NowPos, Quaternion.identity);
             }
 

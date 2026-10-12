@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 7da39041ea4546d4ab4966f2b7a5ec0e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - PoisonEffectPrefab: {fileID: 4577809016751947276, guid: 2ef5f00a40fd06f47bebd4993034a8e2, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

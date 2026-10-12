@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d9db937061371a418fa7ad9233fd38b, type: 3}
   m_Name: NeyaaAyaAttack
   m_EditorClassIdentifier: 
+  statusEffects: []
   attackType: 2
   Attack: 5
   AttackSpeedTime: 0

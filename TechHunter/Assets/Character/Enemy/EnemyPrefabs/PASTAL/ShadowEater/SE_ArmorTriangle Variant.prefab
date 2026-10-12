@@ -113,6 +113,10 @@ PrefabInstance:
       value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 6275342297049284216, guid: 1d1f53fc8379d3246a996875cd4d4e19, type: 3}
+      propertyPath: factions
+      value: 2064
+      objectReference: {fileID: 0}
+    - target: {fileID: 6275342297049284216, guid: 1d1f53fc8379d3246a996875cd4d4e19, type: 3}
       propertyPath: DefoScale
       value: 2.5
       objectReference: {fileID: 0}

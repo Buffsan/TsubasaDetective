@@ -131,9 +131,12 @@ MonoBehaviour:
   EnemyName: 
   enemyBase: {fileID: 0}
   A_Phase: 0
+  attacktype: 0
   AttackCount: 0
+  Clone_DengerObjects: []
   Arrow: {fileID: 2532427505246366082, guid: 08b6ac169625b08488dfa307a5fdf5b5, type: 3}
   Laser: {fileID: 6476723156860721337}
+  AttackPoint: {fileID: 0}
 --- !u!1 &6476723156860721337
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,6 +232,10 @@ PrefabInstance:
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: StanTime
       value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: factions
+      value: 1056
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: moveBase

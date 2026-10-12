@@ -8,11 +8,16 @@ public class TT_LightningDriveStaff : MonoBehaviour
     float AttackCont = 0;
     int Phase = 0;
 
+    [SerializeField]bool BatteryUsed = true;
+
     [SerializeField] Animator animator;
     [SerializeField] GameObject Bullet;
     [SerializeField] GameObject Bullet2;
     [SerializeField] AudioClip AudioClip;
     [SerializeField] RelicData bioBattery;
+    [SerializeField] float Speed0 = 15;
+    [SerializeField] float Speed1 = 22;
+    [SerializeField] float DestroyBullet = 0;
     PlayerController controller => PlayerController.Instance;
     AudioManager audioManager => AudioManager.instance;
     // Start is called before the first frame update
@@ -51,11 +56,14 @@ public class TT_LightningDriveStaff : MonoBehaviour
                 AttackCont =0;
 
                 bool bio_Battery = false;
-                foreach (var relic in controller.relicDatas) 
+                if (BatteryUsed)
                 {
-                    if (relic.RelicName == bioBattery.RelicName) 
-                    { 
-                    bio_Battery = true;
+                    foreach (var relic in controller.relicDatas)
+                    {
+                        if (relic.RelicName == bioBattery.RelicName)
+                        {
+                            bio_Battery = true;
+                        }
                     }
                 }
 
@@ -65,7 +73,7 @@ public class TT_LightningDriveStaff : MonoBehaviour
                     Rigidbody2D rb = CL_Bullet.GetComponent<Rigidbody2D>();
 
                     CL_Bullet.transform.up = controller.CursorDirection;
-                    rb.velocity = controller.CursorDirection.normalized * 22;
+                    rb.velocity = controller.CursorDirection.normalized * Speed1;
                 }
                 else 
                 { 
@@ -73,7 +81,11 @@ public class TT_LightningDriveStaff : MonoBehaviour
                     Rigidbody2D rb = CL_Bullet.GetComponent<Rigidbody2D>();
 
                     CL_Bullet.transform.up = controller.CursorDirection;
-                    rb.velocity = controller.CursorDirection.normalized * 15;
+                    rb.velocity = controller.CursorDirection.normalized * Speed0;
+                    if (DestroyBullet != 0) 
+                    {
+                        Destroy(CL_Bullet, DestroyBullet);
+                    }
                 }
                 
             }

@@ -49,6 +49,7 @@ MonoBehaviour:
   A_Phase: 0
   attacktype: 0
   AttackCount: 0
+  Clone_DengerObjects: []
   BrackAngel: {fileID: 5474939525452327047, guid: ddaacb1053df05e4ebc332ecbf547a4f, type: 3}
   RandomAttackSpawn: 12
   WalkAttackTime: 0.2
@@ -140,6 +141,10 @@ PrefabInstance:
     - target: {fileID: 4457924940185567627, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: factions
+      value: 4224
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: moveBase

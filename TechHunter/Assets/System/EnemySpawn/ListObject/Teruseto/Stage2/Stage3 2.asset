@@ -17,7 +17,7 @@ MonoBehaviour:
   - enemyType: 45
     SpawnNumber: 1
   - enemyType: 47
-    SpawnNumber: 10
+    SpawnNumber: 5
   - enemyType: 23
     SpawnNumber: 1
   - enemyType: 44

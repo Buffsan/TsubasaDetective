@@ -16,6 +16,10 @@ public class RoffiimasHarbinger_AI : RelicBase_AI
     [SerializeField] GameObject Bullet;
     [SerializeField] GameObject NeyaaAyaHand;
     [SerializeField] GameObject TuyoiNeyaaAyaHand;
+
+    [SerializeField] float RANDOM_POS_X = 8;
+    [SerializeField] float RANDOM_POS_Y = 8;
+
     int HandCount = 0;
     public enum Harbinger 
     {
@@ -94,12 +98,12 @@ public class RoffiimasHarbinger_AI : RelicBase_AI
         HandCount++;
         if (HandCount < 7)
         {
-            GameObject CL_Bullet = Instantiate(NeyaaAyaHand, transform.position, Quaternion.identity);
+            GameObject CL_Bullet = Instantiate(NeyaaAyaHand,new Vector2(Random.RandomRange(transform.position.x - RANDOM_POS_X, transform.position.x + RANDOM_POS_X), Random.RandomRange(transform.position.y - RANDOM_POS_Y, transform.position.y + RANDOM_POS_Y)), Quaternion.identity);
             HandCount++;
         }
         else 
         {
-            GameObject CL_Bullet = Instantiate(TuyoiNeyaaAyaHand, transform.position, Quaternion.identity);
+            GameObject CL_Bullet = Instantiate(TuyoiNeyaaAyaHand, new Vector2(Random.RandomRange(transform.position.x - RANDOM_POS_X, transform.position.x + RANDOM_POS_X), Random.RandomRange(transform.position.y - RANDOM_POS_Y, transform.position.y + RANDOM_POS_Y)), Quaternion.identity);
             HandCount = 0;
         }
     }

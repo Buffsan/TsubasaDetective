@@ -68,11 +68,14 @@ public class Boss_Controller : EnemyBase
     // Update is called once per frame
     void isMovie() 
     {
+       
         if (MoviePhase == 0) 
-        {
+        {   
+            charaDamage.gameObject.SetActive(false);
             audioManager.BgmSource.Stop();
             movieCount += Time.deltaTime;
             if (movieCount < 0.2) return;
+            //Debug.Log(MoviePhase);
             if (ALL_System.systemManager.gameMode != SystemManager.GameMode.Nomal) return;
             ALL_System.systemManager.gameMode = SystemManager.GameMode.Movie;
             
@@ -81,7 +84,7 @@ public class Boss_Controller : EnemyBase
         }
         if (MoviePhase == 1) 
         { 
-            charaDamage.gameObject.SetActive(false);
+            
             float PlayerDistanceNow = Vector2.Distance(playerController.transform.position, transform.position);
             if (PlayerDistanceNow < 3) 
             { 

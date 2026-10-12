@@ -47,8 +47,12 @@ MonoBehaviour:
   EnemyName: 
   enemyBase: {fileID: 0}
   A_Phase: 0
+  attacktype: 0
   AttackCount: 0
+  Clone_DengerObjects: []
   Arrow: {fileID: 0}
+  Target: {fileID: 0}
+  enemyContoroller: {fileID: 0}
 --- !u!1001 &641270998430999742
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -121,6 +125,10 @@ PrefabInstance:
       propertyPath: animator
       value: 
       objectReference: {fileID: 3732387545076031139}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: factions
+      value: 8224
+      objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: moveBase
       value: 

@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttackObject: {fileID: 0}
-  BuffStartTime: 5
+  BuffStartTime: 1
   BuffTime: 0.5
   buffdata: {fileID: 11400000, guid: 00667311f07539544adfc305b54d8989, type: 2}
   RelicObject: {fileID: 8034052654660122130}

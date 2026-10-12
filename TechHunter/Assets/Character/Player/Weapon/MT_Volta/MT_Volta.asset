@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d9db937061371a418fa7ad9233fd38b, type: 3}
   m_Name: MT_Volta
   m_EditorClassIdentifier: 
+  statusEffects:
+  - {fileID: 11400000, guid: a51a523925e5471449baab6ffc8dc274, type: 2}
   attackType: 3
   Attack: 86
   AttackSpeedTime: 0

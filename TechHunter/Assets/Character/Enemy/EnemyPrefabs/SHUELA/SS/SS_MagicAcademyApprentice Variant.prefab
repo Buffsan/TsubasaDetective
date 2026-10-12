@@ -21,6 +21,10 @@ PrefabInstance:
       value: SS_MagicAcademyApprentice Variant
       objectReference: {fileID: 0}
     - target: {fileID: 2410815176786444292, guid: edc1068857f7e6c47bb7dfac63172d9e, type: 3}
+      propertyPath: factions
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: 2410815176786444292, guid: edc1068857f7e6c47bb7dfac63172d9e, type: 3}
       propertyPath: moveBase
       value: 
       objectReference: {fileID: 8213910044440571207}

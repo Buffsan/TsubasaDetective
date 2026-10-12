@@ -49,9 +49,9 @@ public class PlayerDamage : MonoBehaviour, IDamageable
         Stan = playerController.charadata.StanHP;
         Regen = playerController.charadata.Regen;
 
-        animator = DamageImage.GetComponent<Animator>();    
+        animator = DamageImage.GetComponent<Animator>();
     }
-    private void FixedUpdate() 
+    private void FixedUpdate()
     {
         /*
         if (mode == Mode.Invincible)
@@ -63,6 +63,10 @@ public class PlayerDamage : MonoBehaviour, IDamageable
                 InvincibleCount = 0;
             }
         }*/
+    }
+    public void SpawnBuff(StatusEffectAttack buffData)
+    {
+    
     }
     public void Damage(float Attackvalue, float Stanvalue, float value2, bool value3)
     {

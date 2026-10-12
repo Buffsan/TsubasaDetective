@@ -78,6 +78,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 5315938453462939683}
   Coin: {fileID: 4641837086784837186, guid: 70f9ae5caf0c7ed4a9da3c0392d71e54, type: 3}
+  passDamageAreas: []
+  DamageType: 0
+  buffs: []
   ConfusionHP: 0
   DF: 0
   Stan: 0
@@ -289,7 +292,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b5af40ab1267e74385425600ec45b46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  factions: 1025
   charadata: {fileID: 11400000, guid: 41ba7ebb996376a40a5b981a49775d21, type: 2}
+  CutSceneData: {fileID: 0}
   DieEffect: {fileID: 8154208296095492929, guid: af818acf56f0e3447abac572065cc876, type: 3}
   EnemyAnimBody: {fileID: 5680728673799227192}
   spriteRenderer: {fileID: 0}
@@ -303,12 +308,17 @@ MonoBehaviour:
   animator: {fileID: 0}
   animator2: {fileID: 0}
   StanTime: 0.2
-  ConfusionTimer: 0.3
+  ConfusionknockBackTimer: 0.2
+  ConfusionAddTime: 0
   StanCount: 1
   LookPlayerDistance: 7
+  Sliders: {fileID: 0}
   HP_Slider: {fileID: 2640513209884357524}
   Confusion_Slider: {fileID: 2645416713060480801}
   CharaDamage: {fileID: 0}
+  DefoScale: 2.5
+  StatusEffectParticle:
+  - {fileID: 6111644391743638336, guid: 1a80fba26e62f334babcce6a215a48a6, type: 3}
   DefaltColor: {r: 0, g: 0, b: 0, a: 0}
   AttackCount: 0
   rb: {fileID: 0}
@@ -335,12 +345,14 @@ MonoBehaviour:
   ConfusionImageText: {fileID: 4173767549076776010, guid: 2a540308cb9bc3944979bab60b0edace, type: 3}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
   DamageBody: {fileID: 0}
+  charaDamage: {fileID: 0}
   volume: {fileID: 0}
   bloom: {fileID: 0}
   mode: 0
   moveType: 1
   attackType: 0
   status: 0
+  MoviePhase: 0
   moveBase: {fileID: 0}
   EnemyMoveBaseObject: {fileID: 2001982437432072969, guid: 6ffb5bcd5e55c644183b3d42a104cc85, type: 3}
   Choice_MoveToBase: 0

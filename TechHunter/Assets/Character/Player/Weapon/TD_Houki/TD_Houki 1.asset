@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d9db937061371a418fa7ad9233fd38b, type: 3}
   m_Name: TD_Houki 1
   m_EditorClassIdentifier: 
+  statusEffects: []
   attackType: 2
-  Attack: 16
+  Attack: 22
   AttackSpeedTime: 0
   StaggerPower: 5
   ConfusionPower: 1

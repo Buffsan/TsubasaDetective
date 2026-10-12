@@ -35,15 +35,22 @@ public class AudioManager : MonoBehaviour
     }
     public void PlaySE(AudioClip Clip)
     {
-        // 再生間隔チェック
-        if (lastPlayTimes.ContainsKey(Clip))
+        if (Clip)
         {
-            if (Time.time - lastPlayTimes[Clip] < minInterval) return;
+            // 再生間隔チェック
+            if (lastPlayTimes.ContainsKey(Clip))
+            {
+                if (Time.time - lastPlayTimes[Clip] < minInterval) return;
+            }
+            // Pool から AudioSource を取得して再生
+            AudioSource src = AudioPool.Instance.GetSource();
+            src.GetComponent<AudioPlay>().Play(Clip);
+            lastPlayTimes[Clip] = Time.time;
         }
-        // Pool から AudioSource を取得して再生
-        AudioSource src = AudioPool.Instance.GetSource();
-        src.GetComponent<AudioPlay>().Play(Clip);
-        lastPlayTimes[Clip] = Time.time;
+        else 
+        {
+            Debug.Log("SEが未設定");
+        }
     }
     public void StopAllAudio()
     {

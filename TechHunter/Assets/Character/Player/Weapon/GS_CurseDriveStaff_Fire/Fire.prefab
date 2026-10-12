@@ -192,6 +192,7 @@ MonoBehaviour:
   Attack: {fileID: 7093025377791910463, guid: c3de53e1c8b739a45897bd1840cfe0a8, type: 3}
   Effect: {fileID: 8295283954336457243, guid: 2e3c1fd1f00316a4e8c2f851b824932e, type: 3}
   Fire: {fileID: 5338734516916400734, guid: 3663be6709a9925418ef2e2805580e4d, type: 3}
+  FIRE_COUNT: 28
   AudioClip: {fileID: 8300000, guid: e977c248758a4244e995bdc42484d2b4, type: 3}
 --- !u!114 &6814938428818204619
 MonoBehaviour:
@@ -208,8 +209,7 @@ MonoBehaviour:
   weapondata: {fileID: 11400000, guid: e37c9adacf8026a43bcd666719d628b1, type: 2}
   skillcarddata: {fileID: 11400000, guid: 0126b2f653667434693dbd20d0482a1b, type: 2}
   AttackLevel: 0
-  Level_AttackBONUS_multiplier: 15
-  Level_AttackBONUS: 1
+  isCriticulUse: 1
   AgeinAttack: 0
 --- !u!50 &7428945914586180796
 Rigidbody2D:

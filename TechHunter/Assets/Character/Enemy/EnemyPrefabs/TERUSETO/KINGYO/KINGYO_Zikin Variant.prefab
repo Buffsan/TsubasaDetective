@@ -171,6 +171,10 @@ PrefabInstance:
       value: KINGYO_Zikin Variant
       objectReference: {fileID: 0}
     - target: {fileID: 7696423404834228644, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: factions
+      value: 8224
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696423404834228644, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
       propertyPath: moveBase
       value: 
       objectReference: {fileID: 7413512168381043183}

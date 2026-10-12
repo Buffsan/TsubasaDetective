@@ -8,6 +8,10 @@ using UnityEngine.Rendering.Universal;
 
 public class EnemyBase : MonoBehaviour
 {
+    [Header("”h”´Ý’è")]
+    [SerializeField] Faction factions = Faction.None;
+    public Faction Factions => factions;
+
     public charadata charadata;
     public CutSceneData CutSceneData;
     public GameObject DieEffect;
@@ -16,7 +20,7 @@ public class EnemyBase : MonoBehaviour
     public GameObject AttackArea;
     public Vector2 AttackAreaSize;
     public GameObject AttackSpawnPoint;
-    public float AttackDellTimer=0.05f;
+    public float AttackDellTimer = 0.05f;
     public GameObject Player;
     public Vector2 PlayerDirection;
     public float PlayerDistance;
@@ -32,6 +36,8 @@ public class EnemyBase : MonoBehaviour
     public Slider Confusion_Slider;
     public charaDamage CharaDamage;
     public float DefoScale = 2.5f;
+
+    public List<GameObject> StatusEffectParticle = new List<GameObject>();
 
     public Color DefaltColor;
     [Space]
@@ -74,13 +80,13 @@ public class EnemyBase : MonoBehaviour
     public Volume volume;
     public Bloom bloom;
 
-    public enum ModeType 
-    { 
+    public enum ModeType
+    {
         M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M11, M12, M13, M14, M15, M16, M17, M18, M19, M20, M21, M22, M23, M24,
     }
     public ModeType mode = ModeType.M1;
 
-    public enum MoveType 
+    public enum MoveType
     {
         Stay,
         Move,
@@ -89,11 +95,11 @@ public class EnemyBase : MonoBehaviour
     }
     public MoveType moveType = MoveType.Move;
 
-    public enum AttackType 
+    public enum AttackType
     {
-        
-        A1, A2, A3, A4, A5, A6, A7,A8, A9,A10,A11
-    
+
+        A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11
+
     }
     public AttackType attackType = AttackType.A1;
 
@@ -114,15 +120,15 @@ public class EnemyBase : MonoBehaviour
         Player = GameObject.FindGameObjectWithTag("Player");
         rb = GetComponent<Rigidbody2D>();
         animator = EnemyAnimBody.GetComponent<Animator>();
-        
+
         isInputCharadata();
         Ebase = GetComponent<EnemyBase>();
-        if(!spriteRenderer)
-        spriteRenderer = EnemyAnimBody.GetComponent<SpriteRenderer>();
+        if (!spriteRenderer)
+            spriteRenderer = EnemyAnimBody.GetComponent<SpriteRenderer>();
 
         //DefoScale = transform.position.x;
     }
-    
+
     void isInputCharadata()
     {
         NAME = charadata.NAME;
@@ -139,11 +145,11 @@ public class EnemyBase : MonoBehaviour
         ConfusionResistance = charadata.ConfusionResistance;
     }
 
-    public void AttackAreaSpawn() 
+    public void AttackAreaSpawn()
     {
         GameObject CL_AttackArea = Instantiate(AttackArea, AttackSpawnPoint.transform.position, Quaternion.identity);
         myAttack = CL_AttackArea.GetComponent<EnemyAttack>();
-        Destroy( CL_AttackArea ,AttackDellTimer);
+        Destroy(CL_AttackArea, AttackDellTimer);
         myAttack.enemyBase = Ebase;
     }
     public void isTargetLook(Vector2 target)
@@ -157,7 +163,7 @@ public class EnemyBase : MonoBehaviour
             EnemyAnimBody.transform.localScale = new Vector2(DefoScale, DefoScale);
         }
     }
-    public void isLookDistance() 
+    public void isLookDistance()
     {
         PlayerDirection = Player.transform.position - transform.position;
         PlayerDistance = Vector2.Distance(Player.transform.position, transform.position);
@@ -176,12 +182,25 @@ public class EnemyBase : MonoBehaviour
             EnemyAnimBody.transform.localScale = new Vector2(DefoScale, DefoScale);
         }
     }
-
-    public void TakeDamageColor() 
+    float DamageColorTimer = 0;
+    public void TakeDamageColor()
     {
-        StartCoroutine(ChangeColor());
+        //StartCoroutine(ChangeColor());
+        spriteRenderer.color = damageColor;
+        DamageColorTimer = 0.2f;
     }
-    private IEnumerator ChangeColor() 
+    private void LateUpdate()
+    {
+        if (DamageColorTimer <= 0) return;
+
+        DamageColorTimer -= Time.deltaTime;
+
+        if (DamageColorTimer <= 0)
+        {
+            spriteRenderer.color = DefaltColor;
+        }
+    }
+    private IEnumerator ChangeColor()
     {
         //Color originalColor = spriteRenderer.color;
         spriteRenderer.color = damageColor;

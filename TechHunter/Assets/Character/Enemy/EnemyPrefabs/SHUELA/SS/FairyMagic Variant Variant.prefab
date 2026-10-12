@@ -97,6 +97,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9005227939480646900, guid: 0819bb5c844015c428af6377ea4d3ad5, type: 3}
+      propertyPath: factions
+      value: 1088
+      objectReference: {fileID: 0}
+    - target: {fileID: 9005227939480646900, guid: 0819bb5c844015c428af6377ea4d3ad5, type: 3}
       propertyPath: AttackAudio
       value: 
       objectReference: {fileID: 8300000, guid: 94a19eb241b73fe45801fae23390fdd1, type: 3}

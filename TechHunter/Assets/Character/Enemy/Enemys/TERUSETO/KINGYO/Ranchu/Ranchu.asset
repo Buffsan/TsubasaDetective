@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Ranchu
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 800
+  MAXHP: 850
+  enemyStrength: 2
   Regen: 0
   MAXMP: 0
   SPEED: 1
@@ -21,7 +22,7 @@ MonoBehaviour:
   ATKDF: 20
   GOLD: 54
   XP: 0
-  StanHP: 11
+  StanHP: 15
   ConfusionResistance: 1000
   Critical: 0
   Range: 0

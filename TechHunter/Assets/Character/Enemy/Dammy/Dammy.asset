@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NAME: 
   MAXHP: 100000
+  enemyStrength: 0
+  Regen: 0
   MAXMP: 0
   SPEED: 0
   ATK: 0
@@ -22,3 +24,6 @@ MonoBehaviour:
   XP: 0
   StanHP: 0
   ConfusionResistance: 25
+  Critical: 0
+  Range: 0
+  ConfusionResistanceRegen: 15

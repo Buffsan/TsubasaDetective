@@ -13,6 +13,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2694927100310490297, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: factions
+      value: 2064
+      objectReference: {fileID: 0}
+    - target: {fileID: 2694927100310490297, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
       propertyPath: charadata
       value: 
       objectReference: {fileID: 11400000, guid: abbfc9f07bf7e804a895084c50775b13, type: 2}

@@ -47,8 +47,11 @@ MonoBehaviour:
   EnemyName: 
   enemyBase: {fileID: 0}
   A_Phase: 0
+  attacktype: 0
   AttackCount: 0
+  Clone_DengerObjects: []
   Koaka: {fileID: 8220321862052980685, guid: 9beca1fadcb8eec4d8a31f06306b979f, type: 3}
+  SpawnEnemyNumber: 16
   RandomTime: 0
   WaitCunt: 0
 --- !u!1001 &4033299968636237634
@@ -118,6 +121,10 @@ PrefabInstance:
     - target: {fileID: 4457924940185567627, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: factions
+      value: 8224
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: moveBase

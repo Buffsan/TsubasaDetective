@@ -121,6 +121,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8248753671308724667}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: factions
+      value: 1040
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: moveBase
       value: 
       objectReference: {fileID: 6482125351523883023}

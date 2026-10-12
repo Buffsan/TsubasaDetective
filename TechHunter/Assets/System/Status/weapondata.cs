@@ -4,6 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Data/CreateWeaponData")]
 public class weapondata : ScriptableObject
 {
+    public List<StatusEffectAttack> statusEffects = new List<StatusEffectAttack>();
+
     public enum AttackType 
     { 
         Slash,

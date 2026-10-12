@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d9db937061371a418fa7ad9233fd38b, type: 3}
   m_Name: MT_Volta 1
   m_EditorClassIdentifier: 
+  statusEffects:
+  - {fileID: 11400000, guid: 95e4d6dfa5642674c8bc93592f2bbc18, type: 2}
   attackType: 3
-  Attack: 0.001
+  Attack: 0
   AttackSpeedTime: 0
-  StaggerPower: 9
-  ConfusionPower: 2
+  StaggerPower: 0
+  ConfusionPower: 0
   KnockBackPower: 0
   MaxStack: 0
-  HitAudio: {fileID: 8300000, guid: 2493cc64b1a333148a18e518609ebc19, type: 3}
+  HitAudio: {fileID: 8300000, guid: 469ffcf0be31c9044becbc446b60a249, type: 3}

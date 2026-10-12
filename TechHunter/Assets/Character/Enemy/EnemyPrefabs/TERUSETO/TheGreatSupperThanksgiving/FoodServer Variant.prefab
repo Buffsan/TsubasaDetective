@@ -92,6 +92,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 0}
   charadata: {fileID: 11400000, guid: ed6770feedcfc364fb37b5ec170fc112, type: 2}
+  attackableFactions: 0
+  attackPlayer: 1
+  canAttackSelf: 0
   dellCondition: 0
 --- !u!1001 &7441094524606289861
 PrefabInstance:
@@ -165,6 +168,10 @@ PrefabInstance:
       propertyPath: animator
       value: 
       objectReference: {fileID: 6660346843524181464}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: factions
+      value: 3120
+      objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: moveBase
       value: 

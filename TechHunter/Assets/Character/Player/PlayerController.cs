@@ -154,29 +154,35 @@ public class PlayerController : PlayerStatus
         mode = ModeType.M1;
         movetype = MoveType.Skill;
         skilltype = (SkillYype)skillNumber;
+        PlayerSkillBase playerSkillBase = Skill1.GetComponent<PlayerSkillBase>(); 
         switch (skillNumber) 
         {
                 case 0:
                 Skill1 = skillINFO[skillNumber].skillDATA.SkillData;
+                playerSkillBase = Skill1.GetComponent<PlayerSkillBase>();
                 break;
                 case 1:
                 Skill2 = skillINFO[skillNumber].skillDATA.SkillData;
+                playerSkillBase = Skill2.GetComponent<PlayerSkillBase>();
                 break;
                 case 2:
                 Skill3 = skillINFO[skillNumber].skillDATA.SkillData;
+                playerSkillBase = Skill3.GetComponent<PlayerSkillBase>();
                 break;
                 case 3:
                 Skill4 = skillINFO[skillNumber].skillDATA.SkillData;
+                playerSkillBase = Skill4.GetComponent<PlayerSkillBase>();
                 break; 
                 case 4:
                 Skill5 = skillINFO[skillNumber].skillDATA.SkillData;
+                playerSkillBase = Skill5.GetComponent<PlayerSkillBase>();
                 break;
                 case 5:
                 Skill6 = skillINFO[skillNumber].skillDATA.SkillData;
+                playerSkillBase = Skill6.GetComponent<PlayerSkillBase>();
                 break;  
         }
 
-        PlayerSkillBase playerSkillBase = Skill1.GetComponent<PlayerSkillBase>();
         GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[skillNumber].skillDATA);
         skillINFO[skillNumber].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
     }
@@ -310,7 +316,19 @@ public class PlayerController : PlayerStatus
 
     private void FixedUpdate()
     {
-       
+        // ïsãÔçáí≤ç∏óp
+        if (MoveInput != Vector2.zero)
+        {
+            bool w = Keyboard.current?.wKey.isPressed ?? false;
+            bool a = Keyboard.current?.aKey.isPressed ?? false;
+            bool s = Keyboard.current?.sKey.isPressed ?? false;
+            bool d = Keyboard.current?.dKey.isPressed ?? false;
+
+            if (!w && !a && !s && !d)
+            {
+                Debug.LogWarning("WASDÇâüÇµÇƒÇ¢Ç»Ç¢ÇÃÇ…MoveInputÇ™écÇ¡ÇƒÇ¢Ç‹Ç∑");
+            }
+        }
 
 
         isChangeAnim();

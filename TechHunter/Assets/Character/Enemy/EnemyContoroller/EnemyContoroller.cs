@@ -106,15 +106,16 @@ public class EnemyContoroller : EnemyBase
     }
     public void PlayerLook()
     {
-        PlayerDirection = Player.transform.position - transform.position;
-        PlayerDistance = Vector2.Distance(Player.transform.position, transform.position);
-        if (Player.transform.position.x < transform.position.x)
-        {
-            EnemyAnimBody.transform.localScale = new Vector2(-DefoScale, DefoScale);
-        }
-        else
-        {
-            EnemyAnimBody.transform.localScale = new Vector2(DefoScale, DefoScale);
-        }
+        Vector2 targetPos = Player.transform.position;
+        Vector2 myPos = transform.position;
+
+        PlayerDirection = targetPos - myPos;
+        PlayerDistance = PlayerDirection.magnitude;
+
+        EnemyAnimBody.transform.localScale =
+            new Vector2(
+                targetPos.x < myPos.x ? -DefoScale : DefoScale,
+                DefoScale
+            );
     }
 }

@@ -47,10 +47,13 @@ MonoBehaviour:
   EnemyName: 
   enemyBase: {fileID: 0}
   A_Phase: 0
+  attacktype: 0
   AttackCount: 0
+  Clone_DengerObjects: []
   RockNeedle: {fileID: 8836682513317167095, guid: 7a4795cafd5c117408ceb867ede49045, type: 3}
   baseDistance: 0.5
   randomOffset: 0.5
+  RockNumbber: 20
 --- !u!1001 &707723078188488161
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -115,6 +118,10 @@ PrefabInstance:
       propertyPath: animator
       value: 
       objectReference: {fileID: 3672698977966452732}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: factions
+      value: 1056
+      objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: moveBase
       value: 

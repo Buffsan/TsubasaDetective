@@ -43,7 +43,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6663287150467855009}
   - component: {fileID: 6832404921926155616}
-  - component: {fileID: 5727449898519849084}
   - component: {fileID: 8481165557380286803}
   m_Layer: 7
   m_Name: AttackArea
@@ -112,21 +111,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 5, y: 20}
   m_EdgeRadius: 0
---- !u!114 &5727449898519849084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4640334246666051397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d6ce17247d8ab345bc725f634b395ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AttackDellTime: 8
-  AttackObject: {fileID: 1988470187226322381, guid: bb5ecfe0119a34b4aa9178975b083c62, type: 3}
-  Effect: {fileID: 6111644391743638336, guid: 1a80fba26e62f334babcce6a215a48a6, type: 3}
 --- !u!114 &8481165557380286803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -239,7 +223,6 @@ GameObject:
   - component: {fileID: 6582011098476131572}
   - component: {fileID: 7408193348469593225}
   - component: {fileID: 4157835312029820025}
-  - component: {fileID: 245418161762362265}
   - component: {fileID: 8631230167252421943}
   m_Layer: 7
   m_Name: "\u7121\u984C649_20251104232031"
@@ -361,21 +344,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.05, y: 0.92}
   m_EdgeRadius: 0
---- !u!114 &245418161762362265
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6869176462800198283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d6ce17247d8ab345bc725f634b395ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AttackDellTime: 8
-  AttackObject: {fileID: 1988470187226322381, guid: bb5ecfe0119a34b4aa9178975b083c62, type: 3}
-  Effect: {fileID: 6111644391743638336, guid: 1a80fba26e62f334babcce6a215a48a6, type: 3}
 --- !u!114 &8631230167252421943
 MonoBehaviour:
   m_ObjectHideFlags: 0

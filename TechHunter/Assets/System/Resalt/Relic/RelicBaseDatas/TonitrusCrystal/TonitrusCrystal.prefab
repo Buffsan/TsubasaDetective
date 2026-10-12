@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 826352165534673169}
   - component: {fileID: 7643746397276472271}
   - component: {fileID: 3441782443793827629}
-  - component: {fileID: 9081879898400484819}
+  - component: {fileID: -8509462970960506812}
   m_Layer: 0
   m_Name: TonitrusCrystal
   m_TagString: Untagged
@@ -91,7 +91,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &9081879898400484819
+--- !u!114 &-8509462970960506812
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,12 +100,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2754892641735878242}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d6ce17247d8ab345bc725f634b395ad, type: 3}
+  m_Script: {fileID: 11500000, guid: 67d94abb50391f34f9365c5bd1ab9b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttackDellTime: 8
-  AttackObject: {fileID: 3692374093166414517, guid: 4bc8533e39728f445a07a4e3e0e3311c, type: 3}
-  Effect: {fileID: 6111644391743638336, guid: 1a80fba26e62f334babcce6a215a48a6, type: 3}
+  weapondata: {fileID: 11400000, guid: 212724e3b9f329c478803a2ae5af7f97, type: 2}
+  skillcarddata: {fileID: 0}
+  AttackLevel: 0
+  isCriticulUse: 1
+  AgeinAttack: 0
 --- !u!1 &7407842122047421042
 GameObject:
   m_ObjectHideFlags: 0

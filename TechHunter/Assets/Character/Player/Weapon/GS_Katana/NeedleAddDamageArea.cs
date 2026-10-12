@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NeedleAddDamageArea : MonoBehaviour ,IDamageable
+public class NeedleAddDamageArea : MonoBehaviour 
 {
 
     [SerializeField] GameObject AttackArea;

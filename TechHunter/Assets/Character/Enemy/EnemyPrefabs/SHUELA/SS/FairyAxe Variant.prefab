@@ -89,6 +89,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9005227939480646900, guid: 0819bb5c844015c428af6377ea4d3ad5, type: 3}
+      propertyPath: factions
+      value: 1088
+      objectReference: {fileID: 0}
+    - target: {fileID: 9005227939480646900, guid: 0819bb5c844015c428af6377ea4d3ad5, type: 3}
       propertyPath: charadata
       value: 
       objectReference: {fileID: 11400000, guid: 26c5bf333487f434d9214362817b928b, type: 2}

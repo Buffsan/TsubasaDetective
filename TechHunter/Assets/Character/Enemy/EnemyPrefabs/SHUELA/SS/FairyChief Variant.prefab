@@ -93,6 +93,10 @@ PrefabInstance:
       value: FairyChief Variant
       objectReference: {fileID: 0}
     - target: {fileID: 7696423404834228644, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
+      propertyPath: factions
+      value: 1088
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696423404834228644, guid: 91ec72b54264b3c4da08a369c68166d6, type: 3}
       propertyPath: charadata
       value: 
       objectReference: {fileID: 11400000, guid: 4205ab9d9f83ae542ab8a777f6f3b5ec, type: 2}

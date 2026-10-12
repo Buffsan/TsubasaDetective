@@ -21,8 +21,10 @@ public class PlayerController : PlayerStatus
     public TextMeshProUGUI HP_Text;
     public float NowSkillMove = 0;
     public bool Dash = false;
+    [HideInInspector] public bool FlameDanceActive = false;
+    public int FlameDanceDodgeSerial { get; private set; } = 0;
 
-    
+
     [SerializeField] TextMeshProUGUI CoinText;
     [SerializeField] GameObject Weapon;
     [Space]
@@ -52,10 +54,10 @@ public class PlayerController : PlayerStatus
     [SerializeField] AudioClip DodgeClip;
     public Rigidbody2D rb;
     public Animator animator;
-    public int AllCoins=0;
+    public int AllCoins = 0;
     float AttackWaitCount = 0;
     float DodgeCount = 0;
-    
+
     float AttackMoveCount = 0;
     private int lastUseSkillFrame = -100;
     float DontMove = 99;
@@ -84,12 +86,12 @@ public class PlayerController : PlayerStatus
     }
     public MoveType movetype = MoveType.Nomal;
 
-    public enum SkillYype 
-    { 
-    Skill1 = 0,
-    Skill2 = 1,
-    Skill3 = 2,
-    Skill4 = 3,
+    public enum SkillYype
+    {
+        Skill1 = 0,
+        Skill2 = 1,
+        Skill3 = 2,
+        Skill4 = 3,
         Skill5 = 4,
         Skill6 = 5,
         SkillStart
@@ -97,7 +99,7 @@ public class PlayerController : PlayerStatus
     SkillYype skilltype = SkillYype.Skill1;
 
     string NAME;
-     public float HP;
+    public float HP;
     [HideInInspector] public float MaxHP;
     [HideInInspector] public float MP;
     [HideInInspector] public float SPEED;
@@ -113,8 +115,8 @@ public class PlayerController : PlayerStatus
 
 
 
-    public void OnDecide(InputAction.CallbackContext context) 
-    { 
+    public void OnDecide(InputAction.CallbackContext context)
+    {
         GlobalEvents.InvokeOnDecide(0);
     }
     public void OnMove(InputAction.CallbackContext context)
@@ -122,25 +124,25 @@ public class PlayerController : PlayerStatus
         //Debug.Log("移動した");
         MoveInput = context.ReadValue<Vector2>();
 
-        
-        if (MoveInput != Vector2.zero) 
-        { 
-        LastMoveInput = MoveInput;
+
+        if (MoveInput != Vector2.zero)
+        {
+            LastMoveInput = MoveInput;
         }
 
         if (movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             MoveInputSave = MoveInput;
-            
+
         }
-        
+
 
     }
-    public void OnGuard(InputAction.CallbackContext context) 
+    public void OnGuard(InputAction.CallbackContext context)
     {
-        
+
     }
-    void useSkill(int skillNumber) 
+    void useSkill(int skillNumber)
     {
 
         if (ALL_System.systemManager.gameMode == SystemManager.GameMode.Movie) return;//ムービー中は手動でスキルを使えない
@@ -154,33 +156,33 @@ public class PlayerController : PlayerStatus
         mode = ModeType.M1;
         movetype = MoveType.Skill;
         skilltype = (SkillYype)skillNumber;
-        PlayerSkillBase playerSkillBase = Skill1.GetComponent<PlayerSkillBase>(); 
-        switch (skillNumber) 
+        PlayerSkillBase playerSkillBase = Skill1.GetComponent<PlayerSkillBase>();
+        switch (skillNumber)
         {
-                case 0:
+            case 0:
                 Skill1 = skillINFO[skillNumber].skillDATA.SkillData;
                 playerSkillBase = Skill1.GetComponent<PlayerSkillBase>();
                 break;
-                case 1:
+            case 1:
                 Skill2 = skillINFO[skillNumber].skillDATA.SkillData;
                 playerSkillBase = Skill2.GetComponent<PlayerSkillBase>();
                 break;
-                case 2:
+            case 2:
                 Skill3 = skillINFO[skillNumber].skillDATA.SkillData;
                 playerSkillBase = Skill3.GetComponent<PlayerSkillBase>();
                 break;
-                case 3:
+            case 3:
                 Skill4 = skillINFO[skillNumber].skillDATA.SkillData;
                 playerSkillBase = Skill4.GetComponent<PlayerSkillBase>();
-                break; 
-                case 4:
+                break;
+            case 4:
                 Skill5 = skillINFO[skillNumber].skillDATA.SkillData;
                 playerSkillBase = Skill5.GetComponent<PlayerSkillBase>();
                 break;
-                case 5:
+            case 5:
                 Skill6 = skillINFO[skillNumber].skillDATA.SkillData;
                 playerSkillBase = Skill6.GetComponent<PlayerSkillBase>();
-                break;  
+                break;
         }
 
         GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[skillNumber].skillDATA);
@@ -197,9 +199,9 @@ public class PlayerController : PlayerStatus
                 useSkill(4);
             }
         }
-        
+
     }
-    public void isCursorDirection() 
+    public void isCursorDirection()
     {
         CursorDirection = cursorController.MousePos - transform.position;
     }
@@ -214,7 +216,7 @@ public class PlayerController : PlayerStatus
             }
         }
     }
-            public void OnSkill2(InputAction.CallbackContext context) 
+    public void OnSkill2(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -236,11 +238,12 @@ public class PlayerController : PlayerStatus
             }
         }
     }
-    public void OnSkill4(InputAction.CallbackContext context) 
+    public void OnSkill4(InputAction.CallbackContext context)
     {//Debug.Log("スキル４");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
-            if (skillINFO[3].SkillCardManager.mode == SkillCardManager.Mode.Standby) {
+            if (skillINFO[3].SkillCardManager.mode == SkillCardManager.Mode.Standby)
+            {
                 useSkill(3);
             }
 
@@ -280,10 +283,16 @@ public class PlayerController : PlayerStatus
 
 
 
-    public void OnDodge(InputAction.CallbackContext context) 
+    public void OnDodge(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait) 
+        if (context.phase == InputActionPhase.Performed &&
+            (movetype != MoveType.Dodge || FlameDanceActive) &&
+            movetype != MoveType.NoAction &&
+            movetype != MoveType.Wait)
         {
+            // 炎舞中の再回避では、回避タイマーを最初から開始する。
+            DodgeCount = 0f;
+            FlameDanceDodgeSerial++;
             movetype = MoveType.Dodge;
             //playerDamage.SetInvincible(0.3f);
             playerBuff.SpawnBuff(DogeBuff);
@@ -291,6 +300,7 @@ public class PlayerController : PlayerStatus
             audioManager.PlaySE(DodgeClip);
         }
     }
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -335,18 +345,18 @@ public class PlayerController : PlayerStatus
         AttackWaitCount += Time.deltaTime;
         CoinText.text = "x" + AllCoins.ToString();
         HP_Text.text = HP.ToString("F1") + "/" + MaxHP.ToString("F1");
-        switch (movetype) 
-        { 
-        
+        switch (movetype)
+        {
+
             case MoveType.Nomal:
                 isMove(1);
                 //animator.SetBool("Dash", false);
                 animator.SetInteger("Attack", 0);
-                break; 
+                break;
             case MoveType.Guard:
                 isGuard();
                 break;
-            case MoveType.Attack: 
+            case MoveType.Attack:
                 isAttack();
                 break;
             case MoveType.Damage:
@@ -364,21 +374,21 @@ public class PlayerController : PlayerStatus
             case MoveType.Wait:
                 SaveSkillBase = null;
                 break;
-            
 
-        
+
+
         }
 
-        
+
     }
-    public void SpawnRelic(RelicData relicData) 
+    public void SpawnRelic(RelicData relicData)
     {
         int index = 0;
-        foreach (var relic in relicDatas) 
-        { 
-        
-            if(relic != NoneRelic) index++;
-        
+        foreach (var relic in relicDatas)
+        {
+
+            if (relic != NoneRelic) index++;
+
         }
         if (index >= 6) return;
         int j = 0;
@@ -394,28 +404,28 @@ public class PlayerController : PlayerStatus
         RelicController relicController = CL_Relic.GetComponent<RelicController>();
         relicController.relicData = relicData;
 
-    
+
     }
-    void isNoAction() 
-    { 
+    void isNoAction()
+    {
         isMove(1);
         SaveSkillBase = null;
         //Debug.Log("NoAction");
     }
-    void isDodge() 
+    void isDodge()
     {
         DodgeCount += Time.deltaTime;
         if (DodgeCount < 0.15)
         {
-            rb.velocity = rb.velocity = MoveInputSave.normalized * 10;
+            rb.velocity = MoveInputSave.normalized * (FlameDanceActive ? 14f : 10f);
         }
-        else if (DodgeCount < 0.35) 
+        else if (DodgeCount < (FlameDanceActive ? 0.25f : 0.35f))
         {
-            rb.velocity = rb.velocity = MoveInputSave.normalized * 1.2f;
+            rb.velocity = MoveInputSave.normalized * (FlameDanceActive ? 1.68f : 1.2f);
         }
         else
-        { 
-        DodgeCount = 0;
+        {
+            DodgeCount = 0;
             rb.velocity = Vector2.zero;
             movetype = MoveType.Nomal;
             animator.SetBool("Dodge", false);
@@ -427,58 +437,59 @@ public class PlayerController : PlayerStatus
         }
         if (SaveSkillBase) SaveSkillBase = null;
     }
-    void isDamage() 
+    void isDamage()
     {
         isMove(1f);
     }
-    void isGuard() 
-    { 
-    isMove(0.1f);
+    void isGuard()
+    {
+        isMove(0.1f);
         animator.SetBool("Guard", true);
     }
-    void isSkill() 
+    void isSkill()
     {
-        
+
         if (mode == ModeType.M1)
-        {Dash = false;
+        {
+            Dash = false;
             if (animator.GetInteger("Attack") == 1)
             {
                 animator.SetInteger("Attack", 2);
                 animator.Play("攻撃２", 0, 0);
             }
-            else 
-            { 
+            else
+            {
                 animator.SetInteger("Attack", 1);
-                animator.Play("攻撃１",0,0);
+                animator.Play("攻撃１", 0, 0);
             }
-            
+
             if (skilltype == SkillYype.Skill1)
             {
-                SaveSkill(Skill1,0);
+                SaveSkill(Skill1, 0);
             }
             else if (skilltype == SkillYype.Skill2)
             {
-                SaveSkill(Skill2,1);
+                SaveSkill(Skill2, 1);
             }
             else if (skilltype == SkillYype.Skill3)
             {
-                SaveSkill(Skill3,2);
+                SaveSkill(Skill3, 2);
             }
             else if (skilltype == SkillYype.Skill4)
             {
-                SaveSkill(Skill4,3);
+                SaveSkill(Skill4, 3);
             }
             else if (skilltype == SkillYype.Skill5)
             {
-                SaveSkill(Skill5,4);
+                SaveSkill(Skill5, 4);
             }
             else if (skilltype == SkillYype.Skill6)
             {
-                SaveSkill(Skill6,5);
+                SaveSkill(Skill6, 5);
             }
             mode = ModeType.M2;
         }
-        else if (mode == ModeType.M2) 
+        else if (mode == ModeType.M2)
         {
             SaveSkillBase.SkillPlay();
         }
@@ -496,9 +507,9 @@ public class PlayerController : PlayerStatus
         }
         */
     }
-    void SaveSkill(GameObject SkillOBJ,int Level) 
+    void SaveSkill(GameObject SkillOBJ, int Level)
     {
-        GameObject CL_SkillOBJ = Instantiate(SkillOBJ,transform.position,Quaternion.identity);
+        GameObject CL_SkillOBJ = Instantiate(SkillOBJ, transform.position, Quaternion.identity);
         CL_SkillOBJ.transform.parent = transform;
 
         PlayerSkillBase CL_playerSkill = CL_SkillOBJ.GetComponent<PlayerSkillBase>();
@@ -506,9 +517,9 @@ public class PlayerController : PlayerStatus
 
         int i = 0;
         int SkillLevel = 0;
-        foreach (var skillinfo in skillINFO) 
+        foreach (var skillinfo in skillINFO)
         {
-            if (i == Level) 
+            if (i == Level)
             {
                 SkillLevel = skillinfo.SkillLevel;
             }
@@ -517,8 +528,8 @@ public class PlayerController : PlayerStatus
 
         CL_playerSkill.SkillLevel = SkillLevel;
     }
-    void isAttack() 
-    { 
+    void isAttack()
+    {
         AttackWaitCount = 0;
         isMove(0.5f);
 
@@ -541,32 +552,33 @@ public class PlayerController : PlayerStatus
             if (mode == ModeType.M1)
             {
                 mode = ModeType.M2;
-            }else if (mode == ModeType.M2) 
+            }
+            else if (mode == ModeType.M2)
             {
                 mode = ModeType.M1;
             }
         }
-        else 
-        { 
-        AttackMoveCount += Time.deltaTime;
+        else
+        {
+            AttackMoveCount += Time.deltaTime;
         }
 
-        
+
         //movetype = MoveType.Nomal;
     }
-    public void isInputCharadata() 
+    public void isInputCharadata()
     {
-     NAME = charadata.NAME;
-     MaxHP = charadata.MAXHP + AddHP;
-     HP = charadata.MAXHP + AddHP;
+        NAME = charadata.NAME;
+        MaxHP = charadata.MAXHP + AddHP;
+        HP = charadata.MAXHP + AddHP;
 
-     MP = charadata.MAXMP;
-     SPEED = charadata.SPEED * ((100 + AddSpeed) / 100);
-     ATK = charadata.ATK + Add_AdditiveATK;
-        
-     ATKDF = charadata.ATKDF + AddAtkDF;
-     GOLD = charadata.GOLD;
-     XP = charadata.XP;
+        MP = charadata.MAXMP;
+        SPEED = charadata.SPEED * ((100 + AddSpeed) / 100);
+        ATK = charadata.ATK + Add_AdditiveATK;
+
+        ATKDF = charadata.ATKDF + AddAtkDF;
+        GOLD = charadata.GOLD;
+        XP = charadata.XP;
         Regen = charadata.Regen + AddRegen;
         ConfusionTime = AddConfusionTime;
         Critical = charadata.Critical + AddCritical;
@@ -577,15 +589,15 @@ public class PlayerController : PlayerStatus
         //RecoveryHP = AddRecoveryHP;
     }
 
-    public void RandomLevelUp(int Value) 
+    public void RandomLevelUp(int Value)
     {
-        
+
         List<SkillInfo> skillInfos = new List<SkillInfo>();
-        foreach (SkillInfo info in skillINFO) 
+        foreach (SkillInfo info in skillINFO)
         {
-            if (info.skillDATA != ALL_System.skillController.NoneSkill) 
-            { 
-            skillInfos.Add(info);
+            if (info.skillDATA != ALL_System.skillController.NoneSkill)
+            {
+                skillInfos.Add(info);
             }
         }
 
@@ -596,8 +608,8 @@ public class PlayerController : PlayerStatus
         }
 
         int randomSkillInfo = Random.Range(0, skillInfos.Count);
-        skillInfos[randomSkillInfo].SkillLevel+= Value;
-    
+        skillInfos[randomSkillInfo].SkillLevel += Value;
+
     }
 
     public void isAddStatus()
@@ -606,27 +618,27 @@ public class PlayerController : PlayerStatus
         MaxHP = charadata.MAXHP + AddHP;
 
         MP = charadata.MAXMP;
-        SPEED = charadata.SPEED * ((100 + AddSpeed)/100);
+        SPEED = charadata.SPEED * ((100 + AddSpeed) / 100);
         ATK = charadata.ATK + Add_AdditiveATK;
         ATKDF = charadata.ATKDF + AddAtkDF;
         Regen = charadata.Regen + AddRegen;
-        ConfusionTime =  AddConfusionTime;
+        ConfusionTime = AddConfusionTime;
 
         Critical = charadata.Critical + AddCritical;
         Range = charadata.Range + AddRange;
 
         playerDamage.HP_SliderChange();
 
-        HP_RectTransform.sizeDelta = new Vector2(80+ (MaxHP*1.5f),HP_RectTransform.sizeDelta.y);
+        HP_RectTransform.sizeDelta = new Vector2(80 + (MaxHP * 1.5f), HP_RectTransform.sizeDelta.y);
     }
-    public void isSpecialMove(float value,Vector2 moveSPinput,GameObject target) 
+    public void isSpecialMove(float value, Vector2 moveSPinput, GameObject target)
     {
         if (target == this.gameObject)
         {
             rb.velocity = moveSPinput.normalized * (SPEED + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
             DontMove = 0;
         }
-        else 
+        else
         {
             if (!target) return;
             Rigidbody2D sprb = target.GetComponent<Rigidbody2D>();
@@ -634,7 +646,7 @@ public class PlayerController : PlayerStatus
             sprb.velocity = moveSPinput.normalized * value * SPEED;
         }
     }
-    public void isMove(float value) 
+    public void isMove(float value)
     {
 
         if (DontMove > 0.05)
@@ -652,12 +664,12 @@ public class PlayerController : PlayerStatus
                 rb.velocity = MoveInput.normalized * (SPEED + playerBuff.Speed_AllBuff) * (value * playerBuff.MultiplySpeed_AllBuff);
             }
         }
-        else 
+        else
         {
             DontMove += Time.fixedDeltaTime;
         }
     }
-    void isChangeAnim() 
+    void isChangeAnim()
     {
         if (movetype == MoveType.Nomal || movetype == MoveType.Skill || movetype == MoveType.NoAction)
         {
@@ -681,23 +693,23 @@ public class PlayerController : PlayerStatus
             }
         }
     }
-    public void HitEffectSpawn(Vector2 Pos) 
+    public void HitEffectSpawn(Vector2 Pos)
     {
         GameObject CL_Effect = Instantiate(HitEffect, Pos, Quaternion.identity);
-        Destroy(CL_Effect ,1f);
+        Destroy(CL_Effect, 1f);
     }
-    public void isStartPointMove( GameObject StartPoint) 
-    { 
-    
+    public void isStartPointMove(GameObject StartPoint)
+    {
+
         transform.position = StartPoint.transform.position;
 
     }
-    public void isRecoveryHP(float HPvalue) 
+    public void isRecoveryHP(float HPvalue)
     {
         HP += HPvalue;
-        if (HP > MaxHP) 
-        { 
-        HP = MaxHP;
+        if (HP > MaxHP)
+        {
+            HP = MaxHP;
         }
         if (HP < 1)
         {
@@ -705,7 +717,7 @@ public class PlayerController : PlayerStatus
         }
         playerDamage.HP_SliderChange();
     }
-    
+
 }
 
 [System.Serializable]

@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8756338199317564120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2650615997810259898}
+  - component: {fileID: 481993966541516785}
+  m_Layer: 0
+  m_Name: Skill_PD_FlameDance_Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2650615997810259898
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8756338199317564120}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.4286156, y: 0.17390807, z: 0.004574028}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &481993966541516785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8756338199317564120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e97065535a5f7c49aa41a8e50ca416c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Duration: 5
+  FirePrefab: {fileID: 6565959533261188896, guid: 2ef5e9c801aad5a48a2b0be20aab290a, type: 3}
+  ExplosionPrefab: {fileID: 3819676530029410331, guid: d53f8243f4ed252459fdaba74a986971, type: 3}
+  clip: {fileID: 8300000, guid: e977c248758a4244e995bdc42484d2b4, type: 3}
+  ActiveEffectPrefab: {fileID: 6051570796158604386, guid: 5604181fd676e5546a0f5daef1f4ea0f, type: 3}
+  FireSpacing: 0.4
+  FireSpawnInterval: 0.04
+  MaxFireCount: 80
+  ExplosionRadius: 0.9
+  ExplosionTargetLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  ExplosionDamage: 42
+  ExplosionStun: 0
+  ExplosionConfusion: 0
+  ExplosionCritical: 0
+  ExplosionLifeTime: 5

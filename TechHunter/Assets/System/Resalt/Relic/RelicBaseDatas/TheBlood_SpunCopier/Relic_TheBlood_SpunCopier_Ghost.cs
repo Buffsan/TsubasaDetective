@@ -18,50 +18,54 @@ public class Relic_TheBlood_SpunCopier_Ghost : MonoBehaviour
     // Start is called before the first frame update
     private void FixedUpdate()
     {
-        
-        if (playerskillBase == null && Phase ==0) return;
 
-        if (Phase == 0) 
+        if (playerskillBase == null && Phase == 0) return;
+
+        if (Phase == 0)
         {
             Cout += Time.fixedDeltaTime;
-            if (Cout > WaitTime) 
+            if (Cout > WaitTime)
             {
                 Phase++;
             }
-            
+
         }
-        if (Phase == 1) 
-        { 
+        if (Phase == 1)
+        {
             GameObject CL_Skill = Instantiate(playerskillBase, transform.position, Quaternion.identity);
             CL_Skill.transform.parent = transform;
             playerSkillBase = CL_Skill.GetComponent<PlayerSkillBase>();
             playerSkillBase.TargetObject = gameObject;
 
+            // 複製機によるスキルの再発動も契約カウントに含める。
+            // Phase 1 は一度しか通らないため、1回の再発動につき+1。
+            Skill_PD_SwordContract_Count.AddCount();
+
             int i = 0;
-            foreach (var playerskill in PlayerController.Instance.skillINFO) 
+            foreach (var playerskill in PlayerController.Instance.skillINFO)
             {
-                if (playerskill.skillDATA == skillCardData) 
+                if (playerskill.skillDATA == skillCardData)
                 {
                     playerskill.SkillCardManager.isCoolTime_add_Over(-skillCardData.CoolTime * 0.3f);
                 }
                 i++;
             }
-            
+
             Phase++;
         }
-        if (Phase == 2) 
+        if (Phase == 2)
         {
             if (!playerSkillBase)
             {
                 Phase++;
             }
-            else 
+            else
             {
                 playerSkillBase.SkillPlay();
             }
-            
+
         }
-        if (Phase == 3) 
+        if (Phase == 3)
         {
             Phase++;
             Destroy(gameObject, 15);

@@ -21884,6 +21884,12 @@ MonoBehaviour:
   - SkillName: "\u6BD2\u6DB2\u3088\u62BC\u3057\u6D41\u305B"
     Rarity: 2
     skill: {fileID: 11400000, guid: e81f81b4167ffae4e858465169441a34, type: 2}
+  - SkillName: "\u708E\u821E"
+    Rarity: 2
+    skill: {fileID: 11400000, guid: 3002bea05a9691f4c9ef308c278171ba, type: 2}
+  - SkillName: "\u5263\u7D99\u306E\u5951\u7D04"
+    Rarity: 2
+    skill: {fileID: 11400000, guid: c80207853fb7dda4e814ef30ba44aca1, type: 2}
   StatusUPs:
   - MainImage: {fileID: 21300000, guid: cd059f8ea1dce9148ab5c348307a30ec, type: 3}
     PageName: "\u6226\u95D8\u8A13\u7DF4"
@@ -280039,7 +280045,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5795139298799790361, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: gameMode
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5795139298799790361, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: NoneSkill
@@ -282552,11 +282558,11 @@ PrefabInstance:
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[1].skillDATA
       value: 
-      objectReference: {fileID: 11400000, guid: dfa4992dc0fdf004f91c1edc484b765f, type: 2}
+      objectReference: {fileID: 11400000, guid: 5402aba11f5628f488869dedd3368a7a, type: 2}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[2].skillDATA
       value: 
-      objectReference: {fileID: 11400000, guid: 3e4df03a0f9caee4694a5aa449499bf7, type: 2}
+      objectReference: {fileID: 11400000, guid: c80207853fb7dda4e814ef30ba44aca1, type: 2}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[3].skillDATA
       value: 
@@ -282564,7 +282570,7 @@ PrefabInstance:
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[4].skillDATA
       value: 
-      objectReference: {fileID: 11400000, guid: 09f5d11b89c7e5d489e45a7d1de652a3, type: 2}
+      objectReference: {fileID: 11400000, guid: 3002bea05a9691f4c9ef308c278171ba, type: 2}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[5].skillDATA
       value: 
@@ -282575,7 +282581,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 3aa718d31d500af4b89714e94ed6c655, type: 2}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[0].SkillLevel
-      value: 100
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[1].SkillLevel

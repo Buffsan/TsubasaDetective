@@ -139,34 +139,34 @@ public class SkillController : MonoBehaviour
     {
         if (Spawn)
         {
-            ReRollAnim.Play("oŒ»", 0, 0);
-            SkipAnim.Play("oŒ»", 0, 0);
-            BookAnimator.Play("oŒ»", 1);
-            BookAnimator.Play("‚ß‚­‚é", 0, 0);
+            ReRollAnim.Play("å‡ºç¾", 0, 0);
+            SkipAnim.Play("å‡ºç¾", 0, 0);
+            BookAnimator.Play("å‡ºç¾", 1);
+            BookAnimator.Play("ã‚ãã‚‹", 0, 0);
         }
         else 
         {
-            ReRollAnim.Play("Á‚¦‚é");
-            SkipAnim.Play("Á‚¦‚é");
-            BookAnimator.Play("Á¸", 1);
+            ReRollAnim.Play("æ¶ˆãˆã‚‹");
+            SkipAnim.Play("æ¶ˆãˆã‚‹");
+            BookAnimator.Play("æ¶ˆå¤±", 1);
         }
     }
     void PlayRelicAnims(bool Spawn)
     {
         if (Spawn)
         {
-            ReRollAnim.Play("oŒ»", 0, 0);
-            SkipAnim.Play("oŒ»", 0, 0);
-            BookAnimator.Play("oŒ»", 1);
-            BookAnimator.Play("ÎoŒ»", 2);
-            BookAnimator.Play("İ’u", 0, 0);
+            ReRollAnim.Play("å‡ºç¾", 0, 0);
+            SkipAnim.Play("å‡ºç¾", 0, 0);
+            BookAnimator.Play("å‡ºç¾", 1);
+            BookAnimator.Play("çŸ³å‡ºç¾", 2);
+            BookAnimator.Play("è¨­ç½®", 0, 0);
         }
         else
         {
-            ReRollAnim.Play("Á‚¦‚é");
-            SkipAnim.Play("Á‚¦‚é");
-            BookAnimator.Play("Á¸", 1);
-            BookAnimator.Play("ÎÁ¸", 2);
+            ReRollAnim.Play("æ¶ˆãˆã‚‹");
+            SkipAnim.Play("æ¶ˆãˆã‚‹");
+            BookAnimator.Play("æ¶ˆå¤±", 1);
+            BookAnimator.Play("çŸ³æ¶ˆå¤±", 2);
         }
     }
 
@@ -215,12 +215,12 @@ public class SkillController : MonoBehaviour
         }
         if (gameModeManager.gameMode != system_GameModeManager.AdventureGameMode.StartSpot)
         {
-            ReRollAnim.Play("oŒ»", 0, 0);
-            SkipAnim.Play("oŒ»", 0, 0);
+            ReRollAnim.Play("å‡ºç¾", 0, 0);
+            SkipAnim.Play("å‡ºç¾", 0, 0);
         }
         
-        BookAnimator.Play("oŒ»", 1);
-        BookAnimator.Play("‚ß‚­‚é", 0, 0);
+        BookAnimator.Play("å‡ºç¾", 1);
+        BookAnimator.Play("ã‚ãã‚‹", 0, 0);
         SpawnAllPages();
     }
     public void Change_AllRelicPage()
@@ -345,7 +345,7 @@ public class SkillController : MonoBehaviour
 
             statusMenu.SetStatus();
         }
-        //‚à‚Æ‚à‚Æ‚ ‚Á‚½ƒy[ƒW‚Ìíœ
+        //ã‚‚ã¨ã‚‚ã¨ã‚ã£ãŸãƒšãƒ¼ã‚¸ã®å‰Šé™¤
         foreach (PageManager save in SavePage)
         {
             save.move = PageManager.Move.Run;
@@ -430,7 +430,7 @@ public class SkillController : MonoBehaviour
         cardMode = ChoiceCardMode.Status;
 
         
-        //‚à‚Æ‚à‚Æ‚ ‚Á‚½ƒy[ƒW‚Ìíœ
+        //ã‚‚ã¨ã‚‚ã¨ã‚ã£ãŸãƒšãƒ¼ã‚¸ã®å‰Šé™¤
         foreach (var save in SaveStageManager)
         {
             save.move = StagePageManager.Move.Run;
@@ -441,7 +441,7 @@ public class SkillController : MonoBehaviour
         SaveStatus.Clear();
 
         List<StagePageData> NowPage = new List<StagePageData>();
-        //O–‡‚ğğŒ‚É‹ö‚¤‚æ‚¤‚É‘Io
+        //ä¸‰æšã‚’æ¡ä»¶ã«é‡ã†ã‚ˆã†ã«é¸å‡º
         for (int i = 0; i < 3; i++)
         {
             bool Set = false;
@@ -474,7 +474,7 @@ public class SkillController : MonoBehaviour
             isStagePage(SaveStage, i);
         }
     }
-    public void isStart_RelicPageChoice()//ƒŒƒŠƒbƒNƒy[ƒW‚Ì’Š‘I
+    public void isStart_RelicPageChoice()//ãƒ¬ãƒªãƒƒã‚¯ãƒšãƒ¼ã‚¸ã®æŠ½é¸
     {
         PlayRelicAnims(true);
         playerController.movetype = PlayerController.MoveType.Wait;
@@ -489,7 +489,7 @@ public class SkillController : MonoBehaviour
             statusMenu.SetStatus();
         }
 
-        //‚à‚Æ‚à‚Æ‚ ‚Á‚½ƒy[ƒW‚Ìíœ
+        //ã‚‚ã¨ã‚‚ã¨ã‚ã£ãŸãƒšãƒ¼ã‚¸ã®å‰Šé™¤
         foreach (RelicPageManager save in Save_RelicPage)
         {
             save.move = RelicPageManager.Move.Run;
@@ -533,6 +533,19 @@ public class SkillController : MonoBehaviour
             isSet_Relic(SaveRelic, i);
         }
     }
+    public void PreviewStatusCard(PageManager page)
+    {
+        int index = SavePage.IndexOf(page);
+        if (cardMode == ChoiceCardMode.Status && statusMenu != null && index >= 0 && index < SaveStatus.Count)
+            statusMenu.Preview(SaveStatus[index]);
+    }
+
+    public void ClearStatusCardPreview(PageManager page)
+    {
+        if (statusMenu != null && cardMode == ChoiceCardMode.Status)
+            statusMenu.ClearPreview();
+    }
+
     public void ChoicePage()
     {
         playerController.movetype = PlayerController.MoveType.Nomal;
@@ -555,36 +568,9 @@ public class SkillController : MonoBehaviour
             {
                 save.move = PageManager.Move.Wait;
 
-                playerController.AddATK += SaveStatus[index].Attack;
-                playerController.AddAtkDF += SaveStatus[index].Defense;
-                playerController.Add_AdditiveATK += SaveStatus[index].AdditiveATK;
+                StatusCardEffects.Apply(playerController, SaveStatus[index]);
 
-                if (playerController.charadata.MAXHP + SaveStatus[index].HP + playerController.AddHP < 0)
-                {
-                    playerController.AddHP = 1 - playerController.charadata.MAXHP;
-                }
-                else
-                {
-                    playerController.AddHP += SaveStatus[index].HP;
-                }
-
-                playerController.AddRegen += SaveStatus[index].Regen;
-                playerController.isRecoveryHP(SaveStatus[index].RecoveryHP);
-                playerController.AddCritical += SaveStatus[index].Critical;
-                playerController.AddRange += SaveStatus[index].Range;
-                playerController.AddSpeed += SaveStatus[index].Speed;
-                playerController.AddConfusionTime += SaveStatus[index].ConfusionTime;
-
-                float coinChange = Mathf.Max((100f + SaveStatus[index].Coin) / 100f, 0f);
-                // ˆê“I‚Éfloat‚ÅŒvZ‚µ‚Ä‚©‚çint‚É–ß‚·
-                playerController.AllCoins = Mathf.RoundToInt(playerController.AllCoins * coinChange);
-
-                if (SaveStatus[index].RandomLevelUp > 0)
-                {
-                    playerController.RandomLevelUp(SaveStatus[index].RandomLevelUp);
-                }
-
-                //Debug.Log("statusƒZƒbƒg");
+                //Debug.Log("statusã‚»ãƒƒãƒˆ");
                 systemManager.gameMode = SystemManager.GameMode.Goal;
                 playerController.movetype = PlayerController.MoveType.Nomal;
                 systemManager.mode = SystemManager.ModeType.M1;
@@ -595,8 +581,6 @@ public class SkillController : MonoBehaviour
                 save.move = PageManager.Move.Run;
             }
             index++;
-            playerController.isAddStatus();
-            playerController.playerDamage.HP_SliderChange();
             Destroy(save.gameObject, 5);
             if (ALL_System.system_GameModeManager.gameMode == system_GameModeManager.AdventureGameMode.BossBattleSpot) 
             {
@@ -701,7 +685,7 @@ public class SkillController : MonoBehaviour
 
                 playerController.SpawnRelic(SaveRelics[index].data);
 
-                //Debug.Log("statusƒZƒbƒg");
+                //Debug.Log("statusã‚»ãƒƒãƒˆ");
                 systemManager.gameMode = SystemManager.GameMode.Goal;
                 playerController.movetype = PlayerController.MoveType.Nomal;
                 systemManager.mode = SystemManager.ModeType.M1;
@@ -752,7 +736,7 @@ public class SkillController : MonoBehaviour
 
                 systemManager.nextStage[systemManager.stageNumber + 1] = SaveStagePages[index].stage;
 
-                //Debug.Log("statusƒZƒbƒg");
+                //Debug.Log("statusã‚»ãƒƒãƒˆ");
                 systemManager.gameMode = SystemManager.GameMode.Goal;
                 playerController.movetype = PlayerController.MoveType.Nomal;
                 systemManager.mode = SystemManager.ModeType.M1;
@@ -772,7 +756,7 @@ public class SkillController : MonoBehaviour
         SaveStageManager.Clear();
         SaveStagePages.Clear();
     }
-    public void ChoiceSkillPage()//ƒXƒLƒ‹ƒy[ƒW‚Ì‘I‘ğ
+    public void ChoiceSkillPage()//ã‚¹ã‚­ãƒ«ãƒšãƒ¼ã‚¸ã®é¸æŠ
     {
         bool isMaxSkill = false;
         Max_skillCount = 0;
@@ -829,7 +813,7 @@ public class SkillController : MonoBehaviour
         SkillInfo LevelUP_SkillInfo;
         ChangeSkillPageManger_save = null;
         foreach (SkillPageManager save in SavesSkillPageManager) 
-        {//ƒŒƒxƒ‹ƒAƒbƒv‚Å‚«‚é‚©‚ÌŒŸØ
+        {//ãƒ¬ãƒ™ãƒ«ã‚¢ãƒƒãƒ—ã§ãã‚‹ã‹ã®æ¤œè¨¼
 
             if (save.Select)
             {
@@ -839,7 +823,7 @@ public class SkillController : MonoBehaviour
                 {
                     if (skillinfo.skillDATA == SaveSkills[index].skill && skillinfo.skillDATA != skillNoneData)
                     {
-                        //Debug.Log("ƒŒƒxƒ‹ƒAƒbƒv”­Œ©");
+                        //Debug.Log("ãƒ¬ãƒ™ãƒ«ã‚¢ãƒƒãƒ—ç™ºè¦‹");
                         LevelUP = true;
                         LevelUP_SkillInfo = skillinfo;
                     }
@@ -972,11 +956,11 @@ public class SkillController : MonoBehaviour
                         if (skillinfo.skillDATA == skillNoneData)
                         {
                             
-                            //Debug.Log(SaveSkills[index].skill + "Šm”F");
+                            //Debug.Log(SaveSkills[index].skill + "ç¢ºèª");
                             systemManager.gameMode = SystemManager.GameMode.Goal;
                             playerController.movetype = PlayerController.MoveType.Nomal;
                             systemManager.mode = SystemManager.ModeType.M1;
-                            //Debug.Log("skillƒZƒbƒg");
+                            //Debug.Log("skillã‚»ãƒƒãƒˆ");
                             skillinfo.skillDATA = SaveSkills[index].skill;
                             break;
                         }
@@ -1030,7 +1014,7 @@ public class SkillController : MonoBehaviour
 
         rect.transform.position = new Vector2(-1200, 1000);
 
-        //İ’uŠÔŠu -500 0 500
+        //è¨­ç½®é–“éš” -500 0 500
         //500 1000 1500
         //int TargetPos = 480 * value - 350;
         float TargetPos = SkillPagesDistanse * value + SkillPageStartPos;
@@ -1039,7 +1023,7 @@ public class SkillController : MonoBehaviour
     }
     void isStatusPage(StatusUP statuspage,int value) 
     { 
-    //-----------------statusƒy[ƒW¶¬
+    //-----------------statusãƒšãƒ¼ã‚¸ç”Ÿæˆ
         GameObject CL_Page = Instantiate(Page);
        PageManager pageManager = CL_Page.GetComponent<PageManager>();
 
@@ -1048,12 +1032,12 @@ public class SkillController : MonoBehaviour
 
         if (statuspage.Rarity == 1)
         {
-            //Debug.Log("ƒRƒ‚ƒ“");
+            //Debug.Log("ã‚³ãƒ¢ãƒ³");
             pageManager.Page_rarity.sprite = pageManager.CommonPage;
         }
         if (statuspage.Rarity == 2)
         {
-            //Debug.Log("ƒAƒ“ƒRƒ‚ƒ“");
+            //Debug.Log("ã‚¢ãƒ³ã‚³ãƒ¢ãƒ³");
             pageManager.Page_rarity.sprite = pageManager.UnCommonPage;
             pageManager.tape.sprite = pageManager.UnCommonPage_kazari;
         }
@@ -1069,7 +1053,7 @@ public class SkillController : MonoBehaviour
         RectTransform rect = CL_Page.GetComponent<RectTransform>();
         CL_Page.transform.parent = ResultCanvas.transform;
 
-        pageManager.MainName.text = "ƒXƒe[ƒ^ƒXUP";
+        pageManager.MainName.text = "ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹UP";
         pageManager.Name.text = statuspage.PageName;
         pageManager.MainExplanation.text = statuspage.PageName;
         pageManager.Explanation.text = statuspage.Explanation;
@@ -1078,7 +1062,7 @@ public class SkillController : MonoBehaviour
 
         rect.transform.position = new Vector2(-1200, 400);
 
-        //İ’uŠÔŠu -500 0 500
+        //è¨­ç½®é–“éš” -500 0 500
         //500 1000 1500
         float TargetPos = SkillPagesDistanse * value + SkillPageStartPos;
         //int TargetPos = 480 * value - 700;
@@ -1106,7 +1090,7 @@ public class SkillController : MonoBehaviour
             float AttackCount= playerController.ATK + playerController.AddATK;
             float AttackCount2 = AttackCount + statuspage.Attack;
             
-            AttackString = "UŒ‚—Í”{—¦:"+ AttackCount + "¨" + AttackCount2;
+            AttackString = "æ”»æ’ƒåŠ›å€ç‡:"+ AttackCount + "â†’" + AttackCount2;
             AllStatusStrings.Add(AttackString);
         }
         if (statuspage.AdditiveATK != 0)
@@ -1116,7 +1100,7 @@ public class SkillController : MonoBehaviour
             float AttackCount = playerController.AdditiveATK + playerController.Add_AdditiveATK;
             float AttackCount2 = AttackCount + statuspage.AdditiveATK;
 
-            AttackString = "UŒ‚—Í:" + AttackCount + "¨" + AttackCount2;
+            AttackString = "æ”»æ’ƒåŠ›:" + AttackCount + "â†’" + AttackCount2;
             AllStatusStrings.Add(AttackString);
         }
         if (statuspage.Defense != 0) 
@@ -1125,7 +1109,7 @@ public class SkillController : MonoBehaviour
 
             NumverStringCount++;
             DefenceCount = playerController.ATKDF + statuspage.Defense;
-            DefenceString = "–hŒä—Í:"+ playerController.ATKDF + "¨" + DefenceCount;
+            DefenceString = "é˜²å¾¡åŠ›:"+ playerController.ATKDF + "â†’" + DefenceCount;
             AllStatusStrings.Add(DefenceString);
         }
         if (statuspage.HP != 0) 
@@ -1133,7 +1117,7 @@ public class SkillController : MonoBehaviour
             float NowHP = playerController.charadata.MAXHP + playerController.AddHP;
             NumverStringCount++;
             HP_Count = playerController.charadata.MAXHP+ playerController.AddHP + statuspage.HP;
-            HP_String = "Å‘åHP:"+ NowHP + "¨" +HP_Count;
+            HP_String = "æœ€å¤§HP:"+ NowHP + "â†’" +HP_Count;
             AllStatusStrings.Add(HP_String);
         }
         if (statuspage.Regen != 0) 
@@ -1141,7 +1125,7 @@ public class SkillController : MonoBehaviour
             float RegenceCount = playerController.Regen ;
             float RegenceCount2 = RegenceCount + statuspage.Regen;
 
-            RegenString = "©‘R‰ñ•œ:" + RegenceCount + "¨" + RegenceCount2;
+            RegenString = "è‡ªç„¶å›å¾©:" + RegenceCount + "â†’" + RegenceCount2;
             AllStatusStrings.Add(RegenString);
         }
         if (statuspage.RecoveryHP != 0) 
@@ -1153,7 +1137,7 @@ public class SkillController : MonoBehaviour
             RecoveryHP_Count2 = playerController.MaxHP;
             }
 
-            RecoveryHP_String = "c‚èHP:"+RecoveryHP_Count + "¨" + RecoveryHP_Count2;
+            RecoveryHP_String = "æ®‹ã‚ŠHP:"+RecoveryHP_Count + "â†’" + RecoveryHP_Count2;
 
             AllStatusStrings.Add(RecoveryHP_String);
         }
@@ -1163,7 +1147,7 @@ public class SkillController : MonoBehaviour
             float Critical_Count = playerController.Critical;
             float Critical_Count2 = Critical_Count + statuspage.Critical;
 
-            string critical = "‰^:" + Critical_Count + "¨" + Critical_Count2;
+            string critical = "é‹:" + Critical_Count + "â†’" + Critical_Count2;
             AllStatusStrings.Add(critical);
         }
         if (statuspage.Range != 0) 
@@ -1172,7 +1156,7 @@ public class SkillController : MonoBehaviour
             float Range_Count = playerController.Range;
             float Range_Count2 = Range_Count + statuspage.Range;
 
-            string Rangestring = "ƒN[ƒ‹ƒ^ƒCƒ€‘¬“x:" +Range_Count+"¨"+Range_Count2; 
+            string Rangestring = "ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ é€Ÿåº¦:" +Range_Count+"â†’"+Range_Count2; 
             AllStatusStrings.Add(Rangestring);
         }
         if (statuspage.Speed != 0)
@@ -1181,7 +1165,7 @@ public class SkillController : MonoBehaviour
             float Range_Count = playerController.AddSpeed;
             float Range_Count2 = playerController.AddSpeed + statuspage.Speed;
 
-            string Rangestring = "ˆÚ“®‘¬“x:" + Range_Count + "¨" + Range_Count2;
+            string Rangestring = "ç§»å‹•é€Ÿåº¦:" + Range_Count + "â†’" + Range_Count2;
             AllStatusStrings.Add(Rangestring);
         }
         if (statuspage.Coin != 0)
@@ -1190,7 +1174,7 @@ public class SkillController : MonoBehaviour
             float Range_Count = playerController.AllCoins;
             float Range_Count2 = playerController.AllCoins * ((100 + statuspage.Coin) / 100);
 
-            string Rangestring = "Š‹à:" + Range_Count + "¨" + Range_Count2;
+            string Rangestring = "æ‰€æŒé‡‘:" + Range_Count + "â†’" + Range_Count2;
             AllStatusStrings.Add(Rangestring);
         }
         if (statuspage.ConfusionTime != 0) 
@@ -1198,7 +1182,7 @@ public class SkillController : MonoBehaviour
             float Range_Count = playerController.ConfusionTime +3;
             float Range_Count2 = playerController.ConfusionTime + statuspage.ConfusionTime + 3;
 
-            string Rangestring = "¬—ŠÔ:" + Range_Count + "¨" + Range_Count2;
+            string Rangestring = "æ··ä¹±æ™‚é–“:" + Range_Count + "â†’" + Range_Count2;
             AllStatusStrings.Add(Rangestring);
         }
 
@@ -1225,7 +1209,7 @@ public class SkillController : MonoBehaviour
     }
     void isStagePage(StagePageData statuspage, int value)
     {
-        //-----------------ƒXƒe[ƒWƒy[ƒW¶¬
+        //-----------------ã‚¹ãƒ†ãƒ¼ã‚¸ãƒšãƒ¼ã‚¸ç”Ÿæˆ
         GameObject CL_Page = Instantiate(StagePage);
         StagePageManager pageManager = CL_Page.GetComponent<StagePageManager>();
 
@@ -1239,7 +1223,7 @@ public class SkillController : MonoBehaviour
         RectTransform rect = CL_Page.GetComponent<RectTransform>();
         CL_Page.transform.parent = ResultCanvas.transform;
 
-        pageManager.MainName.text = "ƒXƒe[ƒW‘I‘ğ";
+        pageManager.MainName.text = "ã‚¹ãƒ†ãƒ¼ã‚¸é¸æŠ";
         pageManager.Name.text = statuspage.StageName;
         pageManager.BossIMage.sprite = statuspage.BossImage;
         pageManager.MainExplanation.text = statuspage.explaination;
@@ -1264,7 +1248,7 @@ public class SkillController : MonoBehaviour
 
         rect.transform.position = new Vector2(-1200, 400);
 
-        //İ’uŠÔŠu -500 0 500
+        //è¨­ç½®é–“éš” -500 0 500
         //500 1000 1500
         int TargetPos = 600 * value - 700;
         //Debug.Log(TargetPos);
@@ -1275,7 +1259,7 @@ public class SkillController : MonoBehaviour
 
     void isSkillPage(Skill statuspage, int value)
     {
-        //[[[[[[[[[[[[[[[[ƒXƒLƒ‹ƒJ[ƒh[[[[[[[[[[[[[[[[
+        //ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ã‚¹ã‚­ãƒ«ã‚«ãƒ¼ãƒ‰ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼ãƒ¼
         GameObject CL_Page = Instantiate(SkillPage);
         SkillPageManager pageManager = CL_Page.GetComponent<SkillPageManager>();
 
@@ -1297,7 +1281,7 @@ public class SkillController : MonoBehaviour
         RectTransform rect = CL_Page.GetComponent<RectTransform>();
         CL_Page.transform.parent = ResultCanvas.transform;
 
-        pageManager.MainName.text = "ƒXƒLƒ‹Šl“¾";
+        pageManager.MainName.text = "ã‚¹ã‚­ãƒ«ç²å¾—";
         pageManager.Name.text = statuspage.skill.SkillName;
         //pageManager.MainExplanation.text = statuspage.MainImage;
         pageManager.Explanation.text = statuspage.skill.SkillMessage;
@@ -1308,7 +1292,7 @@ public class SkillController : MonoBehaviour
 
         rect.transform.position = new Vector2(-1200, 0);
 
-        //İ’uŠÔŠu -500 0 500
+        //è¨­ç½®é–“éš” -500 0 500
         //500 1000 1500
         float TargetPos = SkillPagesDistanse * value + SkillPageStartPos;
         //Debug.Log(TargetPos);
@@ -1331,7 +1315,7 @@ public class StatusUP
 {
     public Sprite MainImage;
     public string PageName;
-    string StatusName = "ƒXƒe[ƒ^ƒXUP";
+    string StatusName = "ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹UP";
     
     public string UpExplanation;
     [TextArea]
@@ -1356,7 +1340,7 @@ public class Relic
 {
     public string Name;
     public RelicData data;
-     string StatusName = "ˆâ•¨Šl“¾";
+     string StatusName = "éºç‰©ç²å¾—";
     
     
 }

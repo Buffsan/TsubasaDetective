@@ -1285,6 +1285,8 @@ public class SkillController : MonoBehaviour
         pageManager.Name.text = statuspage.skill.SkillName;
         //pageManager.MainExplanation.text = statuspage.MainImage;
         pageManager.Explanation.text = statuspage.skill.SkillMessage;
+        SkillTermTooltip tooltip = pageManager.Explanation.GetComponent<SkillTermTooltip>();
+        if (tooltip != null) tooltip.SetDescription(statuspage.skill.SkillMessage);
         //pageManager.UP_Number.text = statuspage.UpExplanation;
         pageManager.MainImage.sprite = statuspage.skill.SkillImage;
         pageManager.CoolTimeTEXT.text = statuspage.skill.CoolTime.ToString();

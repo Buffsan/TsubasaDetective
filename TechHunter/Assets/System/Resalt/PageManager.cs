@@ -65,12 +65,12 @@ public class PageManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)&& Totch && !Select) 
+        if (Input.GetMouseButtonDown(0) && Totch && !Select && !DontTotch && move == Move.Move) 
         {
             TrigerObject.SetActive(false);
             audio.PlaySE(Clip2);
             Select = true;
-            //Debug.Log("‘I‘ğŠ®—¹");
+            //Debug.Log("é¸æŠå®Œäº†");
             SkillController.ChoicePage();
         }
     }
@@ -101,6 +101,7 @@ public class PageManager : MonoBehaviour
     void isRun() 
     {
 
+        DontTotch = true;
         TrigerObject.SetActive(false);
         rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 60, 320);
         animator.SetInteger("Anim", 0);
@@ -118,17 +119,24 @@ public class PageManager : MonoBehaviour
             animator.SetInteger("Anim", 1);
         }
     }
+    void OnDisable()
+    {
+        if (SkillController != null) SkillController.ClearStatusCardPreview(this);
+    }
+
     public void OnPointerEnter(BaseEventData eventData)
     {
         
-        //Debug.Log("ƒ}ƒEƒX‚ª‰æ‘œ‚ÉG‚ê‚Ü‚µ‚½I");
+        //Debug.Log("ãƒã‚¦ã‚¹ãŒç”»åƒã«è§¦ã‚Œã¾ã—ãŸï¼");
         Totch = true;
+        if (SkillController != null) SkillController.PreviewStatusCard(this);
         audio.PlaySE(Clip1);
         
     }
     public void OnPointerExit(BaseEventData eventData)
     {
-        //Debug.Log("ƒ}ƒEƒX‚ª‰æ‘œ‚É—£‚ê‚Ü‚µ‚½I");
+        //Debug.Log("ãƒã‚¦ã‚¹ãŒç”»åƒã«é›¢ã‚Œã¾ã—ãŸï¼");
         Totch = false;
+        if (SkillController != null) SkillController.ClearStatusCardPreview(this);
     }
 }

@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e97065535a5f7c49aa41a8e50ca416c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Duration: 5
+  Duration: 6
   FirePrefab: {fileID: 6565959533261188896, guid: 2ef5e9c801aad5a48a2b0be20aab290a, type: 3}
   ExplosionPrefab: {fileID: 3819676530029410331, guid: d53f8243f4ed252459fdaba74a986971, type: 3}
   clip: {fileID: 8300000, guid: e977c248758a4244e995bdc42484d2b4, type: 3}
@@ -61,3 +61,4 @@ MonoBehaviour:
   ExplosionConfusion: 0
   ExplosionCritical: 0
   ExplosionLifeTime: 5
+  skillCardData: {fileID: 0}

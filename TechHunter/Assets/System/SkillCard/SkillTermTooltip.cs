@@ -79,9 +79,31 @@ public class SkillTermTooltip : MonoBehaviour
 
     void Update()
     {
-        if (explanation == null || tooltipRoot == null || tooltipText == null || canvas == null) return;
-        Camera cam = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
-        int index = TMP_TextUtilities.FindIntersectingLink(explanation, Input.mousePosition, cam);
+        // Prefab生成後、親Canvasを自動取得する
+        if (canvas == null)
+        {
+            canvas = GetComponentInParent<Canvas>();
+        }
+
+        if (explanation == null ||
+            tooltipRoot == null ||
+            tooltipText == null ||
+            canvas == null)
+        {
+            return;
+        }
+
+        Camera cam = canvas.renderMode == RenderMode.ScreenSpaceOverlay
+            ? null
+            : canvas.worldCamera;
+
+        int index = TMP_TextUtilities.FindIntersectingLink(
+            explanation,
+            Input.mousePosition,
+            cam
+        );
+
+
         if (index < 0) { Hide(); return; }
         string id = explanation.textInfo.linkInfo[index].GetLinkID();
         if (!id.StartsWith("term") || !int.TryParse(id.Substring(4), out int term) || term < 0 || term >= Details.Length)

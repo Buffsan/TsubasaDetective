@@ -776,12 +776,12 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 if (i % 5 == 0) 
                 {
                     pendingA7Spawns++;
-                StartCoroutine(DereySpawnEnemy(0.4f * i, Zako1));
+                    StartCoroutine(DereySpawnEnemy(0.4f * i, Zako1));
                 }
                 if (i % 10 == 0) 
                 {
                     pendingA7Spawns++;
-                StartCoroutine(DereySpawnEnemy(0.4f * i, Enemys[0]));
+                    StartCoroutine(DereySpawnEnemy(0.4f * i, Enemys[0]));
                 }
             }
             enemyBase.mode = EnemyBase.ModeType.M2;

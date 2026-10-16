@@ -13,13 +13,15 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 {
 
     [SerializeField] GameObject RockNeedle;
+    CG_Puppeteer_NeedlePool needlePool;
+    int pendingA7Spawns = 0;
     [SerializeField] GameObject DieEffect;
     [SerializeField] AudioClip Needleclip;
     [SerializeField] GameObject DamageEffect;
 
-    public float targetDistance = 2f;   // ÅI“I‚É•Û‚¿‚½‚¢‹——£
-    public float approachSpeed = 2f;    // ‹——£‚ğ‹ß‚Ã‚­ƒXƒs[ƒh
-    public float rotateSpeed = 3f;      // ‰ñ“]ƒXƒs[ƒh
+    public float targetDistance = 2f;   // æœ€çµ‚çš„ã«ä¿ã¡ãŸã„è·é›¢
+    public float approachSpeed = 2f;    // è·é›¢ã‚’è¿‘ã¥ãã‚¹ãƒ”ãƒ¼ãƒ‰
+    public float rotateSpeed = 3f;      // å›è»¢ã‚¹ãƒ”ãƒ¼ãƒ‰
 
     public List<bool> EnemySpawnBool = new List<bool>();
 
@@ -49,15 +51,17 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     float sabAttackCount = 0;
     int sabAttackNumber = 0;
 
-    public float radius = 3f;      // ‰ñ“]”¼Œa
-    public float angularSpeed = 90f; // ‰ñ“]‘¬“xi“x/•bj
+    public float radius = 3f;      // å›è»¢åŠå¾„
+    public float angularSpeed = 90f; // å›è»¢é€Ÿåº¦ï¼ˆåº¦/ç§’ï¼‰
 
-    private float angle; // Œ»İ‚ÌŠp“x
+    private float angle; // ç¾åœ¨ã®è§’åº¦
 
     public List<GameObject> MovePoints = new List<GameObject>();
    
     void Start()
     {
+        needlePool = gameObject.AddComponent<CG_Puppeteer_NeedlePool>();
+        needlePool.Initialize(RockNeedle, 300);
         StartPos = transform.position;
          AddMovePointGameObject = GameObject.FindGameObjectWithTag("MovePoints");
         add_Lists_GameObject = AddMovePointGameObject.GetComponent<Add_Lists_GameObject>();
@@ -69,12 +73,12 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
         if (enemyBase.volume.profile.TryGet<Bloom>(out enemyBase.bloom))
         {
-            Debug.Log("BloomƒGƒtƒFƒNƒg‚ªŒ©‚Â‚©‚è‚Ü‚µ‚½I");
-            //enemyBase.bloom.scatter.value = 0.5f; // Scatter’l‚ğİ’è
+            Debug.Log("Bloomã‚¨ãƒ•ã‚§ã‚¯ãƒˆãŒè¦‹ã¤ã‹ã‚Šã¾ã—ãŸï¼");
+            //enemyBase.bloom.scatter.value = 0.5f; // Scatterå€¤ã‚’è¨­å®š
         }
         else
         {
-            Debug.LogWarning("ƒvƒƒtƒ@ƒCƒ‹‚ÉBloom‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñI");
+            Debug.LogWarning("ãƒ—ãƒ­ãƒ•ã‚¡ã‚¤ãƒ«ã«BloomãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ï¼");
         }
     }
     public void FixedUpdate()
@@ -105,7 +109,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         {
             if (Near < 10 && !NearBool)
             {
-                Near = Time.deltaTime;
+                Near += Time.deltaTime;
             }
             else
             {
@@ -144,7 +148,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                     AttackWaitTime = 0;
                     enemyBase.moveType = EnemyBase.MoveType.Attack;
 
-                    float random = Random.RandomRange(0, 4);
+                    int random = Random.Range(0, 4);
                     //int random = 0;
 
                     if (random == 0)
@@ -166,21 +170,6 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                     {
                         enemyBase.moveType = EnemyBase.MoveType.Attack;
                         enemyBase.attackType = EnemyBase.AttackType.A4;
-                    }
-                    if (random == 4)
-                    {
-                        enemyBase.moveType = EnemyBase.MoveType.Attack;
-                        enemyBase.attackType = EnemyBase.AttackType.A5;
-                    }
-                    if (random == 5)
-                    {
-                        enemyBase.moveType = EnemyBase.MoveType.Attack;
-                        enemyBase.attackType = EnemyBase.AttackType.A6;
-                    }
-                    if (random == 6)
-                    {
-                        enemyBase.moveType = EnemyBase.MoveType.Attack;
-                        enemyBase.attackType = EnemyBase.AttackType.A2;
                     }
 
                 }
@@ -195,7 +184,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                     AttackWaitTime = 0;
                     enemyBase.moveType = EnemyBase.MoveType.Attack;
 
-                    float random = Random.RandomRange(0, 4);
+                    int random = Random.Range(0, 4);
                     //int random = 0;
 
                     if (random == 0)
@@ -217,21 +206,6 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                     {
                         enemyBase.moveType = EnemyBase.MoveType.Attack;
                         enemyBase.attackType = EnemyBase.AttackType.A4;
-                    }
-                    if (random == 4)
-                    {
-                        enemyBase.moveType = EnemyBase.MoveType.Attack;
-                        enemyBase.attackType = EnemyBase.AttackType.A5;
-                    }
-                    if (random == 5)
-                    {
-                        enemyBase.moveType = EnemyBase.MoveType.Attack;
-                        enemyBase.attackType = EnemyBase.AttackType.A6;
-                    }
-                    if (random == 6)
-                    {
-                        enemyBase.moveType = EnemyBase.MoveType.Attack;
-                        enemyBase.attackType = EnemyBase.AttackType.A2;
                     }
 
                 }
@@ -296,6 +270,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 NearBool = false;
                 Near = 0;
                 enemyBase.attackType = EnemyBase.AttackType.A5;
+                enemyBase.moveType = EnemyBase.MoveType.Attack;
 
             }
 
@@ -340,15 +315,9 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
         }
     }
-    void NeedleSpawn(Vector2 Ptransform) 
+    void NeedleSpawn(Vector2 Ptransform)
     {
-        
-
-    GameObject CL_Needle = Instantiate(RockNeedle ,Ptransform,Quaternion.identity);
-            CG_Puppeteer_Needle puppeteer_Needle = CL_Needle.GetComponent<CG_Puppeteer_Needle>();
-            puppeteer_Needle.enemyAttack.enemyBase = enemyBase;
-
-            Destroy(CL_Needle, 5);
+        needlePool.Spawn(Ptransform, enemyBase);
     }
     
     void A1() 
@@ -361,8 +330,9 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
             if (enemyBase.AttackCount > 0.5) 
             {
-                enemyBase.animator2.Play("‘OUŒ‚", 0, 0);
+                enemyBase.animator2.Play("å‰æ”»æ’ƒ", 0, 0);
                 enemyBase.mode = EnemyBase.ModeType.M2;
+                enemyBase.AttackCount = 0;
                 SavePos = enemyBase.Player.transform.position;
             }
 
@@ -371,6 +341,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 0.1)
             {
+                enemyBase.AttackCount = 0;
                 AttackNumber++;
 
                 if (AttackNumber < 30)
@@ -403,7 +374,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     {
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
-            enemyBase.animator2.Play("‘OUŒ‚", 0, 0);
+            enemyBase.animator2.Play("å‰æ”»æ’ƒ", 0, 0);
             SavePos = enemyBase.Player.transform.position;
             enemyBase.mode = EnemyBase.ModeType.M2;
         }
@@ -417,23 +388,23 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
                 float AttackDistance = AttackNumber / 2.5f;
 
-                // ƒ‰ƒ“ƒ_ƒ€‚ÈŠp“x‚ğ¶¬ (0 ~ 360“x)
+                // ãƒ©ãƒ³ãƒ€ãƒ ãªè§’åº¦ã‚’ç”Ÿæˆ (0 ~ 360åº¦)
                 float randomAngle = Random.Range(-40f, 40f);
 
-                // ƒ‰ƒ“ƒ_ƒ€‚ÈŠp“x‚ğƒ‰ƒWƒAƒ“‚É•ÏŠ·
+                // ãƒ©ãƒ³ãƒ€ãƒ ãªè§’åº¦ã‚’ãƒ©ã‚¸ã‚¢ãƒ³ã«å¤‰æ›
                 float radians = randomAngle * Mathf.Deg2Rad;
 
-                // ‹ÉÀ•W‚©‚çƒfƒJƒ‹ƒgÀ•W‚Ö•ÏŠ·
+                // æ¥µåº§æ¨™ã‹ã‚‰ãƒ‡ã‚«ãƒ«ãƒˆåº§æ¨™ã¸å¤‰æ›
                 float xOffset = AttackDistance * Mathf.Cos(radians);
                 float yOffset = AttackDistance * Mathf.Sin(radians);
                 Quaternion rotation = Quaternion.AngleAxis(randomAngle, Vector3.forward);
                 Vector2 newDirection = (SavePos - (Vector2)transform.position).normalized;
 
-                // V‚µ‚¢ˆÊ’u‚ğŒvZ
+                // æ–°ã—ã„ä½ç½®ã‚’è¨ˆç®—
                 //Vector2 newPosition = (Vector2)transform.position + newDirection*new Vector2(xOffset, yOffset);
 
-                Vector2 rotatedDirection = rotation * newDirection; // SavePos•ûŒü‚ğŠî€‚ÉŠp“x‚ğ‰ñ“]
-                Vector2 newPosition = (Vector2)transform.position + rotatedDirection * AttackDistance; // ‰ñ“]•ûŒü‚ÅV‚µ‚¢ˆÊ’u‚ğŒvZ
+                Vector2 rotatedDirection = rotation * newDirection; // SavePosæ–¹å‘ã‚’åŸºæº–ã«è§’åº¦ã‚’å›è»¢
+                Vector2 newPosition = (Vector2)transform.position + rotatedDirection * AttackDistance; // å›è»¢æ–¹å‘ã§æ–°ã—ã„ä½ç½®ã‚’è¨ˆç®—
 
                 NeedleSpawn(newPosition);
                 if (AttackNumber > 45) 
@@ -451,7 +422,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     {
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
-            enemyBase.animator2.Play("‘OUŒ‚", 0, 0);
+            enemyBase.animator2.Play("å‰æ”»æ’ƒ", 0, 0);
             SavePos = enemyBase.Player.transform.position;
             enemyBase.mode = EnemyBase.ModeType.M2;
         }
@@ -470,11 +441,11 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                
                 Vector2 newDirection = (SavePos - (Vector2)transform.position).normalized;
 
-                // V‚µ‚¢ˆÊ’u‚ğŒvZ
+                // æ–°ã—ã„ä½ç½®ã‚’è¨ˆç®—
                 //Vector2 newPosition = (Vector2)transform.position + newDirection*new Vector2(xOffset, yOffset);
 
                 
-                Vector2 newPosition = (Vector2)transform.position +newDirection * AttackDistance; // ‰ñ“]•ûŒü‚ÅV‚µ‚¢ˆÊ’u‚ğŒvZ
+                Vector2 newPosition = (Vector2)transform.position +newDirection * AttackDistance; // å›è»¢æ–¹å‘ã§æ–°ã—ã„ä½ç½®ã‚’è¨ˆç®—
 
                 NeedleSpawn(newPosition);
                 if (AttackNumber > 15)
@@ -500,8 +471,8 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     {
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
-            enemyBase.animator.Play("“D“P‘Ş");
-            enemyBase.animator2.Play("ö•š");
+            enemyBase.animator.Play("æ³¥æ’¤é€€");
+            enemyBase.animator2.Play("æ½œä¼");
             if (enemyBase.AttackCount > 2)
             {
                 enemyBase.DamageBody.SetActive(false);
@@ -513,14 +484,14 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                      newChoicePoint = add_Lists_GameObject.gameObjects[Random.Range(0, add_Lists_GameObject.gameObjects.Count)];
                     if (SafeCount > 1000) 
                     {
-                        Debug.Log("‚±‚Ì¢ŠE‚ÅƒgƒbƒvƒNƒ‰ƒX‚Ìˆ«‰^‚©–Ú“I’n‚ª‚P‚Â‚µ‚©‚È‚¢‚½‚ß‚½‚Ç‚è’…‚¯‚Ü‚¹‚ñ‚Å‚µ‚½");  
+                        Debug.Log("ã“ã®ä¸–ç•Œã§ãƒˆãƒƒãƒ—ã‚¯ãƒ©ã‚¹ã®æ‚ªé‹ã‹ç›®çš„åœ°ãŒï¼‘ã¤ã—ã‹ãªã„ãŸã‚ãŸã©ã‚Šç€ã‘ã¾ã›ã‚“ã§ã—ãŸ");  
                         return;
                     }
                 }
 
                 LastMovePoint = newChoicePoint;
                 SavePos = newChoicePoint.transform.position;
-                enemyBase.animator.Play("“DˆÚ“®");
+                enemyBase.animator.Play("æ³¥ç§»å‹•");
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M2;
 
@@ -548,8 +519,8 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
             if (newDistance < 0.1f)
             {
-                enemyBase.animator.Play("“DoŒ»");
-                enemyBase.animator2.Play("oŒ»");
+                enemyBase.animator.Play("æ³¥å‡ºç¾");
+                enemyBase.animator2.Play("å‡ºç¾");
                 sabAttackCount = 0;
                 enemyBase.rb.velocity = Vector2.zero;
                 enemyBase.AttackCount = 0;
@@ -584,7 +555,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
-            enemyBase.animator2.Play("ãUŒ‚", 0, 0);
+            enemyBase.animator2.Play("ä¸Šæ”»æ’ƒ", 0, 0);
             for (int i = 0; i < 10; i++)
             {
 
@@ -594,7 +565,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 float newX = transform.position.x + 1 * Mathf.Cos(angleRad);
                 float newY = transform.position.y + 1 * Mathf.Sin(angleRad);
 
-                // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+                // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
                 Vector2 newPosition = new Vector2(newX, newY);
 
                 NeedleSpawn(newPosition);
@@ -619,7 +590,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M4)
         {
-            enemyBase.animator2.Play("ãUŒ‚", 0, 0);
+            enemyBase.animator2.Play("ä¸Šæ”»æ’ƒ", 0, 0);
             for (int i = 0; i < 12; i++)
             {
 
@@ -629,7 +600,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 float newX = transform.position.x + 2 * Mathf.Cos(angleRad);
                 float newY = transform.position.y + 2 * Mathf.Sin(angleRad);
 
-                // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+                // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
                 Vector2 newPosition = new Vector2(newX, newY);
 
                 NeedleSpawn(newPosition);
@@ -655,7 +626,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M6)
         {
-            enemyBase.animator2.Play("ãUŒ‚", 0, 0);
+            enemyBase.animator2.Play("ä¸Šæ”»æ’ƒ", 0, 0);
             for (int i = 0; i < 12; i++)
             {
 
@@ -665,7 +636,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 float newX = transform.position.x + 3 * Mathf.Cos(angleRad);
                 float newY = transform.position.y + 3 * Mathf.Sin(angleRad);
 
-                // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+                // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
                 Vector2 newPosition = new Vector2(newX, newY);
 
                 NeedleSpawn(newPosition);
@@ -782,33 +753,35 @@ public class CG_AI_Puppeteer : Boss_MoveBase
             if (enemyBase.AttackCount > 1) 
             {
                 enemyBase.rb.velocity = Vector2.zero;
-                enemyBase.animator.Play("“DˆÚ“®");
-                enemyBase.animator2.Play("ö•š");
+                enemyBase.animator.Play("æ³¥ç§»å‹•");
+                enemyBase.animator2.Play("æ½œä¼");
                 enemyBase.AttackCount = 0; AttackNumber = 0;
                 enemyBase.mode = EnemyBase.ModeType.M15;
 
                 Vector2 pos = enemyBase.rb.position;
-                radius = pos.magnitude; // Œ´“_‚Æ‚Ì‹——£
-                angle = Mathf.Atan2(pos.y, pos.x); // Œ»İ‚ÌŠp“x‚ğƒ‰ƒWƒAƒ“‚Åæ“¾
+                radius = pos.magnitude; // åŸç‚¹ã¨ã®è·é›¢
+                angle = Mathf.Atan2(pos.y, pos.x); // ç¾åœ¨ã®è§’åº¦ã‚’ãƒ©ã‚¸ã‚¢ãƒ³ã§å–å¾—
             }
         }
 
         if (enemyBase.mode == EnemyBase.ModeType.M15)
         {
-
-           
+            pendingA7Spawns = 0;
 
             for (int i = 0; i < 30; i++) 
             {
+                pendingA7Spawns++;
                 StartCoroutine(DereySpawnEnemy(0.4f * i,Zako));
 
                 if (i % 5 == 0) 
                 {
-                    StartCoroutine(DereySpawnEnemy(0.4f * i, Zako1));
+                    pendingA7Spawns++;
+                StartCoroutine(DereySpawnEnemy(0.4f * i, Zako1));
                 }
                 if (i % 10 == 0) 
                 {
-                    StartCoroutine(DereySpawnEnemy(0.4f * i, Enemys[0]));
+                    pendingA7Spawns++;
+                StartCoroutine(DereySpawnEnemy(0.4f * i, Enemys[0]));
                 }
             }
             enemyBase.mode = EnemyBase.ModeType.M2;
@@ -832,14 +805,19 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 sabAttackCount = 0;
             }
             
-            if (enemyBase.AttackCount > 35 || AllEnemy.Count == 0)
+            if (enemyBase.AttackCount > 35 || (pendingA7Spawns == 0 && AllEnemy.Count == 0))
             {
 
 
+                if (pendingA7Spawns > 0)
+                {
+                    StopAllCoroutines(); // 35ç§’çµŒéæ™‚ã€æœªå¬å–šã®æ•µã‚’å‡ºã•ãªã„
+                    pendingA7Spawns = 0;
+                }
                 sabAttackCount = 0;
 
                 SavePos = add_Lists_GameObject.gameObjects[4].transform.position;
-                //enemyBase.animator.Play("“DˆÚ“®");
+                //enemyBase.animator.Play("æ³¥ç§»å‹•");
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M3;
 
@@ -871,8 +849,8 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
             if (newDistance < 0.1f)
             {
-                enemyBase.animator.Play("“DoŒ»");
-                enemyBase.animator2.Play("oŒ»");
+                enemyBase.animator.Play("æ³¥å‡ºç¾");
+                enemyBase.animator2.Play("å‡ºç¾");
                 sabAttackCount = 0;
                 enemyBase.rb.velocity = Vector2.zero;
                 enemyBase.AttackCount = 0;
@@ -887,7 +865,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
             if (enemyBase.AttackCount > 3)
             {
-                enemyBase.animator2.Play("ãUŒ‚", 0, 0);
+                enemyBase.animator2.Play("ä¸Šæ”»æ’ƒ", 0, 0);
                 AttackNumber++;
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M5;
@@ -909,10 +887,10 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                         float angle = (360 / 10 ) * i;
                         float angleRad = angle * Mathf.Deg2Rad;
 
-                        float newX = (transform.position.x + 1 + AttackNumber) * Mathf.Cos(angleRad);
-                        float newY = (transform.position.y + 1 + AttackNumber) * Mathf.Sin(angleRad);
+                        float newX = transform.position.x + (1 + AttackNumber) * Mathf.Cos(angleRad);
+                        float newY = transform.position.y + (1 + AttackNumber) * Mathf.Sin(angleRad);
 
-                        // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+                        // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
                         Vector2 newPosition = new Vector2(newX, newY);
 
                         NeedleSpawn(newPosition);
@@ -942,13 +920,13 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                     for (int i = 0; i < 10; i++)
                     {
 
-                        float angle = ((360 / 10)+20) * i;
+                        float angle = (360f / 10f) * i + 20f;
                         float angleRad = angle * Mathf.Deg2Rad;
 
-                        float newX = (transform.position.x + 1 + AttackNumber) * Mathf.Cos(angleRad);
-                        float newY = (transform.position.y + 1 + AttackNumber) * Mathf.Sin(angleRad);
+                        float newX = transform.position.x + (1 + AttackNumber) * Mathf.Cos(angleRad);
+                        float newY = transform.position.y + (1 + AttackNumber) * Mathf.Sin(angleRad);
 
-                        // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+                        // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
                         Vector2 newPosition = new Vector2(newX, newY);
 
                         NeedleSpawn(newPosition);
@@ -978,13 +956,13 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                     for (int i = 0; i < 10; i++)
                     {
 
-                        float angle = ((360 / 10) + 40) * i;
+                        float angle = (360f / 10f) * i + 40f;
                         float angleRad = angle * Mathf.Deg2Rad;
 
-                        float newX = (transform.position.x + 1 + AttackNumber) * Mathf.Cos(angleRad);
-                        float newY = (transform.position.y + 1 + AttackNumber) * Mathf.Sin(angleRad);
+                        float newX = transform.position.x + (1 + AttackNumber) * Mathf.Cos(angleRad);
+                        float newY = transform.position.y + (1 + AttackNumber) * Mathf.Sin(angleRad);
 
-                        // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+                        // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
                         Vector2 newPosition = new Vector2(newX, newY);
 
                         NeedleSpawn(newPosition);
@@ -1010,14 +988,14 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     }
     private IEnumerator DereySpawnEnemy(float delayTime, GameObject zakoEnemy)
     {
-        //Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ªŠJn‚³‚ê‚Ü‚µ‚½B¡‚©‚ç " + delayTime + " •b‘Ò‚¿‚Ü‚·...");
+        //Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ãŒé–‹å§‹ã•ã‚Œã¾ã—ãŸã€‚ä»Šã‹ã‚‰ " + delayTime + " ç§’å¾…ã¡ã¾ã™...");
 
-        // ‚±‚±‚Åw’è‚µ‚½•b”‚¾‚¯‘Ò‹@‚·‚é
+        // ã“ã“ã§æŒ‡å®šã—ãŸç§’æ•°ã ã‘å¾…æ©Ÿã™ã‚‹
         yield return new WaitForSeconds(delayTime);
 
         Vector2 newPos = EnemySpawnLists_GameObject.gameObjects[Random.Range(0, EnemySpawnLists_GameObject.gameObjects.Count)].transform.position;
         GameObject CL_Enemy1 = EnemySpawn(zakoEnemy, newPos);
-
+        pendingA7Spawns--;
     }
     [SerializeField] Vector2 centerPos = Vector2.zero;
 
@@ -1030,7 +1008,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 
         float dist = toCenter.magnitude;
 
-        // --- Šp“x‚ğŒ»İˆÊ’u‚©‚çŒvZi1‰ñ‚¾‚¯j ---
+        // --- è§’åº¦ã‚’ç¾åœ¨ä½ç½®ã‹ã‚‰è¨ˆç®—ï¼ˆ1å›ã ã‘ï¼‰ ---
         if (!initializedAngle)
         {
             if (dist > 0f)
@@ -1040,13 +1018,13 @@ public class CG_AI_Puppeteer : Boss_MoveBase
             initializedAngle = true;
         }
 
-        // --- Šp“x‚ğXVi‰~‰^“®j ---
+        // --- è§’åº¦ã‚’æ›´æ–°ï¼ˆå††é‹å‹•ï¼‰ ---
         angle += rotateSpeed * Time.deltaTime;
 
-        // --- –Ú•W”¼Œa‚É‹ß‚Ã‚­iƒ[ƒv–h~j ---
+        // --- ç›®æ¨™åŠå¾„ã«è¿‘ã¥ãï¼ˆãƒ¯ãƒ¼ãƒ—é˜²æ­¢ï¼‰ ---
         float newDist = Mathf.MoveTowards(dist, targetDistance, approachSpeed * Time.deltaTime);
 
-        // --- V‚µ‚¢ˆÊ’u‚ğŒvZ ---
+        // --- æ–°ã—ã„ä½ç½®ã‚’è¨ˆç®— ---
         float x = Mathf.Cos(angle) * newDist;
         float y = Mathf.Sin(angle) * newDist;
 

@@ -43,8 +43,10 @@ public class EnemyAttack : MonoBehaviour
         charaDamage target = other.GetComponent<charaDamage>();
         if (target == null) return;
 
-        // 子オブジェクトの被弾判定でも、EnemyBaseで攻撃者本人を特定する。
-        bool isSelf = enemyBase != null && target.OwnerEnemyBase == enemyBase;
+        // 攻撃者と被弾者のcharadataを比較して自己攻撃を判定する。
+        charadata attackerData = enemyBase != null ? enemyBase.charadata : charadata;
+        charadata targetData = target.OwnerEnemyBase != null ? target.OwnerEnemyBase.charadata : null;
+        bool isSelf = attackerData != null && attackerData == targetData;
         if (isSelf)
         {
             if (!canAttackSelf) return;

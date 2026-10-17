@@ -344,6 +344,9 @@ MonoBehaviour:
   StorongSpier: {fileID: 5350161065586460782, guid: aa2425e67fb336e40848aa38aad67689, type: 3}
   Tank: {fileID: 887986414244470312, guid: 5ccb85780d2a06c42b75270d8d88bb64, type: 3}
   SpawnCount: 3
+  EnemyThrowDuration: 3
+  EnemyThrowArcHeight: 8
+  EnemyThrowRotationSpeed: 1440
   audioClips:
   - {fileID: 8300000, guid: b360cd3b457bf4742a4b09af804c955d, type: 3}
   - {fileID: 8300000, guid: 7605819949a993c4a80e6e275fce96f8, type: 3}
@@ -1651,6 +1654,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 0}
   charadata: {fileID: 11400000, guid: cf9848d3633064140856274793602613, type: 2}
+  attackableFactions: 0
+  attackPlayer: 1
+  canAttackSelf: 0
   dellCondition: 0
 --- !u!1 &9174886998596211414
 GameObject:
@@ -53608,7 +53614,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
       propertyPath: status
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
       propertyPath: moveBase

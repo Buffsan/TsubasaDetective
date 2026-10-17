@@ -13,7 +13,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
 {
 
     [SerializeField] GameObject RockNeedle;
-    CG_Puppeteer_NeedlePool needlePool;
+    [SerializeField]CG_Puppeteer_NeedlePool needlePool;
     int pendingA7Spawns = 0;
     [SerializeField] GameObject DieEffect;
     [SerializeField] AudioClip Needleclip;
@@ -60,7 +60,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
    
     void Start()
     {
-        needlePool = gameObject.AddComponent<CG_Puppeteer_NeedlePool>();
+        //needlePool = gameObject.AddComponent<CG_Puppeteer_NeedlePool>();
         needlePool.Initialize(RockNeedle, 300);
         StartPos = transform.position;
          AddMovePointGameObject = GameObject.FindGameObjectWithTag("MovePoints");
@@ -69,7 +69,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         GameObject EnemysSpawnList = GameObject.FindGameObjectWithTag("EnemySpawnPoints");
         EnemySpawnLists_GameObject = EnemysSpawnList.GetComponent<Add_Lists_GameObject>();
 
-
+        /*
 
         if (enemyBase.volume.profile.TryGet<Bloom>(out enemyBase.bloom))
         {
@@ -79,7 +79,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         else
         {
             Debug.LogWarning("プロファイルにBloomが見つかりません！");
-        }
+        }*/
     }
     public void FixedUpdate()
     {

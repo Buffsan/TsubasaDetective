@@ -26,6 +26,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
     [Header("Enemy cannon launch")]
     [SerializeField] float EnemyThrowDuration = 1.2f;
     [SerializeField] float EnemyThrowArcHeight = 4f;
+    [SerializeField] float EnemyThrowRotationSpeed = 1440f;
     int nextEnemyCannon = 0;
 
     int MaxSpawnEnemyCount = 20;
@@ -432,6 +433,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             Vector2 position = Vector2.Lerp(launchPos, landingPos, t);
             position.y += Mathf.Sin(t * Mathf.PI) * EnemyThrowArcHeight;
             thrownVisual.transform.position = position;
+            thrownVisual.transform.Rotate(0f, 0f, EnemyThrowRotationSpeed * Time.deltaTime);
             yield return null;
         }
 

@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: charadata
       value: 
       objectReference: {fileID: 11400000, guid: 6bb53c6a9f36f9c4485dadc06afb21cf, type: 2}
+    - target: {fileID: 3968289412930448670, guid: e020c9d367875734fa7d9611debb9516, type: 3}
+      propertyPath: attackableFactions
+      value: 16383
+      objectReference: {fileID: 0}
     - target: {fileID: 4571655906799280998, guid: e020c9d367875734fa7d9611debb9516, type: 3}
       propertyPath: m_Name
       value: AttackArea Variant
@@ -19,6 +23,10 @@ PrefabInstance:
     - target: {fileID: 4571655906799280998, guid: e020c9d367875734fa7d9611debb9516, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6028676383365692794, guid: e020c9d367875734fa7d9611debb9516, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8187484510068949740, guid: e020c9d367875734fa7d9611debb9516, type: 3}
       propertyPath: m_LocalPosition.x

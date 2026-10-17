@@ -89,9 +89,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 100100}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab83e1d202b64de484c5a8b7f6229fb1, type: 3}
+  m_Script: {fileID: 11500000, guid: cad25789242cd7f4e8faada24b6b4b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+
+  enemyBase: {fileID: 0}
+  charadata: {fileID: 0}
+  attackableFactions: 16381
+  attackPlayer: 1
+  canAttackSelf: 0
+  dellCondition: 0
 --- !u!50 &500100
 Rigidbody2D:
   serializedVersion: 4

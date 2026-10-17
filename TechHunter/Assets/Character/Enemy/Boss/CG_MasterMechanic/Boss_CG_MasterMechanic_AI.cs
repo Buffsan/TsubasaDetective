@@ -23,6 +23,11 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
     [SerializeField] GameObject Tank;
     [SerializeField] int SpawnCount = 0;
 
+    [Header("Enemy cannon launch")]
+    [SerializeField] float EnemyThrowDuration = 1.2f;
+    [SerializeField] float EnemyThrowArcHeight = 4f;
+    int nextEnemyCannon = 0;
+
     int MaxSpawnEnemyCount = 20;
     int SpawnEnemyCount = 0;
 
@@ -60,10 +65,10 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             {
                 flag = true;
                 for (int i = 0; i < 50; i++)
-                    StartCoroutine(LateSpawnEnemy((float)i / 15, StarongKnight, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
+                    StartCoroutine(LateThrowEnemy((float)i / 15, StarongKnight, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
 
                 for (int i = 0; i < 1; i++)
-                    EnemySpawn(Tank, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position);
+                    StartCoroutine(LateThrowEnemy(0f, Tank, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
             }
         }
 
@@ -92,10 +97,10 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
                         {
                             SpawnEnemyCount++;
                             for (int i = 0; i < 25; i++)
-                                StartCoroutine(LateSpawnEnemy((float)i / 10, StarongKnight, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
+                                StartCoroutine(LateThrowEnemy((float)i / 10, StarongKnight, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
 
                             for (int i = 0; i < 1; i++)
-                                EnemySpawn(StorongSpier, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position);
+                                StartCoroutine(LateThrowEnemy(0f, StorongSpier, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
                         }
                     }
                     else 
@@ -369,9 +374,68 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
         mortar.AttackArea = S_AttackArea;
 
     }
-    IEnumerator LateSpawnEnemy(float WaitTime,GameObject Enemy,Vector2 pos)
+    // 砲台から敵の外見を投擲し、着地時に本物の敵を召喚する。
+    // 飛行中にAIや当たり判定を起動させないため、投擲表示はSpriteRendererのみを使う。
+    IEnumerator LateThrowEnemy(float waitTime, GameObject enemyPrefab, Vector2 landingPos)
     {
-        yield return new WaitForSeconds(WaitTime);
-        EnemySpawn(Enemy,pos);
+        if (waitTime > 0f)
+            yield return new WaitForSeconds(waitTime);
+
+        if (enemyPrefab == null || HoudanShotPoint == null || HoudanShotPoint.Count == 0)
+        {
+            // 砲台未設定時は既存の召喚を維持する。
+            EnemySpawn(enemyPrefab, landingPos);
+            yield break;
+        }
+
+        // 4基を順番に使用。リストの要素数が異なる場合も対応。
+        GameObject cannon = HoudanShotPoint[nextEnemyCannon % HoudanShotPoint.Count];
+        nextEnemyCannon++;
+        if (cannon == null)
+        {
+            EnemySpawn(enemyPrefab, landingPos);
+            yield break;
+        }
+
+        Vector2 launchPos = cannon.transform.position;
+        GameObject thrownVisual = new GameObject(enemyPrefab.name + "_ThrownVisual");
+        thrownVisual.transform.position = launchPos;
+
+        SpriteRenderer source = null;
+        foreach (SpriteRenderer renderer in enemyPrefab.GetComponentsInChildren<SpriteRenderer>(true))
+        {
+            if (renderer.sprite != null)
+            {
+                source = renderer;
+                break;
+            }
+        }
+
+        if (source != null)
+        {
+            SpriteRenderer visual = thrownVisual.AddComponent<SpriteRenderer>();
+            visual.sprite = source.sprite;
+            visual.color = source.color;
+            visual.flipX = landingPos.x < launchPos.x;
+            visual.flipY = source.flipY;
+            visual.sortingLayerID = source.sortingLayerID;
+            visual.sortingOrder = source.sortingOrder;
+            thrownVisual.transform.localScale = source.transform.lossyScale;
+        }
+
+        float duration = Mathf.Max(0.01f, EnemyThrowDuration);
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            Vector2 position = Vector2.Lerp(launchPos, landingPos, t);
+            position.y += Mathf.Sin(t * Mathf.PI) * EnemyThrowArcHeight;
+            thrownVisual.transform.position = position;
+            yield return null;
+        }
+
+        Destroy(thrownVisual);
+        EnemySpawn(enemyPrefab, landingPos);
     }
 }

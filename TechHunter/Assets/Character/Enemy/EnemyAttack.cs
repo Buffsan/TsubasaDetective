@@ -5,9 +5,9 @@ public class EnemyAttack : MonoBehaviour
     public EnemyBase enemyBase;
     public charadata charadata;
 
-    [Header("UŒ‚‘ÎÛİ’è")]
+    [Header("æ”»æ’ƒå¯¾è±¡è¨­å®š")]
     [SerializeField] Faction attackableFactions = Faction.None;
-    [SerializeField] bool attackPlayer = true; // Šù‘¶Prefab‚ÌPlayerAreaUŒ‚‚ğˆÛ
+    [SerializeField] bool attackPlayer = true; // æ—¢å­˜Prefabã®PlayerAreaæ”»æ’ƒã‚’ç¶­æŒ
     [SerializeField] bool canAttackSelf = false;
 
     public enum DellCondition
@@ -32,7 +32,7 @@ public class EnemyAttack : MonoBehaviour
     {
         if (other.CompareTag("PlayerArea"))
         {
-            // PlayerController‚É‚ÍEnemyBase‚ª‚È‚¢‚½‚ßA]—ˆ‚ÌPlayerArea”»’è‚ğˆÛB
+            // PlayerControllerã«ã¯EnemyBaseãŒãªã„ãŸã‚ã€å¾“æ¥ã®PlayerAreaåˆ¤å®šã‚’ç¶­æŒã€‚
             if (!attackPlayer) return;
             ApplyDamage(other.GetComponent<IDamageable>());
             return;
@@ -43,7 +43,7 @@ public class EnemyAttack : MonoBehaviour
         charaDamage target = other.GetComponent<charaDamage>();
         if (target == null) return;
 
-        // qƒIƒuƒWƒFƒNƒg‚Ì”í’e”»’è‚Å‚àAEnemyBase‚ÅUŒ‚Ò–{l‚ğ“Á’è‚·‚éB
+        // å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è¢«å¼¾åˆ¤å®šã§ã‚‚ã€EnemyBaseã§æ”»æ’ƒè€…æœ¬äººã‚’ç‰¹å®šã™ã‚‹ã€‚
         bool isSelf = enemyBase != null && target.OwnerEnemyBase == enemyBase;
         if (isSelf)
         {
@@ -54,14 +54,19 @@ public class EnemyAttack : MonoBehaviour
             return;
         }
 
-        ApplyDamage(target);
+        ApplyDamage(target, true);
     }
 
-    private void ApplyDamage(IDamageable target)
+    private void ApplyDamage(IDamageable target, bool isEnemyTarget = false)
     {
         if (target == null) return;
         if (enemyBase != null)
-            target.Damage(enemyBase.ATK, 0, 0, false);
+        {
+            float damage = enemyBase.ATK;
+            if (isEnemyTarget)
+                damage *= Mathf.Max(1f, enemyBase.MAXHP / 100f);
+            target.Damage(damage, 0, 0, false);
+        }
         else if (charadata != null)
             target.Damage(charadata.ATK, 0, 0, false);
     }

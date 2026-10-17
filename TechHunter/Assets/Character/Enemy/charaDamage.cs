@@ -35,6 +35,12 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     AudioManager audioManager => AudioManager.instance;
 
+    float CameraShakeDertionNormal = 0.1f;
+    float CameraShakeStrengthNormal = 0.1f;
+    float CameraShakeDertionVeteran = 0.2f;
+    float CameraShakeStrengthVeteran = 0.2f;
+    float CameraShakeDertionElite = 0.2f;
+    float CameraShakeStrengthElite = 0.4f;
 
     private void Start()
     {
@@ -91,7 +97,7 @@ public class charaDamage : MonoBehaviour, IDamageable
     public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical)
     {
         if (isDead) return;
-
+        
         if (DamageType != 0 && passDamageAreas.Count == 0)
         {
             Debug.Log("ダメージを押し付ける処理なのに押しつけ先がいない　ひどいよのなか");
@@ -115,6 +121,35 @@ public class charaDamage : MonoBehaviour, IDamageable
         }
 
 
+
+    }
+
+    void isDieCameraShake(charadata data) 
+    {
+
+        switch (data.enemyStrength) 
+        {
+
+            case charadata.EnemyStrength.None:
+                
+                break;
+            case charadata.EnemyStrength.Fodder:
+                
+                break;
+            case charadata.EnemyStrength.Normal:
+                enemyBase.ALL_System.camera_Controller.Shake(CameraShakeDertionNormal,CameraShakeStrengthNormal);
+                break;
+            case charadata.EnemyStrength.Veteran:
+                enemyBase.ALL_System.camera_Controller.Shake(CameraShakeDertionNormal, CameraShakeStrengthNormal);
+                break;
+            case charadata.EnemyStrength.Elite:
+                enemyBase.ALL_System.camera_Controller.Shake(CameraShakeDertionElite, CameraShakeStrengthElite);
+                break;
+            case charadata.EnemyStrength.Boss:
+                
+                break;
+
+        }
 
     }
 
@@ -316,6 +351,7 @@ public class charaDamage : MonoBehaviour, IDamageable
     private bool isDead = false;
     public void Death()
     {
+        isDieCameraShake(enemyBase.charadata);
         enemyBase.status = EnemyBase.Status.Die;
         //Debug.Log("しんだ");
         if (isDead) return;   // 既に死亡処理中なら何もしない

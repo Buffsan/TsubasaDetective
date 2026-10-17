@@ -111211,6 +111211,75 @@ Transform:
   - {fileID: 1002177444}
   m_Father: {fileID: 249735124}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1205335099
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 400100, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.126008
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.5754008
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400100, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4457924940185470607, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4457924940185470607, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7031987147499342394, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8859200305933796471, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
+      propertyPath: m_Name
+      value: DK_PilgrimOfTheMoon
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5a3b3c927dd14d77ac5748f3d761034f, type: 3}
 --- !u!224 &1213141723 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3008200536617617639, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
@@ -282885,3 +282954,4 @@ SceneRoots:
   - {fileID: 390810533}
   - {fileID: 1067935163}
   - {fileID: 2006591489}
+  - {fileID: 1205335099}

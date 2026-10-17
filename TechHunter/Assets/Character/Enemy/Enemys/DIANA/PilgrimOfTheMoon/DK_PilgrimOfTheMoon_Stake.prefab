@@ -92,13 +92,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cad25789242cd7f4e8faada24b6b4b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-
   enemyBase: {fileID: 0}
   charadata: {fileID: 0}
   attackableFactions: 16381
   attackPlayer: 1
   canAttackSelf: 0
-  dellCondition: 0
+  dellCondition: 1
 --- !u!50 &500100
 Rigidbody2D:
   serializedVersion: 4

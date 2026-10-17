@@ -1,5 +1,3 @@
-using JetBrains.Annotations;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,125 +6,136 @@ public class StatusMenu : MonoBehaviour
 {
     [SerializeField] Vector2 SetPosition;
     [SerializeField] TextMeshProUGUI Statuss;
-    ALL_SystemManager ALL_System => ALL_SystemManager.Instance;
-    HashSet<int> lineBreaks = new HashSet<int> { 2, 5, 6, 9 };
 
-    public enum Move
-    {
+    // 既存のStatussは残す。新UIを使用する場合は12個ずつ順番に設定する。
+    // 順番: HP, 攻撃倍率, 攻撃, 回復, 防御倍率, 防御, CT, 運, 混乱, スタン, 速度倍率, 速度
+    [SerializeField] List<TextMeshProUGUI> StatusValues = new List<TextMeshProUGUI>();
+    [SerializeField] List<TextMeshProUGUI> StatusDeltas = new List<TextMeshProUGUI>();
+    [SerializeField] Color PositiveColor = new Color(0.25f, 0.9f, 0.45f);
+    [SerializeField] Color NegativeColor = new Color(1f, 0.3f, 0.3f);
+    [SerializeField] float PreviewFontMultiplier = 1.2f;
 
-        Move,
-        Wait,
-        Run,
+    readonly HashSet<int> lineBreaks = new HashSet<int> { 2, 5, 6, 9 };
+    readonly List<Color> defaultColors = new List<Color>();
+    readonly List<float> defaultSizes = new List<float>();
+    StatusUP previewCard;
 
-    }
+    public enum Move { Move, Wait, Run }
     public Move move = Move.Move;
     RectTransform rect;
-    // Start is called before the first frame update
-    void Start()
+
+    void Awake()
     {
         rect = GetComponent<RectTransform>();
     }
-    private void FixedUpdate()
+
+    void FixedUpdate()
     {
         switch (move)
         {
+            case Move.Move: isMove(); break;
+            case Move.Run: isRun(); break;
+        }
+    }
 
-            case Move.Move:
-                isMove();
-                break;
-            case Move.Run:
-                isRun();
-                break;
-            case Move.Wait:
-                isWait();
-                break;
+    public void SetStatus()
+    {
+        Render();
+    }
 
+    public void Preview(StatusUP card)
+    {
+        previewCard = card;
+        Render();
+    }
+
+    public void ClearPreview()
+    {
+        previewCard = null;
+        Render();
+    }
+
+    void CacheDefaults()
+    {
+        if (defaultSizes.Count != 0) return;
+        foreach (var value in StatusValues)
+        {
+            defaultSizes.Add(value != null ? value.fontSize : 0f);
+            defaultColors.Add(value != null ? value.color : Color.white);
+        }
+    }
+
+    void Render()
+    {
+        var player = PlayerController.Instance;
+        if (player == null) return;
+
+        float[] current = StatusCardEffects.GetValues(player, null);
+        float[] next = previewCard != null ? StatusCardEffects.GetValues(player, previewCard) : current;
+        bool split = StatusValues.Count == 12 && StatusDeltas.Count == 12;
+        CacheDefaults();
+
+        if (split)
+        {
+            if (Statuss != null) Statuss.gameObject.SetActive(false);
+            for (int i = 0; i < 12; i++)
+            {
+                var value = StatusValues[i];
+                var deltaText = StatusDeltas[i];
+                if (value == null || deltaText == null) continue;
+
+                float delta = i == 0 ? next[12] - current[12] : next[i] - current[i];
+                // HP回復のみの場合は回復量を変化量として表示。
+                if (i == 0 && Mathf.Approximately(delta, 0f))
+                    delta = next[0] - current[0];
+                bool changed = previewCard != null && !Mathf.Approximately(delta, 0f);
+                Color color = delta >= 0f ? PositiveColor : NegativeColor;
+                value.color = changed ? color : defaultColors[i];
+                value.fontSize = changed ? defaultSizes[i] * PreviewFontMultiplier : defaultSizes[i];
+                value.text = i == 0
+                    ? next[0].ToString("F1") + " / " + next[12].ToString("F1")
+                    : next[i].ToString("F1");
+                deltaText.text = changed ? (delta > 0f ? "+" : "") + delta.ToString("F1") : "";
+                deltaText.color = color;
+            }
+            return;
         }
 
-
-    }
-    public void SetStatus() 
-    {
-        
-        float ALL_HP = ALL_System.playerController.MaxHP;
-        float ALL_Attack_multiplier = ALL_System.playerController.AddATK;
-        float ALL_Attack = ALL_System.playerController.Add_AdditiveATK;
-
-        float ALL_Recovery =  ALL_System.playerController.Regen;
-        float ALL_Deffence_multiplier = 0;
-        float ALL_Deffence =  ALL_System.playerController.ATKDF;
-
-        float ALL_CoolTime =  ALL_System.playerController.Range;
-
-        float ALL_Criticul =  ALL_System.playerController.Critical;
-        float ALL_Confusion = ALL_System.playerController.ConfusionTime;
-        float ALL_Stan = 0;
-
-        float ALL_Speed_multiplier = ALL_System.playerController.AddSpeed;
-        float ALL_Speed = ALL_System.playerController.SPEED;
-
-
-        List<float> ALL_Status = new List<float>
+        // Inspector未設定の間も従来の1テキスト表示を維持する。
+        if (Statuss == null) return;
+        Statuss.gameObject.SetActive(true);
+        string result = "";
+        for (int i = 0; i < 12; i++)
         {
-            ALL_HP,
-            ALL_Attack_multiplier,
-            ALL_Attack,
-            ALL_Recovery,
-            ALL_Deffence_multiplier,
-            ALL_Deffence,
-            ALL_CoolTime,
-            ALL_Criticul,
-            ALL_Confusion,
-            ALL_Stan,
-            ALL_Speed_multiplier,
-            ALL_Speed
-        };
-
-        string AllStatus_String = "";
-        for (int i = 0; i < ALL_Status.Count; i++) 
-        {
-            if (i == 0)
+            float delta = i == 0 ? next[12] - current[12] : next[i] - current[i];
+            if (i == 0 && Mathf.Approximately(delta, 0f))
+                delta = next[0] - current[0];
+            string value = i == 0
+                ? next[0].ToString("F1") + " / " + next[12].ToString("F1")
+                : next[i].ToString("F1");
+            if (previewCard != null && !Mathf.Approximately(delta, 0f))
             {
-                AllStatus_String +=  ALL_System.playerController.HP.ToString("F1") + " / "+ ALL_Status[i] + "\n";
+                string hex = ColorUtility.ToHtmlStringRGB(delta > 0f ? PositiveColor : NegativeColor);
+                value = "<color=#" + hex + "><size=120%>" + value + "</size> <size=75%>"
+                    + (delta > 0f ? "+" : "") + delta.ToString("F1") + "</size></color>";
             }
-            else 
-            { 
-                AllStatus_String += ALL_Status[i].ToString("F1") + "\n";
-            }
-
-            if (lineBreaks.Contains(i))
-            {
-                AllStatus_String += "\n";
-            }
-        
+            result += value + "\n";
+            if (lineBreaks.Contains(i)) result += "\n";
         }
-        Statuss.text = AllStatus_String;
-
+        Statuss.text = result;
     }
-    void isWait()
-    {
 
-    }
     void isRun()
     {
-        rect.transform.localPosition = new Vector2(rect.transform.localPosition.x - 100, 0);
-
+        if (rect != null)
+            rect.localPosition = new Vector2(rect.localPosition.x - 100f, 0f);
     }
+
     void isMove()
     {
-        if (rect.transform.localPosition.x < SetPosition.x)
-        {
-
-            rect.transform.localPosition = new Vector2(rect.transform.localPosition.x + 200, 0);
-
-        }
-        else
-        {
-            rect.transform.localPosition = new Vector2(SetPosition.x, 0);
-
-        }
+        if (rect == null) return;
+        rect.localPosition = rect.localPosition.x < SetPosition.x
+            ? new Vector2(rect.localPosition.x + 200f, 0f)
+            : new Vector2(SetPosition.x, 0f);
     }
-
-
 }
-

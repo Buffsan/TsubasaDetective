@@ -57,7 +57,8 @@ MonoBehaviour:
   AttackPhase: 0
   SaveVolume: 0
   phase: 0
-  RockNeedle: {fileID: 2218436625401236047, guid: e57302ff6772a8a498ffbbfccb56c502, type: 3}
+  RockNeedle: {fileID: 6952365916143570745, guid: fd925f6dd6914b040a8b8ab6396af593, type: 3}
+  needlePool: {fileID: 0}
   DieEffect: {fileID: 8154208296095492929, guid: af818acf56f0e3447abac572065cc876, type: 3}
   Needleclip: {fileID: 0}
   DamageEffect: {fileID: 4735767792586528100, guid: 72019fb5ec960cd4484fa0993c22dcca, type: 3}

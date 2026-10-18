@@ -349,7 +349,7 @@ public class SO_Eshema_AI : Boss_MoveBase
 
             for (int i = 0; i < 5; i++)
             {
-                GameObject CL_AttackPPP = Instantiate(Denger_AttackArea_Slash, enemyBase.transform.position, Quaternion.identity);
+                GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea_Slash, enemyBase.transform.position, Quaternion.identity, 1f, null, 0f, false);
                 CL_AttackPPP.transform.up = TargetDirection.normalized;
                 Vector2 NewLookDirection = Quaternion.Euler(0, 0, -80 + 40 * i) * TargetDirection.normalized;
                 CL_AttackPPP.transform.up = NewLookDirection.normalized;
@@ -580,9 +580,9 @@ public class SO_Eshema_AI : Boss_MoveBase
             LookAtCurrentTarget();
             enemyBase.animator.Play("ジャンプ待機",0,0);
 
-            GameObject CL_AttackPPP = Instantiate(Denger_AttackArea_Slash, enemyBase.transform.position, Quaternion.identity);
+            GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea_Slash, enemyBase.transform.position, Quaternion.identity, 1f, null, 0f, false);
             CL_AttackPPP.transform.up = TargetDirection.normalized;
-            Destroy(CL_AttackPPP, 1);
+            
 
             NextPhase() ;
         }
@@ -668,9 +668,9 @@ public class SO_Eshema_AI : Boss_MoveBase
         Vector2 startPos = enemyBase.transform.position;
         Vector2 endPos = targetPos;
 
-        GameObject CL_AttackPPP = Instantiate(Denger_AttackArea_Stand, endPos, Quaternion.identity);
+        GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea_Stand, endPos, Quaternion.identity, 1.5f, null, 0f, false);
 
-        Destroy(CL_AttackPPP, 1.5f);
+        
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)

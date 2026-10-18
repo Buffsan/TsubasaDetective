@@ -128,6 +128,17 @@ public class EnemyMoveBase : MonoBehaviour
                 duration, parent, extraLifetime, syncAnimation, localScale);
         }
 
+        // ボスからEnemyMoveBase派生AIを使用する場合もBoss_Controller側で一括管理。
+        Boss_Controller boss = enemyBase as Boss_Controller;
+        if (boss != null)
+        {
+            if (fallbackPrefab != null)
+                return boss.SpawnAttackWarningPrefab(fallbackPrefab, position, rotation,
+                    duration, parent, extraLifetime, syncAnimation, localScale);
+            return boss.SpawnAttackWarning(warningType, position, rotation,
+                duration, parent, extraLifetime, syncAnimation, localScale);
+        }
+
         // EnemyContoroller以外の旧AIも従来どおり生成可能。
         if (fallbackPrefab == null) return null;
         GameObject instance = Instantiate(fallbackPrefab, position, rotation, parent);

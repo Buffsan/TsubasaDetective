@@ -28,7 +28,7 @@ public class CG_Wizard : EnemyMoveBase
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
                 GameObject CL_Arrow = Instantiate(Arrow, enemyBase.gameObject.transform.position, Quaternion.identity);
                 Mortar_Controller mortar = CL_Arrow.GetComponent<Mortar_Controller>();
-                mortar.ChangePos(enemyBase.Player.transform.position);
+                mortar.ChangePos(TargetPosition);
                 mortar.enemyBase = enemyBase;
                 mortar.AttackArea = S_AttackArea;
             }

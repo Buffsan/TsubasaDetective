@@ -20,12 +20,12 @@ public class CG_HeavyKnight_AI : EnemyMoveBase
     bool Dash = false;
     public override void EnemyMovePlay()
     {
-        //enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
-        enemyBase.isPlayerLookBase();
+        //RefreshTargetInfo();
+        LookAtCurrentTarget();
         if (Dash)
         {
             enemyBase.animator.SetInteger("Anim", 4);
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 3f;
+            enemyBase.rb.velocity = TargetDirection.normalized * 3f;
 
         }
         else 
@@ -33,10 +33,10 @@ public class CG_HeavyKnight_AI : EnemyMoveBase
             AttackType = 0;
             enemyBase.animator.SetInteger("Anim",1);
             
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
         }
 
-        if (enemyBase.PlayerDistance > 1.7)
+        if (TargetDistance > 1.7)
         {
             DistanceCount += Time.deltaTime;
             if (DistanceCount > 2)
@@ -73,7 +73,7 @@ public class CG_HeavyKnight_AI : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M2)
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 if (enemyBase.AttackCount > 0.2)
                 {
                     enemyBase.mode = EnemyBase.ModeType.M3;
@@ -82,8 +82,8 @@ public class CG_HeavyKnight_AI : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M3)
             {
-                enemyBase.isPlayerLookBase();
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 1.6f;
+                LookAtCurrentTarget();
+                enemyBase.rb.velocity = TargetDirection.normalized * 1.6f;
                 if (enemyBase.AttackCount > 1f)
                 {
                     enemyBase.mode = EnemyBase.ModeType.M4;
@@ -144,9 +144,9 @@ public class CG_HeavyKnight_AI : EnemyMoveBase
             if (enemyBase.mode == EnemyBase.ModeType.M2)
             {
 
-                enemyBase.isPlayerLookBase();
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 5f;
-                if (enemyBase.PlayerDistance < 1)
+                LookAtCurrentTarget();
+                enemyBase.rb.velocity = TargetDirection.normalized * 5f;
+                if (TargetDistance < 1)
                 {
                     enemyBase.animator.SetInteger("Anim", 3);
                     enemyBase.mode = EnemyBase.ModeType.M3;
@@ -158,8 +158,8 @@ public class CG_HeavyKnight_AI : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M3)
             {
-                //enemyBase.isPlayerLookBase();
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 0.2f;
+                //LookAtCurrentTarget();
+                enemyBase.rb.velocity = TargetDirection.normalized * 0.2f;
                 if (enemyBase.AttackCount > 1f)
                 {
                     

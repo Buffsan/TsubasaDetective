@@ -7,6 +7,152 @@ public class Boss_Controller : EnemyBase
     [SerializeField] Boss_MoveBase moveBase;
     [SerializeField] GameObject EnemyMoveBaseObject;
 
+    // ボスはEnemyContorollerとは別系統のため、同じターゲット形式を独立して提供する。
+    // 初期値PlayerOnlyで既存のボス戦・演出を維持。
+    [Header("ボスターゲット設定")]
+    [SerializeField] EnemyContoroller.TargetType targetType = EnemyContoroller.TargetType.PlayerOnly;
+    [SerializeField] EnemyContoroller.TargetPriority targetPriority = EnemyContoroller.TargetPriority.Nearest;
+    [SerializeField] bool targetAllFactions = true;
+    [SerializeField] Faction targetFactions = Faction.None;
+    [SerializeField] Faction excludedTargetFactions = Faction.None;
+    [SerializeField, Min(0f)] float enemyFirstPlayerDistance;
+    [SerializeField, Min(0.05f)] float targetSearchInterval = 0.25f;
+
+    public EnemyContoroller.TargetType TargetMode => targetType;
+    public Transform CurrentTarget { get; private set; }
+    public Vector2 TargetDirection { get; private set; }
+    public float TargetDistance { get; private set; } = float.PositiveInfinity;
+    float targetSearchTimer;
+    Transform forcedTarget;
+
+    public void ForceTarget(Transform target)
+    {
+        forcedTarget = target;
+        CurrentTarget = target;
+        UpdateTargetDirection();
+    }
+
+    public void ClearForcedTarget()
+    {
+        forcedTarget = null;
+        targetSearchTimer = targetSearchInterval;
+    }
+
+    void RefreshTarget()
+    {
+        if (targetType == EnemyContoroller.TargetType.PlayerOnly)
+        {
+            CurrentTarget = Player != null ? Player.transform : null;
+            UpdateTargetDirection();
+            return;
+        }
+
+        if (moveType != MoveType.Attack)
+        {
+            targetSearchTimer += Time.fixedDeltaTime;
+            if (targetSearchTimer >= Mathf.Max(0.05f, targetSearchInterval) ||
+                (CurrentTarget != null && !IsTargetValid(CurrentTarget)))
+            {
+                ChooseTargetNow();
+                targetSearchTimer = 0f;
+            }
+        }
+        UpdateTargetDirection();
+    }
+
+    void UpdateTargetDirection()
+    {
+        if (CurrentTarget == null)
+        {
+            TargetDirection = Vector2.zero;
+            TargetDistance = float.PositiveInfinity;
+            return;
+        }
+        TargetDirection = (Vector2)CurrentTarget.position - (Vector2)transform.position;
+        TargetDistance = TargetDirection.magnitude;
+    }
+
+    bool IsTargetValid(Transform target)
+    {
+        if (target == null) return false;
+        if (Player != null && target == Player.transform)
+            return targetType != EnemyContoroller.TargetType.EnemyOnly;
+
+        EnemyBase other = target.GetComponent<EnemyBase>();
+        if (other == null || other == this ||
+            other.status == Status.Die || other.HP <= 0f) return false;
+        if ((other.Factions & excludedTargetFactions) != Faction.None) return false;
+        return targetAllFactions || (other.Factions & targetFactions) != Faction.None;
+    }
+
+    public void ChooseTargetNow()
+    {
+        Transform player = Player != null ? Player.transform : null;
+        if (targetType == EnemyContoroller.TargetType.PlayerOnly)
+        {
+            CurrentTarget = player;
+            UpdateTargetDirection();
+            return;
+        }
+        if (forcedTarget != null && IsTargetValid(forcedTarget))
+        {
+            CurrentTarget = forcedTarget;
+            UpdateTargetDirection();
+            return;
+        }
+        forcedTarget = null;
+
+        Transform nearestEnemy = null;
+        float nearestSqr = float.PositiveInfinity;
+        SystemManager manager = SystemManager.Instance;
+        if (manager != null && manager.AllEnemy != null)
+        {
+            foreach (GameObject obj in manager.AllEnemy)
+            {
+                if (obj == null || obj == gameObject) continue;
+                EnemyBase other = obj.GetComponent<EnemyBase>();
+                if (other == null || other == this ||
+                    other.status == Status.Die || other.HP <= 0f) continue;
+                if ((other.Factions & excludedTargetFactions) != Faction.None) continue;
+                if (!targetAllFactions && (other.Factions & targetFactions) == Faction.None)
+                    continue;
+
+                float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
+                if (sqr < nearestSqr)
+                {
+                    nearestSqr = sqr;
+                    nearestEnemy = other.transform;
+                }
+            }
+        }
+
+        if (targetType == EnemyContoroller.TargetType.EnemyOnly)
+            CurrentTarget = nearestEnemy;
+        else if (nearestEnemy == null)
+            CurrentTarget = player;
+        else if (player == null)
+            CurrentTarget = nearestEnemy;
+        else
+        {
+            float playerSqr = ((Vector2)(player.position - transform.position)).sqrMagnitude;
+            switch (targetPriority)
+            {
+                case EnemyContoroller.TargetPriority.PlayerFirst:
+                    CurrentTarget = player;
+                    break;
+                case EnemyContoroller.TargetPriority.EnemyFirst:
+                    CurrentTarget = playerSqr >= enemyFirstPlayerDistance * enemyFirstPlayerDistance
+                        ? nearestEnemy : player;
+                    break;
+                default:
+                    CurrentTarget = nearestSqr < playerSqr ? nearestEnemy : player;
+                    break;
+            }
+        }
+        UpdateTargetDirection();
+    }
+
+
     [SerializeField] CutScene StartCutScene;
     
     [SerializeField] AudioClip StartAudio;
@@ -26,6 +172,8 @@ public class Boss_Controller : EnemyBase
 
 
         moveBase.enemyBase = this;
+        CurrentTarget = Player != null ? Player.transform : null;
+        if (targetType != EnemyContoroller.TargetType.PlayerOnly) ChooseTargetNow();
 
 
         if (status == Status.MovieStay) return;
@@ -51,7 +199,7 @@ public class Boss_Controller : EnemyBase
                     if (enemys)Destroy(enemys.gameObject);
                 }
                 moveBase.enemyList.Clear();
-                return; // ���S���͈�ؓ������Ȃ�
+                return; // 死亡中は一切動かさない
             case Status.MovieStay:
                 isMovie();
                 break;
@@ -98,7 +246,7 @@ public class Boss_Controller : EnemyBase
         }
         if (MoviePhase == 2) 
         {
-            StartCutScene.animator.Play("�o��");
+            StartCutScene.animator.Play("出現");
             StartCutScene.ChangeImage(CutSceneData);
             MoviePhase++;
         }
@@ -112,7 +260,7 @@ public class Boss_Controller : EnemyBase
                 playerController.movetype = PlayerController.MoveType.Nomal;
                 MoviePhase++;
                 audioManager.BgmSource.Play();
-                StartCutScene.animator.Play("������");
+                StartCutScene.animator.Play("消える");
                 charaDamage.gameObject.SetActive(true);
                 ALL_System.systemManager.AllEnemy.Add(this.gameObject);
                 status = Status.Nomal;
@@ -159,6 +307,15 @@ public class Boss_Controller : EnemyBase
     }
     private void isNomalActive()
     {
+        RefreshTarget();
+        if (targetType == EnemyContoroller.TargetType.EnemyOnly &&
+            CurrentTarget == null && moveType != MoveType.Attack)
+        {
+            rb.velocity = Vector2.zero;
+            animator.SetInteger("Anim", 0);
+            return;
+        }
+
         switch (moveType)
         {
             case MoveType.Move:
@@ -180,7 +337,7 @@ public class Boss_Controller : EnemyBase
         moveBase.M_AI();
     }
     void isAttack()
-    {//�U�����[�V������ʓr�����
+    {//攻撃モーションを別途入れる
         moveBase.M_Attack();
     }
     private void isMove()

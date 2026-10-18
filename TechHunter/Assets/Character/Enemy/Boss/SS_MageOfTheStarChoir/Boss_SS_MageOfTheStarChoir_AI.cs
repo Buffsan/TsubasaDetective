@@ -211,9 +211,9 @@ public class Boss_SS_MageOfTheStarChoir_AI : Boss_MoveBase
     {
         if (AttackPhase == 0) 
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             SaveLaser = Instantiate(Laser,transform.position,Quaternion.identity);
-            SaveLaser.transform.up = enemyBase.PlayerDirection.normalized;
+            SaveLaser.transform.up = TargetDirection.normalized;
             enemyBase.animator.SetInteger("Anim", 2);
             NextPhase();
         }
@@ -246,9 +246,9 @@ public class Boss_SS_MageOfTheStarChoir_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             SaveLaser = Instantiate(Laser, transform.position, Quaternion.identity);
-            SaveLaser.transform.up = enemyBase.PlayerDirection.normalized;
+            SaveLaser.transform.up = TargetDirection.normalized;
 
             enemyBase.animator.SetInteger("Anim", 2);
             NextPhase();

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillImage: {fileID: 21300000, guid: 0d983be98d09a754f9d461e1b8f45c4a, type: 3}
   SkillName: "\u30B7\u30E5\u30A8\u30E9\u306E\u661F\u792B"
-  SkillMessage: "1.5秒詠唱\nカーソルの方向に<color=#CC4400>大量の魔法弾をバースト射撃する。</color>近距離で発射すると絶大な威力を誇る。\n"
+  SkillMessage: "詠唱1.5秒\n<color=#CC4400>カーソル方向に大量の魔法弾をバースト射撃する。</color>\n近距離では絶大な威力を発揮する。"
   CoolTime: 19
   SkillData: {fileID: 5928173527305951650, guid: 64e81ac0202e7a348b587ee5bff7b879, type: 3}
   SkillDataList:

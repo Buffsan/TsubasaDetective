@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillImage: {fileID: 21300000, guid: 22d63380886ab7f43bdeba4155701524, type: 3}
   SkillName: "\u56DE\u907F"
-  SkillMessage: "\u4E00\u822C\u7684\u306A\u56DE\u907F\u3092\u3059\u308B\u3002\u56DE\u907F\u3001\u6025\u63A5\u8FD1\u3001\u30C0\u30C3\u30B7\u30E5\u3068\u3042\u3089\u3086\u308B\u5FDC\u7528\u304C\u5229\u304F\u3002"
+  SkillMessage: "回避動作を行う。\n攻撃の回避だけでなく、急接近やダッシュにも使える。"
   CoolTime: 0
   SkillData: {fileID: 0}
   SkillDataList: []

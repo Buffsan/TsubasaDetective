@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillImage: {fileID: 21300000, guid: 50932fe602bbdf44cb34f4849679ca82, type: 3}
   SkillName: "\u30D5\u30A9\u30B9\u30BF"
-  SkillMessage: "1.5秒詠唱\nカーソルの方向に<color=#CC4400>冷気の塊を発射する。</color>的中時に非常に高い混乱ダメージを与えて爆発し、15秒間高いスタン攻撃力を持った冷気の霧を周囲にばらまく。"
+  SkillMessage: "詠唱1.5秒\n<color=#CC4400>カーソル方向に冷気の塊を放つ。</color>\n命中すると非常に高い混乱ダメージを与えて爆発し、周囲に冷気の霧をまき散らす。\n霧は15秒間残り、高いスタン攻撃力を持つ。"
   CoolTime: 22
   SkillData: {fileID: 752216037248828957, guid: d68a7ed1a121c0b4eb1248860ad00c29, type: 3}
   SkillDataList: []

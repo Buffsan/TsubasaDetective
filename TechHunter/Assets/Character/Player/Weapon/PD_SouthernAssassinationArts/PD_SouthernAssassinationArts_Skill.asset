@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillImage: {fileID: 21300000, guid: 7b431a5cc31d1d242b55e24b61794f95, type: 3}
   SkillName: "\u5357\u65B9\u306E\u6697\u6BBA\u8853"
-  SkillMessage: "\u30AB\u30FC\u30BD\u30EB\u65B9\u5411\u306B\u8CAB\u901A\u3059\u308B\u3059\u308B\u6BD2\u77E2\u3092\u767A\u5C04\u3059\u308B\u3002\u5F3E\u901F\u304C\u65E9\u304F\u30B9\u30BF\u30F3\u653B\u6483\u529B\u3082\u9AD8\u304F\u6BD2\u309215\u79D2\u4ED8\u4E0E\u3059\u308B\u3002\n\u201D\u30AF\u30ED\u30B9\u30DC\u30A6\u304C\u3042\u308C\u3070\u9283\u306A\u3093\u3066\u3044\u3089\u306A\u3044\uFF01\u201C"
+  SkillMessage: "カーソル方向に、貫通する毒矢を放つ。\n弾速とスタン攻撃力が高く、命中した敵に毒を15秒付与する。\n\n「クロスボウがあれば銃なんていらない！」"
   CoolTime: 10
   SkillData: {fileID: 4715596013917457782, guid: 2c458cdcefa4f534da0505abd178b468, type: 3}
   SkillDataList: []

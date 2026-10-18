@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillImage: {fileID: 21300000, guid: b664f1ca2b333fe4a9404dd8cfe6030b, type: 3}
   SkillName: "\u706B\u3088\u98DB\u7FD4\u305B\u3088"
-  SkillMessage: "1.5秒詠唱\nカーソルの方向に<color=#CC4400>火球を放ち全てを貫通しながら一定距離で爆発してダメージを与える。</color>火球が爆発した場所にしばらくの間持続ダメージを与える炎を散乱させる。"
+  SkillMessage: "詠唱1.5秒\n<color=#CC4400>カーソル方向に、すべてを貫通する火球を放つ。</color>\n火球は一定距離を進むと爆発し、周囲に炎をまき散らす。残った炎は、しばらく持続ダメージを与える。"
   CoolTime: 22
   SkillData: {fileID: 7965594756040391176, guid: cae316aa17f631940a12af7c330d61d9, type: 3}
   SkillDataList: []

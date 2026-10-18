@@ -4,7 +4,6 @@ using UnityEngine;
 public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
 {
     [Header("ターゲット")]
-    [SerializeField] float playerPriorityDistance = 5f;
     [SerializeField] float stunPlayerPriorityDistance = 4f;
     [SerializeField] float targetSearchInterval = 0.25f;
     [SerializeField] float attackStartDistance = 1.5f;
@@ -42,7 +41,6 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
     float searchTimer;
     float zigzagTimer;
     bool zigzagRight = true;
-    bool forcePlayerAfterStun;
     bool needsAdjustment;
     int orbitDirection = 1;
     int attackKind; // 0=杭投げ (20%)、1=近接攻撃 (80%)
@@ -94,7 +92,8 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
                 <= stunPlayerPriorityDistance)
         {
             currentTarget = enemyBase.Player.transform;
-            forcePlayerAfterStun = true;
+            EnemyContoroller controller = enemyBase as EnemyContoroller;
+            if (controller != null) controller.ForceTarget(currentTarget);
         }
     }
 
@@ -151,49 +150,15 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
             enemyBase.animator.Play("歩行");
     }
 
+    // 対象選択・派閥検索は共通EnemyContorollerに集約。
     void ChooseTarget(bool forcedAttack)
     {
-        Transform player = enemyBase.Player != null ? enemyBase.Player.transform : null;
-        if (player == null) { currentTarget = null; return; }
-        if (forcePlayerAfterStun) { currentTarget = player; return; }
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller == null) return;
 
-        float playerSqrDistance = ((Vector2)(player.position - enemyBase.transform.position)).sqrMagnitude;
-        Transform nearestEnemy = null;
-        float bestSqrDistance = float.PositiveInfinity;
-
-        SystemManager manager = SystemManager.Instance;
-        if (manager != null)
-        {
-            foreach (GameObject obj in manager.AllEnemy)
-            {
-                if (obj == null || obj == enemyBase.gameObject) continue;
-                EnemyBase other = obj.GetComponent<EnemyBase>();
-                if (other == null || other == enemyBase || other.status == EnemyBase.Status.Die || other.HP <= 0f)
-                    continue;
-
-                // 亜人かどうかは問わない。Diana を含む複合派閥も除外。
-                if ((other.Factions & Faction.Diana) != Faction.None) continue;
-
-                float sqrDistance = ((Vector2)(other.transform.position - enemyBase.transform.position)).sqrMagnitude;
-                if (sqrDistance < bestSqrDistance)
-                {
-                    bestSqrDistance = sqrDistance;
-                    nearestEnemy = other.transform;
-                }
-            }
-        }
-
-        if (forcedAttack)
-        {
-            // 2秒の強制攻撃時だけは、距離5未満でもプレイヤーより近い敵を優先。
-            currentTarget = nearestEnemy != null && bestSqrDistance < playerSqrDistance
-                ? nearestEnemy : player;
-        }
-        else
-        {
-            currentTarget = playerSqrDistance >= playerPriorityDistance * playerPriorityDistance &&
-                            nearestEnemy != null ? nearestEnemy : player;
-        }
+        // 通常はControllerの更新結果を利用。2秒の強制攻撃時だけ再選択する。
+        if (forcedAttack) controller.ChooseTargetNow(true);
+        currentTarget = controller.CurrentTarget;
     }
 
     bool IsTargetUsable(Transform target)
@@ -216,7 +181,8 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
         needsAdjustment = Vector2.Distance(enemyBase.transform.position, lastAttackTargetPosition)
                           <= adjustmentDistance;
         noAttackTimer = 0f;
-        forcePlayerAfterStun = false;
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null) controller.ClearForcedTarget();
         A_Phase = 0;
         enemyBase.AttackCount = 0f;
         enemyBase.mode = EnemyBase.ModeType.M1;

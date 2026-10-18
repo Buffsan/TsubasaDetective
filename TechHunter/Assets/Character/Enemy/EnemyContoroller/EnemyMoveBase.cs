@@ -117,7 +117,12 @@ public class EnemyMoveBase : MonoBehaviour
                 return controller.SpawnAttackWarning(warningType, position, rotation,
                     duration, parent, extraLifetime, syncAnimation, localScale);
 
-            return controller.SpawnAttackWarningPrefab(fallbackPrefab, position, rotation,
+            if (fallbackPrefab != null)
+                return controller.SpawnAttackWarningPrefab(fallbackPrefab, position, rotation,
+                    duration, parent, extraLifetime, syncAnimation, localScale);
+
+            // 新規のタイプ指定でPrefabが未登録ならControllerが警告を出す。
+            return controller.SpawnAttackWarning(warningType, position, rotation,
                 duration, parent, extraLifetime, syncAnimation, localScale);
         }
 

@@ -288,13 +288,27 @@ public class EnemyContoroller : EnemyBase
         return attacks.Length;
     }
 
-    // 派閥・プレイヤー攻撃設定をPrefabのままにしたい場合。
+    // AIの攻撃対象設定を攻撃判定にも反映する。明示的なFaction指定版は従来どおり優先。
+    public void ConfigureAttackTarget(EnemyAttack attack)
+    {
+        if (attack == null) return;
+        Faction factions = Faction.None;
+        if (targetType != TargetType.PlayerOnly)
+            factions = (targetAllFactions ? (Faction)(~0) : targetFactions) & ~excludedTargetFactions;
+        bool hitPlayer = targetType != TargetType.EnemyOnly;
+        attack.ConfigureAttack(this, attack.AttackPowerPercent, factions, hitPlayer);
+    }
+
+    // 攻撃倍率を指定し、攻撃対象はAIのターゲット設定から自動反映する。
     public int ConfigureAttackObject(GameObject attackObject, float attackPowerPercent)
     {
         if (attackObject == null) return 0;
         EnemyAttack[] attacks = attackObject.GetComponentsInChildren<EnemyAttack>(true);
         foreach (EnemyAttack attack in attacks)
+        {
             attack.ConfigureAttack(this, attackPowerPercent);
+            ConfigureAttackTarget(attack);
+        }
         return attacks.Length;
     }
 

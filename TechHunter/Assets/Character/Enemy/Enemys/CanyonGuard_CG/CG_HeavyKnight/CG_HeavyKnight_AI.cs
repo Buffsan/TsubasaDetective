@@ -102,6 +102,7 @@ public class CG_HeavyKnight_AI : EnemyMoveBase
             if (enemyBase.mode == EnemyBase.ModeType.M5)
             {
                 GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.AttackSpawnPoint.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Attack);
                 BoxCollider2D CL_Box = CL_Attack.GetComponent<BoxCollider2D>();
                 CL_Box.size = enemyBase.AttackAreaSize;
 

@@ -39,11 +39,10 @@ public class Boss_SS_MageOfTheStarChoir_Weapon : EnemyMoveBase
 
             if (DengerObject)
             {
-                GameObject CL_Denger = Instantiate(DengerObject, transform.position, Quaternion.identity);
-                CL_Denger.transform.up = SaveDirection;
-                SaveComponent savecomponent = CL_Denger.GetComponent<SaveComponent>();
-                savecomponent.animator.speed = 1 / AttackStartTime;
-                Destroy(CL_Denger, AttackStartTime * 1.1f);
+                GameObject CL_Denger = SpawnAttackWarning(EnemyContoroller.WarningRectangle,
+                    DengerObject, transform.position, Quaternion.identity,
+                    AttackStartTime, null, AttackStartTime * 0.1f, true);
+                if (CL_Denger != null) CL_Denger.transform.up = SaveDirection;
             }
 
             enemyBase.mode = EnemyBase.ModeType.M2;

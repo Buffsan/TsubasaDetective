@@ -173,6 +173,11 @@ public class EnemyMoveBase : MonoBehaviour
 
     // 生成された攻撃判定には、Prefabの攻撃倍率・派閥設定を維持したまま攻撃者を割り当てる。
     // 敵本体や演出PrefabなどEnemyAttackを持たないオブジェクトは変更しない。
+    public void ConfigureSummonedAttack(GameObject instance)
+    {
+        ConfigureSpawnedAttack(instance);
+    }
+
     protected void ConfigureSpawnedAttack(GameObject instance)
     {
         if (instance == null || enemyBase == null) return;

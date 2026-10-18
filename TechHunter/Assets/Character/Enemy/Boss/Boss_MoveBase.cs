@@ -9,6 +9,50 @@ public class Boss_MoveBase : MonoBehaviour
     public string EnemyName;
     public EnemyBase enemyBase;
 
+    // Boss_Controller側のCurrentTargetを参照する。従来のボスはPlayerOnly。
+    protected Transform CurrentTarget
+    {
+        get
+        {
+            Boss_Controller controller = enemyBase as Boss_Controller;
+            if (controller != null) return controller.CurrentTarget;
+            return enemyBase != null && enemyBase.Player != null
+                ? enemyBase.Player.transform : null;
+        }
+    }
+
+    // 置換前のTransform.positionと同様、Vector3を返す。
+    protected Vector3 TargetPosition =>
+        CurrentTarget != null ? CurrentTarget.position :
+        (enemyBase != null ? enemyBase.transform.position : Vector3.zero);
+
+    protected Vector2 TargetDirection =>
+        enemyBase != null && CurrentTarget != null
+            ? (Vector2)TargetPosition - (Vector2)enemyBase.transform.position : Vector2.zero;
+
+    protected float TargetDistance =>
+        CurrentTarget != null ? TargetDirection.magnitude : float.PositiveInfinity;
+
+    protected void RefreshTargetInfo()
+    {
+        if (enemyBase == null || CurrentTarget == null) return;
+        Boss_Controller controller = enemyBase as Boss_Controller;
+        if (controller == null ||
+            controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+        {
+            enemyBase.PlayerDirection = TargetDirection;
+            enemyBase.PlayerDistance = TargetDistance;
+        }
+    }
+
+    protected void LookAtCurrentTarget()
+    {
+        if (enemyBase == null || CurrentTarget == null) return;
+        RefreshTargetInfo();
+        enemyBase.isTargetLook(TargetPosition);
+    }
+
+
     ALL_SystemManager aLL_System =>ALL_SystemManager.Instance;
     public List<EnemyContoroller> enemyList = new List<EnemyContoroller>();
     public List<GameObject> AllEnemy = new List<GameObject>();

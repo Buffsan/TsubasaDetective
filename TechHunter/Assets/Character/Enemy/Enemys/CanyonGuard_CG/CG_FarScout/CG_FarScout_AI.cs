@@ -20,9 +20,9 @@ public class CG_FarScout_AI : EnemyMoveBase
 
     public override void EnemyMovePlay()
     {
-        enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
-        enemyBase.isPlayerLookBase();
-        enemyBase.rb.velocity = enemyBase.PlayerDirection;
+        RefreshTargetInfo();
+        LookAtCurrentTarget();
+        enemyBase.rb.velocity = TargetDirection;
     }
     public override void EnemyAttackPlay()
     {
@@ -36,12 +36,12 @@ public class CG_FarScout_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 0.2)
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
-                Direction = PlayerController.Instance.transform.position - gameObject.transform.position;
+                Direction = TargetPosition - gameObject.transform.position;
                 AttackDirection = Direction;
                 int radom = Random.Range(0, 3);
                 switch (radom) 
@@ -63,7 +63,7 @@ public class CG_FarScout_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            //enemyBase.isPlayerLookBase();
+            //LookAtCurrentTarget();
             enemyBase.rb.velocity = Direction.normalized * enemyBase.SPEED * 1.2f;
             if (enemyBase.AttackCount > 0.5f)
             {
@@ -87,7 +87,7 @@ public class CG_FarScout_AI : EnemyMoveBase
             Shot(AttackDirection);
 
             enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
-            enemyBase.animator.Play("çUåÇ");
+            enemyBase.animator.Play("¬çU≈í‚Äö");
             enemyBase.mode = EnemyBase.ModeType.M6;
 
         }
@@ -100,7 +100,7 @@ public class CG_FarScout_AI : EnemyMoveBase
                 enemyBase.AttackCount = 0;
                 enemyBase.moveType = EnemyBase.MoveType.Move;
                 enemyBase.PlayerDistance = 1000;
-                enemyBase.animator.Play("ë“ã@");
+                enemyBase.animator.Play("‚Äò√í‚Äπ@");
                 enemyBase.animator.SetInteger("Anim", 0);
             }
         }
@@ -113,7 +113,7 @@ public class CG_FarScout_AI : EnemyMoveBase
         float angle = -angleStep;
         
         for (int i = 0; i < 3; i++)
-        {//Debug.Log("ìäÇ∞ÇÈ");
+        {//Debug.Log("‚Äú≈†‚Äö¬∞‚Äö√©");
 
             GameObject bullet = Instantiate(Arrow, gameObject.transform.position, Quaternion.identity);
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
@@ -131,7 +131,7 @@ public class CG_FarScout_AI : EnemyMoveBase
         float angleStep = 15;
         float angle = -angleStep;
         for (int i = 0; i < 3; i++)
-        {//Debug.Log("ìäÇ∞ÇÈ");
+        {//Debug.Log("‚Äú≈†‚Äö¬∞‚Äö√©");
 
             GameObject denger = DengerAreaSpawn(DengerArea, transform.position, 1);
             denger.transform.parent = transform;

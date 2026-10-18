@@ -5,7 +5,7 @@ using UnityEngine;
 public class Boss_TheGoldenWitch : Boss_MoveBase
 {
 
-    private IEnumerator myRunningCoroutine; // Às’†‚ÌƒRƒ‹[ƒ`ƒ“‚ğ•Û‚·‚é‚½‚ß‚Ì•Ï”
+    private IEnumerator myRunningCoroutine; // å®Ÿè¡Œä¸­ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’ä¿æŒã™ã‚‹ãŸã‚ã®å¤‰æ•°
     public float duration = 1;
     public float arcHeight = 30;
     float AttackCount1 = 0;
@@ -51,9 +51,9 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
         {
             AttackCount1 = 0;
             asaltAttackArea.SetActive(false);
-            StopCoroutine(myRunningCoroutine); // “Á’è‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~
-            Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ğ’â~‚µ‚Ü‚µ‚½B");
-            myRunningCoroutine = null; // QÆ‚ğƒNƒŠƒA
+            StopCoroutine(myRunningCoroutine); // ç‰¹å®šã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢
+            Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢ã—ã¾ã—ãŸã€‚");
+            myRunningCoroutine = null; // å‚ç…§ã‚’ã‚¯ãƒªã‚¢
         }*/
     }
     public override void M_Con()
@@ -63,9 +63,9 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
         {
             AttackCount1 = 0;
             asaltAttackArea.SetActive(false);
-            StopCoroutine(myRunningCoroutine); // “Á’è‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~
-            Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ğ’â~‚µ‚Ü‚µ‚½B");
-            myRunningCoroutine = null; // QÆ‚ğƒNƒŠƒA
+            StopCoroutine(myRunningCoroutine); // ç‰¹å®šã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢
+            Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢ã—ã¾ã—ãŸã€‚");
+            myRunningCoroutine = null; // å‚ç…§ã‚’ã‚¯ãƒªã‚¢
         }
     }
     public override void M_AI()
@@ -73,11 +73,11 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
 
         if (enemyBase.moveType != EnemyBase.MoveType.Attack)
         {
-            enemyBase.animator.Play("•às");
+            enemyBase.animator.Play("æ­©è¡Œ");
             AttackWaitTime += Time.deltaTime;
 
-            enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+            LookAtCurrentTarget();
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
 
             if (phase == Phase.P1)
             {
@@ -276,12 +276,12 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
         StartAttackMotion(0);
         if (AttackPhase == 1) 
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -10;
+            LookAtCurrentTarget();
+            enemyBase.rb.velocity = TargetDirection.normalized * -10;
             if (attackcount() > 0.5f) 
             {
                 NextPhase();
-                enemyBase.animator.Play("c‚Ô‚èˆÚ“®");
+                enemyBase.animator.Play("ç¸¦ã¶ã‚Šç§»å‹•");
                 audioManager.PlaySE(audioclips[1]);
 
                 SaveDengerArea = DengerAreaSpawn(DengerObjects[0],transform.position, 2f);
@@ -290,13 +290,13 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
         }
         if (AttackPhase == 2) 
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             SaveDengerArea.transform.position = transform.position;
-            SaveDengerArea.transform.transform.up = enemyBase.PlayerDirection.normalized;
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED*0.5f;
+            SaveDengerArea.transform.transform.up = TargetDirection.normalized;
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED*0.5f;
             if(attackcount() > 1) 
             {
-                saveDirection = enemyBase.PlayerDirection.normalized;
+                saveDirection = TargetDirection.normalized;
                 NextPhase();
                 enemyBase.rb.velocity = Vector2.zero;
             }
@@ -309,7 +309,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
                 CL_Attack.transform.up = saveDirection;
                 GameObject CL_Effect = SpawnObjectNow_Input(Effects[0], transform.position, 1);
                 CL_Effect.transform.up = saveDirection;
-                enemyBase.animator.Play("cUŒ‚");
+                enemyBase.animator.Play("ç¸¦æ”»æ’ƒ");
                 audioManager.PlaySE(audioclips[2]);
                 NextPhase();
             }
@@ -334,7 +334,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
         {
             if (attackcount() > 2f) 
             {
-                enemyBase.animator.Play("‰r¥");
+                enemyBase.animator.Play("è© å”±");
                 GameObject CL_Attack = SpawnObjectNow_Input(AttackObjects[1], transform.position, 0.1f);
                 GameObject CL_Effect = SpawnObjectNow_Input(Effects[1], transform.position, 1);
                 SpawnObjectNow(GoaldTurret, transform.position, 300);
@@ -359,10 +359,10 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
             int safeCount = 0;
             while (!FindPlayerPos)
             {
-                Vector2 TargetFindPlayerPos = new Vector2(Random.Range(-2f, 2f) + enemyBase.Player.transform.position.x, Random.Range(-2f, 2f) + enemyBase.Player.transform.position.y);
+                Vector2 TargetFindPlayerPos = new Vector2(Random.Range(-2f, 2f) + TargetPosition.x, Random.Range(-2f, 2f) + TargetPosition.y);
                 FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
                 safeCount++;
-                if (safeCount > 100) { Debug.Log("–Ú“I’n‚ªŒ©‚Â‚©‚ç‚È‚¢"); FindPlayerPos = true; }
+                if (safeCount > 100) { Debug.Log("ç›®çš„åœ°ãŒè¦‹ã¤ã‹ã‚‰ãªã„"); FindPlayerPos = true; }
                 if (FindPlayerPos)
                 {
                     targetPos = TargetFindPlayerPos;
@@ -370,7 +370,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
                     enemyBase.isTargetLook(targetPos);
                 }
             }
-            enemyBase.animator.Play("‰Á‘¬", 0, 0);
+            enemyBase.animator.Play("åŠ é€Ÿ", 0, 0);
 
             NextPhase();
         }
@@ -387,11 +387,11 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
             {
                 AttackCount1 = 0;
                 NextPhase();
-                enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ", 0, 0);
                 audioManager.PlaySE(audioclips[2]);
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 GameObject CL_Denger = DengerAreaSpawn(DengerObjects[2], transform.position, 1);
-                saveDirection = enemyBase.PlayerDirection.normalized;
+                saveDirection = TargetDirection.normalized;
                 CL_Denger.transform.up = saveDirection;
                 CL_Denger.transform.parent = transform;
             }
@@ -408,21 +408,21 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
                 CL_Denger.transform.up = saveDirection;
                 CL_Attack.transform.up = saveDirection;
                 
-                targetPos = enemyBase.Player.transform.position;
+                targetPos = TargetPosition;
                 targetDirection = targetPos - (Vector2)transform.position;
-                enemyBase.animator.Play("UŒ‚", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒ", 0, 0);
                 audioManager.PlaySE(audioclips[2]);
 
                 for (int i = 0; i < 2; i++)
                 {
-                    // ‚’¼•ûŒüi¶‰EjƒxƒNƒgƒ‹
+                    // å‚ç›´æ–¹å‘ï¼ˆå·¦å³ï¼‰ãƒ™ã‚¯ãƒˆãƒ«
                     Vector2 perp = new Vector2(-saveDirection.y, saveDirection.x);
                     float Lenght = 3;
-                    // UŒ‚”»’è‚ğ¶‰E‚É¶¬‚·‚éˆÊ’u
+                    // æ”»æ’ƒåˆ¤å®šã‚’å·¦å³ã«ç”Ÿæˆã™ã‚‹ä½ç½®
                     Vector2 leftPos = (Vector2)transform.position + perp * Lenght * (i + 1);
                     Vector2 rightPos = (Vector2)transform.position - perp * Lenght * (i + 1);
 
-                    // UŒ‚”»’èƒIƒuƒWƒFƒNƒg‚ğ¶‰E‚É¶¬
+                    // æ”»æ’ƒåˆ¤å®šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å·¦å³ã«ç”Ÿæˆ
                     StartCoroutine(DengerAreaSpawn_RateTime(i, 1, DengerObjects[2], leftPos, 1, saveDirection, AttackObjects[2], Effects[2]));
                     StartCoroutine(DengerAreaSpawn_RateTime(i, 1, DengerObjects[2], rightPos, 1, saveDirection, AttackObjects[2], Effects[2]));
                 }
@@ -456,7 +456,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
                 else
                 {
                     Finish();
-                    enemyBase.animator.Play("‘Ò‹@", 0, 0);
+                    enemyBase.animator.Play("å¾…æ©Ÿ", 0, 0);
                 }
             }
             else
@@ -472,9 +472,9 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 0.3)
             {
-                targetPos = (Vector2)enemyBase.Player.transform.position;
+                targetPos = (Vector2)TargetPosition;
                 StartCoroutine(MoveInArc());
-                enemyBase.animator.Play("‰Á‘¬", 0, 0);
+                enemyBase.animator.Play("åŠ é€Ÿ", 0, 0);
 
                 NextPhase();
             }
@@ -484,7 +484,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
             if (StandOk)
             {
                 GameObject CL_Denger = SpawnObjectNow_Input(Effects[1], transform.position, 1);
-                enemyBase.animator.Play("cUŒ‚", 0, 0);
+                enemyBase.animator.Play("ç¸¦æ”»æ’ƒ", 0, 0);
                 StandOk = false;
                 NextPhase();
             }
@@ -515,7 +515,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
         {
             if (attackcount() > 1f)
             {
-                enemyBase.animator.Play("‰r¥");
+                enemyBase.animator.Play("è© å”±");
                 StartCoroutine(DengerAreaSpawn_RateTime(0, 1.5f, DengerObjects[1],transform.position, 1.5f,Vector2.zero, AttackObjects[1], Effects[1]));
 
                 NextPhase();
@@ -561,7 +561,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("•Ïg‘Ò‹@");
+            enemyBase.animator.Play("å¤‰èº«å¾…æ©Ÿ");
             StartCoroutine(DengerAreaSpawn_RateTime(0, 1, DengerObjects[1], transform.position, 1, Vector2.zero, AttackObjects[1], Effects[1]));
             NextPhase();
         }
@@ -571,7 +571,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
             {
                 audioManager.BgmSource.clip = BossBGM;
                 DamageArea.SetActive(true);
-                enemyBase.animator.Play("Œ`‘Ô•Ï‰»");
+                enemyBase.animator.Play("å½¢æ…‹å¤‰åŒ–");
                 GameObject CL_Attack = SpawnObjectNow_Input(AttackObjects[1], transform.position, 0.1f);
                 GameObject CL_Effect = SpawnObjectNow_Input(Effects[1], transform.position, 1);
                 NextPhase();
@@ -588,10 +588,10 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
                 
                 }
                 GameObject CL_Denger = DengerAreaSpawn(DengerObjects[2], transform.position, 1);
-                saveDirection = enemyBase.PlayerDirection.normalized;
+                saveDirection = TargetDirection.normalized;
                 CL_Denger.transform.up = saveDirection;
                 asaltAttackArea.SetActive(true);
-                enemyBase.animator.Play("Œ`‘Ô•Ï‰»Q’µ–ô");
+                enemyBase.animator.Play("å½¢æ…‹å¤‰åŒ–ï¼¿è·³èº");
                 NextPhase();
             }
         }
@@ -619,7 +619,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {        
-                enemyBase.animator.Play("•Ïg‘Ò‹@");
+                enemyBase.animator.Play("å¤‰èº«å¾…æ©Ÿ");
             enemyBase.rb.velocity = Vector2.zero;
                 StartCoroutine(DengerAreaSpawn_RateTime(0, 3, DengerObjects[1], transform.position, 3, Vector2.zero, AttackObjects[1], Effects[1]));
                 NextPhase();
@@ -631,7 +631,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
                 audioManager.BgmSource.clip = BossBGM;
                 audioManager.BgmSource.Play();
                 DamageArea.SetActive(true);
-                enemyBase.animator.Play("Œ`‘Ô•Ï‰»");
+                enemyBase.animator.Play("å½¢æ…‹å¤‰åŒ–");
                 GameObject CL_Attack = SpawnObjectNow_Input(AttackObjects[1], transform.position, 0.1f);
                 GameObject CL_Effect = SpawnObjectNow_Input(Effects[1], transform.position, 1);
                 NextPhase();
@@ -686,7 +686,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("•Ïg‘Ò‹@");
+            enemyBase.animator.Play("å¤‰èº«å¾…æ©Ÿ");
             enemyBase.rb.velocity = Vector2.zero;
             StartCoroutine(DengerAreaSpawn_RateTime(0, 3, DengerObjects[1], transform.position, 1.5f, Vector2.zero, AttackObjects[1], Effects[1]));
             DengerAreaSpawn(DengerObjects[0], transform.position, 2);
@@ -698,7 +698,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
             {
  
                 DamageArea.SetActive(true);
-                enemyBase.animator.Play("Œ`‘Ô•Ï‰»");
+                enemyBase.animator.Play("å½¢æ…‹å¤‰åŒ–");
                 GameObject CL_Attack = SpawnObjectNow_Input(AttackObjects[1], transform.position, 0.1f);
                 GameObject CL_Effect = SpawnObjectNow_Input(Effects[1], transform.position, 1);
                 NextPhase();
@@ -708,7 +708,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
         {
             if (attackcount() > 2)
             {
-                enemyBase.animator.Play("Œ`‘Ô•Ï‰»Q‚½‚½‚«‚Â‚¯‚é", 0, 0);
+                enemyBase.animator.Play("å½¢æ…‹å¤‰åŒ–ï¼¿ãŸãŸãã¤ã‘ã‚‹", 0, 0);
                 SpawnObjectNow(AttackObjects[0], transform.position, 0.1f);
                 SpawnObjectNow(Effects[0], transform.position, 3);
                 all_System.camera_Controller.Shake(0.2f, 0.3f);
@@ -762,7 +762,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
     {
         if (AttackPhase == attackPhase)
         {
-            enemyBase.animator.Play("UŒ‚‘Ò‹@");
+            enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ");
             audioManager.PlaySE(audioclips[0]);
 
             NextPhase();
@@ -771,9 +771,9 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
     private IEnumerator MoveInArc()
     {
         myRunningCoroutine = MoveInArc();
-        // ˆÚ“®ŠJn‘O‚ÌBodyType‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+        // ç§»å‹•é–‹å§‹å‰ã®BodyTypeã‚’ä¿å­˜ã—ã¦ãŠã
         var originalBodyType = enemyBase.rb.bodyType;
-        // ˆÚ“®’†‚ÍKinematic‚É‚µ‚ÄA•¨—‰‰Z‚Ì‰e‹¿‚ğ‚È‚­‚·
+        // ç§»å‹•ä¸­ã¯Kinematicã«ã—ã¦ã€ç‰©ç†æ¼”ç®—ã®å½±éŸ¿ã‚’ãªãã™
         enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
 
         Vector2 startPos = enemyBase.transform.position;
@@ -787,34 +787,34 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsedTime / duration); // 0‚©‚ç1‚Ì”ÍˆÍ‚Éû‚ß‚é
+            float progress = Mathf.Clamp01(elapsedTime / duration); // 0ã‹ã‚‰1ã®ç¯„å›²ã«åã‚ã‚‹
 
-            // X‚ÆY‚Ì’¼ü“I‚ÈˆÚ“®‚ğŒvZ
+            // Xã¨Yã®ç›´ç·šçš„ãªç§»å‹•ã‚’è¨ˆç®—
             Vector2 linearPos = Vector2.Lerp(startPos, endPos, progress);
 
-            // ‚‚³‚ğŒvZ (SinƒJ[ƒu)
+            // é«˜ã•ã‚’è¨ˆç®— (Sinã‚«ãƒ¼ãƒ–)
             float height = Mathf.Sin(progress * Mathf.PI) * arcHeight;
 
-            // Rigidbody2D‚ğg‚Á‚ÄˆÊ’u‚ğXV‚·‚é
-            // 2D‚È‚Ì‚ÅAYÀ•W‚É‚‚³‚ğ‰Á‚¦‚é
+            // Rigidbody2Dã‚’ä½¿ã£ã¦ä½ç½®ã‚’æ›´æ–°ã™ã‚‹
+            // 2Dãªã®ã§ã€Yåº§æ¨™ã«é«˜ã•ã‚’åŠ ãˆã‚‹
             enemyBase.rb.MovePosition(new Vector2(linearPos.x, linearPos.y + height));
 
-            //yield return new WaitForFixedUpdate(); // •¨—‰‰Z‚ÌXVƒ^ƒCƒ~ƒ“ƒO‚Å‘Ò‚Â
+            //yield return new WaitForFixedUpdate(); // ç‰©ç†æ¼”ç®—ã®æ›´æ–°ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å¾…ã¤
             yield return new WaitForEndOfFrame();
         }
 
-        // ”O‚Ì‚½‚ßAÅI“I‚É‚«‚Á‚¿‚è–Ú•W’n“_‚É‡‚í‚¹‚é
+        // å¿µã®ãŸã‚ã€æœ€çµ‚çš„ã«ãã£ã¡ã‚Šç›®æ¨™åœ°ç‚¹ã«åˆã‚ã›ã‚‹
         transform.position = endPos;
-        // BodyType‚ğŒ³‚É–ß‚·
+        // BodyTypeã‚’å…ƒã«æˆ»ã™
         enemyBase.rb.bodyType = originalBodyType;
 
 
         StandOk = true;
-        // ”O‚Ì‚½‚ßAÅI“I‚É‚«‚Á‚¿‚è–Ú•W’n“_‚É‡‚í‚¹‚é
+        // å¿µã®ãŸã‚ã€æœ€çµ‚çš„ã«ãã£ã¡ã‚Šç›®æ¨™åœ°ç‚¹ã«åˆã‚ã›ã‚‹
 
         SpawnObjectNow(AttackObjects[1], endPos, 0.1f);
         transform.position = targetPos;
-        Debug.Log("–Ú“I’n‚É“’…I" + targetPos);
+        Debug.Log("ç›®çš„åœ°ã«åˆ°ç€ï¼" + targetPos);
     }
     bool IsTagAtPosition(Vector2 position, string tag)
     {
@@ -848,9 +848,9 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
     }
     private IEnumerator NeedleSpawnLing(float delayTime, float Lange, int Plass)
     {
-        //Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ªŠJn‚³‚ê‚Ü‚µ‚½B¡‚©‚ç " + delayTime + " •b‘Ò‚¿‚Ü‚·...");
+        //Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ãŒé–‹å§‹ã•ã‚Œã¾ã—ãŸã€‚ä»Šã‹ã‚‰ " + delayTime + " ç§’å¾…ã¡ã¾ã™...");
 
-        // ‚±‚±‚Åw’è‚µ‚½•b”‚¾‚¯‘Ò‹@‚·‚é
+        // ã“ã“ã§æŒ‡å®šã—ãŸç§’æ•°ã ã‘å¾…æ©Ÿã™ã‚‹
         yield return new WaitForSeconds(delayTime);
         for (int i = 0; i < 10 + Plass; i++)
         {
@@ -861,7 +861,7 @@ public class Boss_TheGoldenWitch : Boss_MoveBase
             float newX = enemyBase.transform.position.x + 2 * Lange * Mathf.Cos(angleRad);
             float newY = enemyBase.transform.position.y + 2 * Lange * Mathf.Sin(angleRad);
 
-            // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+            // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
             Vector2 newPosition = new Vector2(newX, newY);
 
             //NeedleSpawn(newPosition);

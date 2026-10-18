@@ -31,6 +31,9 @@ public class EnemyContoroller : EnemyBase
     public Vector2 TargetDirection { get; private set; }
     public float TargetDistance { get; private set; } = float.PositiveInfinity;
 
+    // EnemyOnly専用。攻撃可能な敵がいない間だけtrue。
+    public bool IsHostilityReleased { get; private set; }
+
     float targetSearchTimer;
     Transform forcedTarget;
 
@@ -46,8 +49,9 @@ public class EnemyContoroller : EnemyBase
         if (moveType != MoveType.Attack)
         {
             targetSearchTimer += Time.fixedDeltaTime;
+            // ターゲット不在時は指定間隔で探索し、毎FixedUpdateの全敵走査を防ぐ。
             if (targetSearchTimer >= Mathf.Max(0.05f, targetSearchInterval) ||
-                !IsValidTarget(CurrentTarget))
+                (CurrentTarget != null && !IsValidTarget(CurrentTarget)))
             {
                 ChooseTargetNow();
                 targetSearchTimer = 0f;
@@ -295,6 +299,24 @@ public class EnemyContoroller : EnemyBase
     private void NomalActive()
     {
         RefreshTarget();
+
+        // EnemyOnlyで敵がいなければ友好行動ループに移る。
+        // 攻撃中は現在の攻撃を完了させ、終了後に移行する。
+        if (targetType == TargetType.EnemyOnly && CurrentTarget == null &&
+            moveType != MoveType.Attack)
+        {
+            FriendlyActive();
+            return;
+        }
+
+        // 敵が再出現したときは通常の移動・攻撃ループへ戻す。
+        if (IsHostilityReleased)
+        {
+            IsHostilityReleased = false;
+            moveBase.EnemyFriendlyExit();
+            moveType = MoveType.Move;
+        }
+
         switch (moveType)
         {
             case MoveType.Move:
@@ -308,6 +330,21 @@ public class EnemyContoroller : EnemyBase
         if ((targetType == TargetType.PlayerOnly ? PlayerDistance : TargetDistance) < LookPlayerDistance)
             moveType = MoveType.Attack;
     }
+    // EnemyOnlyで攻撃対象がいない間、FixedUpdateから継続的に呼ぶ。
+    void FriendlyActive()
+    {
+        if (!IsHostilityReleased)
+        {
+            IsHostilityReleased = true;
+            rb.velocity = Vector2.zero;
+            animator.SetInteger("Anim", 0);
+            moveBase.EnemyFriendlyEnter();
+        }
+
+        // 個別の友好NPCはこの処理をoverrideして追従・待機などを実装可能。
+        moveBase.EnemyFriendlyPlay();
+    }
+
     void AttackAction()
     {//攻撃モーションを別途入れる
         moveBase.EnemyAttackPlay();

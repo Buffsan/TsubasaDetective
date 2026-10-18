@@ -19,7 +19,7 @@ public class Boss_SS_MageOfTheStarChoir_Weapon : EnemyMoveBase
     public override void EnemyMovePlay()
     {
         attackCount += Time.fixedDeltaTime;
-        enemyBase.animator.Play("‘Ò‹@");
+        enemyBase.animator.Play("â€˜Ã’â€¹@");
         if (attackCount > AttackTime) 
         {
             attackCount = 0;
@@ -34,7 +34,7 @@ public class Boss_SS_MageOfTheStarChoir_Weapon : EnemyMoveBase
             
             enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
             GameObject CL_Effect = Instantiate(ChargeEffect,transform.position,Quaternion.identity);
-            SaveDirection = (enemyBase.playerController.transform.position - transform.position).normalized;
+            SaveDirection = (TargetPosition - transform.position).normalized;
             Destroy(CL_Effect,2);
 
             if (DengerObject)
@@ -54,7 +54,7 @@ public class Boss_SS_MageOfTheStarChoir_Weapon : EnemyMoveBase
             if (enemyBase.AttackCount > AttackStartTime)
             {
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
-                enemyBase.animator.Play("”ñ•\¦”­Ë");
+                enemyBase.animator.Play("â€Ã±â€¢\Å½Â¦â€Â­Å½Ã‹");
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
                 shotBullet();

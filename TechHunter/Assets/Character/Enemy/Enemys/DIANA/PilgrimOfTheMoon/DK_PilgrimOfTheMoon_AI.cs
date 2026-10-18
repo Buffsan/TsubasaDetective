@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using UnityEngine.Tilemaps;
 using UnityEngine;
 
 // 月の巡礼者。EnemyContoroller の Special 移動を使用し、共通クラスは変更しない。
@@ -32,6 +34,21 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
     [SerializeField] float dashDuration = 0.35f;
     [SerializeField] float meleeRecoveryTime = 0.3f;
 
+    [Header("跳躍・扇状杭攻撃")]
+    [SerializeField] float leapTargetDistance = 5f;
+    [SerializeField] float leapDuration = 0.8f;
+    [SerializeField] float leapArcHeight = 3f;
+    [SerializeField] float fanSpreadAngle = 80f;
+    [SerializeField] float fanStakeSpacing = 0.45f;
+    [SerializeField] float fanShotInterval = 0.15f;
+    readonly List<GameObject> fanStakes = new List<GameObject>();
+    readonly Vector2[] fanDirections = new Vector2[5];
+    readonly int[] fanOrder = { 0, 4, 1, 3, 2 };
+    int fanShotIndex;
+    Vector2 leapStart, leapDestination, fanTargetPosition;
+    RigidbodyType2D originalBodyType;
+    bool leapPhysicsChanged;
+
     [Header("攻撃警告（未設定時はControllerの四角形警告を使用）")]
     [SerializeField] GameObject stakeWarningPrefab;
     [SerializeField] GameObject meleeWarningPrefab;
@@ -49,7 +66,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
     bool zigzagRight = true;
     bool needsAdjustment;
     int orbitDirection = 1;
-    int attackKind; // 0=杭投げ (20%)、1=近接攻撃 (80%)
+    int attackKind; // 0=杭投げ、1=近接攻撃、2=跳躍・扇状杭
     GameObject activeMeleeHitbox;
 
     void Start()
@@ -182,7 +199,8 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
         if (currentTarget == null) return;
         attackTarget = currentTarget; // 攻撃終了まで別の相手へ変更しない。
         lastAttackTargetPosition = attackTarget.position;
-        attackKind = Random.Range(0, 5) == 0 ? 0 : 1;
+        attackKind = Random.Range(0, 5) == 0 ? 0 : (Random.Range(0, 4) == 0 ? 2 : 1);
+        if (attackKind == 2) fanTargetPosition = lastAttackTargetPosition;
         orbitDirection = Random.value < 0.5f ? -1 : 1;
         needsAdjustment = Vector2.Distance(enemyBase.transform.position, lastAttackTargetPosition)
                           <= adjustmentDistance;
@@ -201,6 +219,8 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
         if (enemyBase == null) return;
         if (attackTarget != null && IsTargetUsable(attackTarget))
             lastAttackTargetPosition = attackTarget.position;
+
+        if (attackKind == 2) { PlayLeapFanAttack(); return; }
 
         switch (A_Phase)
         {
@@ -250,6 +270,161 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
                 if (enemyBase.AttackCount >= meleeRecoveryTime) FinishAttack();
                 break;
         }
+    }
+
+
+    // 跳躍と杭の展開は固定更新のフェーズで管理し、スタン時にも確実に中断する。
+    void PlayLeapFanAttack()
+    {
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.AttackCount += Time.fixedDeltaTime;
+        switch (A_Phase)
+        {
+            case 0:
+                enemyBase.animator.Play("跳躍待機", 0, 0f);
+                leapStart = enemyBase.transform.position;
+                leapDestination = FindLeapDestination(fanTargetPosition);
+                NextPhase();
+                break;
+            case 1:
+                if (enemyBase.AttackCount >= 1f)
+                {
+                    originalBodyType = enemyBase.rb.bodyType;
+                    enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
+                    leapPhysicsChanged = true;
+                    leapStart = enemyBase.transform.position;
+                    enemyBase.animator.Play("跳躍", 0, 0f);
+                    NextPhase();
+                }
+                break;
+            case 2:
+                float progress = Mathf.Clamp01(enemyBase.AttackCount / Mathf.Max(0.05f, leapDuration));
+                Vector2 pos = Vector2.Lerp(leapStart, leapDestination, progress);
+                pos.y += Mathf.Sin(progress * Mathf.PI) * leapArcHeight;
+                enemyBase.rb.MovePosition(pos);
+                if (progress >= 1f)
+                {
+                    enemyBase.rb.MovePosition(leapDestination);
+                    RestoreLeapPhysics();
+                    enemyBase.animator.Play("着地", 0, 0f);
+                    NextPhase();
+                }
+                break;
+            case 3:
+                if (enemyBase.AttackCount >= 0.5f)
+                {
+                    DeployFanStakes();
+                    NextPhase();
+                }
+                break;
+            case 4:
+                if (enemyBase.AttackCount >= 1f)
+                {
+                    enemyBase.animator.Play("詠唱発動", 0, 0f);
+                    fanShotIndex = 0;
+                    NextPhase();
+                }
+                break;
+            case 5:
+                if (enemyBase.AttackCount >= fanShotIndex * Mathf.Max(0.02f, fanShotInterval))
+                {
+                    FireFanStake(fanOrder[fanShotIndex]);
+                    fanShotIndex++;
+                    if (fanShotIndex >= 5) NextPhase();
+                }
+                break;
+            case 6:
+                if (enemyBase.AttackCount >= 1f) FinishAttack();
+                break;
+        }
+    }
+
+    Vector2 FindLeapDestination(Vector2 target)
+    {
+        // EnemySpawnArea のタイルだけを着地点として採用する。
+        if (ALL_SystemManager.Instance == null ||
+            ALL_SystemManager.Instance.enemySpawnBASE == null ||
+            ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C == null)
+            return enemyBase.transform.position;
+
+        Tilemap tilemap = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.StandFloor;
+        if (tilemap == null) return enemyBase.transform.position;
+        Vector2 fallback = enemyBase.transform.position;
+        float bestDifference = float.MaxValue;
+        List<Vector2> preferred = new List<Vector2>();
+        BoundsInt bounds = tilemap.cellBounds;
+        foreach (Vector3Int cell in bounds.allPositionsWithin)
+        {
+            if (!tilemap.HasTile(cell)) continue;
+            Vector2 candidate = tilemap.GetCellCenterWorld(cell);
+            float distance = Vector2.Distance(candidate, target);
+            float difference = Mathf.Abs(distance - leapTargetDistance);
+            if (difference < bestDifference)
+            {
+                bestDifference = difference;
+                fallback = candidate;
+            }
+            if (difference <= 0.75f) preferred.Add(candidate);
+        }
+        return preferred.Count > 0 ? preferred[Random.Range(0, preferred.Count)] : fallback;
+    }
+
+    void DeployFanStakes()
+    {
+        ClearFanStakes();
+        if (stakePrefab == null) return;
+        Vector2 direction = fanTargetPosition - (Vector2)enemyBase.transform.position;
+        if (direction.sqrMagnitude < 0.0001f) direction = Vector2.right;
+        direction.Normalize();
+        Vector2 origin = enemyBase.AttackSpawnPoint != null
+            ? (Vector2)enemyBase.AttackSpawnPoint.transform.position
+            : (Vector2)enemyBase.transform.position;
+        for (int i = 0; i < 5; i++)
+        {
+            float angle = (i - 2) * fanSpreadAngle / 4f;
+            Vector2 shotDirection = Rotate(direction, angle);
+            fanDirections[i] = shotDirection;
+            Vector2 position = origin + shotDirection * fanStakeSpacing;
+            float rotation = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg + stakeRotationOffset;
+            GameObject stake = Instantiate(stakePrefab, position, Quaternion.Euler(0f, 0f, rotation));
+            ConfigureSummonedAttack(stake);
+            Rigidbody2D rb = stake.GetComponent<Rigidbody2D>();
+            if (rb != null) { rb.velocity = Vector2.zero; rb.gravityScale = 0f; }
+            // 展開中は衝突しない。射出時に有効化する。
+            Collider2D[] colliders = stake.GetComponentsInChildren<Collider2D>();
+            foreach (Collider2D collider in colliders) collider.enabled = false;
+            fanStakes.Add(stake);
+        }
+    }
+
+    void FireFanStake(int index)
+    {
+        if (index >= fanStakes.Count || fanStakes[index] == null) return;
+        GameObject stake = fanStakes[index];
+        fanStakes[index] = null;
+        foreach (Collider2D collider in stake.GetComponentsInChildren<Collider2D>())
+            collider.enabled = true;
+        Rigidbody2D rb = stake.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            rb.velocity = fanDirections[index] * stakeSpeed;
+        }
+        Destroy(stake, stakeLifetime);
+    }
+
+    void ClearFanStakes()
+    {
+        foreach (GameObject stake in fanStakes)
+            if (stake != null) Destroy(stake);
+        fanStakes.Clear();
+    }
+
+    void RestoreLeapPhysics()
+    {
+        if (!leapPhysicsChanged || enemyBase == null || enemyBase.rb == null) return;
+        enemyBase.rb.bodyType = originalBodyType;
+        leapPhysicsChanged = false;
     }
 
     void PositionForAttack()
@@ -327,7 +502,6 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
                       + stakeRotationOffset;
         GameObject stake = Instantiate(stakePrefab, position, Quaternion.Euler(0f, 0f, angle));
         ConfigureSummonedAttack(stake);
-        ConfigureSummonedAttack(stake);
         EnemyAttack attack = stake.GetComponent<EnemyAttack>();
         if (attack != null) attack.enemyBase = enemyBase;
         else Debug.LogError("杭PrefabにEnemyAttackがありません。", stake);
@@ -357,6 +531,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
             ? enemyBase.AttackSpawnPoint.transform : enemyBase.transform;
         activeMeleeHitbox = Instantiate(meleeHitboxPrefab, anchor.position, anchor.rotation);
         activeMeleeHitbox.transform.SetParent(anchor, true);
+        ConfigureSummonedAttack(activeMeleeHitbox);
 
         EnemyAttack attack = activeMeleeHitbox.GetComponent<EnemyAttack>();
         if (attack != null) attack.enemyBase = enemyBase;
@@ -440,6 +615,8 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
     {
         ClearAttackWarning();
         ClearMeleeHitbox();
+        ClearFanStakes();
+        RestoreLeapPhysics();
         A_Phase = 0;
         attackTarget = null;
         enemyBase.mode = EnemyBase.ModeType.M1;
@@ -468,5 +645,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
     {
         ClearAttackWarning();
         ClearMeleeHitbox();
+        ClearFanStakes();
+        RestoreLeapPhysics();
     }
 }

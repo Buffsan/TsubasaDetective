@@ -75,7 +75,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
 
         if (enemyBase.moveType != EnemyBase.MoveType.Attack)
         {
-            enemyBase.rb.velocity = (enemyBase.playerController.transform.position - transform.position).normalized * enemyBase.SPEED;
+            enemyBase.rb.velocity = (TargetPosition - transform.position).normalized * enemyBase.SPEED;
             enemyBase.animator.SetInteger("Anim", 0);
             AttackWaitTime += Time.deltaTime;
 
@@ -283,7 +283,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
         {
             GameObject denger = DengerAreaSpawn(DengerObjects[0], transform.position, 2);
 
-            SaveDirection = enemyBase.playerController.transform.position - transform.position;
+            SaveDirection = TargetPosition - transform.position;
             denger.transform.up = SaveDirection;
             
             NextPhase();
@@ -351,7 +351,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             );
 
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
-        Vector2 direction = (Vector2)enemyBase.playerController.transform.position - shotPos;
+        Vector2 direction = (Vector2)TargetPosition - shotPos;
         CL_Arrow.transform.up = direction;
         CL_Arrow.transform.Rotate(0, 0, 90);
         rb.velocity = direction.normalized * ArrowSpeed;
@@ -370,7 +370,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             );
 
         Mortar_Controller mortar = CL_Arrow.GetComponent<Mortar_Controller>();
-        mortar.ChangePos(enemyBase.Player.transform.position + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
+        mortar.ChangePos(TargetPosition + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
         mortar.enemyBase = enemyBase;
         mortar.AttackArea = S_AttackArea;
 

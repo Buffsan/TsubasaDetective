@@ -20,6 +20,17 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
     [SerializeField] float DashSpeed = 3;
     public GameObject Target;
 
+    // 群れのリーダー追従を優先し、それ以外は共通CurrentTargetで照準を取る。
+    Vector2 ActiveTargetPosition => Target != null
+        ? (Vector2)Target.transform.position : TargetPosition;
+    Vector2 ActiveTargetDirection => ActiveTargetPosition - (Vector2)enemyBase.transform.position;
+    float ActiveTargetDistance => ActiveTargetDirection.magnitude;
+    void LookAtActiveTarget()
+    {
+        if (Target != null) enemyBase.isTargetLook(ActiveTargetPosition);
+        else LookAtCurrentTarget();
+    }
+
     bool one = false;
     Vector2 Direction;
     bool trune = false;
@@ -96,20 +107,20 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
         if (Target)
         {
 
-            enemyBase.PlayerDistance = Vector2.Distance(Target.transform.position, enemyBase.gameObject.transform.position);
+            enemyBase.PlayerDistance = ActiveTargetDistance;
             enemyBase.animator.SetInteger("Anim", 1);
-            enemyBase.PlayerDirection = Target.transform.position - enemyBase.transform.position;
-            angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-            offset = 100f / (enemyBase.PlayerDistance + 1f) * moveRabge; // 距離が遠いほど小さく
+            enemyBase.PlayerDirection = ActiveTargetDirection;
+            angle = Mathf.Atan2(ActiveTargetDirection.y, ActiveTargetDirection.x) * Mathf.Rad2Deg;
+            offset = 100f / (ActiveTargetDistance + 1f) * moveRabge; // 距離が遠いほど小さく
         }
         else
         {
 
             RefreshTargetInfo();
             enemyBase.animator.SetInteger("Anim", 1);
-            enemyBase.PlayerDirection = TargetDirection;
-            angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-            offset = 100f / (TargetDistance + 1f) * moveRabge; // 距離が遠いほど小さく
+            enemyBase.PlayerDirection = ActiveTargetDirection;
+            angle = Mathf.Atan2(ActiveTargetDirection.y, ActiveTargetDirection.x) * Mathf.Rad2Deg;
+            offset = 100f / (ActiveTargetDistance + 1f) * moveRabge; // 距離が遠いほど小さく
         }
 
 
@@ -124,7 +135,7 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
 
         Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
-        LookAtCurrentTarget();
+        LookAtActiveTarget();
 
         if (Target)
         {
@@ -153,8 +164,8 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
         {
             if (enemyBase.AttackCount > 1)
             {
-                LookAtCurrentTarget();
-                PlayerDirSave = TargetDirection;
+                LookAtActiveTarget();
+                PlayerDirSave = ActiveTargetDirection;
                 Fire(PlayerDirSave.normalized);
                 enemyBase.animator.SetInteger("Anim", 2);
                 enemyBase.AttackCount = 0;
@@ -182,7 +193,7 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
             if (enemyBase.AttackCount > 1)
             {
                 Vector2 randomPos = new Vector2(Random.Range(-6,6), Random.Range(-6, 6));
-                enemyBase.transform.position = (Vector2)TargetPosition + Vector2.one * randomPos;
+                enemyBase.transform.position = ActiveTargetPosition + Vector2.one * randomPos;
                 enemyBase.DamageBody.SetActive(true);
                 enemyBase.EnemyAnimBody.SetActive(true);
 

@@ -168,6 +168,7 @@ public class Eaterofleftovers_AI : EnemyMoveBase
         {
             /*
             GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Attack);
             EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
             enemyAttack.enemyBase = enemyBase;
             Destroy(CL_Attack, 0.01f);*/

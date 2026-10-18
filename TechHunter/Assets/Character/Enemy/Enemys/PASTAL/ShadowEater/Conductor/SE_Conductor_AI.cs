@@ -161,6 +161,7 @@ public class SE_Conductor_AI : EnemyMoveBase
 
                 GameObject CL_Attack = Instantiate(AllEnemyAttack, transform.position, Quaternion.identity);
         ConfigureSummonedAttack(CL_Attack);
+        ConfigureSummonedAttack(CL_Attack);
                 Destroy(CL_Attack,0.1f);
             }
             if (SearchCount > SearchLimitTime + SearchFindLimitTime) 
@@ -169,6 +170,7 @@ public class SE_Conductor_AI : EnemyMoveBase
                 Text.SetActive(false);
                 SEplayed = false;
                 GameObject CL_Attack = Instantiate(AllEnemyAttack, transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Attack);
         ConfigureSummonedAttack(CL_Attack);
                 CL_Attack.transform.parent = transform;
                 Destroy(CL_Attack, 0.1f);
@@ -246,6 +248,7 @@ public class SE_Conductor_AI : EnemyMoveBase
 
                 GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
         ConfigureSummonedAttack(CL_Attack);
+        ConfigureSummonedAttack(CL_Attack);
                 EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
                 enemyAttack.enemyBase = enemyBase;
                 Destroy(CL_Attack, 0.1f);
@@ -294,6 +297,7 @@ public class SE_Conductor_AI : EnemyMoveBase
     public void SpawnRockNeedle(Vector2 pos)
     {
         GameObject CL_Rock = Instantiate(RockNeedle, pos, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Rock);
         ConfigureSummonedAttack(CL_Rock);
         Destroy(CL_Rock, 5);
     }

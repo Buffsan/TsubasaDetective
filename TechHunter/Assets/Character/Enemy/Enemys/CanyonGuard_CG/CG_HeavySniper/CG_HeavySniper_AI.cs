@@ -20,14 +20,14 @@ public class CG_HeavySniper_AI : EnemyMoveBase
 
     public override void EnemyMovePlay()
     {
-        enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
+        RefreshTargetInfo();
 
-        enemyBase.isPlayerLookBase();
+        LookAtCurrentTarget();
 
-        if (walkCount > 3 || walkCount > 1 && enemyBase.PlayerDistance < 8)
+        if (walkCount > 3 || walkCount > 1 && TargetDistance < 8)
         {
-            Debug.Log(AttackNumberArrow +"  "+enemyBase.PlayerDistance);
-            if (enemyBase.PlayerDistance < 3 && AttackNumberArrow > 1)
+            Debug.Log(AttackNumberArrow +"  "+TargetDistance);
+            if (TargetDistance < 3 && AttackNumberArrow > 1)
             {
                 //Debug.Log("AAA");
                 enemyBase.moveType = EnemyBase.MoveType.Attack;
@@ -43,7 +43,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
         } 
         else 
         {
-            if (enemyBase.PlayerDistance < 8) 
+            if (TargetDistance < 8) 
             {
                 enemyBase.animator.SetInteger("Anim", 0);
                 enemyBase.rb.velocity = Vector2.zero;
@@ -51,7 +51,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
             else
             {
                 enemyBase.animator.SetInteger("Anim", 1);
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+                enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
                 
             }walkCount += Time.deltaTime;
         }
@@ -66,7 +66,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
         {
             if (enemyBase.mode == EnemyBase.ModeType.M1)
             {
-                SavePos = enemyBase.Player.transform.position;
+                SavePos = TargetPosition;
                 
                 enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
                 enemyBase.mode = EnemyBase.ModeType.M2;
@@ -75,8 +75,8 @@ public class CG_HeavySniper_AI : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M2)
             {
-                enemyBase.isPlayerLookBase();
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -1f;
+                LookAtCurrentTarget();
+                enemyBase.rb.velocity = TargetDirection.normalized * -1f;
                 if (enemyBase.AttackCount > 1)
                 {
                     enemyBase.rb.velocity = Vector2.zero;
@@ -182,7 +182,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
         EnemyAttack enemyAttack = CL_Arrow.GetComponent<EnemyAttack>();
         enemyAttack.enemyBase = enemyBase;
 
-        Vector2 PlayerLookDirecton = enemyBase.Player.transform.position - enemyBase.transform.position;
+        Vector2 PlayerLookDirecton = TargetPosition - enemyBase.transform.position;
 
         Vector2 RadomDirection = new Vector2(
         Mathf.Cos(A_Random) * PlayerLookDirecton.x - Mathf.Sin(A_Random) * PlayerLookDirecton.y,

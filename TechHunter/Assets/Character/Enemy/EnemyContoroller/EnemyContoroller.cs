@@ -313,8 +313,8 @@ public class EnemyContoroller : EnemyBase
         if (IsHostilityReleased)
         {
             IsHostilityReleased = false;
-            moveBase.EnemyFriendlyExit();
             moveType = MoveType.Move;
+            moveBase.EnemyFriendlyExit();
         }
 
         switch (moveType)

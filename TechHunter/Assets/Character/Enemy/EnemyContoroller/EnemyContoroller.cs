@@ -317,6 +317,8 @@ public class EnemyContoroller : EnemyBase
             moveBase.EnemyFriendlyExit();
         }
 
+        // 攻撃終了フレームでTargetDistanceにより即時再攻撃しないようにする。
+        bool wasAttacking = moveType == MoveType.Attack;
         switch (moveType)
         {
             case MoveType.Move:
@@ -327,6 +329,10 @@ public class EnemyContoroller : EnemyBase
                 break;
         }
         // PlayerOnlyは従来のPlayerDistance、それ以外は選択対象とのTargetDistanceで判定。
+        if (targetType != TargetType.PlayerOnly && wasAttacking &&
+            moveType != MoveType.Attack)
+            return;
+
         if ((targetType == TargetType.PlayerOnly ? PlayerDistance : TargetDistance) < LookPlayerDistance)
             moveType = MoveType.Attack;
     }

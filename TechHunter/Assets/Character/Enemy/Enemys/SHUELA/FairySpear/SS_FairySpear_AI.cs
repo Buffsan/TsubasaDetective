@@ -170,7 +170,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
                 enemyBase.animator.SetInteger("Anim", 5);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M3;
-                PlayerDirSave = ActiveTargetDirection;
+                PlayerDirSave = TargetDirection;
 
 
                 if (AttackPhase == 1)
@@ -182,13 +182,13 @@ public class SS_FairySpear_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            LookAtActiveTarget();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 1.5f)
             {
                 enemyBase.animator.SetInteger("Anim", 3);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M4;
-                PlayerDirSave = ActiveTargetDirection;
+                PlayerDirSave = TargetDirection;
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
 
                 AttackArea.SetActive(true);
@@ -201,7 +201,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
                 enemyBase.rb.velocity = PlayerDirSave.normalized * (enemyBase.SPEED * DashSpeed);
                 if (enemyBase.AttackCount > DashRange)
                 {
-                    float playerDistance = ActiveTargetDistance;
+                    float playerDistance = TargetDistance;
                     if (playerDistance < 1)
                     {
                         Debug.Log("再行動");

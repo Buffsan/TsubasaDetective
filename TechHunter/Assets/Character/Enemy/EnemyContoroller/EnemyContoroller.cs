@@ -45,6 +45,15 @@ public class EnemyContoroller : EnemyBase
             attackWarningPrefabs[warningType] != null;
     }
 
+    // 簡易版：形状、位置、表示秒数、角度、サイズを指定。
+    public GameObject SpawnAttackWarning(int warningType, Vector3 position,
+        float duration, float angleDegrees = 0f, Vector3? localScale = null)
+    {
+        return SpawnAttackWarning(warningType, position,
+            Quaternion.Euler(0f, 0f, angleDegrees), duration,
+            null, 0.2f, true, localScale);
+    }
+
     // 登録したタイプで警告を生成する（角度や親子付けも指定可能）。
     public GameObject SpawnAttackWarning(int warningType, Vector3 position,
         Quaternion rotation, float duration, Transform parent = null,

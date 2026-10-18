@@ -43,12 +43,12 @@ public class Boss_GoaldTurret : EnemyMoveBase
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
-        rb.velocity = enemyBase.PlayerDirection.normalized * 1.8f;
+        rb.velocity = TargetDirection.normalized * 1.8f;
 
         EnemyAttack enemyAttack = CL_Arrow.GetComponent<EnemyAttack>();
         enemyAttack.enemyBase = enemyBase;
 
-        CL_Arrow.transform.up = enemyBase.PlayerDirection;
+        CL_Arrow.transform.up = TargetDirection;
         CL_Arrow.transform.Rotate(0, 0, 90);
 
         Destroy(CL_Arrow, enemyBase.AttackDellTimer);

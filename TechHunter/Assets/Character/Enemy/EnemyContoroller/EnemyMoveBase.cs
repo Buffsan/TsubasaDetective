@@ -180,7 +180,13 @@ public class EnemyMoveBase : MonoBehaviour
         foreach (EnemyAttack attack in attacks)
         {
             if (attack != null)
-                attack.ConfigureAttack(enemyBase, attack.AttackPowerPercent);
+            {
+                EnemyContoroller controller = enemyBase as EnemyContoroller;
+                if (controller != null)
+                    controller.ConfigureAttackTarget(attack);
+                else
+                    attack.ConfigureAttack(enemyBase, attack.AttackPowerPercent);
+            }
         }
     }
 

@@ -83,7 +83,7 @@ public class Enemy_CG_TANK_AI : EnemyMoveBase
             enemyBase.animator.SetInteger("Anim", 2);
             LookAtCurrentTarget();
 
-            GameObject CL_Denger = Instantiate(Denger_Attackarea1, transform.position, Quaternion.identity);
+            GameObject CL_Denger = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_Attackarea1, transform.position, Quaternion.identity, 1f, null, 0f, false);
             CL_Denger.transform.up = TargetDirection.normalized;
             Destroy(CL_Denger, 1);
         }

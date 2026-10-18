@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: charadata
       value: 
       objectReference: {fileID: 11400000, guid: 5c72b9602abc288438b7c5a2339b1098, type: 2}
+    - target: {fileID: 1245347073914878382, guid: e57302ff6772a8a498ffbbfccb56c502, type: 3}
+      propertyPath: attackableFactions
+      value: 12287
+      objectReference: {fileID: 0}
     - target: {fileID: 2218436625401236047, guid: e57302ff6772a8a498ffbbfccb56c502, type: 3}
       propertyPath: m_Name
       value: RockNeedle Variant

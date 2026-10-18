@@ -42,15 +42,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0fcab7e857e4fdc9b136e93ff9dc18c, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  EnemyName: "月の巡礼者"
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnemyName: "\u6708\u306E\u5DE1\u793C\u8005"
   enemyBase: {fileID: 0}
   A_Phase: 0
   attacktype: 0
   AttackCount: 0
   Clone_DengerObjects: []
-  playerPriorityDistance: 5
   stunPlayerPriorityDistance: 4
   targetSearchInterval: 0.25
   attackStartDistance: 1.5
@@ -70,6 +69,6 @@ MonoBehaviour:
   dashSpeedMultiplier: 4
   dashDuration: 0.35
   meleeRecoveryTime: 0.3
-  stakeWarningPrefab: {fileID: 100100000, guid: db9f6feefa4afc64f9b51b2bfdf7e120, type: 3}
-  meleeWarningPrefab: {fileID: 100100000, guid: f6da1e462cfbdd14c8a8fc1fe8f9d611, type: 3}
+  stakeWarningPrefab: {fileID: 8317282966728204219, guid: f065bb0c5e9e4ee4481698931e5c0cc8, type: 3}
+  meleeWarningPrefab: {fileID: 8317282966728204219, guid: f065bb0c5e9e4ee4481698931e5c0cc8, type: 3}
   warningDuration: 1

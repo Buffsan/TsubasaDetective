@@ -94,6 +94,7 @@ public class Enemy_CG_TANK_AI : EnemyMoveBase
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
+                ConfigureSummonedAttack(AttackArea);
                 AttackArea.SetActive(true);
 
             }

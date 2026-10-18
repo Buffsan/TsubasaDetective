@@ -358,15 +358,20 @@ public class Boss_Controller : EnemyBase
     }
     public void isPlayerLook()
     {
-        PlayerDirection = Player.transform.position - transform.position;
-        PlayerDistance = Vector2.Distance(Player.transform.position, transform.position);
-        if (Player.transform.position.x < transform.position.x)
+        // 旧メソッド名との互換性を残しつつ、攻撃対象の位置を参照する。
+        Transform target = CurrentTarget;
+        if (target == null && targetType == EnemyContoroller.TargetType.PlayerOnly &&
+            Player != null)
+            target = Player.transform;
+        if (target == null)
         {
-            EnemyAnimBody.transform.localScale = new Vector2(-DefoScale, DefoScale);
+            PlayerDirection = Vector2.zero;
+            PlayerDistance = float.PositiveInfinity;
+            return;
         }
-        else
-        {
-            EnemyAnimBody.transform.localScale = new Vector2(DefoScale, DefoScale);
-        }
+
+        PlayerDirection = (Vector2)target.position - (Vector2)transform.position;
+        PlayerDistance = PlayerDirection.magnitude;
+        isTargetLook(target.position);
     }
 }

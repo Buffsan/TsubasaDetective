@@ -26,19 +26,19 @@ public class EnemyMoveBase : MonoBehaviour
         }
     }
 
-    protected Vector2 TargetPosition
+    protected Vector3 TargetPosition
     {
         get
         {
             Transform target = CurrentTarget;
-            return target != null ? (Vector2)target.position :
-                (enemyBase != null ? (Vector2)enemyBase.transform.position : Vector2.zero);
+            return target != null ? target.position :
+                (enemyBase != null ? enemyBase.transform.position : Vector3.zero);
         }
     }
 
     protected Vector2 TargetDirection =>
         enemyBase != null && CurrentTarget != null
-            ? TargetPosition - (Vector2)enemyBase.transform.position : Vector2.zero;
+            ? (Vector2)TargetPosition - (Vector2)enemyBase.transform.position : Vector2.zero;
 
     protected float TargetDistance =>
         enemyBase != null && CurrentTarget != null

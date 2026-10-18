@@ -46,11 +46,11 @@ public class KINGYO_LeaderKoaka_AI : EnemyMoveBase
             RandomTime = Random.Range(5f, 10f);
         }
 
-        enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
+        RefreshTargetInfo();
         enemyBase.animator.SetInteger("Anim", 1);
-        enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
-        float angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-        float offset = 100f / (enemyBase.PlayerDistance + 1f) * 3f; // ‹——£‚ª‰“‚¢‚Ù‚Ç¬‚³‚­
+        RefreshTargetInfo();
+        float angle = Mathf.Atan2(TargetDirection.y, TargetDirection.x) * Mathf.Rad2Deg;
+        float offset = 100f / (TargetDistance + 1f) * 3f; // è·é›¢ãŒé ã„ã»ã©å°ã•ã
 
         if (trune)
         {
@@ -86,16 +86,16 @@ public class KINGYO_LeaderKoaka_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 0.1)
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
 
-                // ƒvƒŒƒCƒ„[ ¨ ©•ª ‚Ì•ûŒüƒxƒNƒgƒ‹
-                Vector2 direction = (transform.position - enemyBase.Player.transform.position).normalized;
+                // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ â†’ è‡ªåˆ† ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+                Vector2 direction = (transform.position - TargetPosition).normalized;
 
-                // ”½‘Î•ûŒü‚É20mi’PˆÊj—£‚ê‚½À•W‚ğŒvZ
+                // åå¯¾æ–¹å‘ã«20mï¼ˆå˜ä½ï¼‰é›¢ã‚ŒãŸåº§æ¨™ã‚’è¨ˆç®—
                 Vector2 targetPos = (Vector2)transform.position + direction * 10f;
                 for (int i = 0; i < SpawnEnemyNumber; i++)
                 {
@@ -107,8 +107,8 @@ public class KINGYO_LeaderKoaka_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            //enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 1.2f;
+            //LookAtCurrentTarget();
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 1.2f;
             if (enemyBase.AttackCount > 0.1f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;

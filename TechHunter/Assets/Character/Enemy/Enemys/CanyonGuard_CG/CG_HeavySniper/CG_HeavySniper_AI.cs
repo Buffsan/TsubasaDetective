@@ -175,6 +175,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
     void shotBullet()
     {
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Arrow);
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
 
         float A_Random = Random.Range(-40, 40) * Mathf.Deg2Rad;

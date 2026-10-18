@@ -78,7 +78,19 @@ public class EnemyContoroller : EnemyBase
     {
         if (prefab == null) return null;
 
-        GameObject instance = Instantiate(prefab, position, rotation, parent);
+        // UnityのInstantiate<GameObject>内部で型変換例外が発生するケースを
+        // 切り分けるため、非ジェネリック版で生成結果の型を検証する。
+        UnityEngine.Object clonedObject = UnityEngine.Object.Instantiate(
+            (UnityEngine.Object)prefab, position, rotation, parent);
+        GameObject instance = clonedObject as GameObject;
+        if (instance == null)
+        {
+            Debug.LogError("攻撃警告の生成結果がGameObjectではありません。Prefab: " +
+                prefab.name + " / 生成型: " +
+                (clonedObject != null ? clonedObject.GetType().FullName : "null"), this);
+            if (clonedObject != null) Destroy(clonedObject);
+            return null;
+        }
         if (localScale.HasValue) instance.transform.localScale = localScale.Value;
         if (syncAnimation && duration > 0f)
         {

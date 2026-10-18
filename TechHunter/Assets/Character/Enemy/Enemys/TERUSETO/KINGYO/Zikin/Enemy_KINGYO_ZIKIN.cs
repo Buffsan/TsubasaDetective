@@ -100,16 +100,16 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
             enemyBase.animator.SetInteger("Anim", 1);
             enemyBase.PlayerDirection = Target.transform.position - enemyBase.transform.position;
             angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-            offset = 100f / (enemyBase.PlayerDistance + 1f) * moveRabge; // ‹——£‚ª‰“‚¢‚Ù‚Ç¬‚³‚­
+            offset = 100f / (enemyBase.PlayerDistance + 1f) * moveRabge; // è·é›¢ãŒé ã„ã»ã©å°ã•ã
         }
         else
         {
 
-            enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
+            RefreshTargetInfo();
             enemyBase.animator.SetInteger("Anim", 1);
-            enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
+            enemyBase.PlayerDirection = TargetDirection;
             angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-            offset = 100f / (enemyBase.PlayerDistance + 1f) * moveRabge; // ‹——£‚ª‰“‚¢‚Ù‚Ç¬‚³‚­
+            offset = 100f / (TargetDistance + 1f) * moveRabge; // è·é›¢ãŒé ã„ã»ã©å°ã•ã
         }
 
 
@@ -124,7 +124,7 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
 
         Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
-        enemyBase.isPlayerLookBase();
+        LookAtCurrentTarget();
 
         if (Target)
         {
@@ -153,8 +153,8 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
         {
             if (enemyBase.AttackCount > 1)
             {
-                enemyBase.isPlayerLookBase();
-                PlayerDirSave = enemyBase.PlayerDirection;
+                LookAtCurrentTarget();
+                PlayerDirSave = TargetDirection;
                 Fire(PlayerDirSave.normalized);
                 enemyBase.animator.SetInteger("Anim", 2);
                 enemyBase.AttackCount = 0;
@@ -182,7 +182,7 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
             if (enemyBase.AttackCount > 1)
             {
                 Vector2 randomPos = new Vector2(Random.Range(-6,6), Random.Range(-6, 6));
-                enemyBase.transform.position = (Vector2)enemyBase.playerController.transform.position + Vector2.one * randomPos;
+                enemyBase.transform.position = (Vector2)TargetPosition + Vector2.one * randomPos;
                 enemyBase.DamageBody.SetActive(true);
                 enemyBase.EnemyAnimBody.SetActive(true);
 
@@ -212,13 +212,13 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
     }
     public void Fire(Vector2 direction)
     {
-        // ”­Ë•ûŒü‚ğ³‹K‰»
+        // ç™ºå°„æ–¹å‘ã‚’æ­£è¦åŒ–
         direction = direction.normalized;
 
-        // ’†SE¶E‰E‚Ì3•ûŒü‚ğì‚é
-        ShootBullet(direction); // ’†S
-        ShootBullet(Rotate(direction, spreadAngle));  // ‰E
-        ShootBullet(Rotate(direction, -spreadAngle)); // ¶
+        // ä¸­å¿ƒãƒ»å·¦ãƒ»å³ã®3æ–¹å‘ã‚’ä½œã‚‹
+        ShootBullet(direction); // ä¸­å¿ƒ
+        ShootBullet(Rotate(direction, spreadAngle));  // å³
+        ShootBullet(Rotate(direction, -spreadAngle)); // å·¦
     }
 
     private void ShootBullet(Vector2 dir)
@@ -229,7 +229,7 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
         Destroy(bullet, 20);
     }
 
-    // •ûŒüƒxƒNƒgƒ‹‚ğŠp“x‚Å‰ñ“]‚³‚¹‚éŠÖ”
+    // æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’è§’åº¦ã§å›è»¢ã•ã›ã‚‹é–¢æ•°
     private Vector2 Rotate(Vector2 v, float degrees)
     {
         float rad = degrees * Mathf.Deg2Rad;

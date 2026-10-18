@@ -32,6 +32,12 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
     [SerializeField] float dashDuration = 0.35f;
     [SerializeField] float meleeRecoveryTime = 0.3f;
 
+    [Header("攻撃警告（未設定時はControllerの四角形警告を使用）")]
+    [SerializeField] GameObject stakeWarningPrefab;
+    [SerializeField] GameObject meleeWarningPrefab;
+    [SerializeField, Min(0.01f)] float warningDuration = 1f;
+
+    GameObject activeAttackWarning;
     Transform currentTarget;
     Transform attackTarget;
     Vector2 lastAttackTargetPosition;
@@ -210,6 +216,8 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
                 break;
             case 2:
                 enemyBase.rb.velocity = Vector2.zero;
+                // 斬撃は発動直前に再照準するため、警告も予備動作中に追従させる。
+                if (attackKind == 1) UpdateMeleeWarningDirection();
                 enemyBase.AttackCount += Time.fixedDeltaTime;
                 if (enemyBase.AttackCount >= 1f)
                 {
@@ -301,11 +309,13 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
         {
             enemyBase.animator.Play("近接攻撃待機", 0, 0f);
         }
+        ShowAttackWarning();
         NextPhase();
     }
 
     void ThrowStake()
     {
+        ClearAttackWarning();
         enemyBase.animator.Play("杭投げ攻撃", 0, 0f);
         if (enemyBase.AttackAudio != null)
             enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
@@ -333,6 +343,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
 
     void BeginDash()
     {
+        ClearAttackWarning();
         lockedDirection = AimAtLastTarget();
         enemyBase.isTargetLook(lastAttackTargetPosition);
         enemyBase.animator.Play("近接攻撃", 0, 0f);
@@ -348,6 +359,37 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
         EnemyAttack attack = activeMeleeHitbox.GetComponent<EnemyAttack>();
         if (attack != null) attack.enemyBase = enemyBase;
         else Debug.LogError("近接PrefabにEnemyAttackがありません。", activeMeleeHitbox);
+    }
+
+    // 警告は1秒の予備動作中に表示。既存Prefabのサイズ・子階層をそのまま利用する。
+    void ShowAttackWarning()
+    {
+        ClearAttackWarning();
+        GameObject warningPrefab = attackKind == 0 ? stakeWarningPrefab : meleeWarningPrefab;
+        Vector2 direction = attackKind == 0 ? lockedDirection : AimAtLastTarget();
+        Quaternion rotation = WarningRotation(direction);
+        activeAttackWarning = SpawnAttackWarning(
+            EnemyContoroller.WarningRectangle, warningPrefab,
+            enemyBase.transform.position, rotation, warningDuration,
+            null, 0f, true);
+    }
+
+    void UpdateMeleeWarningDirection()
+    {
+        if (activeAttackWarning == null) return;
+        activeAttackWarning.transform.rotation = WarningRotation(AimAtLastTarget());
+    }
+
+    static Quaternion WarningRotation(Vector2 direction)
+    {
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+        return Quaternion.Euler(0f, 0f, angle);
+    }
+
+    void ClearAttackWarning()
+    {
+        if (activeAttackWarning != null) Destroy(activeAttackWarning);
+        activeAttackWarning = null;
     }
 
     Vector2 AimAtLastTarget()
@@ -379,6 +421,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
 
     void FinishAttack()
     {
+        ClearAttackWarning();
         ClearMeleeHitbox();
         A_Phase = 0;
         attackTarget = null;
@@ -393,6 +436,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
 
     void CancelAttack()
     {
+        ClearAttackWarning();
         ClearMeleeHitbox();
         A_Phase = 0;
         attackTarget = null;
@@ -405,6 +449,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
 
     void OnDisable()
     {
+        ClearAttackWarning();
         ClearMeleeHitbox();
     }
 }

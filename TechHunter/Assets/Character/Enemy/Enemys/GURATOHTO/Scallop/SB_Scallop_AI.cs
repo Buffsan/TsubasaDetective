@@ -180,7 +180,8 @@ public class SB_Scallop_AI : EnemyMoveBase
                 EnemyContoroller controller = enemyBase as EnemyContoroller;
                 if (controller != null)
                     controller.ConfigureAttackObject(AssultAttack, 100f);
-                AssultAttack.SetActive(true);
+                ConfigureSummonedAttack(AssultAttack);
+        AssultAttack.SetActive(true);
                 enemyBase.mode = EnemyBase.ModeType.M8; enemyBase.AttackCount = 0;
             }
         }
@@ -228,7 +229,8 @@ public class SB_Scallop_AI : EnemyMoveBase
                 EnemyContoroller controller = enemyBase as EnemyContoroller;
                 if (controller != null)
                     controller.ConfigureAttackObject(AttackArea, 100f);
-                AttackArea.SetActive(true);
+                ConfigureSummonedAttack(AttackArea);
+        AttackArea.SetActive(true);
 
             }
         }

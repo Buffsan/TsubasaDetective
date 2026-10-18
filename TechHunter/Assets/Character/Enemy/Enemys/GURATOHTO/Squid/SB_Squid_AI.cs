@@ -38,7 +38,7 @@ public class SB_Squid_AI : EnemyMoveBase
             LookAtCurrentTarget();
             enemyBase.rb.velocity = Vector2.zero;
             GameObject CL_Effect = SpawnObjectNow_Input(AttackChargeEffect, transform.position, 4);
-            GameObject CL_DengerArea = SpawnObjectNow_Input(Denger_area,transform.position,4);
+            GameObject CL_DengerArea = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_area, transform.position, Quaternion.identity, 4f, null, 0f, false);
             CL_DengerArea.transform.up = TargetDirection;
             SaveComponent animator = CL_DengerArea.GetComponent<SaveComponent>();
             animator.animator.speed = 0.33f;

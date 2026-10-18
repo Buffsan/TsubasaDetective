@@ -104,7 +104,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
     }
     public override void M_AI()
     {
-        NearP = Vector2.Distance(enemyBase.Player.transform.position ,transform.position);
+        NearP = Vector2.Distance(TargetPosition ,transform.position);
         if (NearP < 5)
         {
             if (Near < 10 && !NearBool)
@@ -333,7 +333,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
                 enemyBase.animator2.Play("前攻撃", 0, 0);
                 enemyBase.mode = EnemyBase.ModeType.M2;
                 enemyBase.AttackCount = 0;
-                SavePos = enemyBase.Player.transform.position;
+                SavePos = TargetPosition;
             }
 
         }
@@ -375,7 +375,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
             enemyBase.animator2.Play("前攻撃", 0, 0);
-            SavePos = enemyBase.Player.transform.position;
+            SavePos = TargetPosition;
             enemyBase.mode = EnemyBase.ModeType.M2;
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
@@ -423,7 +423,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
             enemyBase.animator2.Play("前攻撃", 0, 0);
-            SavePos = enemyBase.Player.transform.position;
+            SavePos = TargetPosition;
             enemyBase.mode = EnemyBase.ModeType.M2;
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
@@ -748,7 +748,7 @@ public class CG_AI_Puppeteer : Boss_MoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M14)
         {
-            Vector2 directionBase = enemyBase.Player.transform.position - transform.position;
+            Vector2 directionBase = TargetPosition - transform.position;
             enemyBase.rb.velocity = -directionBase.normalized * 5;
             if (enemyBase.AttackCount > 1) 
             {

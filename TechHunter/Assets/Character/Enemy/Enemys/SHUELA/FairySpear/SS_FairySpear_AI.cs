@@ -21,6 +21,17 @@ public class SS_FairySpear_AI : EnemyMoveBase
     [SerializeField] float DashSpeed =3;
     public GameObject Target;
 
+    // 群れのリーダー追従を優先し、それ以外は共通CurrentTargetで照準を取る。
+    Vector2 ActiveTargetPosition => Target != null
+        ? (Vector2)Target.transform.position : TargetPosition;
+    Vector2 ActiveTargetDirection => ActiveTargetPosition - (Vector2)enemyBase.transform.position;
+    float ActiveTargetDistance => ActiveTargetDirection.magnitude;
+    void LookAtActiveTarget()
+    {
+        if (Target != null) enemyBase.isTargetLook(ActiveTargetPosition);
+        else LookAtCurrentTarget();
+    }
+
     bool one = false;
     Vector2 Direction;
     bool trune = false;
@@ -99,20 +110,20 @@ public class SS_FairySpear_AI : EnemyMoveBase
         if (Target)
         {
             
-            enemyBase.PlayerDistance = Vector2.Distance(Target.transform.position, enemyBase.gameObject.transform.position);
+            enemyBase.PlayerDistance = ActiveTargetDistance;
             enemyBase.animator.SetInteger("Anim", 1);
-            enemyBase.PlayerDirection = Target.transform.position - enemyBase.transform.position;
-            angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-            offset = 100f / (enemyBase.PlayerDistance + 1f) * moveRabge; // 距離が遠いほど小さく
+            enemyBase.PlayerDirection = ActiveTargetDirection;
+            angle = Mathf.Atan2(ActiveTargetDirection.y, ActiveTargetDirection.x) * Mathf.Rad2Deg;
+            offset = 100f / (ActiveTargetDistance + 1f) * moveRabge; // 距離が遠いほど小さく
         }
         else 
         {
             
             RefreshTargetInfo();
             enemyBase.animator.SetInteger("Anim", 1);
-            enemyBase.PlayerDirection = TargetDirection;
-            angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-            offset = 100f / (TargetDistance + 1f) * moveRabge; // 距離が遠いほど小さく
+            enemyBase.PlayerDirection = ActiveTargetDirection;
+            angle = Mathf.Atan2(ActiveTargetDirection.y, ActiveTargetDirection.x) * Mathf.Rad2Deg;
+            offset = 100f / (ActiveTargetDistance + 1f) * moveRabge; // 距離が遠いほど小さく
         }
         
 
@@ -127,7 +138,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
 
         Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
-        LookAtCurrentTarget();
+        LookAtActiveTarget();
 
         if (Target)
         {
@@ -159,7 +170,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
                 enemyBase.animator.SetInteger("Anim", 5);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M3;
-                PlayerDirSave = TargetDirection;
+                PlayerDirSave = ActiveTargetDirection;
 
 
                 if (AttackPhase == 1)
@@ -171,13 +182,13 @@ public class SS_FairySpear_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            LookAtCurrentTarget();
+            LookAtActiveTarget();
             if (enemyBase.AttackCount > 1.5f)
             {
                 enemyBase.animator.SetInteger("Anim", 3);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M4;
-                PlayerDirSave = TargetDirection;
+                PlayerDirSave = ActiveTargetDirection;
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
 
                 AttackArea.SetActive(true);
@@ -190,7 +201,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
                 enemyBase.rb.velocity = PlayerDirSave.normalized * (enemyBase.SPEED * DashSpeed);
                 if (enemyBase.AttackCount > DashRange)
                 {
-                    float playerDistance = Vector2.Distance(TargetPosition, enemyBase.transform.position);
+                    float playerDistance = ActiveTargetDistance;
                     if (playerDistance < 1)
                     {
                         Debug.Log("再行動");

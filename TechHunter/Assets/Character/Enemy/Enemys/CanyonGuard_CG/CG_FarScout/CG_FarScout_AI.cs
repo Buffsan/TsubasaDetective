@@ -116,6 +116,7 @@ public class CG_FarScout_AI : EnemyMoveBase
         {//Debug.Log("“Š‚°‚é");
 
             GameObject bullet = Instantiate(Arrow, gameObject.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(bullet);
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
             Destroy(bullet, 1.5f);
 

@@ -11,13 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
   m_Name: PilgrimOfTheMoon
-  m_EditorClassIdentifier:
-  NAME: "月の巡礼者"
+  m_EditorClassIdentifier: 
+  NAME: "\u6708\u306E\u5DE1\u793C\u8005"
   MAXHP: 3300
   enemyStrength: 4
   Regen: 0
   MAXMP: 0
-  SPEED: 3
+  SPEED: 4
   ATK: 6
   ATKDF: 4
   GOLD: 111

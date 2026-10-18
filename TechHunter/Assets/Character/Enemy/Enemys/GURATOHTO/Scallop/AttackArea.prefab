@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6446084163862185139
 Transform:
   m_ObjectHideFlags: 0
@@ -92,8 +92,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 0}
   charadata: {fileID: 11400000, guid: 5c72b9602abc288438b7c5a2339b1098, type: 2}
-  attackableFactions: 12159
-  attackPlayer: 1
+  attackableFactions: 12287
+  attackPlayer: 0
   canAttackSelf: 0
   attackPowerPercent: 100
   dellCondition: 1

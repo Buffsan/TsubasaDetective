@@ -171,14 +171,29 @@ public class EnemyMoveBase : MonoBehaviour
         return warning;
     }
 
+    // 生成された攻撃判定には、Prefabの攻撃倍率・派閥設定を維持したまま攻撃者を割り当てる。
+    // 敵本体や演出PrefabなどEnemyAttackを持たないオブジェクトは変更しない。
+    protected void ConfigureSpawnedAttack(GameObject instance)
+    {
+        if (instance == null || enemyBase == null) return;
+        EnemyAttack[] attacks = instance.GetComponentsInChildren<EnemyAttack>(true);
+        foreach (EnemyAttack attack in attacks)
+        {
+            if (attack != null)
+                attack.ConfigureAttack(enemyBase, attack.AttackPowerPercent);
+        }
+    }
+
     public void SpawnObjectNow(GameObject SpawnObject , Vector2 Target , float DestroyTime) 
     { 
         GameObject CL_Object = Instantiate(SpawnObject,Target,Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Object);
         Destroy(CL_Object,DestroyTime);
     }
     public GameObject SpawnObjectNow_Input(GameObject SpawnObject, Vector2 Target, float DestroyTime)
     {
         GameObject CL_Object = Instantiate(SpawnObject, Target, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Object);
         Destroy(CL_Object, DestroyTime);
         return CL_Object;
     }

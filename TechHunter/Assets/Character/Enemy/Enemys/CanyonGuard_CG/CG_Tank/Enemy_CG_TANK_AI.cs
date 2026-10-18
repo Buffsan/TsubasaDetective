@@ -28,7 +28,7 @@ public class Enemy_CG_TANK_AI : EnemyMoveBase
     public float WaitCunt = 0;
 
 
-    private IEnumerator myRunningCoroutine; // 実行中のコルーチンを保持するための変数
+    private IEnumerator myRunningCoroutine; // 螳溯｡御ｸｭ縺ｮ繧ｳ繝ｫ繝ｼ繝√Φ繧剃ｿ晄戟縺吶ｋ縺溘ａ縺ｮ螟画焚
     public float duration = 1;
     public float arcHeight = 30;
     bool StandOk = false;
@@ -55,15 +55,15 @@ public class Enemy_CG_TANK_AI : EnemyMoveBase
 
     public override void EnemyMovePlay()
     {
-        enemyBase.isPlayerLookBase();
-        enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+        LookAtCurrentTarget();
+        enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
         foreach (var t in Taiya) 
         {
             t.transform.Rotate(0, 0, 10);
         }
         waitCount += Time.fixedDeltaTime;
         if (waitCount < 3) return;
-        if (enemyBase.PlayerDistance > 3) return;
+        if (TargetDistance > 3) return;
 
         enemyBase.moveType = EnemyBase.MoveType.Attack;
         
@@ -81,10 +81,10 @@ public class Enemy_CG_TANK_AI : EnemyMoveBase
             enemyBase.rb.velocity = Vector3.zero;
             enemyBase.mode = EnemyBase.ModeType.M2;
             enemyBase.animator.SetInteger("Anim", 2);
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
 
             GameObject CL_Denger = Instantiate(Denger_Attackarea1, transform.position, Quaternion.identity);
-            CL_Denger.transform.up = enemyBase.PlayerDirection.normalized;
+            CL_Denger.transform.up = TargetDirection.normalized;
             Destroy(CL_Denger, 1);
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
@@ -100,14 +100,14 @@ public class Enemy_CG_TANK_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            //enemyBase.isPlayerLookBase();
+            //LookAtCurrentTarget();
             AttackCount1 += Time.fixedDeltaTime;
             if (AttackCount1 > 0.05)
             {
                 AttackCount1 = 0;
                 
             }
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 4;
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 4;
             if (enemyBase.AttackCount > 2f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;

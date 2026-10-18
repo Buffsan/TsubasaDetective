@@ -51,6 +51,7 @@ public class TF_FishHanter_Shield_AI : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M5)
         {
             GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Attack);
             EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
             enemyAttack.enemyBase = enemyBase;
             Destroy(CL_Attack, 0.01f);
@@ -93,6 +94,7 @@ public class TF_FishHanter_Shield_AI : EnemyMoveBase
 
         // オブジェクトを設置
         GameObject CL_litSlash = Instantiate(RockNeedle, finalPos, Quaternion.identity);
+        ConfigureSummonedAttack(CL_litSlash);
         Destroy( CL_litSlash ,5);
     }
 }

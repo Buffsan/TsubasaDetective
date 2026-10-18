@@ -313,6 +313,9 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
             case 3:
                 if (enemyBase.AttackCount >= 0.5f)
                 {
+                    // 跳躍前に固定した攻撃対象の現在位置を、着地後に一度だけ取得する。
+                    if (attackTarget != null && IsTargetUsable(attackTarget))
+                        fanTargetPosition = attackTarget.position;
                     DeployFanStakes();
                     NextPhase();
                 }

@@ -20,8 +20,8 @@ public class SB_Squid_AI : EnemyMoveBase
     }
     public override void EnemyMovePlay()
     {
-        enemyBase.isPlayerLookBase();
-        enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+        LookAtCurrentTarget();
+        enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
 
         moveCount += Time.fixedDeltaTime;
         if (moveCount > 1) 
@@ -35,14 +35,14 @@ public class SB_Squid_AI : EnemyMoveBase
         enemyBase.AttackCount += Time.fixedDeltaTime;
         if (A_Phase == 0) 
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             enemyBase.rb.velocity = Vector2.zero;
             GameObject CL_Effect = SpawnObjectNow_Input(AttackChargeEffect, transform.position, 4);
             GameObject CL_DengerArea = SpawnObjectNow_Input(Denger_area,transform.position,4);
-            CL_DengerArea.transform.up = enemyBase.PlayerDirection;
+            CL_DengerArea.transform.up = TargetDirection;
             SaveComponent animator = CL_DengerArea.GetComponent<SaveComponent>();
             animator.animator.speed = 0.33f;
-            enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+            enemyBase.animator.Play("ÂUÅ’â€šâ€˜Ã’â€¹@", 0, 0);
             AUDIO_manager.PlaySE(audioClips[0]);
             A_Phase = 1;
         }
@@ -52,21 +52,21 @@ public class SB_Squid_AI : EnemyMoveBase
             {
                 GameObject CL_Effect = SpawnObjectNow_Input(Effect, transform.position, 3);
                 GameObject CL_Attack = SpawnObjectNow_Input(AttackArea, transform.position, 0.3f);
-                CL_Effect.transform.up = enemyBase.PlayerDirection;
-                CL_Attack.transform.up = enemyBase.PlayerDirection;
+                CL_Effect.transform.up = TargetDirection;
+                CL_Attack.transform.up = TargetDirection;
                 enemyBase.AttackCount = 0;
                 A_Phase =2;
                 AUDIO_manager.PlaySE(audioClips[1]);
-                enemyBase.animator.Play("UŒ‚", 0, 0);
+                enemyBase.animator.Play("ÂUÅ’â€š", 0, 0);
             }
         }
         if (A_Phase == 2) 
         {
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -0.5f;
+            enemyBase.rb.velocity = TargetDirection.normalized * -0.5f;
             if (enemyBase.AttackCount > 1) 
             {
                 
-                enemyBase.animator.Play("‘Ò‹@", 0, 0);
+                enemyBase.animator.Play("â€˜Ã’â€¹@", 0, 0);
                 AttackFinish();
             }
         }

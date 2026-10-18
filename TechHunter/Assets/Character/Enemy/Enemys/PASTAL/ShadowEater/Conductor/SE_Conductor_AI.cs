@@ -305,11 +305,7 @@ public class SE_Conductor_AI : EnemyMoveBase
         Vector2 startPos = enemyBase.transform.position;
         Vector2 endPos = targetPos;
 
-        GameObject CL_AttackPPP = Instantiate(Denger_AttackArea, endPos, Quaternion.identity);
-        SaveComponent saveComponent = CL_AttackPPP.GetComponent<SaveComponent>();
-        saveComponent.animator.speed = 1 / duration;
-
-        Destroy(CL_AttackPPP, duration * 1.5f);
+        GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea, endPos, Quaternion.identity, duration, null, duration * 0.5f, true);
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)

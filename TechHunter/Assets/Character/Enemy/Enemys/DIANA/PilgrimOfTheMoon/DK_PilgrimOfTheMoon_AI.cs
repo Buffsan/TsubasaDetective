@@ -368,10 +368,25 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
         GameObject warningPrefab = attackKind == 0 ? stakeWarningPrefab : meleeWarningPrefab;
         Vector2 direction = attackKind == 0 ? lockedDirection : AimAtLastTarget();
         Quaternion rotation = WarningRotation(direction);
-        activeAttackWarning = SpawnAttackWarning(
-            EnemyContoroller.WarningRectangle, warningPrefab,
-            enemyBase.transform.position, rotation, warningDuration,
-            null, 0f, true);
+        // 斬撃用Prefabの参照が不正な場合、共通の警告Prefabに切り替える。
+        // 杭投げ用Prefabや正常な斬撃用Prefabの表示は従来どおり維持する。
+        try
+        {
+            activeAttackWarning = SpawnAttackWarning(
+                EnemyContoroller.WarningRectangle, warningPrefab,
+                enemyBase.transform.position, rotation, warningDuration,
+                null, 0f, true);
+        }
+        catch (System.InvalidCastException exception)
+        {
+            Debug.LogError("攻撃警告Prefabの生成に失敗しました: " +
+                (warningPrefab != null ? warningPrefab.name : "null") +
+                "。共通の警告Prefabで再試行します。\n" + exception, enemyBase);
+            activeAttackWarning = SpawnAttackWarning(
+                EnemyContoroller.WarningRectangle, null,
+                enemyBase.transform.position, rotation, warningDuration,
+                null, 0f, true);
+        }
     }
 
     void UpdateMeleeWarningDirection()

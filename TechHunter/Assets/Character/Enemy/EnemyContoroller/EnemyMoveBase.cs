@@ -20,7 +20,13 @@ public class EnemyMoveBase : MonoBehaviour
         get
         {
             EnemyContoroller controller = enemyBase as EnemyContoroller;
-            if (controller != null) return controller.CurrentTarget;
+            if (controller != null)
+            {
+                if (controller.CurrentTarget != null) return controller.CurrentTarget;
+                if (controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+                    return enemyBase.Player != null ? enemyBase.Player.transform : null;
+                return null;
+            }
             Boss_Controller boss = enemyBase as Boss_Controller;
             if (boss != null) return boss.CurrentTarget;
             return enemyBase != null && enemyBase.Player != null

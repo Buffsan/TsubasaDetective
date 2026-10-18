@@ -255,8 +255,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 5c72b9602abc288438b7c5a2339b1098, type: 2}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetFactions
+      value: 12287
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: Choice_MoveToBase
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetAllFactions
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6893297167733884149, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: m_LocalScale.x

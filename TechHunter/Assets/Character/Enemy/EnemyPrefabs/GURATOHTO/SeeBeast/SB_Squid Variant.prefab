@@ -162,6 +162,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 1e307da8df19ab1419c6e529229ea450, type: 2}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetFactions
+      value: 12287
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: Choice_MoveToBase
       value: 1
       objectReference: {fileID: 0}

@@ -77,7 +77,7 @@ public class MO_LastHoliday_AI : EnemyMoveBase
                 enemyBase.rb.velocity = Vector2.zero;
                 enemyBase.animator.Play("攻撃待機２", 0, 0);
                 A_NextPhase();
-                SpawnObjectNow(Denger_AttackArea,transform.position, 1);
+                SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea, transform.position, Quaternion.identity, 1f, null, 0f, false);
             }
         }
         if (A_Phase == 2)
@@ -153,7 +153,7 @@ public class MO_LastHoliday_AI : EnemyMoveBase
         Vector2 startPos = enemyBase.transform.position;
         Vector2 endPos = targetPos;
 
-        GameObject CL_AttackPPP = Instantiate(Denger_AttackArea, endPos, Quaternion.identity);
+        GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea, endPos, Quaternion.identity, 1.5f, null, 0f, false);
 
         Destroy(CL_AttackPPP, 1.5f);
         float elapsedTime = 0f;

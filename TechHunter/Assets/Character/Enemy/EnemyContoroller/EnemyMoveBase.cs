@@ -13,6 +13,56 @@ public class EnemyMoveBase : MonoBehaviour
     [HideInInspector] public List<GameObject> Clone_DengerObjects = new List<GameObject>();
 
     public AudioManager AUDIO_manager => AudioManager.instance;
+
+    // 個別AI向けのターゲット参照。PlayerOnlyではこれまでどおりプレイヤー。
+    protected Transform CurrentTarget
+    {
+        get
+        {
+            EnemyContoroller controller = enemyBase as EnemyContoroller;
+            if (controller != null) return controller.CurrentTarget;
+            return enemyBase != null && enemyBase.Player != null
+                ? enemyBase.Player.transform : null;
+        }
+    }
+
+    protected Vector2 TargetPosition
+    {
+        get
+        {
+            Transform target = CurrentTarget;
+            return target != null ? (Vector2)target.position :
+                (enemyBase != null ? (Vector2)enemyBase.transform.position : Vector2.zero);
+        }
+    }
+
+    protected Vector2 TargetDirection =>
+        enemyBase != null && CurrentTarget != null
+            ? TargetPosition - (Vector2)enemyBase.transform.position : Vector2.zero;
+
+    protected float TargetDistance =>
+        enemyBase != null && CurrentTarget != null
+            ? TargetDirection.magnitude : float.PositiveInfinity;
+
+    // 追跡・照準用。PlayerOnlyでは従来のPlayerDirection/Distanceも更新する。
+    protected void RefreshTargetInfo()
+    {
+        if (enemyBase == null || CurrentTarget == null) return;
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller == null || controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+        {
+            enemyBase.PlayerDirection = TargetDirection;
+            enemyBase.PlayerDistance = TargetDistance;
+        }
+    }
+
+    protected void LookAtCurrentTarget()
+    {
+        if (enemyBase == null || CurrentTarget == null) return;
+        RefreshTargetInfo();
+        enemyBase.isTargetLook(TargetPosition);
+    }
+
     public GameObject DengerAreaSpawn(GameObject Effect, Vector2 Pos, float AnimationSpeed)
     {
 

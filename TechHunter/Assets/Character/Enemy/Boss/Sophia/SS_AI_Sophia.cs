@@ -30,12 +30,12 @@ public class SS_AI_Sophia : Boss_MoveBase
     {
         if (enemyBase.volume.profile.TryGet<Bloom>(out enemyBase.bloom))
         {
-            Debug.Log("BloomÉGÉtÉFÉNÉgÇ™å©Ç¬Ç©ÇËÇ‹ÇµÇΩÅI");
-            //enemyBase.bloom.scatter.value = 0.5f; // ScatterílÇê›íË
+            Debug.Log("Bloom„Ç®„Éï„Çß„ÇØ„Éà„ÅåË¶ã„Å§„Åã„Çä„Åæ„Åó„ÅüÔºÅ");
+            //enemyBase.bloom.scatter.value = 0.5f; // ScatterÂÄ§„ÇíË®≠ÂÆö
         }
         else
         {
-            Debug.LogWarning("ÉvÉçÉtÉ@ÉCÉãÇ…BloomÇ™å©Ç¬Ç©ÇËÇ‹ÇπÇÒÅI");
+            Debug.LogWarning("„Éó„É≠„Éï„Ç°„Ç§„É´„Å´Bloom„ÅåË¶ã„Å§„Åã„Çä„Åæ„Åõ„ÇìÔºÅ");
         }
     }
     public override void M_Con()
@@ -175,7 +175,7 @@ public class SS_AI_Sophia : Boss_MoveBase
 
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             enemyBase.attackType = EnemyBase.AttackType.A1;
-            Debug.Log("úaêØåQ");
+            Debug.Log("ÂΩóÊòüÁæ§");
 
         }
         if (Input.GetKey(KeyCode.J))
@@ -183,7 +183,7 @@ public class SS_AI_Sophia : Boss_MoveBase
 
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             enemyBase.attackType = EnemyBase.AttackType.A5;
-            Debug.Log("êØâ_");
+            Debug.Log("ÊòüÈõ≤");
 
         }
         if (Input.GetKey(KeyCode.K))
@@ -191,7 +191,7 @@ public class SS_AI_Sophia : Boss_MoveBase
 
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             enemyBase.attackType = EnemyBase.AttackType.A3;
-            Debug.Log("êØ‚I");
+            Debug.Log("ÊòüÁ§´");
 
         }
         if (Input.GetKey(KeyCode.L))
@@ -199,7 +199,7 @@ public class SS_AI_Sophia : Boss_MoveBase
 
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             enemyBase.attackType = EnemyBase.AttackType.A8;
-            Debug.Log("ÉVÉÖÉGÉâÇÃãÛåÑ");
+            Debug.Log("„Ç∑„É•„Ç®„É©„ÅÆÁ©∫Èöô");
 
         }
         if (Input.GetKey(KeyCode.G))
@@ -207,7 +207,7 @@ public class SS_AI_Sophia : Boss_MoveBase
 
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             enemyBase.attackType = EnemyBase.AttackType.A6;
-            Debug.Log("úaêØÇ∆êØâ_");
+            Debug.Log("ÂΩóÊòü„Å®ÊòüÈõ≤");
 
         }*/
     }
@@ -262,7 +262,7 @@ public class SS_AI_Sophia : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 0.5)
             {
-                SavePos = new Vector2(enemyBase.Player.transform.position.x + Random.RandomRange(-1f, 1f), enemyBase.Player.transform.position.y + Random.RandomRange(-1f, 1f));
+                SavePos = new Vector2(TargetPosition.x + Random.RandomRange(-1f, 1f), TargetPosition.y + Random.RandomRange(-1f, 1f));
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M2;
             }
@@ -294,13 +294,13 @@ public class SS_AI_Sophia : Boss_MoveBase
                 enemyBase.mode = EnemyBase.ModeType.M4;
 
                 GameObject CL_Laser = Instantiate(Laser, enemyBase.transform.position, Quaternion.identity);
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 CL_Laser.transform.parent = enemyBase.EnemyAnimBody.transform;
                 SophiaLaser sophiaLaser = CL_Laser.GetComponent<SophiaLaser>();
                 sophiaLaser.enemyAttack.enemyBase = enemyBase;
                 sophiaLaser.AttackNumaber = 2;
 
-                CL_Laser.transform.up = enemyBase.PlayerDirection;
+                CL_Laser.transform.up = TargetDirection;
                 CL_Laser.transform.Rotate(0, 0, 180);
             }
         }
@@ -355,7 +355,7 @@ public class SS_AI_Sophia : Boss_MoveBase
 
     void A9() 
     {
-        //êØâ_
+        //ÊòüÈõ≤
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
             enemyBase.animator.SetInteger("Anim", 2);
@@ -366,12 +366,12 @@ public class SS_AI_Sophia : Boss_MoveBase
                 enemyBase.mode = EnemyBase.ModeType.M2;
 
                 GameObject CL_Laser = Instantiate(Laser, enemyBase.transform.position, Quaternion.identity);
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
 
                 SophiaLaser sophiaLaser = CL_Laser.GetComponent<SophiaLaser>();
                 sophiaLaser.enemyAttack.enemyBase = enemyBase;
 
-                CL_Laser.transform.up = enemyBase.PlayerDirection;
+                CL_Laser.transform.up = TargetDirection;
                 CL_Laser.transform.Rotate(0, 0, 180);
             }
         }
@@ -451,7 +451,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                 enemyBase.AttackCount = 0;
             AttackNumber++;
 
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 0.5f;
+                enemyBase.rb.velocity = TargetDirection.normalized * 0.5f;
 
                 if (AttackNumber % 10 == 0 && phase == Phase.P2) 
                 {
@@ -477,7 +477,7 @@ public class SS_AI_Sophia : Boss_MoveBase
     void A7() 
     {
         enemyBase.CharaDamage.RecoveryConfusionHP(100);
-        //úaêØÇ∆ëÂêØâ_
+        //ÂΩóÊòü„Å®Â§ßÊòüÈõ≤
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
             float Distance = Vector2.Distance(new Vector2(0, 0), enemyBase.transform.position);
@@ -542,7 +542,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                 for (int i = 0; i < 4; i++) 
                 {
                     GameObject CL_Laser = Instantiate(Laser, enemyBase.transform.position, Quaternion.identity);
-                    enemyBase.isPlayerLookBase();
+                    LookAtCurrentTarget();
 
                     SophiaLaser sophiaLaser = CL_Laser.GetComponent<SophiaLaser>();
                     sophiaLaser.enemyAttack.enemyBase = enemyBase;
@@ -581,16 +581,16 @@ public class SS_AI_Sophia : Boss_MoveBase
     }
     void A6() 
     {
-        //úaêØÇ∆êØâ_
+        //ÂΩóÊòü„Å®ÊòüÈõ≤
         
         if (enemyBase.mode == EnemyBase.ModeType.M1) 
             {
 
             if (phase == Phase.P2)
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
 
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -2.5f;
+                enemyBase.rb.velocity = TargetDirection.normalized * -2.5f;
             }
 
             enemyBase.animator.SetInteger("Anim", 2);
@@ -605,9 +605,9 @@ public class SS_AI_Sophia : Boss_MoveBase
 
             if (phase == Phase.P2)
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
 
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -3f;
+                enemyBase.rb.velocity = TargetDirection.normalized * -3f;
             }
 
             enemyBase.animator.SetInteger("Anim", 2);
@@ -623,9 +623,9 @@ public class SS_AI_Sophia : Boss_MoveBase
 
             if (phase == Phase.P2)
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
 
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -0.2f;
+                enemyBase.rb.velocity = TargetDirection.normalized * -0.2f;
             }
 
             enemyBase.animator.SetInteger("Anim", 3);
@@ -645,7 +645,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                     GameObject CL_Motar = Instantiate(Motar,enemyBase.transform.position,Quaternion.identity);
                     Mortar_Controller CL_mortar_Controller = CL_Motar.GetComponent<Mortar_Controller>();
 
-                    CL_mortar_Controller.ChangePos(enemyBase.Player.transform.position);
+                    CL_mortar_Controller.ChangePos(TargetPosition);
                 CL_mortar_Controller.enemyBase = enemyBase;
                     enemyBase.AttackCount = 0;
                     enemyBase.animator.SetInteger("Anim", 0);
@@ -680,7 +680,7 @@ public class SS_AI_Sophia : Boss_MoveBase
     }
     void A5() 
     {
-        //êØâ_
+        //ÊòüÈõ≤
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
             enemyBase.animator.SetInteger("Anim", 2);
@@ -691,12 +691,12 @@ public class SS_AI_Sophia : Boss_MoveBase
                 enemyBase.mode = EnemyBase.ModeType.M2;
 
                 GameObject CL_Laser = Instantiate(Laser, enemyBase.transform.position, Quaternion.identity);
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
 
                 SophiaLaser sophiaLaser = CL_Laser.GetComponent<SophiaLaser>();
                 sophiaLaser.enemyAttack.enemyBase = enemyBase;
 
-                CL_Laser.transform.up = enemyBase.PlayerDirection;
+                CL_Laser.transform.up = TargetDirection;
                 CL_Laser.transform.Rotate(0, 0, 180);
             }
         }
@@ -749,12 +749,12 @@ public class SS_AI_Sophia : Boss_MoveBase
     void A4() 
     {
         if (enemyBase.mode == EnemyBase.ModeType.M1)
-        {enemyBase.isPlayerLookBase();
+        {LookAtCurrentTarget();
 
-            if (enemyBase.PlayerDistance > 2 && AttackNumber ==0)
+            if (TargetDistance > 2 && AttackNumber ==0)
             {
                 
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 10;
+                enemyBase.rb.velocity = TargetDirection.normalized * 10;
             }
             else 
             {
@@ -791,9 +791,9 @@ public class SS_AI_Sophia : Boss_MoveBase
                 }
 
                 sword.EnemyBase = enemyBase;
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
 
-                CL_Sword.transform.up = enemyBase.PlayerDirection;
+                CL_Sword.transform.up = TargetDirection;
                 CL_Sword.transform.Rotate(0, 0, 90);
 
                 sword.EnemyBase = enemyBase;
@@ -801,7 +801,7 @@ public class SS_AI_Sophia : Boss_MoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 0.5)
             {
                 if (phase == Phase.P2 && AttackNumber ==0)
@@ -843,7 +843,7 @@ public class SS_AI_Sophia : Boss_MoveBase
     void isStarRandomShot(int value)
     {
 
-        enemyBase.isPlayerLookBase();
+        LookAtCurrentTarget();
 
             GameObject CL_Star = Instantiate(Star, enemyBase.gameObject.transform.position, Quaternion.identity);
             Rigidbody2D CL_rb = CL_Star.GetComponent<Rigidbody2D>();
@@ -854,7 +854,7 @@ public class SS_AI_Sophia : Boss_MoveBase
             float T_Angle = (Random.RandomRange(-value, value)) * Mathf.Deg2Rad;
 
 
-        Vector2 direction = enemyBase.PlayerDirection.normalized;
+        Vector2 direction = TargetDirection.normalized;
         Vector3 T_velocity = new Vector3(
             Mathf.Cos(T_Angle) * direction.x - Mathf.Sin(T_Angle) * direction.y,
             Mathf.Sin(T_Angle) * direction.x + Mathf.Cos(T_Angle) * direction.y,
@@ -897,9 +897,9 @@ public class SS_AI_Sophia : Boss_MoveBase
 
             if (phase == Phase.P2) 
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
 
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized* 0.3f;
+                enemyBase.rb.velocity = TargetDirection.normalized* 0.3f;
             }
 
             if (enemyBase.AttackCount > 0.8)
@@ -950,7 +950,7 @@ public class SS_AI_Sophia : Boss_MoveBase
     }
     void A2()
     {
-        //êØâ_
+        //ÊòüÈõ≤
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
             enemyBase.animator.SetInteger("Anim", 2);
@@ -961,12 +961,12 @@ public class SS_AI_Sophia : Boss_MoveBase
                 enemyBase.mode = EnemyBase.ModeType.M2;
 
                 GameObject CL_Laser = Instantiate(Laser, enemyBase.transform.position, Quaternion.identity);
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
 
                 SophiaLaser sophiaLaser = CL_Laser.GetComponent<SophiaLaser>();
                 sophiaLaser.enemyAttack.enemyBase = enemyBase;
 
-                CL_Laser.transform.up = enemyBase.PlayerDirection;
+                CL_Laser.transform.up = TargetDirection;
                 CL_Laser.transform.Rotate(0,0,180);
             }
         }

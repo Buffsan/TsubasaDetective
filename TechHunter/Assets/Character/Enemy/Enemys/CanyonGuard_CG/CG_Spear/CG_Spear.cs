@@ -28,19 +28,19 @@ public class CG_Spear : EnemyMoveBase
                 enemyBase.animator.SetInteger("Anim", 5);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M3;
-                PlayerDirSave = enemyBase.PlayerDirection;
+                PlayerDirSave = TargetDirection;
 
             }
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3) 
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 1) 
             {
                 enemyBase.animator.SetInteger("Anim", 3);
             enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M4;
-                PlayerDirSave = enemyBase.PlayerDirection;
+                PlayerDirSave = TargetDirection;
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
 
                 GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.gameObject.transform.position, Quaternion.identity);
@@ -62,10 +62,10 @@ public class CG_Spear : EnemyMoveBase
             {
                 
                 
-                float playerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.transform.position);
+                float playerDistance = Vector2.Distance(TargetPosition, enemyBase.transform.position);
                 if (playerDistance < 4)
                 {
-                    Debug.Log("�čs��");
+                    Debug.Log("Äs“®");
                     enemyBase.rb.velocity = enemyBase.rb.velocity * 0.5f;
                     enemyBase.animator.SetInteger("Anim", 5);
                     enemyBase.AttackCount = 0;

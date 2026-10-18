@@ -31,7 +31,7 @@ public class Kingyo_Koaka : EnemyMoveBase
         { 
         if (!one) {
             Vector2 randomPos = new Vector2 (Random.Range(-1f,1f), Random.Range(-1f, 1f));
-            Direction = ((Vector2)controller.transform.position + randomPos) - (Vector2)transform.position;
+            Direction = (TargetPosition + randomPos) - (Vector2)transform.position;
             one = true;
         }
         

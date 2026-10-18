@@ -58,6 +58,7 @@ public class CG_CosmicSurveyor_AI : EnemyMoveBase
         //Vector2 ShotPos = TargetPosition - enemyBase.AttackSpawnPoint.transform.position;
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Arrow);
         
         CL_Arrow.transform.up = TargetDirection;
         CL_Arrow.transform.Rotate(0, 0, 180);

@@ -38,25 +38,55 @@ public class EnemyMoveBase : MonoBehaviour
         }
     }
 
-    protected Vector2 TargetDirection =>
-        enemyBase != null && CurrentTarget != null
-            ? (Vector2)TargetPosition - (Vector2)enemyBase.transform.position : Vector2.zero;
 
-    protected float TargetDistance =>
-        enemyBase != null && CurrentTarget != null
-            ? TargetDirection.magnitude : float.PositiveInfinity;
+    // PlayerOnlyでは旧AIのPlayerDirection/PlayerDistanceの保存値をそのまま返す。
+    // 既存の PlayerDistance = 1000 による攻撃抑制も維持する。
+    protected bool UsesLegacyPlayerTarget
+    {
+        get
+        {
+            if (enemyBase == null) return true;
+            EnemyContoroller controller = enemyBase as EnemyContoroller;
+            if (controller != null)
+                return controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly;
+            Boss_Controller boss = enemyBase as Boss_Controller;
+            if (boss != null)
+                return boss.TargetMode == EnemyContoroller.TargetType.PlayerOnly;
+            return true;
+        }
+    }
 
-    // 追跡・照準用。PlayerOnlyでは従来のPlayerDirection/Distanceも更新する。
+    protected Vector2 TargetDirection
+    {
+        get
+        {
+            if (enemyBase == null) return Vector2.zero;
+            if (UsesLegacyPlayerTarget) return enemyBase.PlayerDirection;
+            return CurrentTarget != null
+                ? (Vector2)TargetPosition - (Vector2)enemyBase.transform.position : Vector2.zero;
+        }
+    }
+
+    protected float TargetDistance
+    {
+        get
+        {
+            if (enemyBase == null) return float.PositiveInfinity;
+            if (UsesLegacyPlayerTarget) return enemyBase.PlayerDistance;
+            return CurrentTarget != null
+                ? Vector2.Distance(TargetPosition, enemyBase.transform.position)
+                : float.PositiveInfinity;
+        }
+    }
+
     protected void RefreshTargetInfo()
     {
         if (enemyBase == null || CurrentTarget == null) return;
-        EnemyContoroller controller = enemyBase as EnemyContoroller;
-        Boss_Controller boss = enemyBase as Boss_Controller;
-        if ((controller == null || controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly) &&
-            (boss == null || boss.TargetMode == EnemyContoroller.TargetType.PlayerOnly))
+        if (UsesLegacyPlayerTarget)
         {
-            enemyBase.PlayerDirection = TargetDirection;
-            enemyBase.PlayerDistance = TargetDistance;
+            Vector2 direction = (Vector2)TargetPosition - (Vector2)enemyBase.transform.position;
+            enemyBase.PlayerDirection = direction;
+            enemyBase.PlayerDistance = direction.magnitude;
         }
     }
 

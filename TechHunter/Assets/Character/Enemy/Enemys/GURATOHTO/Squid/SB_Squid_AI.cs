@@ -40,8 +40,9 @@ public class SB_Squid_AI : EnemyMoveBase
             GameObject CL_Effect = SpawnObjectNow_Input(AttackChargeEffect, transform.position, 4);
             GameObject CL_DengerArea = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_area, transform.position, Quaternion.identity, 4f, null, 0f, false);
             CL_DengerArea.transform.up = TargetDirection;
-            SaveComponent animator = CL_DengerArea.GetComponent<SaveComponent>();
-            animator.animator.speed = 0.33f;
+            SaveComponent warningSave = CL_DengerArea.GetComponentInChildren<SaveComponent>(true);
+            if (warningSave != null && warningSave.animator != null)
+                warningSave.animator.speed = 0.33f;
             enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
             AUDIO_manager.PlaySE(audioClips[0]);
             A_Phase = 1;

@@ -62,6 +62,7 @@ MonoBehaviour:
   Denger_AttackArea: {fileID: 520444690567741310, guid: e50319ecbfbf2a541bf859e37986ddd4, type: 3}
   Denger_Attackarea1: {fileID: 520444690567741310, guid: e50319ecbfbf2a541bf859e37986ddd4, type: 3}
   AttackArea: {fileID: 2146240657863754078, guid: d97d26ae2f815934db888e93c303e94f, type: 3}
+  LandingAttackPrefab: {fileID: 3454106823859442278, guid: 59dbbbc0dbeb99442a6b89dc88c855e1, type: 3}
 --- !u!1 &3262776185593759204
 GameObject:
   m_ObjectHideFlags: 0

@@ -80,16 +80,16 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
 
     [SerializeField] float MoterRandomRange = 4;
 
-    [Header("Œ`‘ÔˆÚsFHPŠ„‡")]
+    [Header("å½¢æ…‹ç§»è¡Œï¼šHPå‰²åˆ")]
     [Range(0.01f, 1f)][SerializeField] float secondPhaseHP = 0.93f;
     [Range(0.01f, 1f)][SerializeField] float thirdPhaseHP = 0.50f;
 
-    [Header("’ÊíUŒ‚ŠÔŠuiUŒ‚I—¹Œã`Ÿ‚Ì‘I‘ğj")]
+    [Header("é€šå¸¸æ”»æ’ƒé–“éš”ï¼ˆæ”»æ’ƒçµ‚äº†å¾Œï½æ¬¡ã®é¸æŠï¼‰")]
     [SerializeField] float phase1AttackInterval = 3.5f;
     [SerializeField] float phase2AttackInterval = 2.5f;
     [SerializeField] float phase3AttackIntervalMultiplier = 0.5f;
 
-    [Header("‘æ“ñŒ`‘ÔF”š”­E‚Ì‚¯‚¼‚è‰ñ“]‰‰o")]
+    [Header("ç¬¬äºŒå½¢æ…‹ï¼šçˆ†ç™ºãƒ»ã®ã‘ãã‚Šå›è»¢æ¼”å‡º")]
     [SerializeField] ParticleSystem phase2ExplosionPrefab;
     [Min(0f)][SerializeField] float phase2ExplosionLifetime = 5f;
     [Min(0.05f)][SerializeField] float recoilSeconds = 2f;
@@ -98,13 +98,13 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     [Min(0f)][SerializeField] float recoilEndSpinSpeed = 40f;
     [SerializeField] bool recoilClockwise = true;
 
-    [Header("‘æ“ñŒ`‘ÔFáz¹‰‰o")]
+    [Header("ç¬¬äºŒå½¢æ…‹ï¼šç—™æ”£æ¼”å‡º")]
     [Min(0f)][SerializeField] float twitchSeconds = 0.5f;
     [Min(0f)][SerializeField] float twitchPositionJitter = 0.12f;
     [Min(0f)][SerializeField] float twitchRotationJitter = 12f;
     [Min(0.02f)][SerializeField] float twitchStepSeconds = 0.06f;
 
-    [Header("‘æ“ñŒ`‘ÔFêŠO‚Ö‚Ì‚«”ò‚Ñ")]
+    [Header("ç¬¬äºŒå½¢æ…‹ï¼šå ´å¤–ã¸ã®å¹ãé£›ã³")]
     [SerializeField] Vector2 arenaCenter = Vector2.zero;
     [SerializeField] float outsideDistance = 26f;
     [SerializeField] float flyOutSeconds = 0.65f;
@@ -113,7 +113,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     [SerializeField] float outsideWaitSeconds = 2f;
     [SerializeField] float flyBackSeconds = 0.8f;
 
-    [Header("‘æ“ñŒ`‘ÔF‹AŠÒŒã‚Ìù‰ñ`“Š±i‡Œv–ñ6•bj")]
+    [Header("ç¬¬äºŒå½¢æ…‹ï¼šå¸°é‚„å¾Œã®æ—‹å›ï½æŠ•æ“²ï¼ˆåˆè¨ˆç´„6ç§’ï¼‰")]
     [Min(0.1f)][SerializeField] float returnToThrowSeconds = 6f;
     [Min(0.1f)][SerializeField] float playerOrbitRadius = 5f;
     [Min(0f)][SerializeField] float orbitEntrySeconds = 0.6f;
@@ -121,7 +121,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     [Min(0f)][SerializeField] float orbitEndDegreesPerSecond = 75f;
     [SerializeField] bool orbitClockwise = true;
 
-    [Header("‘æ“ñŒ`‘ÔFŒŒ”G‚ê‚½•¡»‹@")]
+    [Header("ç¬¬äºŒå½¢æ…‹ï¼šè¡€æ¿¡ã‚ŒãŸè¤‡è£½æ©Ÿ")]
     [SerializeField] GameObject bloodyReplicatorPrefab;
     [SerializeField] Transform carryAnchor;
     [SerializeField] Transform landingPointOverride;
@@ -133,7 +133,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     [SerializeField] AudioClip bloodyReplicatorSpawnAudioClip;
     [SerializeField] float bloodyReplicatorRemoveEffect = 5;
 
-    [Header("‘æOŒ`‘ÔF’†‰›‚Ö‚Ì’µ–ôE‰~Œ`‘à—ñ")]
+    [Header("ç¬¬ä¸‰å½¢æ…‹ï¼šä¸­å¤®ã¸ã®è·³èºãƒ»å††å½¢éšŠåˆ—")]
     [Min(0.1f)][SerializeField] float phase3CenterJumpSeconds = 1.2f;
     [Min(0.1f)][SerializeField] float phase3FormationRadius = 2f;
     [Min(0f)][SerializeField] float phase3OrbitDegreesPerSecond = 15f;
@@ -142,26 +142,26 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     [Min(1f)][SerializeField] float phase3GatherTimeout = 12f;
     [SerializeField] float phase3FormationStartAngle = 90f;
 
-    [Header("‘æOŒ`‘ÔFƒŒ[ƒU[˜AË")]
+    [Header("ç¬¬ä¸‰å½¢æ…‹ï¼šãƒ¬ãƒ¼ã‚¶ãƒ¼é€£å°„")]
     [Min(1)][SerializeField] int phase3LaserRounds = 3;
     [Min(0f)][SerializeField] float phase3LaserOrderInterval = 0.1f;
     [Min(0f)][SerializeField] float phase3LaserRoundInterval = 1f;
     [Range(0f, 180f)][SerializeField] float phase3AimSpread = 80f;
     [Min(0.1f)][SerializeField] float phase3LaserLifetime = 5f;
 
-    [Header("‘æOŒ`‘ÔFƒtƒBƒjƒbƒVƒ…E’â~")]
+    [Header("ç¬¬ä¸‰å½¢æ…‹ï¼šãƒ•ã‚£ãƒ‹ãƒƒã‚·ãƒ¥ãƒ»åœæ­¢")]
     [Min(1)][SerializeField] int phase3FinishShotsPerEcho = 5;
     [Min(0f)][SerializeField] float phase3FinishShotInterval = 0.05f;
     [Range(0f, 180f)][SerializeField] float phase3FinishSpread = 15f;
     [Min(0f)][SerializeField] float phase3EchoStunSeconds = 3f;
 
-    [Header("‘æOŒ`‘ÔF•¡»‹@¬—’†‚Ì–{‘ÌƒŠƒAƒNƒVƒ‡ƒ“")]
+    [Header("ç¬¬ä¸‰å½¢æ…‹ï¼šè¤‡è£½æ©Ÿæ··ä¹±ä¸­ã®æœ¬ä½“ãƒªã‚¢ã‚¯ã‚·ãƒ§ãƒ³")]
     [Min(0.05f)][SerializeField] float phase3ConfusionLookInterval = 0.3f;
     [Min(0f)][SerializeField] float phase3ConfusionTwitchDegrees = 12f;
     [Min(0f)][SerializeField] float phase3ConfusionTwitchOffset = 0.08f;
     [Min(0.1f)][SerializeField] float phase3ConfusionTwitchFrequency = 12f;
 
-    // 1=P1¨P2‰‰oA2=P2¨P3‰‰oA0=’ÊíB
+    // 1=P1â†’P2æ¼”å‡ºã€2=P2â†’P3æ¼”å‡ºã€0=é€šå¸¸ã€‚
     int transition = 0;
     bool transitionStarted;
     bool savedDamageBodyActive;
@@ -209,10 +209,10 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             }
         }
 
-        // ‘æOŒ`‘Ô‚Ì“Áês“®’†A•¡»‹@‚Ì¬—‚É‡‚í‚¹‚Ä–{‘Ì‚à˜T”‚‚·‚éB
+        // ç¬¬ä¸‰å½¢æ…‹ã®ç‰¹æ®Šè¡Œå‹•ä¸­ã€è¤‡è£½æ©Ÿã®æ··ä¹±ã«åˆã‚ã›ã¦æœ¬ä½“ã‚‚ç‹¼ç‹½ã™ã‚‹ã€‚
         UpdatePhase3ConfusionReaction();
 
-        // •¡»‘Ì‚Í•¡»‹@‚Ì¬—’†AˆÊ’u‚Æ‘à—ñŠp“x‚ğŠ®‘S‚ÉŒÅ’è‚·‚éB
+        // è¤‡è£½ä½“ã¯è¤‡è£½æ©Ÿã®æ··ä¹±ä¸­ã€ä½ç½®ã¨éšŠåˆ—è§’åº¦ã‚’å®Œå…¨ã«å›ºå®šã™ã‚‹ã€‚
         if (phase3OrbitActive) UpdatePhase3Formation();
     }
     public override void M_Con()
@@ -239,8 +239,8 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         CancelInterruptedAttackEffects();
     }
 
-    // “Ëi(A2)‚ğƒXƒ^ƒ“/¬—/€–S‚Å’†’f‚µ‚½‚Æ‚«AFinish()‚ğ’Ê‚ê‚¸
-    // “Ëi”»’è‚ÆƒGƒtƒFƒNƒg‚ªc‚è‘±‚¯‚é–â‘è‚ğ–h‚®B
+    // çªé€²(A2)ã‚’ã‚¹ã‚¿ãƒ³/æ··ä¹±/æ­»äº¡ã§ä¸­æ–­ã—ãŸã¨ãã€Finish()ã‚’é€šã‚Œãš
+    // çªé€²åˆ¤å®šã¨ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãŒæ®‹ã‚Šç¶šã‘ã‚‹å•é¡Œã‚’é˜²ãã€‚
     void CancelInterruptedAttackEffects()
     {
         if (AsaltAttackBody != null && AsaltAttackBody.activeSelf)
@@ -248,7 +248,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         SetAttackEmission(0f);
         if (AttackparticleSystem != null && AttackparticleSystem.isPlaying)
             AttackparticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        // Rigidbody‚Ì‘¬“x‚ÍƒXƒ^ƒ“/¬—‘¤‚ÌƒmƒbƒNƒoƒbƒN§Œä‚ğ—Dæ‚µ‚Äã‘‚«‚µ‚È‚¢B
+        // Rigidbodyã®é€Ÿåº¦ã¯ã‚¹ã‚¿ãƒ³/æ··ä¹±å´ã®ãƒãƒƒã‚¯ãƒãƒƒã‚¯åˆ¶å¾¡ã‚’å„ªå…ˆã—ã¦ä¸Šæ›¸ãã—ãªã„ã€‚
     }
 
     public override void M_AI()
@@ -257,8 +257,8 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         if (CheckPhaseTransition()) return;
         if (enemyBase.moveType == EnemyBase.MoveType.Attack) return;
 
-        // Œ³ƒR[ƒh‚Í•ûŒüƒxƒNƒgƒ‹‚ğw’è‚µ‚½’¼Œã‚É‘¬“x0‚Ö–ß‚µ‚Ä‚¢‚½‚½‚ßA
-        // ˆÚ“®d—l‚Í•Ï‚¦‚¸AUŒ‚‘Ò‚¿ŠÔ‚Ìis‚¾‚¯ˆÛ‚·‚éB
+        // å…ƒã‚³ãƒ¼ãƒ‰ã¯æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’æŒ‡å®šã—ãŸç›´å¾Œã«é€Ÿåº¦0ã¸æˆ»ã—ã¦ã„ãŸãŸã‚ã€
+        // ç§»å‹•ä»•æ§˜ã¯å¤‰ãˆãšã€æ”»æ’ƒå¾…ã¡æ™‚é–“ã®é€²è¡Œã ã‘ç¶­æŒã™ã‚‹ã€‚
         enemyBase.rb.velocity = Vector2.zero;
         enemyBase.animator.SetInteger("Anim", 0);
         AttackWaitTime += Time.deltaTime;
@@ -271,11 +271,11 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         SpawnCount++;
         AttackWaitTime = 0f;
         enemyBase.moveType = EnemyBase.MoveType.Attack;
-        int random = Random.Range(1, 5); // A1`A4
+        int random = Random.Range(1, 5); // A1ï½A4
         enemyBase.attackType = (EnemyBase.AttackType)(random - 1);
     }
 
-    // Œ`‘ÔˆÚs‚ÍUŒ‚“r’†‚Å‚à”­¶‚³‚¹‚éB
+    // å½¢æ…‹ç§»è¡Œã¯æ”»æ’ƒé€”ä¸­ã§ã‚‚ç™ºç”Ÿã•ã›ã‚‹ã€‚
     bool CheckPhaseTransition()
     {
         if (transition != 0 || enemyBase.MAXHP <= 0f ||
@@ -302,11 +302,11 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         transitionStarted = false;
         if (next == 1)
         {
-            // 93%‚ğ‰º‰ñ‚Á‚½uŠÔ‚©‚çA“Š±I—¹‚Ü‚Å”í’e”»’è‚ğ–³Œø‰»‚·‚éB
+            // 93%ã‚’ä¸‹å›ã£ãŸç¬é–“ã‹ã‚‰ã€æŠ•æ“²çµ‚äº†ã¾ã§è¢«å¼¾åˆ¤å®šã‚’ç„¡åŠ¹åŒ–ã™ã‚‹ã€‚
             savedDamageBodyActive = enemyBase.DamageBody != null && enemyBase.DamageBody.activeSelf;
             if (enemyBase.DamageBody != null) enemyBase.DamageBody.SetActive(false);
 
-            // HPè‡’l‚ğ‰º‰ñ‚Á‚½uŠÔ‚É”š”­ƒGƒtƒFƒNƒg‚ğˆê“x‚¾‚¯¶¬‚·‚éB
+            // HPé–¾å€¤ã‚’ä¸‹å›ã£ãŸç¬é–“ã«çˆ†ç™ºã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ä¸€åº¦ã ã‘ç”Ÿæˆã™ã‚‹ã€‚
             if (phase2ExplosionPrefab != null)
             {
                 ParticleSystem explosion = Instantiate(phase2ExplosionPrefab, transform.position, Quaternion.identity);
@@ -315,7 +315,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
                     Destroy(explosion.gameObject, phase2ExplosionLifetime);
             }
         }
-        // ‘O‚ÌUŒ‚iA1˜AË‚âA3’µ–ô‚È‚Çj‚ğ’â~‚·‚éB
+        // å‰ã®æ”»æ’ƒï¼ˆA1é€£å°„ã‚„A3è·³èºãªã©ï¼‰ã‚’åœæ­¢ã™ã‚‹ã€‚
         StopAllCoroutines();
         if (arcInProgress)
         {
@@ -405,7 +405,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         var emission = AttackparticleSystem.emission;
         emission.rateOverTime = rate;
 
-        // ‹¯‚İE¬—‚ÅStop‚³‚ê‚½ê‡AŸ‚Ì“Ëi‚ÅÄ¶‚ğÄŠJ‚·‚éB
+        // æ€¯ã¿ãƒ»æ··ä¹±ã§Stopã•ã‚ŒãŸå ´åˆã€æ¬¡ã®çªé€²ã§å†ç”Ÿã‚’å†é–‹ã™ã‚‹ã€‚
         if (rate > 0f && !AttackparticleSystem.isPlaying)
             AttackparticleSystem.Play();
     }
@@ -420,7 +420,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("ˆÚ“®", 0, 0);
+            enemyBase.animator.Play("ç§»å‹•", 0, 0);
 
             Vector2 offset = (Vector2)transform.position;
 
@@ -436,7 +436,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
 
             if (attackcount() > RotateTime)
             {
-                enemyBase.animator.Play("UŒ‚", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒ", 0, 0);
 
                 StartCoroutine(ShotArrow_A1(0f));
                 StartCoroutine(ShotArrow_A1(0.25f));
@@ -461,11 +461,11 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+            enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ", 0, 0);
 
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
 
-            DashDirection = enemyBase.PlayerDirection.normalized;
+            DashDirection = TargetDirection.normalized;
 
             DashStartPos =
                 (Vector2)transform.position
@@ -489,7 +489,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
 
             if (attackcount() > BackStepTime)
             {
-                enemyBase.animator.Play("•às", 0, 0);
+                enemyBase.animator.Play("æ­©è¡Œ", 0, 0);
 
 
 
@@ -507,7 +507,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
                 AsaltAttackBody.SetActive(false);
                 enemyBase.rb.velocity = Vector2.zero;
 
-                enemyBase.animator.Play("‘Ò‹@", 0, 0);
+                enemyBase.animator.Play("å¾…æ©Ÿ", 0, 0);
                 SetAttackEmission(0);
                 NextPhase();
             }
@@ -529,16 +529,16 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             if (attackcount() > 1)
             {
                 bool FindPlayerPos = false;
-                int safeCount = 0; // ˆÀ‘SƒJƒEƒ“ƒ^
+                int safeCount = 0; // å®‰å…¨ã‚«ã‚¦ãƒ³ã‚¿
                 jampAsalt = true;
-                targetPos = enemyBase.Player.transform.position;
+                targetPos = TargetPosition;
                 while (!FindPlayerPos && safeCount < 100)
                 {
                     safeCount++;
 
                     Vector2 TargetFindPlayerPos = new Vector2(
-                        Random.Range(-0.2f, 0.2f) + enemyBase.Player.transform.position.x,
-                        Random.Range(-0.2f, 0.2f) + enemyBase.Player.transform.position.y
+                        Random.Range(-0.2f, 0.2f) + TargetPosition.x,
+                        Random.Range(-0.2f, 0.2f) + TargetPosition.y
                     );
 
                     FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
@@ -564,7 +564,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
                 isStarShot(7, 1);
                 all_System.camera_Controller.Shake(0.1f, 0.1f);
 
-                enemyBase.animator.Play("’…’n");
+                enemyBase.animator.Play("ç€åœ°");
                 GameObject leftAttack = Instantiate(AttackObjects[0], transform.position, Quaternion.identity);
                 if (echoReplay != null) echoReplay.RecordSpawn(AttackObjects[0], leftAttack, 0.1f);
                 Destroy(leftAttack, 0.1f);
@@ -576,7 +576,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("ˆÚ“®", 0, 0);
+            enemyBase.animator.Play("ç§»å‹•", 0, 0);
 
             Vector2 offset = (Vector2)transform.position;
 
@@ -592,12 +592,12 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
 
             if (attackcount() > RotateTime)
             {
-                enemyBase.animator.Play("UŒ‚", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒ", 0, 0);
 
                 GameObject CL_Laser = Instantiate(AttackObjects[1], transform.position, Quaternion.identity);
                 Destroy(CL_Laser, 5);
 
-                CL_Laser.transform.up = (enemyBase.Player.transform.position - transform.position).normalized;
+                CL_Laser.transform.up = (TargetPosition - transform.position).normalized;
                 CL_Laser.transform.Rotate(0, 0, 180);
                 CL_Laser.transform.Rotate(0, 0, Random.Range(-80, 80));
                 if (echoReplay != null) echoReplay.RecordSpawn(AttackObjects[1], CL_Laser, 5f, aimMode: 2, aimSpread: 80f);
@@ -634,7 +634,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         if (echoReplay != null) echoReplay.BeginSpecialAction();
         if (audioClips.Count > 1 && audioClips[1] != null)
             enemyBase.audioManager.PlaySE(audioClips[1]);
-        // ”í’e”»’è‚Í BeginTransition(1) ‚ÅŠù‚É–³Œø‰»Ï‚İB
+        // è¢«å¼¾åˆ¤å®šã¯ BeginTransition(1) ã§æ—¢ã«ç„¡åŠ¹åŒ–æ¸ˆã¿ã€‚
         enemyBase.rb.velocity = Vector2.zero;
 
         RigidbodyType2D previousBodyType = enemyBase.rb.bodyType;
@@ -643,10 +643,10 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         Vector2 start = transform.position;
         float initialRotation = transform.eulerAngles.z;
 
-        // 1. ”š”­ŒãA’á‘¬‚ÅƒvƒŒƒCƒ„[‚©‚ç‚Ì‚¯‚¼‚è‚È‚ª‚ç‚‘¬‰ñ“] ¨ ™X‚ÉŒ¸‘¬B
-        // ‰ñ“]‚Ì—İÏŠp“x‚ğ•Û‚·‚é‚Ì‚ÅAáz¹‚ÖˆÚ‚é’¼‘O‚ÉŠp“x‚ª”ò‚Î‚È‚¢B
+        // 1. çˆ†ç™ºå¾Œã€ä½é€Ÿã§ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‹ã‚‰ã®ã‘ãã‚ŠãªãŒã‚‰é«˜é€Ÿå›è»¢ â†’ å¾ã€…ã«æ¸›é€Ÿã€‚
+        // å›è»¢ã®ç´¯ç©è§’åº¦ã‚’ä¿æŒã™ã‚‹ã®ã§ã€ç—™æ”£ã¸ç§»ã‚‹ç›´å‰ã«è§’åº¦ãŒé£›ã°ãªã„ã€‚
         Vector2 recoilDirection = enemyBase.Player != null
-            ? (start - (Vector2)enemyBase.Player.transform.position)
+            ? (start - (Vector2)TargetPosition)
             : (start - arenaCenter);
         if (recoilDirection.sqrMagnitude < 0.0001f) recoilDirection = Vector2.right;
         recoilDirection.Normalize();
@@ -673,7 +673,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         enemyBase.rb.MoveRotation(initialRotation);
         yield return new WaitForFixedUpdate();
 
-        // 2. 0.5•b‚Ù‚ÇA‚Ì‚¯‚¼‚èI‚¦‚½ˆÊ’u‚Å•s‹K‘¥‚Éáz¹‚·‚éB
+        // 2. 0.5ç§’ã»ã©ã€ã®ã‘ãã‚Šçµ‚ãˆãŸä½ç½®ã§ä¸è¦å‰‡ã«ç—™æ”£ã™ã‚‹ã€‚
         float twitchElapsed = 0f;
         float nextTwitch = 0f;
         enemyBase.audioManager.BgmSource.Stop();
@@ -698,8 +698,8 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         if (outward.sqrMagnitude < 0.01f) outward = Vector2.right;
         Vector2 outside = arenaCenter + outward.normalized * outsideDistance;
 
-        // 3. ]—ˆ‚Ì”¼•ª‚Ì‘¬“x‚Å‰ñ“]‚µ‚È‚ª‚çêŠO‚Ö‚Á”ò‚ÔB
-        // flyOutSeconds‚Í‹ŒPrefab‚Ìİ’è’l‚ğˆÛ‚µA”{—¦‚©‚çÀÛ‚ÌˆÚ“®ŠÔ‚ğŒvZ‚·‚éB
+        // 3. å¾“æ¥ã®åŠåˆ†ã®é€Ÿåº¦ã§å›è»¢ã—ãªãŒã‚‰å ´å¤–ã¸å¹ã£é£›ã¶ã€‚
+        // flyOutSecondsã¯æ—§Prefabã®è¨­å®šå€¤ã‚’ç¶­æŒã—ã€å€ç‡ã‹ã‚‰å®Ÿéš›ã®ç§»å‹•æ™‚é–“ã‚’è¨ˆç®—ã™ã‚‹ã€‚
         float actualFlyOutSeconds = flyOutSeconds / Mathf.Max(0.05f, flyOutSpeedMultiplier);
         float t = 0f;
         while (t < actualFlyOutSeconds)
@@ -714,7 +714,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         enemyBase.rb.MoveRotation(0f);
         yield return new WaitForFixedUpdate();
 
-        // 3. êŠO‚É2•b‘Øİ‚µA•¡»‹@‚ğ’S‚¢‚Å–ß‚Á‚Ä‚­‚éB
+        // 3. å ´å¤–ã«2ç§’æ»åœ¨ã—ã€è¤‡è£½æ©Ÿã‚’æ‹…ã„ã§æˆ»ã£ã¦ãã‚‹ã€‚
         yield return new WaitForSeconds(Mathf.Max(0f, outsideWaitSeconds));
         GameObject carriedMachine = null;
         if (bloodyReplicatorPrefab != null)
@@ -723,16 +723,16 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             carriedMachine = Instantiate(bloodyReplicatorPrefab, anchor.position, anchor.rotation, anchor);
             carriedMachine.transform.localPosition = Vector3.zero;
             carriedMachine.transform.localRotation = Quaternion.identity;
-            // “Š±‚Ü‚Å©g‚Ì•¨—‹““®‚ğ~‚ß‚éBPrefab‚Í•\¦—p‚ğ„§B
+            // æŠ•æ“²æ™‚ã¾ã§è‡ªèº«ã®ç‰©ç†æŒ™å‹•ã‚’æ­¢ã‚ã‚‹ã€‚Prefabã¯è¡¨ç¤ºç”¨ã‚’æ¨å¥¨ã€‚
             Rigidbody2D machineRb = carriedMachine.GetComponent<Rigidbody2D>();
             if (machineRb != null) { machineRb.velocity = Vector2.zero; machineRb.simulated = false; }
         }
         else
         {
-            Debug.LogWarning("‰i‰“‚Ì­—: Bloody Replicator Prefab ‚ª–¢İ’è‚Å‚·B•ªg‚Í¶¬‚³‚ê‚Ü‚¹‚ñB", this);
+            Debug.LogWarning("æ°¸é ã®å°‘å¥³: Bloody Replicator Prefab ãŒæœªè¨­å®šã§ã™ã€‚åˆ†èº«ã¯ç”Ÿæˆã•ã‚Œã¾ã›ã‚“ã€‚", this);
         }
 
-        enemyBase.animator.Play("ˆÚ“®", 0, 0);
+        enemyBase.animator.Play("ç§»å‹•", 0, 0);
         t = 0f;
         while (t < flyBackSeconds)
         {
@@ -744,13 +744,13 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         enemyBase.rb.MovePosition(start);
         yield return new WaitForFixedUpdate();
 
-        // 4. •¡»‹@‚ğ•ø‚¦‚½‚Ü‚ÜƒvƒŒƒCƒ„[‚ÌüˆÍ‚ğ‚‘¬‚Å‰ñ‚èA™X‚ÉŒ¸‘¬‚·‚éB
-        //    ‹AŠÒŠ®—¹‚©‚ç“Š±I—¹‚Ü‚Å‚Ì‘ŠÔ‚ğ returnToThrowSeconds ‚É‘µ‚¦‚éB
-        //    •¡»‹@‚Í carryAnchor ‚Ìq‚È‚Ì‚ÅA–{‘Ì‚Ìü‰ñ‚É’Ç]‚·‚éB
+        // 4. è¤‡è£½æ©Ÿã‚’æŠ±ãˆãŸã¾ã¾ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‘¨å›²ã‚’é«˜é€Ÿã§å›ã‚Šã€å¾ã€…ã«æ¸›é€Ÿã™ã‚‹ã€‚
+        //    å¸°é‚„å®Œäº†ã‹ã‚‰æŠ•æ“²çµ‚äº†ã¾ã§ã®ç·æ™‚é–“ã‚’ returnToThrowSeconds ã«æƒãˆã‚‹ã€‚
+        //    è¤‡è£½æ©Ÿã¯ carryAnchor ã®å­ãªã®ã§ã€æœ¬ä½“ã®å‘¨å›ã«è¿½å¾“ã™ã‚‹ã€‚
         float orbitSeconds = Mathf.Max(0f, returnToThrowSeconds - Mathf.Max(0f, throwSeconds));
         if (orbitSeconds > 0f && enemyBase.Player != null)
         {
-            Vector2 orbitCenter = enemyBase.Player.transform.position;
+            Vector2 orbitCenter = TargetPosition;
             Vector2 initialOffset = (Vector2)transform.position - orbitCenter;
             float orbitAngle = initialOffset.sqrMagnitude > 0.0001f
                 ? Mathf.Atan2(initialOffset.y, initialOffset.x) * Mathf.Rad2Deg
@@ -761,18 +761,18 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
 
             while (orbitElapsed < orbitSeconds)
             {
-                // ƒvƒŒƒCƒ„[‚ªˆÚ“®‚µ‚½ê‡‚àA‚»‚Ì“_‚ÌˆÊ’u‚ğü‰ñ’†S‚É‚·‚éB
-                orbitCenter = enemyBase.Player.transform.position;
+                // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒç§»å‹•ã—ãŸå ´åˆã‚‚ã€ãã®æ™‚ç‚¹ã®ä½ç½®ã‚’å‘¨å›ä¸­å¿ƒã«ã™ã‚‹ã€‚
+                orbitCenter = TargetPosition;
                 float dt = Mathf.Min(Time.fixedDeltaTime, orbitSeconds - orbitElapsed);
                 orbitElapsed += dt;
                 float progress = Mathf.Clamp01(orbitElapsed / orbitSeconds);
-                // ü‰ñ‘¬“x‚»‚Ì‚à‚Ì‚ğ‚‘¬‚©‚ç’á‘¬‚ÖŠŠ‚ç‚©‚ÉŒ¸‚ç‚·B
+                // å‘¨å›é€Ÿåº¦ãã®ã‚‚ã®ã‚’é«˜é€Ÿã‹ã‚‰ä½é€Ÿã¸æ»‘ã‚‰ã‹ã«æ¸›ã‚‰ã™ã€‚
                 float slowdown = Mathf.SmoothStep(0f, 1f, progress);
                 float angularSpeed = Mathf.Lerp(orbitStartDegreesPerSecond,
                                                 orbitEndDegreesPerSecond, slowdown);
                 orbitAngle += angularSpeed * directionSign * dt;
 
-                // ‹AŠÒ’¼Œã‚ÌˆÊ’u‚©‚çw’è”¼Œa‚ÖˆÚ‚·i”¼Œa·‚É‚æ‚éuŠÔˆÚ“®‚ğ”ğ‚¯‚éjB
+                // å¸°é‚„ç›´å¾Œã®ä½ç½®ã‹ã‚‰æŒ‡å®šåŠå¾„ã¸ç§»ã™ï¼ˆåŠå¾„å·®ã«ã‚ˆã‚‹ç¬é–“ç§»å‹•ã‚’é¿ã‘ã‚‹ï¼‰ã€‚
                 float entryProgress = orbitEntrySeconds <= 0f ? 1f :
                     Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(orbitElapsed / orbitEntrySeconds));
                 float radius = Mathf.Lerp(initialRadius, playerOrbitRadius, entryProgress);
@@ -786,17 +786,17 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         }
         else if (orbitSeconds > 0f)
         {
-            // ƒvƒŒƒCƒ„[‚ªæ“¾‚Å‚«‚È‚¢ê‡‚Íê‚Å‘Ò‹@‚µA“Š±‚Ü‚Å‚ÌÚ‚ÍˆÛ‚·‚éB
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå–å¾—ã§ããªã„å ´åˆã¯å ´ã§å¾…æ©Ÿã—ã€æŠ•æ“²ã¾ã§ã®å°ºã¯ç¶­æŒã™ã‚‹ã€‚
             yield return new WaitForSeconds(orbitSeconds);
         }
 
-        // 5. ƒvƒŒƒCƒ„[‚Ö“Š‚°A’n–Ê‚É“Ë‚«h‚·B“Š±‚ªI‚í‚é‚Ü‚Å‚Í–³“G‚Ì‚Ü‚ÜB
+        // 5. ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¸æŠ•ã’ã€åœ°é¢ã«çªãåˆºã™ã€‚æŠ•æ“²ãŒçµ‚ã‚ã‚‹ã¾ã§ã¯ç„¡æ•µã®ã¾ã¾ã€‚
         if (carriedMachine != null)
         {
             carriedMachine.transform.SetParent(null, true);
             Vector3 throwStart = carriedMachine.transform.position;
             Vector3 target = landingPointOverride != null ? landingPointOverride.position :
-                (enemyBase.Player != null ? enemyBase.Player.transform.position : transform.position);
+                (enemyBase.Player != null ? TargetPosition : transform.position);
             target += (Vector3)landingOffset;
             target.z = throwStart.z;
             t = 0f;
@@ -818,8 +818,8 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
                 Destroy(impact, 3f);
             }
             placedReplicator = carriedMachine;
-            // ’S‚¢‚Å‚¢‚éŠÔ‚Í simulated=false ‚É‚µ‚Ä‚¢‚é‚½‚ßA’…’nŒã‚Í•¨—”»’è‚ğÄŠJ‚·‚éB
-            // •¡»‹@‚ğUŒ‚E¬—‚³‚¹‚ç‚ê‚é‚æ‚¤ARigidbody2D‚ÆCollider2D‚ğ—LŒø‚É‚·‚éB
+            // æ‹…ã„ã§ã„ã‚‹é–“ã¯ simulated=false ã«ã—ã¦ã„ã‚‹ãŸã‚ã€ç€åœ°å¾Œã¯ç‰©ç†åˆ¤å®šã‚’å†é–‹ã™ã‚‹ã€‚
+            // è¤‡è£½æ©Ÿã‚’æ”»æ’ƒãƒ»æ··ä¹±ã•ã›ã‚‰ã‚Œã‚‹ã‚ˆã†ã€Rigidbody2Dã¨Collider2Dã‚’æœ‰åŠ¹ã«ã™ã‚‹ã€‚
             Rigidbody2D landedMachineRb = placedReplicator.GetComponent<Rigidbody2D>();
             if (landedMachineRb != null)
             {
@@ -831,7 +831,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
                 landedMachineRb.simulated = true;
             }
 
-            // •¡»‹@Prefab“à‚ÉuCloneExitvq‚ª‚ ‚ê‚ÎA‚»‚±‚©‚ç•ªg‚ªoŒ»‚·‚éB
+            // è¤‡è£½æ©ŸPrefabå†…ã«ã€ŒCloneExitã€å­ãŒã‚ã‚Œã°ã€ãã“ã‹ã‚‰åˆ†èº«ãŒå‡ºç¾ã™ã‚‹ã€‚
 
             Transform exit = placedReplicator.transform.Find("CloneExit");
 
@@ -847,7 +847,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         enemyBase.audioManager.BgmSource.Play();
         enemyBase.rb.bodyType = previousBodyType;
         enemyBase.rb.velocity = Vector2.zero;
-        // “Š±i•¡»‹@‚Ìİ’uj‚ªŠ®—¹‚·‚é‚Ü‚Å–³“G‚ğˆÛ‚µA‚±‚±‚ÅŒ³‚Ì”í’e”»’è‚Ö–ß‚·B
+        // æŠ•æ“²ï¼ˆè¤‡è£½æ©Ÿã®è¨­ç½®ï¼‰ãŒå®Œäº†ã™ã‚‹ã¾ã§ç„¡æ•µã‚’ç¶­æŒã—ã€ã“ã“ã§å…ƒã®è¢«å¼¾åˆ¤å®šã¸æˆ»ã™ã€‚
         if (enemyBase.DamageBody != null) enemyBase.DamageBody.SetActive(savedDamageBodyActive);
         phase = Phase.P2;
         transition = 0;
@@ -856,8 +856,8 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         Finish();
     }
 
-    // ¬—‚Å•¡»‘Ì‚ª’â~‚µ‚Ä‚¢‚éŠÔA–{‘Ì‚Í‚»‚ÌˆÊ’u‚Å¶‰E‚ğŒ©“n‚µA¬‚³‚­áz¹‚·‚éB
-    // Animator‚ÉV‚µ‚¢ó‘Ô‚Í—v‹‚µ‚È‚¢‚Ì‚ÅAŠù‘¶‚ÌƒAƒjƒ[ƒVƒ‡ƒ“İ’è‚Í•ÏX•s—vB
+    // æ··ä¹±ã§è¤‡è£½ä½“ãŒåœæ­¢ã—ã¦ã„ã‚‹é–“ã€æœ¬ä½“ã¯ãã®ä½ç½®ã§å·¦å³ã‚’è¦‹æ¸¡ã—ã€å°ã•ãç—™æ”£ã™ã‚‹ã€‚
+    // Animatorã«æ–°ã—ã„çŠ¶æ…‹ã¯è¦æ±‚ã—ãªã„ã®ã§ã€æ—¢å­˜ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³è¨­å®šã¯å¤‰æ›´ä¸è¦ã€‚
     void UpdatePhase3ConfusionReaction()
     {
         bool shouldReact = transition == 2 && transitionStarted && Phase3MachineConfused;
@@ -884,7 +884,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
                 savedPhase3AnimatorSpeed = enemyBase.animator.speed;
                 enemyBase.animator.speed = 0f;
             }
-            // ‰ğœŒã‚ÍA’â~‚µ‚Ä‚¢‚½‰~Œ`‘à—ñ‚ğ‚à‚¤ˆê“x®‚¦‚Ä‚©‚çËŒ‚‚·‚éB
+            // è§£é™¤å¾Œã¯ã€åœæ­¢ã—ã¦ã„ãŸå††å½¢éšŠåˆ—ã‚’ã‚‚ã†ä¸€åº¦æ•´ãˆã¦ã‹ã‚‰å°„æ’ƒã™ã‚‹ã€‚
             if (phase3OrbitActive)
             {
                 phase3FormationReady = false;
@@ -927,8 +927,8 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         }
     }
 
-    // ŒÅ’è”¼Œa‚Å¶¬‡‚É•À‚×A‘Sˆõ‚ª“’…‚µ‚Ä‚©‚çƒŒ[ƒU[UŒ‚‚ğn‚ß‚éB
-    // Šp“x‚ğ‘Sˆõ‚Å‹¤—L‚·‚é‚Ì‚ÅA„‰ñ’†‚à•¡»‘Ì‚Ì•À‚Ñ‡‚Í•ö‚ê‚È‚¢B
+    // å›ºå®šåŠå¾„ã§ç”Ÿæˆé †ã«ä¸¦ã¹ã€å…¨å“¡ãŒåˆ°ç€ã—ã¦ã‹ã‚‰ãƒ¬ãƒ¼ã‚¶ãƒ¼æ”»æ’ƒã‚’å§‹ã‚ã‚‹ã€‚
+    // è§’åº¦ã‚’å…¨å“¡ã§å…±æœ‰ã™ã‚‹ã®ã§ã€å·¡å›ä¸­ã‚‚è¤‡è£½ä½“ã®ä¸¦ã³é †ã¯å´©ã‚Œãªã„ã€‚
     void UpdatePhase3Formation()
     {
         if (echoReplay != null && echoReplay.IsMachineConfused) return;
@@ -957,7 +957,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         if (allReady) phase3FormationReady = true;
     }
 
-    // ’ÊíA4‚Æ“¯‚¶ƒŒ[ƒU[Prefab‚ğg—pB‹L˜^‚É‚Í‰Á‚¦‚¸A“Áês“®’†‚Ì•¡»‘Ì‚¾‚¯‚ªŒ‚‚ÂB
+    // é€šå¸¸A4ã¨åŒã˜ãƒ¬ãƒ¼ã‚¶ãƒ¼Prefabã‚’ä½¿ç”¨ã€‚è¨˜éŒ²ã«ã¯åŠ ãˆãšã€ç‰¹æ®Šè¡Œå‹•ä¸­ã®è¤‡è£½ä½“ã ã‘ãŒæ’ƒã¤ã€‚
     void FirePhase3Laser(BOSS_EternalMaidenEcho echo, bool reverseDirection)
     {
         if (echo == null || AttackObjects == null || AttackObjects[1] == null) return;
@@ -966,14 +966,14 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         Vector2 direction;
         if (reverseDirection)
         {
-            // –{‘Ì¨•¡»‘Ì‚ÌƒxƒNƒgƒ‹‚ğ‰„’·‚µ‚½•ûŒüiƒvƒŒƒCƒ„[‚Í‘_‚í‚È‚¢jB
+            // æœ¬ä½“â†’è¤‡è£½ä½“ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’å»¶é•·ã—ãŸæ–¹å‘ï¼ˆãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¯ç‹™ã‚ãªã„ï¼‰ã€‚
             direction = origin - (Vector2)transform.position;
         }
         else
         {
-            // Å‰‚Ì3ƒZƒbƒg‚Í]—ˆ‚ÌA4‚Æ“¯—lA”­Ë“_‚ÌƒvƒŒƒCƒ„[‚ğ‘_‚¤B
+            // æœ€åˆã®3ã‚»ãƒƒãƒˆã¯å¾“æ¥ã®A4ã¨åŒæ§˜ã€ç™ºå°„æ™‚ç‚¹ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç‹™ã†ã€‚
             direction = enemyBase.Player != null
-                ? (Vector2)enemyBase.Player.transform.position - origin
+                ? (Vector2)TargetPosition - origin
                 : origin - (Vector2)transform.position;
         }
         if (direction.sqrMagnitude < 0.0001f) direction = Vector2.up;
@@ -984,20 +984,20 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         float spread = reverseDirection ? phase3FinishSpread : phase3AimSpread;
         laser.transform.Rotate(0f, 0f, Random.Range(-spread, spread));
 
-        // •ªg‚ÌUŒ‚‚Í•ªg©g‚ÌEnemyBase‚ğQÆ‚³‚¹‚éB
+        // åˆ†èº«ã®æ”»æ’ƒã¯åˆ†èº«è‡ªèº«ã®EnemyBaseã‚’å‚ç…§ã•ã›ã‚‹ã€‚
         EnemyAttack[] hits = laser.GetComponentsInChildren<EnemyAttack>(true);
         for (int i = 0; i < hits.Length; i++) hits[i].enemyBase = echo.LocalEnemy;
         Destroy(laser, phase3LaserLifetime);
     }
 
-    // ¬—‚ª‰ğœ‚³‚ê‚½‚çA’â~‚µ‚½‰~Œ`‘à—ñ‚ª®‚Á‚Ä‚©‚çUŒ‚‚ğÄŠJ‚·‚éB
-    // Šù‚É”­Ë‚µ‚½ƒŒ[ƒU[‚É‚ÍG‚ê‚¸A–¢”­Ë‚ÌUŒ‚‚¾‚¯•Û—¯‚·‚éB
+    // æ··ä¹±ãŒè§£é™¤ã•ã‚ŒãŸã‚‰ã€åœæ­¢ã—ãŸå††å½¢éšŠåˆ—ãŒæ•´ã£ã¦ã‹ã‚‰æ”»æ’ƒã‚’å†é–‹ã™ã‚‹ã€‚
+    // æ—¢ã«ç™ºå°„ã—ãŸãƒ¬ãƒ¼ã‚¶ãƒ¼ã«ã¯è§¦ã‚Œãšã€æœªç™ºå°„ã®æ”»æ’ƒã ã‘ä¿ç•™ã™ã‚‹ã€‚
     IEnumerator WaitUntilMachineAvailable()
     {
         float reformElapsed = 0f;
         while (true)
         {
-            // “¯‚¶“Áês“®’†‚É‰½“x¬—‚µ‚Ä‚àAÄ‹A‚ğ‘‚â‚³‚¸‘Î‰‚·‚éB
+            // åŒã˜ç‰¹æ®Šè¡Œå‹•ä¸­ã«ä½•åº¦æ··ä¹±ã—ã¦ã‚‚ã€å†å¸°ã‚’å¢—ã‚„ã•ãšå¯¾å¿œã™ã‚‹ã€‚
             if (Phase3MachineConfused)
             {
                 reformElapsed = 0f;
@@ -1014,7 +1014,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             reformElapsed += Time.deltaTime;
             if (reformElapsed >= phase3GatherTimeout)
             {
-                Debug.LogWarning("‰i‰“‚Ì­—: ¬—‰ğœŒã‚Ì‰~Œ`‘à—ñÄW‡‚ªƒ^ƒCƒ€ƒAƒEƒg‚µ‚Ü‚µ‚½B", this);
+                Debug.LogWarning("æ°¸é ã®å°‘å¥³: æ··ä¹±è§£é™¤å¾Œã®å††å½¢éšŠåˆ—å†é›†åˆãŒã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆã—ã¾ã—ãŸã€‚", this);
                 phase3NeedsReformation = false;
                 yield break;
             }
@@ -1022,7 +1022,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         }
     }
 
-    // ¬—EÄW‡‚µ‚Ä‚¢‚éŠÔ‚Í0.1•bE1•bE0.05•b‚Ì‘Ò‹@ŠÔ‚ğÁ”ï‚µ‚È‚¢B
+    // æ··ä¹±ãƒ»å†é›†åˆã—ã¦ã„ã‚‹é–“ã¯0.1ç§’ãƒ»1ç§’ãƒ»0.05ç§’ã®å¾…æ©Ÿæ™‚é–“ã‚’æ¶ˆè²»ã—ãªã„ã€‚
     IEnumerator WaitPhase3ActiveSeconds(float seconds)
     {
         float remaining = Mathf.Max(0f, seconds);
@@ -1044,13 +1044,13 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         if (echoReplay != null) echoReplay.BeginSpecialAction();
         enemyBase.rb.velocity = Vector2.zero;
 
-        // A3‚ÌƒWƒƒƒ“ƒv‹O“¹‚Æ’…’nUŒ‚‚ğ—¬—pB’…’n“_‚Ì‚İ(0,0)‚É•ÏX‚·‚éB
+        // A3ã®ã‚¸ãƒ£ãƒ³ãƒ—è»Œé“ã¨ç€åœ°æ”»æ’ƒã‚’æµç”¨ã€‚ç€åœ°ç‚¹ã®ã¿(0,0)ã«å¤‰æ›´ã™ã‚‹ã€‚
         targetPos = Vector2.zero;
         yield return StartCoroutine(MoveInArc(Mathf.Max(0.1f, phase3CenterJumpSeconds), arcHeight, true));
         yield return StartCoroutine(WaitUntilMachineAvailable());
         enemyBase.rb.MovePosition(Vector2.zero);
         yield return new WaitForFixedUpdate();
-        enemyBase.animator.Play("’…’n", 0, 0);
+        enemyBase.animator.Play("ç€åœ°", 0, 0);
         isStarShot(7, 1);
         if (AttackObjects != null && AttackObjects[0] != null)
         {
@@ -1058,7 +1058,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             Destroy(landingBall, 0.1f);
         }
 
-        // Œ»İ‘¶İ‚·‚é•¡»‘Ì‚ğ¶¬‡‚Éæ“¾B“Áês“®’†‚ÍV‚µ‚¢•ªg¶¬‚ğ•Û—¯‚·‚éB
+        // ç¾åœ¨å­˜åœ¨ã™ã‚‹è¤‡è£½ä½“ã‚’ç”Ÿæˆé †ã«å–å¾—ã€‚ç‰¹æ®Šè¡Œå‹•ä¸­ã¯æ–°ã—ã„åˆ†èº«ç”Ÿæˆã‚’ä¿ç•™ã™ã‚‹ã€‚
         phase3Formation.Clear();
         if (echoReplay != null)
         {
@@ -1071,7 +1071,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         phase3FormationReady = false;
         phase3OrbitActive = true;
 
-        // ‘Sˆõ‚ª‰~Œ`‚Ì‘à—ñ‚É“ü‚èA„‰ñ‚ğŠJn‚·‚é‚Ü‚Å‘Ò‚ÂB
+        // å…¨å“¡ãŒå††å½¢ã®éšŠåˆ—ã«å…¥ã‚Šã€å·¡å›ã‚’é–‹å§‹ã™ã‚‹ã¾ã§å¾…ã¤ã€‚
         float gatheringTime = 0f;
         while (!phase3FormationReady)
         {
@@ -1079,16 +1079,16 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
                 gatheringTime += Time.fixedDeltaTime;
             if (gatheringTime >= phase3GatherTimeout)
             {
-                Debug.LogWarning("‰i‰“‚Ì­—: ‘æOŒ`‘Ô‚Ì‘à—ñW‡‚ªƒ^ƒCƒ€ƒAƒEƒg‚µ‚Ü‚µ‚½BŒ»İˆÊ’u‚©‚çËŒ‚‚ğŠJn‚µ‚Ü‚·B", this);
+                Debug.LogWarning("æ°¸é ã®å°‘å¥³: ç¬¬ä¸‰å½¢æ…‹ã®éšŠåˆ—é›†åˆãŒã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆã—ã¾ã—ãŸã€‚ç¾åœ¨ä½ç½®ã‹ã‚‰å°„æ’ƒã‚’é–‹å§‹ã—ã¾ã™ã€‚", this);
                 break;
             }
             yield return new WaitForFixedUpdate();
         }
 
-        // W‡‚ÌÅIƒtƒŒ[ƒ€‚É¬—‚µ‚½ê‡‚àAUŒ‚‚Í‰ğœŒã‚Ü‚Ås‚í‚È‚¢B
+        // é›†åˆã®æœ€çµ‚ãƒ•ãƒ¬ãƒ¼ãƒ ã«æ··ä¹±ã—ãŸå ´åˆã‚‚ã€æ”»æ’ƒã¯è§£é™¤å¾Œã¾ã§è¡Œã‚ãªã„ã€‚
         yield return StartCoroutine(WaitUntilMachineAvailable());
 
-        // Še•¡»‘Ì‚ª0.1•b·‚Å1–{‚¸‚ÂÆËB‘SˆõI—¹Œã1•b‘Ò‚¿AŒv3ƒZƒbƒgB
+        // å„è¤‡è£½ä½“ãŒ0.1ç§’å·®ã§1æœ¬ãšã¤ç…§å°„ã€‚å…¨å“¡çµ‚äº†å¾Œ1ç§’å¾…ã¡ã€è¨ˆ3ã‚»ãƒƒãƒˆã€‚
         for (int round = 0; round < phase3LaserRounds; round++)
         {
             for (int i = 0; i < phase3Formation.Count; i++)
@@ -1098,13 +1098,13 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
                 if (i < phase3Formation.Count - 1 && phase3LaserOrderInterval > 0f)
                     yield return StartCoroutine(WaitPhase3ActiveSeconds(phase3LaserOrderInterval));
             }
-            // ÅIƒZƒbƒgŒã‚àƒtƒBƒjƒbƒVƒ…‘O‚É“¯‚¶1•b‚Ì—­‚ß‚ğ’u‚­B
+            // æœ€çµ‚ã‚»ãƒƒãƒˆå¾Œã‚‚ãƒ•ã‚£ãƒ‹ãƒƒã‚·ãƒ¥å‰ã«åŒã˜1ç§’ã®æºœã‚ã‚’ç½®ãã€‚
             if (phase3LaserRoundInterval > 0f)
                 yield return StartCoroutine(WaitPhase3ActiveSeconds(phase3LaserRoundInterval));
         }
 
-        // ƒtƒBƒjƒbƒVƒ…F•¡»‘Ì‚ª¶¬‡‚É1”­‚¸‚ÂŒ‚‚¿A‘Sˆõ‚Å1ü‚Æ‚·‚éB
-        // phase3FinishShotsPerEcho ‰ñ‚¾‚¯ü‰ñ‚·‚éiŠe•¡»‘Ì‚Ì‡Œv”­Ë”‚à“¯‚¶jB
+        // ãƒ•ã‚£ãƒ‹ãƒƒã‚·ãƒ¥ï¼šè¤‡è£½ä½“ãŒç”Ÿæˆé †ã«1ç™ºãšã¤æ’ƒã¡ã€å…¨å“¡ã§1å‘¨ã¨ã™ã‚‹ã€‚
+        // phase3FinishShotsPerEcho å›ã ã‘å‘¨å›ã™ã‚‹ï¼ˆå„è¤‡è£½ä½“ã®åˆè¨ˆç™ºå°„æ•°ã‚‚åŒã˜ï¼‰ã€‚
         for (int shot = 0; shot < phase3FinishShotsPerEcho; shot++)
         {
             for (int i = 0; i < phase3Formation.Count; i++)
@@ -1118,10 +1118,10 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             }
         }
 
-        // ƒtƒBƒjƒbƒVƒ…‚ÌÅŒã‚Ì”­Ë’¼Œã‚É¬—‚µ‚½ê‡‚àA‰ğœ‚ğ‘Ò‚Á‚Ä‚©‚çI—¹‚·‚éB
+        // ãƒ•ã‚£ãƒ‹ãƒƒã‚·ãƒ¥ã®æœ€å¾Œã®ç™ºå°„ç›´å¾Œã«æ··ä¹±ã—ãŸå ´åˆã‚‚ã€è§£é™¤ã‚’å¾…ã£ã¦ã‹ã‚‰çµ‚äº†ã™ã‚‹ã€‚
         yield return StartCoroutine(WaitUntilMachineAvailable());
 
-        // –{‘Ì‚Í‚·‚®P3’Êís“®‚ÖB•¡»‘Ì‚¾‚¯3•b’â~‚µA‘à—ñ‚Ö–ß‚Á‚ÄÄ¶‚ğÄŠJB
+        // æœ¬ä½“ã¯ã™ãP3é€šå¸¸è¡Œå‹•ã¸ã€‚è¤‡è£½ä½“ã ã‘3ç§’åœæ­¢ã—ã€éšŠåˆ—ã¸æˆ»ã£ã¦å†ç”Ÿã‚’å†é–‹ã€‚
         phase3OrbitActive = false;
         phase3NeedsReformation = false;
         if (phase3ConfusionReacting) EndPhase3ConfusionReaction();
@@ -1159,7 +1159,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             );
 
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
-        Vector2 direction = (Vector2)enemyBase.playerController.transform.position - shotPos;
+        Vector2 direction = (Vector2)TargetPosition - shotPos;
         CL_Arrow.transform.up = direction;
         CL_Arrow.transform.Rotate(0, 0, 90);
         rb.velocity = direction.normalized * ArrowSpeed;
@@ -1179,7 +1179,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             );
 
         Mortar_Controller mortar = CL_Arrow.GetComponent<Mortar_Controller>();
-        mortar.ChangePos(enemyBase.Player.transform.position + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
+        mortar.ChangePos(TargetPosition + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
         mortar.enemyBase = enemyBase;
         mortar.AttackArea = S_AttackArea;
 
@@ -1193,9 +1193,9 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     {
         yield return new WaitForSeconds(delayTime);
 
-        // ƒvƒŒƒCƒ„[ ¨ ©•ª ‚Ì•ûŒüƒxƒNƒgƒ‹
-        Vector2 direction = (transform.position - enemyBase.Player.transform.position).normalized;
-        // ”½‘Î•ûŒü‚É20mi’PˆÊj—£‚ê‚½À•W‚ğŒvZ
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ â†’ è‡ªåˆ† ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+        Vector2 direction = (transform.position - TargetPosition).normalized;
+        // åå¯¾æ–¹å‘ã«20mï¼ˆå˜ä½ï¼‰é›¢ã‚ŒãŸåº§æ¨™ã‚’è¨ˆç®—
         Vector2 targetPos = (Vector2)transform.position + direction * 10f;
         for (int i = 0; i < SpawnEnemyNumber; i++)
         {
@@ -1206,9 +1206,9 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     }
     private IEnumerator NeedleSpawnLing(float delayTime, float Lange, int Plass)
     {
-        //Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ªŠJn‚³‚ê‚Ü‚µ‚½B¡‚©‚ç " + delayTime + " •b‘Ò‚¿‚Ü‚·...");
+        //Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ãŒé–‹å§‹ã•ã‚Œã¾ã—ãŸã€‚ä»Šã‹ã‚‰ " + delayTime + " ç§’å¾…ã¡ã¾ã™...");
 
-        // ‚±‚±‚Åw’è‚µ‚½•b”‚¾‚¯‘Ò‹@‚·‚é
+        // ã“ã“ã§æŒ‡å®šã—ãŸç§’æ•°ã ã‘å¾…æ©Ÿã™ã‚‹
         yield return new WaitForSeconds(delayTime);
         for (int i = 0; i < 10 + Plass; i++)
         {
@@ -1219,7 +1219,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             float newX = enemyBase.transform.position.x + 2 * Lange * Mathf.Cos(angleRad);
             float newY = enemyBase.transform.position.y + 2 * Lange * Mathf.Sin(angleRad);
 
-            // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+            // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
             Vector2 newPosition = new Vector2(newX, newY);
 
             NeedleSpawn(newPosition);
@@ -1238,12 +1238,12 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     {
 
 
-        enemyBase.animator.Play("ˆÚ“®", 0, 0);
-        // ˆÚ“®ŠJn‘O‚ÌBodyType‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+        enemyBase.animator.Play("ç§»å‹•", 0, 0);
+        // ç§»å‹•é–‹å§‹å‰ã®BodyTypeã‚’ä¿å­˜ã—ã¦ãŠã
         var originalBodyType = enemyBase.rb.bodyType;
         arcPreviousBodyType = originalBodyType;
         arcInProgress = true;
-        // ˆÚ“®’†‚ÍKinematic‚É‚µ‚ÄA•¨—‰‰Z‚Ì‰e‹¿‚ğ‚È‚­‚·
+        // ç§»å‹•ä¸­ã¯Kinematicã«ã—ã¦ã€ç‰©ç†æ¼”ç®—ã®å½±éŸ¿ã‚’ãªãã™
         enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
 
         Vector2 startPos = enemyBase.transform.position;
@@ -1256,32 +1256,32 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
 
         while (elapsedTime < jampTime)
         {
-            // P3ˆÚs‚ÌƒWƒƒƒ“ƒv’†‚àA•¡»‹@‚Ì¬—‚Å‚ÍŠÔ‚ÆˆÊ’u‚ğ’â~‚³‚¹‚éB
-            // ’ÊíA3‚ÌƒWƒƒƒ“ƒv‚É‚Í‰e‹¿‚µ‚È‚¢B
+            // P3ç§»è¡Œã®ã‚¸ãƒ£ãƒ³ãƒ—ä¸­ã‚‚ã€è¤‡è£½æ©Ÿã®æ··ä¹±ã§ã¯æ™‚é–“ã¨ä½ç½®ã‚’åœæ­¢ã•ã›ã‚‹ã€‚
+            // é€šå¸¸A3ã®ã‚¸ãƒ£ãƒ³ãƒ—ã«ã¯å½±éŸ¿ã—ãªã„ã€‚
             if (pauseForPhase3 && Phase3MachineConfused)
             {
                 yield return null;
                 continue;
             }
             elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsedTime / jampTime); // 0‚©‚ç1‚Ì”ÍˆÍ‚Éû‚ß‚é
+            float progress = Mathf.Clamp01(elapsedTime / jampTime); // 0ã‹ã‚‰1ã®ç¯„å›²ã«åã‚ã‚‹
 
-            // X‚ÆY‚Ì’¼ü“I‚ÈˆÚ“®‚ğŒvZ
+            // Xã¨Yã®ç›´ç·šçš„ãªç§»å‹•ã‚’è¨ˆç®—
             Vector2 linearPos = Vector2.Lerp(startPos, endPos, progress);
 
-            // ‚‚³‚ğŒvZ (SinƒJ[ƒu)
+            // é«˜ã•ã‚’è¨ˆç®— (Sinã‚«ãƒ¼ãƒ–)
             float height = Mathf.Sin(progress * Mathf.PI) * jampHeigh;
 
-            // Rigidbody2D‚ğg‚Á‚ÄˆÊ’u‚ğXV‚·‚é
-            // 2D‚È‚Ì‚ÅAYÀ•W‚É‚‚³‚ğ‰Á‚¦‚é
+            // Rigidbody2Dã‚’ä½¿ã£ã¦ä½ç½®ã‚’æ›´æ–°ã™ã‚‹
+            // 2Dãªã®ã§ã€Yåº§æ¨™ã«é«˜ã•ã‚’åŠ ãˆã‚‹
             enemyBase.rb.MovePosition(new Vector2(linearPos.x, linearPos.y + height));
 
-            //yield return new WaitForFixedUpdate(); // •¨—‰‰Z‚ÌXVƒ^ƒCƒ~ƒ“ƒO‚Å‘Ò‚Â
+            //yield return new WaitForFixedUpdate(); // ç‰©ç†æ¼”ç®—ã®æ›´æ–°ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å¾…ã¤
             yield return new WaitForEndOfFrame();
         }
 
 
-        // BodyType‚ğŒ³‚É–ß‚·
+        // BodyTypeã‚’å…ƒã«æˆ»ã™
         enemyBase.rb.bodyType = originalBodyType;
         arcInProgress = false;
 
@@ -1343,8 +1343,8 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         enemyBase.audioManager.PlaySE(audioClips[0]);
 
         Vector2 shotPos = transform.position;
-        // ”­Ë—\–ñ‚Å‚Í‚È‚­A‚±‚Ì1”­‚ªo‚éuŠÔ‚ÉƒvƒŒƒCƒ„[‚ğ‘_‚¤B
-        Vector2 direction = ((Vector2)enemyBase.Player.transform.position - shotPos).normalized;
+        // ç™ºå°„äºˆç´„æ™‚ã§ã¯ãªãã€ã“ã®1ç™ºãŒå‡ºã‚‹ç¬é–“ã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ç‹™ã†ã€‚
+        Vector2 direction = ((Vector2)TargetPosition - shotPos).normalized;
 
         GameObject arrow = Instantiate(
             Arrow,
@@ -1364,7 +1364,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         EnemyAttack enemyAttack = arrow.GetComponent<EnemyAttack>();
         if (enemyAttack != null) enemyAttack.enemyBase = enemyBase;
 
-        // AddForce(Impulse)‚Í’¼Œã‚Ìvelocity‚É”½‰f‚³‚ê‚È‚¢ê‡‚ª‚ ‚é‚Ì‚ÅA—Í‚à‹L˜^B
+        // AddForce(Impulse)ã¯ç›´å¾Œã®velocityã«åæ˜ ã•ã‚Œãªã„å ´åˆãŒã‚ã‚‹ã®ã§ã€åŠ›ã‚‚è¨˜éŒ²ã€‚
         if (echoReplay != null)
             echoReplay.RecordSpawn(Arrow, arrow, ArrowDestroy,
                                    direction * ArroeSpeed, initialVelocity, aimMode: 1);

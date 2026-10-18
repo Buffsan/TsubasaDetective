@@ -251,7 +251,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             enemyBase.animator.Play("跳躍準備");
             if (enemyBase.AttackCount > 0.8) 
             {
-                targetPos = CurrentTarget;
+                targetPos = CurrentTarget != null ? CurrentTarget : enemyBase.transform;
                 StopAllCoroutines();
                 StartCoroutine(MoveInArc());
 
@@ -410,7 +410,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             enemyBase.animator.Play("跳躍準備");
             if (enemyBase.AttackCount > 1.5)
             {
-                targetPos = CurrentTarget;
+                targetPos = CurrentTarget != null ? CurrentTarget : enemyBase.transform;
                 StopAllCoroutines();
                 StartCoroutine(MoveInArc());
 
@@ -573,7 +573,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             enemyBase.animator.Play("跳躍準備");
             if (enemyBase.AttackCount > 0.8)
             {
-                targetPos = CurrentTarget;
+                targetPos = CurrentTarget != null ? CurrentTarget : enemyBase.transform;
                 StopAllCoroutines();
                 StartCoroutine(MoveInArc());
 
@@ -821,7 +821,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             enemyBase.animator.Play("跳躍準備");
             if (enemyBase.AttackCount > 0.8)
             {
-                targetPos = CurrentTarget;
+                targetPos = CurrentTarget != null ? CurrentTarget : enemyBase.transform;
                 StopAllCoroutines();
                 StartCoroutine(MoveInArc());
 
@@ -951,7 +951,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             enemyBase.animator.Play("跳躍準備");
             if (enemyBase.AttackCount > 0.8)
             {
-                targetPos = CurrentTarget;
+                targetPos = CurrentTarget != null ? CurrentTarget : enemyBase.transform;
                 StopAllCoroutines();
                 StartCoroutine(MoveInArc());
 

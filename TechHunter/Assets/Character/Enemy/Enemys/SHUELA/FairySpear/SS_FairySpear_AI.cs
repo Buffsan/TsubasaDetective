@@ -191,7 +191,8 @@ public class SS_FairySpear_AI : EnemyMoveBase
                 PlayerDirSave = TargetDirection;
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
 
-                AttackArea.SetActive(true);
+                ConfigureSummonedAttack(AttackArea);
+        AttackArea.SetActive(true);
             }
         }
         if (enemyBase.mode == EnemyBase.ModeType.M4)
@@ -274,6 +275,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
     private void ShootBullet(Vector2 dir)
     {
         GameObject bullet = Instantiate(Arrow, transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(bullet);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         rb.velocity = dir * 1;
         Destroy(bullet,20);

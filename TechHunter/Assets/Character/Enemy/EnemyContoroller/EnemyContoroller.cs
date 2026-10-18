@@ -48,7 +48,8 @@ public class EnemyContoroller : EnemyBase
     // 登録したタイプで警告を生成する（角度や親子付けも指定可能）。
     public GameObject SpawnAttackWarning(int warningType, Vector3 position,
         Quaternion rotation, float duration, Transform parent = null,
-        float extraLifetime = 0.2f, bool syncAnimation = true)
+        float extraLifetime = 0.2f, bool syncAnimation = true,
+        Vector3? localScale = null)
     {
         if (!HasAttackWarningPrefab(warningType))
         {
@@ -57,17 +58,19 @@ public class EnemyContoroller : EnemyBase
         }
 
         return SpawnAttackWarningPrefab(attackWarningPrefabs[warningType],
-            position, rotation, duration, parent, extraLifetime, syncAnimation);
+            position, rotation, duration, parent, extraLifetime, syncAnimation, localScale);
     }
 
     // 既存の個別Prefabを使う場合も、生成・時間管理を共通化できる。
     public GameObject SpawnAttackWarningPrefab(GameObject prefab, Vector3 position,
         Quaternion rotation, float duration, Transform parent = null,
-        float extraLifetime = 0.2f, bool syncAnimation = true)
+        float extraLifetime = 0.2f, bool syncAnimation = true,
+        Vector3? localScale = null)
     {
         if (prefab == null) return null;
 
         GameObject instance = Instantiate(prefab, position, rotation, parent);
+        if (localScale.HasValue) instance.transform.localScale = localScale.Value;
         if (syncAnimation && duration > 0f)
         {
             SaveComponent save = instance.GetComponentInChildren<SaveComponent>(true);

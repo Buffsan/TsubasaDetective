@@ -5,6 +5,71 @@ using UnityEngine;
 public class CG_Knght : EnemyBase
 {
     public EnemyMoveBase moveBase;
+
+    // この旧式騎士はEnemyContorollerを継承していないため独自に互換対応。
+    [SerializeField] EnemyContoroller.TargetType targetType = EnemyContoroller.TargetType.PlayerOnly;
+    [SerializeField] bool targetAllFactions = true;
+    [SerializeField] Faction targetFactions = Faction.None;
+    [SerializeField] Faction excludedTargetFactions = Faction.None;
+    [SerializeField, Min(0.05f)] float targetSearchInterval = 0.25f;
+    public Transform CurrentTarget { get; private set; }
+    float targetSearchTimer;
+
+    float TargetDistance => CurrentTarget != null
+        ? Vector2.Distance(CurrentTarget.position, transform.position)
+        : float.PositiveInfinity;
+
+    void RefreshTarget()
+    {
+        if (targetType == EnemyContoroller.TargetType.PlayerOnly)
+        {
+            CurrentTarget = Player != null ? Player.transform : null;
+            return;
+        }
+        if (moveType == MoveType.Attack) return;
+        targetSearchTimer += Time.fixedDeltaTime;
+        if (targetSearchTimer < Mathf.Max(0.05f, targetSearchInterval) &&
+            CurrentTarget != null) return;
+        if (targetSearchTimer < Mathf.Max(0.05f, targetSearchInterval) &&
+            CurrentTarget == null && targetSearchTimer > Time.fixedDeltaTime) return;
+        targetSearchTimer = 0f;
+
+        Transform enemy = null;
+        float distanceSqr = float.PositiveInfinity;
+        SystemManager manager = SystemManager.Instance;
+        if (manager != null && manager.AllEnemy != null)
+        {
+            foreach (GameObject obj in manager.AllEnemy)
+            {
+                if (obj == null || obj == gameObject) continue;
+                EnemyBase other = obj.GetComponent<EnemyBase>();
+                if (other == null || other == this || other.HP <= 0f ||
+                    other.status == Status.Die) continue;
+                if ((other.Factions & excludedTargetFactions) != Faction.None) continue;
+                if (!targetAllFactions && (other.Factions & targetFactions) == Faction.None)
+                    continue;
+                float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
+                if (sqr < distanceSqr)
+                {
+                    distanceSqr = sqr;
+                    enemy = other.transform;
+                }
+            }
+        }
+
+        if (targetType == EnemyContoroller.TargetType.EnemyOnly)
+            CurrentTarget = enemy;
+        else if (Player == null)
+            CurrentTarget = enemy;
+        else if (enemy == null)
+            CurrentTarget = Player.transform;
+        else
+        {
+            float playerSqr = ((Vector2)(Player.transform.position - transform.position)).sqrMagnitude;
+            CurrentTarget = distanceSqr < playerSqr ? enemy : Player.transform;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -63,6 +128,14 @@ public class CG_Knght : EnemyBase
     }
     private void isNomalActive()
     {
+        RefreshTarget();
+        if (targetType == EnemyContoroller.TargetType.EnemyOnly &&
+            CurrentTarget == null && moveType != MoveType.Attack)
+        {
+            rb.velocity = Vector2.zero;
+            animator.SetInteger("Anim", 0);
+            return;
+        }
         switch (moveType) 
         {
             case MoveType.Move:
@@ -74,7 +147,7 @@ public class CG_Knght : EnemyBase
         
         }
 
-        if (PlayerDistance < 2.4) 
+        if (TargetDistance < 2.4f) 
         { 
         moveType = MoveType.Attack;
         }
@@ -85,13 +158,13 @@ public class CG_Knght : EnemyBase
         if (mode == EnemyBase.ModeType.M1)
         {
 
-            //���ʉ�
+            //Œø‰Ê‰¹
             audioManager.PlaySE(AttackStayAudio);
             AttackCount = 0;
             mode = EnemyBase.ModeType.M2;
         }
         if (mode == EnemyBase.ModeType.M2) 
-        {isPlayerLookBase();
+        {isPlayerLook();
             rb.velocity = new Vector2(rb.velocity.x*0.8f,rb.velocity.y*0.8f);
             animator.SetInteger("Anim", 2);
             if (AttackCount > 0.4) 
@@ -102,7 +175,7 @@ public class CG_Knght : EnemyBase
         }if (mode == EnemyBase.ModeType.M3) 
         {
 
-            //���ʉ�
+            //Œø‰Ê‰¹
             audioManager.PlaySE(AttackStayAudio);
             AttackCount = 0;
             mode = EnemyBase.ModeType.M4;
@@ -111,7 +184,7 @@ public class CG_Knght : EnemyBase
         {
             
             rb.velocity = PlayerDirection.normalized * 4f;
-            float Distance = Vector2.Distance(Player.transform.position, transform.position);
+            float Distance = TargetDistance;
             if (Distance < 0.3) 
             {
                 rb.velocity = rb.velocity * 0.1f;
@@ -167,9 +240,15 @@ public class CG_Knght : EnemyBase
     }
     void isPlayerLook() 
     {
-        PlayerDirection = Player.transform.position - transform.position;
-        PlayerDistance = Vector2.Distance(Player.transform.position, transform.position);
-        if (Player.transform.position.x < transform.position.x)
+        if (CurrentTarget == null)
+        {
+            PlayerDirection = Vector2.zero;
+            PlayerDistance = float.PositiveInfinity;
+            return;
+        }
+        PlayerDirection = CurrentTarget.position - transform.position;
+        PlayerDistance = TargetDistance;
+        if (CurrentTarget.position.x < transform.position.x)
         {
             EnemyAnimBody.transform.localScale = new Vector2(-2.5f, 2.5f);
         }else{

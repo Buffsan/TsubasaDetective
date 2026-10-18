@@ -9,6 +9,26 @@ public class EnemyAttack : MonoBehaviour
     [SerializeField] Faction attackableFactions = Faction.None;
     [SerializeField] bool attackPlayer = true; // 既存PrefabのPlayerArea攻撃を維持
     [SerializeField] bool canAttackSelf = false;
+    [Header("攻撃倍率（100 = 元の攻撃力100%）")]
+    [SerializeField, Min(0f)] float attackPowerPercent = 100f;
+
+    public float AttackPowerPercent => attackPowerPercent;
+
+    // 通常Prefabの設定を維持したまま、生成時だけ任意に上書きできる。
+    public void ConfigureAttack(EnemyBase owner, float powerPercent, Faction targetFactions, bool hitPlayer)
+    {
+        enemyBase = owner;
+        attackPowerPercent = Mathf.Max(0f, powerPercent);
+        attackableFactions = targetFactions;
+        attackPlayer = hitPlayer;
+    }
+
+    // 対象設定を変更せず、攻撃倍率と攻撃者だけ変更する場合。
+    public void ConfigureAttack(EnemyBase owner, float powerPercent)
+    {
+        enemyBase = owner;
+        attackPowerPercent = Mathf.Max(0f, powerPercent);
+    }
 
     public enum DellCondition
     {
@@ -64,13 +84,13 @@ public class EnemyAttack : MonoBehaviour
         if (target == null) return;
         if (enemyBase != null)
         {
-            float damage = enemyBase.ATK;
+            float damage = enemyBase.ATK * (attackPowerPercent / 100f);
             if (isEnemyTarget)
                 damage *= Mathf.Max(1f, enemyBase.MAXHP / 100f);
             target.Damage(damage, 0, 0, false);
         }
         else if (charadata != null)
-            target.Damage(charadata.ATK, 0, 0, false);
+            target.Damage(charadata.ATK * (attackPowerPercent / 100f), 0, 0, false);
     }
 
     public void DestroyArea()

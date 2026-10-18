@@ -103,7 +103,7 @@ public class SB_HermitCrab_AI : EnemyMoveBase
                     AttackNext();
                     targetPos = TargetPosition;
                     enemyBase.rb.velocity = Vector2.zero;
-                    SpawnObjectNow(Denger_AttackArea,TargetPosition ,1);
+                    SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea, TargetPosition, Quaternion.identity, 1f, null, 0f, false);
                 }
             }
             if (A_Phase == 1)
@@ -193,7 +193,7 @@ public class SB_HermitCrab_AI : EnemyMoveBase
         Vector2 startPos = enemyBase.transform.position;
         Vector2 endPos = targetPos;
 
-        GameObject CL_AttackPPP = Instantiate(Denger_AttackArea, endPos, Quaternion.identity);
+        GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea, endPos, Quaternion.identity, 1.5f, null, 0f, false);
 
         Destroy(CL_AttackPPP, 1.5f);
         float elapsedTime = 0f;

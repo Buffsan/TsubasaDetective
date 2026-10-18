@@ -16,18 +16,18 @@ public class CG_RightKnight : EnemyMoveBase
 
     public override void EnemyMovePlay()
     {
-        enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
+        RefreshTargetInfo();
 
         if (!enemyBase.ALL_System.systemManager.isMinEnemy) 
         {
             enemyContoroller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Out;
         }
 
-        if (enemyBase.PlayerDistance < 5)
-        {//enemyBase.isPlayerLookBase();
-            enemyBase.isPlayerLookBase();
+        if (TargetDistance < 5)
+        {//LookAtCurrentTarget();
+            LookAtCurrentTarget();
 
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
             enemyBase.animator.SetInteger("Anim", 1);
         }
         else 
@@ -79,7 +79,7 @@ public class CG_RightKnight : EnemyMoveBase
                     if (SaveDistance < 0.5)
                     {
                         enemyBase.rb.velocity = Vector2.zero;
-                        //Debug.Log("ˆÚ“®Œo˜HÄŒŸõ" + SaveDistance);
+                        //Debug.Log("Ë†Ãšâ€œÂ®Å’oËœHÂÃ„Å’Å¸ÂÃµ" + SaveDistance);
                         PhaseCount = 1;
                         Phase = 0;
                         Vector2 SavePosPhase = new Vector2(999, 999);
@@ -107,7 +107,7 @@ public class CG_RightKnight : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 0.2)
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
@@ -116,8 +116,8 @@ public class CG_RightKnight : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            //enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized *enemyBase.SPEED * 1.2f;
+            //LookAtCurrentTarget();
+            enemyBase.rb.velocity = TargetDirection.normalized *enemyBase.SPEED * 1.2f;
             if (enemyBase.AttackCount > 0.5f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;

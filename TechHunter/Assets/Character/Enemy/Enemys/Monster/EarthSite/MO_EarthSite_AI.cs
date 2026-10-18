@@ -44,17 +44,17 @@ public class MO_EarthSite_AI : EnemyMoveBase
             }
         }
 
-        enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
+        RefreshTargetInfo();
         enemyBase.animator.SetInteger("Anim",1);
-        enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
-        float angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
+        RefreshTargetInfo();
+        float angle = Mathf.Atan2(TargetDirection.y, TargetDirection.x) * Mathf.Rad2Deg;
         if (trune)
         {
-            angle += 100 - enemyBase.PlayerDistance * 12;
+            angle += 100 - TargetDistance * 12;
         }
         else 
         {
-            angle -= 100 - enemyBase.PlayerDistance * 12;
+            angle -= 100 - TargetDistance * 12;
         }
         Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
@@ -81,18 +81,18 @@ public class MO_EarthSite_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 1)
             {
                 enemyBase.animator.SetInteger("Anim", 3);
-                SavePos = enemyBase.Player.transform.position;
+                SavePos = TargetPosition;
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
             }
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            //enemyBase.isPlayerLookBase();
+            //LookAtCurrentTarget();
             float SaveDistance = Vector2.Distance(SavePos,enemyBase.transform.position);
             Vector2 SaveDirection = SavePos - (Vector2)enemyBase.transform.position;
             if (SaveDistance > 0.3f)

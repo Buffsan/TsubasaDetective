@@ -113,12 +113,14 @@ public class EnemyMoveBase : MonoBehaviour
         EnemyContoroller controller = enemyBase as EnemyContoroller;
         if (controller != null)
         {
-            if (controller.HasAttackWarningPrefab(warningType))
-                return controller.SpawnAttackWarning(warningType, position, rotation,
-                    duration, parent, extraLifetime, syncAnimation, localScale);
-
+            // 既存の敵固有Prefabを優先する。共通リスト[0]で上書きすると
+            // 警告の幅・長さ・子階層のスケール等が失われるため。
             if (fallbackPrefab != null)
                 return controller.SpawnAttackWarningPrefab(fallbackPrefab, position, rotation,
+                    duration, parent, extraLifetime, syncAnimation, localScale);
+
+            if (controller.HasAttackWarningPrefab(warningType))
+                return controller.SpawnAttackWarning(warningType, position, rotation,
                     duration, parent, extraLifetime, syncAnimation, localScale);
 
             // 新規のタイプ指定でPrefabが未登録ならControllerが警告を出す。

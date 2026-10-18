@@ -22,7 +22,7 @@ public class TF_FishHanter_Shield_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 1)
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
@@ -31,8 +31,8 @@ public class TF_FishHanter_Shield_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 1.3f;
+            LookAtCurrentTarget();
+            enemyBase.rb.velocity = TargetDirection.normalized * 1.3f;
             if (enemyBase.AttackCount > 0.8)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;
@@ -57,7 +57,7 @@ public class TF_FishHanter_Shield_AI : EnemyMoveBase
 
             for (int i = 0; i < RockNumbber; i++) 
             {
-                StartCoroutine(PlaceObject(i, enemyBase.transform.position.normalized, enemyBase.Player.transform.position.normalized));
+                StartCoroutine(PlaceObject(i, enemyBase.transform.position.normalized, TargetPosition.normalized));
             }
 
             enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
@@ -83,15 +83,15 @@ public class TF_FishHanter_Shield_AI : EnemyMoveBase
         yield return new WaitForSeconds(index / 30);
 
 
-        // ‹——£‚É‰ž‚¶‚Ä‘O•û‚É”z’u
+        // è·é›¢ã«å¿œã˜ã¦å‰æ–¹ã«é…ç½®
         float distance = baseDistance * (index + 5);
         Vector3 basePos = savepos + playerpos * distance;
 
-        // ˆÊ’u‚Éƒ‰ƒ“ƒ_ƒ€‚ÈƒYƒŒ‚ð’Ç‰Ái‰~Œ`”ÍˆÍ“à‚Åj
+        // ä½ç½®ã«ãƒ©ãƒ³ãƒ€ãƒ ãªã‚ºãƒ¬ã‚’è¿½åŠ ï¼ˆå††å½¢ç¯„å›²å†…ã§ï¼‰
         Vector2 randomCircle = Random.insideUnitCircle * randomOffset * index;
         Vector3 finalPos = basePos + new Vector3(randomCircle.x, randomCircle.y, 0);
 
-        // ƒIƒuƒWƒFƒNƒg‚ðÝ’u
+        // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¨­ç½®
         GameObject CL_litSlash = Instantiate(RockNeedle, finalPos, Quaternion.identity);
         Destroy( CL_litSlash ,5);
     }

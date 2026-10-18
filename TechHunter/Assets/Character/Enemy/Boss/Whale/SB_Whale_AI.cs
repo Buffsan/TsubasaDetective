@@ -426,9 +426,9 @@ public class SB_Whale_AI : Boss_MoveBase
             LookAtCurrentTarget();
             enemyBase.animator.Play("攻撃待機", 0, 0);
 
-            GameObject CL_AttackPPP = Instantiate(Denger_4AttackArea, enemyBase.transform.position, Quaternion.identity);
+            GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_4AttackArea, enemyBase.transform.position, Quaternion.identity, 1f, null, 0f, false);
             CL_AttackPPP.transform.up = TargetDirection.normalized;
-            Destroy(CL_AttackPPP, 1);
+            
 
             NextPhase();
         }
@@ -885,9 +885,9 @@ public class SB_Whale_AI : Boss_MoveBase
         Vector2 startPos = enemyBase.transform.position;
         Vector2 endPos = targetPos;
 
-        GameObject CL_AttackPPP = Instantiate(Denger_AttackArea_Stand, endPos, Quaternion.identity);
+        GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea_Stand, endPos, Quaternion.identity, 1.5f, null, 0f, false);
 
-        Destroy(CL_AttackPPP, 1.5f);
+        
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)

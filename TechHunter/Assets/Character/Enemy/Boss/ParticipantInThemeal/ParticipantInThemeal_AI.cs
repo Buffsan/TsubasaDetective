@@ -340,6 +340,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 {
 
                     GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
 
                     Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30 * i) * TargetDirection.normalized;
 
@@ -362,6 +365,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             else
             {
                 GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
                 if (TargetDirection.x > 0)
                 {
                     CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
@@ -465,6 +471,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
             if (TargetDirection.x > 0)
             {
                 CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
@@ -520,6 +529,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
             if (TargetDirection.x > 0)
             {
                 CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
@@ -630,6 +642,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
             CL_Slash.transform.up = TargetDirection.normalized;
             Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
             rb.velocity = TargetDirection.normalized *0.5f;
@@ -694,6 +709,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
             CL_Slash.transform.up = TargetDirection.normalized;
             Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
             rb.velocity = TargetDirection.normalized * 14f;
@@ -746,6 +764,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
 
                 Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30 * i) * TargetDirection.normalized;
                 
@@ -885,6 +906,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
 
                 Vector2 NewLookDirection = Quaternion.Euler(0, 0, -40 + 20 * i) * TargetDirection.normalized;
 
@@ -900,6 +924,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
 
                 Vector2 NewLookDirection = Quaternion.Euler(0, 0, -40 + 40 * i) * TargetDirection.normalized;
 
@@ -1010,6 +1037,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 {
 
                     GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
                     CL_Slash.transform.up = TargetDirection.normalized;
 
                     float angle = 360 / 10;
@@ -1026,6 +1056,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             else
             {
                 GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
                 if (TargetDirection.x > 0)
                 {
                     CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);

@@ -164,8 +164,8 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
         {
             if (enemyBase.AttackCount > 1)
             {
-                LookAtActiveTarget();
-                PlayerDirSave = ActiveTargetDirection;
+                LookAtCurrentTarget();
+                PlayerDirSave = TargetDirection;
                 Fire(PlayerDirSave.normalized);
                 enemyBase.animator.SetInteger("Anim", 2);
                 enemyBase.AttackCount = 0;
@@ -193,7 +193,7 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
             if (enemyBase.AttackCount > 1)
             {
                 Vector2 randomPos = new Vector2(Random.Range(-6,6), Random.Range(-6, 6));
-                enemyBase.transform.position = ActiveTargetPosition + Vector2.one * randomPos;
+                enemyBase.transform.position = (Vector2)TargetPosition + Vector2.one * randomPos;
                 enemyBase.DamageBody.SetActive(true);
                 enemyBase.EnemyAnimBody.SetActive(true);
 

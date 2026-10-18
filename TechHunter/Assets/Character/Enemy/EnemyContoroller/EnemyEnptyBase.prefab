@@ -202,6 +202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b5af40ab1267e74385425600ec45b46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  factions: 0
   charadata: {fileID: 0}
   CutSceneData: {fileID: 0}
   DieEffect: {fileID: 8154208296095492929, guid: af818acf56f0e3447abac572065cc876, type: 3}
@@ -265,6 +266,17 @@ MonoBehaviour:
   moveBase: {fileID: 0}
   EnemyMoveBaseObject: {fileID: 0}
   Choice_MoveToBase: 0
+  targetType: 0
+  targetPriority: 0
+  targetAllFactions: 1
+  targetFactions: 0
+  excludedTargetFactions: 0
+  enemyFirstPlayerDistance: 0
+  targetSearchInterval: 0.25
+  attackWarningPrefabs:
+  - {fileID: 8317282966728204219, guid: f065bb0c5e9e4ee4481698931e5c0cc8, type: 3}
+  - {fileID: 8317282966728204219, guid: f065bb0c5e9e4ee4481698931e5c0cc8, type: 3}
+  - {fileID: 8317282966728204219, guid: f065bb0c5e9e4ee4481698931e5c0cc8, type: 3}
 --- !u!50 &8199584674527002638
 Rigidbody2D:
   serializedVersion: 4
@@ -374,6 +386,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 5409718167837950281}
   Coin: {fileID: 4641837086784837186, guid: 70f9ae5caf0c7ed4a9da3c0392d71e54, type: 3}
+  passDamageAreas: []
+  DamageType: 0
   buffs: []
   ConfusionHP: 0
   DF: 0

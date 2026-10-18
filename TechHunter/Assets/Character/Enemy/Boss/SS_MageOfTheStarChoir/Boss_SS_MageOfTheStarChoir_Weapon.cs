@@ -53,7 +53,7 @@ public class Boss_SS_MageOfTheStarChoir_Weapon : EnemyMoveBase
             if (enemyBase.AttackCount > AttackStartTime)
             {
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
-                enemyBase.animator.Play("”ñ•\Ž¦”­ŽË");
+                enemyBase.animator.Play("攻撃");
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
                 shotBullet();

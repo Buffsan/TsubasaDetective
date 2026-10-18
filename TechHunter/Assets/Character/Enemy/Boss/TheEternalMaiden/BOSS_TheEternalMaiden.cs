@@ -645,7 +645,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
 
         // 1. 爆発後、低速でプレイヤーからのけぞりながら高速回転 → 徐々に減速。
         // 回転の累積角度を保持するので、痙攣へ移る直前に角度が飛ばない。
-        Vector2 recoilDirection = enemyBase.Player != null
+        Vector2 recoilDirection = CurrentTarget != null
             ? (start - (Vector2)TargetPosition)
             : (start - arenaCenter);
         if (recoilDirection.sqrMagnitude < 0.0001f) recoilDirection = Vector2.right;
@@ -748,7 +748,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         //    帰還完了から投擲終了までの総時間を returnToThrowSeconds に揃える。
         //    複製機は carryAnchor の子なので、本体の周回に追従する。
         float orbitSeconds = Mathf.Max(0f, returnToThrowSeconds - Mathf.Max(0f, throwSeconds));
-        if (orbitSeconds > 0f && enemyBase.Player != null)
+        if (orbitSeconds > 0f && CurrentTarget != null)
         {
             Vector2 orbitCenter = TargetPosition;
             Vector2 initialOffset = (Vector2)transform.position - orbitCenter;
@@ -796,7 +796,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             carriedMachine.transform.SetParent(null, true);
             Vector3 throwStart = carriedMachine.transform.position;
             Vector3 target = landingPointOverride != null ? landingPointOverride.position :
-                (enemyBase.Player != null ? TargetPosition : transform.position);
+                (CurrentTarget != null ? TargetPosition : transform.position);
             target += (Vector3)landingOffset;
             target.z = throwStart.z;
             t = 0f;
@@ -972,7 +972,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         else
         {
             // 最初の3セットは従来のA4と同様、発射時点のプレイヤーを狙う。
-            direction = enemyBase.Player != null
+            direction = CurrentTarget != null
                 ? (Vector2)TargetPosition - origin
                 : origin - (Vector2)transform.position;
         }

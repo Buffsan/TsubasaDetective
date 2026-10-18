@@ -132,6 +132,7 @@ public class KINGYO_Wakin_AI : EnemyMoveBase
                 enemyBase.AttackCount = 0;
 
                 GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Attack);
                 EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
                 enemyAttack.enemyBase = enemyBase;
                 Destroy(CL_Attack, 0.1f);
@@ -256,6 +257,7 @@ public class KINGYO_Wakin_AI : EnemyMoveBase
         public void SpawnRockNeedle(Vector2 pos)
         {
             GameObject CL_Rock = Instantiate(RockNeedle, pos, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Rock);
             Destroy(CL_Rock, 5);
         }
     private IEnumerator MoveInArc()

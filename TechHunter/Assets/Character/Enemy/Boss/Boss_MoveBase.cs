@@ -173,15 +173,53 @@ public class Boss_MoveBase : MonoBehaviour
         Destroy(CL_Object, DestroyTime);
         return CL_Object;
     }
-    public GameObject DengerAreaSpawn(GameObject Effect,Vector2 Pos,float AnimationSpeed) 
+    // ボス専用Controllerから警告を生成。既存Prefabを渡す場合はその形状と元サイズを優先する。
+    public GameObject SpawnAttackWarning(int warningType, GameObject fallbackPrefab,
+        Vector3 position, Quaternion rotation, float duration, Transform parent = null,
+        float extraLifetime = 0.2f, bool syncAnimation = true,
+        Vector3? localScale = null)
     {
+        Boss_Controller controller = enemyBase as Boss_Controller;
+        if (controller != null)
+        {
+            if (fallbackPrefab != null)
+                return controller.SpawnAttackWarningPrefab(fallbackPrefab, position, rotation,
+                    duration, parent, extraLifetime, syncAnimation, localScale);
 
-        GameObject CL_dengerArea = Instantiate(Effect,Pos,Quaternion.identity);
-        Clone_DengerObjects.Add(CL_dengerArea);
-        SaveComponent saveComponent = CL_dengerArea.GetComponent<SaveComponent>();
-        saveComponent.animator.speed = 1.0f / AnimationSpeed;
-        Destroy(CL_dengerArea, AnimationSpeed + 0.2f);
-        return CL_dengerArea;
+            return controller.SpawnAttackWarning(warningType, position, rotation,
+                duration, parent, extraLifetime, syncAnimation, localScale);
+        }
+
+        // Boss_Controller以外から使用されていた場合も元の動作を維持する。
+        if (fallbackPrefab == null) return null;
+        GameObject instance = Instantiate(fallbackPrefab, position, rotation, parent);
+        if (localScale.HasValue) instance.transform.localScale = localScale.Value;
+        if (syncAnimation && duration > 0f)
+        {
+            SaveComponent save = instance.GetComponentInChildren<SaveComponent>(true);
+            if (save != null && save.animator != null)
+                save.animator.speed = 1f / duration;
+        }
+        Destroy(instance, Mathf.Max(0.01f, duration + extraLifetime));
+        return instance;
+    }
+
+    // 旧APIを残し、警告Prefabを共通管理・破棄対象にする。
+    public GameObject DengerAreaSpawn(GameObject Effect, Vector2 Pos, float AnimationSpeed)
+    {
+        GameObject warning = SpawnAttackWarning(EnemyContoroller.WarningRectangle,
+            Effect, Pos, Quaternion.identity, AnimationSpeed);
+        if (warning != null) Clone_DengerObjects.Add(warning);
+        return warning;
+    }
+
+    // 新規ボスは登録した形状番号で直接呼べる。
+    public GameObject DengerAreaSpawn(int warningType, Vector2 pos, float duration)
+    {
+        GameObject warning = SpawnAttackWarning(warningType, null,
+            pos, Quaternion.identity, duration);
+        if (warning != null) Clone_DengerObjects.Add(warning);
+        return warning;
     }
 
     public void AttackFinish() 

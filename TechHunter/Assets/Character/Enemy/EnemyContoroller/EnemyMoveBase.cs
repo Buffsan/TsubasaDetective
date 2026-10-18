@@ -107,22 +107,24 @@ public class EnemyMoveBase : MonoBehaviour
     // 共通リスト未設定なら既存Prefabへフォールバックし、旧敵の表示を維持する。
     public GameObject SpawnAttackWarning(int warningType, GameObject fallbackPrefab,
         Vector3 position, Quaternion rotation, float duration, Transform parent = null,
-        float extraLifetime = 0.2f, bool syncAnimation = true)
+        float extraLifetime = 0.2f, bool syncAnimation = true,
+        Vector3? localScale = null)
     {
         EnemyContoroller controller = enemyBase as EnemyContoroller;
         if (controller != null)
         {
             if (controller.HasAttackWarningPrefab(warningType))
                 return controller.SpawnAttackWarning(warningType, position, rotation,
-                    duration, parent, extraLifetime, syncAnimation);
+                    duration, parent, extraLifetime, syncAnimation, localScale);
 
             return controller.SpawnAttackWarningPrefab(fallbackPrefab, position, rotation,
-                duration, parent, extraLifetime, syncAnimation);
+                duration, parent, extraLifetime, syncAnimation, localScale);
         }
 
         // EnemyContoroller以外の旧AIも従来どおり生成可能。
         if (fallbackPrefab == null) return null;
         GameObject instance = Instantiate(fallbackPrefab, position, rotation, parent);
+        if (localScale.HasValue) instance.transform.localScale = localScale.Value;
         if (syncAnimation && duration > 0f)
         {
             SaveComponent save = instance.GetComponentInChildren<SaveComponent>(true);

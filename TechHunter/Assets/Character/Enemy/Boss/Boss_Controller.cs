@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -17,6 +18,81 @@ public class Boss_Controller : EnemyBase
     [SerializeField] Faction excludedTargetFactions = Faction.None;
     [SerializeField, Min(0f)] float enemyFirstPlayerDistance;
     [SerializeField, Min(0.05f)] float targetSearchInterval = 0.25f;
+
+    // 警告タイプはリストの要素番号。追加の形状はリスト末尾へ登録できる。
+    public const int WarningRectangle = 0;
+    public const int WarningCircle = 1;
+    public const int WarningSemicircle = 2;
+
+    [Header("攻撃警告Prefab（0=四角 / 1=円 / 2=半円、以降追加可）")]
+    [SerializeField] List<GameObject> attackWarningPrefabs = new List<GameObject>();
+
+    // このControllerを通じて生成した警告をまとめて管理する。
+    readonly List<GameObject> activeAttackWarnings = new List<GameObject>();
+    public IReadOnlyList<GameObject> ActiveAttackWarnings => activeAttackWarnings;
+
+    public bool HasAttackWarningPrefab(int warningType)
+    {
+        return warningType >= 0 &&
+            warningType < attackWarningPrefabs.Count &&
+            attackWarningPrefabs[warningType] != null;
+    }
+
+    // 簡易版：形状、位置、表示秒数、角度、サイズを指定。
+    public GameObject SpawnAttackWarning(int warningType, Vector3 position,
+        float duration, float angleDegrees = 0f, Vector3? localScale = null)
+    {
+        return SpawnAttackWarning(warningType, position,
+            Quaternion.Euler(0f, 0f, angleDegrees), duration,
+            null, 0.2f, true, localScale);
+    }
+
+    // 登録したタイプで警告を生成する（角度や親子付けも指定可能）。
+    public GameObject SpawnAttackWarning(int warningType, Vector3 position,
+        Quaternion rotation, float duration, Transform parent = null,
+        float extraLifetime = 0.2f, bool syncAnimation = true,
+        Vector3? localScale = null)
+    {
+        if (!HasAttackWarningPrefab(warningType))
+        {
+            Debug.LogWarning("未登録の攻撃警告タイプ: " + warningType, this);
+            return null;
+        }
+
+        return SpawnAttackWarningPrefab(attackWarningPrefabs[warningType],
+            position, rotation, duration, parent, extraLifetime, syncAnimation, localScale);
+    }
+
+    // 既存の個別Prefabを使う場合も、生成・時間管理を共通化できる。
+    public GameObject SpawnAttackWarningPrefab(GameObject prefab, Vector3 position,
+        Quaternion rotation, float duration, Transform parent = null,
+        float extraLifetime = 0.2f, bool syncAnimation = true,
+        Vector3? localScale = null)
+    {
+        if (prefab == null) return null;
+
+        GameObject instance = Instantiate(prefab, position, rotation, parent);
+        if (localScale.HasValue) instance.transform.localScale = localScale.Value;
+        if (syncAnimation && duration > 0f)
+        {
+            SaveComponent save = instance.GetComponentInChildren<SaveComponent>(true);
+            if (save != null && save.animator != null)
+                save.animator.speed = 1f / duration;
+        }
+
+        activeAttackWarnings.RemoveAll(warning => warning == null);
+        activeAttackWarnings.Add(instance);
+        Destroy(instance, Mathf.Max(0.01f, duration + extraLifetime));
+        return instance;
+    }
+
+    // スタン等で警告を取り消したいAIから明示的に呼ぶ。
+    public void ClearAttackWarnings()
+    {
+        foreach (GameObject warning in activeAttackWarnings)
+            if (warning != null) Destroy(warning);
+        activeAttackWarnings.Clear();
+    }
 
     public EnemyContoroller.TargetType TargetMode => targetType;
     public Transform CurrentTarget { get; private set; }

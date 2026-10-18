@@ -134,10 +134,9 @@ public class SB_Scallop_AI : EnemyMoveBase
                 enemyBase.mode = EnemyBase.ModeType.M5;
                 enemyBase.AttackCount = 0;
 
-                GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
-                EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
-                enemyAttack.enemyBase = enemyBase;
-                Destroy(CL_Attack, 0.1f);
+                EnemyContoroller controller = enemyBase as EnemyContoroller;
+                if (controller != null)
+                    controller.SpawnAttack(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity, 0.1f);
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
                 StandOk = false;
 
@@ -173,6 +172,9 @@ public class SB_Scallop_AI : EnemyMoveBase
             {
                 enemyBase.animator.Play("歩行");
 
+                EnemyContoroller controller = enemyBase as EnemyContoroller;
+                if (controller != null)
+                    controller.ConfigureAttackObject(AssultAttack, 100f);
                 AssultAttack.SetActive(true);
                 enemyBase.mode = EnemyBase.ModeType.M8; enemyBase.AttackCount = 0;
             }
@@ -216,6 +218,9 @@ public class SB_Scallop_AI : EnemyMoveBase
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
+                EnemyContoroller controller = enemyBase as EnemyContoroller;
+                if (controller != null)
+                    controller.ConfigureAttackObject(AttackArea, 100f);
                 AttackArea.SetActive(true);
 
             }
@@ -286,8 +291,9 @@ public class SB_Scallop_AI : EnemyMoveBase
     }
     public void SpawnRockNeedle(Vector2 pos)
     {
-        GameObject CL_Rock = Instantiate(RockNeedle, pos, Quaternion.identity);
-        Destroy(CL_Rock, 5);
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null)
+            controller.SpawnAttack(RockNeedle, pos, Quaternion.identity, 5f);
     }
     private IEnumerator MoveInArc()
     {

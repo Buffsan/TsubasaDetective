@@ -70,3 +70,6 @@ MonoBehaviour:
   dashSpeedMultiplier: 4
   dashDuration: 0.35
   meleeRecoveryTime: 0.3
+  stakeWarningPrefab: {fileID: 100100000, guid: db9f6feefa4afc64f9b51b2bfdf7e120, type: 3}
+  meleeWarningPrefab: {fileID: 100100000, guid: f6da1e462cfbdd14c8a8fc1fe8f9d611, type: 3}
+  warningDuration: 1

@@ -248,7 +248,7 @@ public class Boss_MovementTriangle_AI : Boss_MoveBase
             waitTime = 1.5f;
             LookAtCurrentTarget();
                 enemyBase.animator.Play("攻撃待機", 0, 0);
-                Vector3Int tile = GetTileBehindPlayer(tilemap, transform, CurrentTarget);
+                Vector3Int tile = GetTileBehindPlayer(tilemap, transform, CurrentTarget != null ? CurrentTarget : enemyBase.transform);
                 targetPos = (Vector3)tile;
                 saveTargetDir = (Vector2)targetPos - (Vector2)transform.position;
                 GameObject denger = DengerAreaSpawn(Denger_4AttackArea, enemyBase.transform.position, waitTime);
@@ -300,7 +300,7 @@ public class Boss_MovementTriangle_AI : Boss_MoveBase
             waitTime = 1;
             LookAtCurrentTarget();
             enemyBase.animator.Play("攻撃待機", 0, 0);
-            Vector3Int tile = GetTileBehindPlayer(tilemap, transform, CurrentTarget);
+            Vector3Int tile = GetTileBehindPlayer(tilemap, transform, CurrentTarget != null ? CurrentTarget : enemyBase.transform);
             targetPos = (Vector3)tile;
             saveTargetDir = (Vector2)targetPos - (Vector2)transform.position;
             GameObject denger = DengerAreaSpawn(Denger_HoukouAttackArea, enemyBase.transform.position, waitTime);

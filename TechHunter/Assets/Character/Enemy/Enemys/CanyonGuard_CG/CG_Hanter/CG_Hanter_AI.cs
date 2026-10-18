@@ -302,7 +302,7 @@ public class CG_Hanter_AI : EnemyMoveBase
             if (enemyBase.mode == EnemyBase.ModeType.M5)
             {
                 //GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
-            ConfigureSummonedAttack(CL_Attack);
+            ConfigureSummonedAttack(enemyBase.AttackArea);
                 // EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
                 //enemyAttack.enemyBase = enemyBase;
                 //Destroy(CL_Attack, 0.01f);

@@ -43,10 +43,10 @@ public class EnemyMoveBase : MonoBehaviour
         Tilemap tilemap =
             ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.StandFloor;
 
-        // ���S�Z��
+        // 中心セル
         Vector3Int centerCell = tilemap.WorldToCell(targetPos);
 
-        // �����_���p�x
+        // ランダム角度
         float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
 
         int dx = Mathf.RoundToInt(Mathf.Cos(angle) * tileDistance);
@@ -55,7 +55,7 @@ public class EnemyMoveBase : MonoBehaviour
         Vector3Int spawnCell =
             centerCell + new Vector3Int(dx, dy, 0);
 
-        // �t�H�[���o�b�N�F���S�Z��
+        // フォールバック：中心セル
         if (!tilemap.HasTile(spawnCell))
         {
             spawnCell = centerCell;
@@ -108,6 +108,21 @@ public class EnemyMoveBase : MonoBehaviour
     {
 
     }
+    // EnemyOnlyで攻撃対象がいなくなった際、1回だけ呼ばれる。
+    public virtual void EnemyFriendlyEnter()
+    {
+    }
+
+    // EnemyOnlyで攻撃対象がいない間、毎FixedUpdate呼ばれる。
+    public virtual void EnemyFriendlyPlay()
+    {
+    }
+
+    // 敵対勢力が現れ、通常戦闘に戻る際、1回だけ呼ばれる。
+    public virtual void EnemyFriendlyExit()
+    {
+    }
+
     public virtual void EnemyConfusionPlay() 
     { 
     

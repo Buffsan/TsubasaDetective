@@ -137,6 +137,7 @@ public class CG_CaptainKnight_AI : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M5)
         {
             GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Attack);
             EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
             for(int i =0; i < 1;i++)
             SpawnEnemySpawn(CG_Spear, transform.position, Quaternion.Euler(0, 0, 0), 3);

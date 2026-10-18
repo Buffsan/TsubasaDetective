@@ -55,16 +55,16 @@ public class CG_Sniper : EnemyMoveBase
 
     void shotBullet() 
     {
-        //Vector2 ShotPos = enemyBase.Player.transform.position - enemyBase.AttackSpawnPoint.transform.position;
+        //Vector2 ShotPos = TargetPosition - enemyBase.AttackSpawnPoint.transform.position;
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
-        rb.velocity = enemyBase.PlayerDirection.normalized * BulletSpeed;
+        rb.velocity = TargetDirection.normalized * BulletSpeed;
 
         EnemyAttack enemyAttack = CL_Arrow.GetComponent<EnemyAttack>();
         enemyAttack.enemyBase = enemyBase;
 
-        CL_Arrow.transform.up = enemyBase.PlayerDirection;
+        CL_Arrow.transform.up = TargetDirection;
         CL_Arrow.transform.Rotate(0, 0, 90);
 
         Destroy( CL_Arrow ,enemyBase.AttackDellTimer);

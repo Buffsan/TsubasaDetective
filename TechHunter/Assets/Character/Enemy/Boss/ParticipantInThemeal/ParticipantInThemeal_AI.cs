@@ -1110,6 +1110,13 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
     private IEnumerator MoveInArc()
     {
+        // 移動開始時点で攻撃対象が消滅している場合は中断する。
+        if (targetPos == null)
+        {
+            StandOk = true;
+            yield break;
+        }
+
         myRunningCoroutine = MoveInArc();
         // 移動開始前のBodyTypeを保存しておく
         var originalBodyType = enemyBase.rb.bodyType;
@@ -1151,8 +1158,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
         StandOk = true;
         // 念のため、最終的にきっちり目標地点に合わせる
-        transform.position = targetPos.position;
-        Debug.Log("目的地に到着！" + targetPos.position);
+        if (targetPos != null) transform.position = targetPos.position;
+        else transform.position = endPos;
+        Debug.Log("目的地に到着！" + transform.position);
     }
     private IEnumerator ChoiceMoveInArc(Vector2 Target)
     {
@@ -1192,7 +1200,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         // BodyTypeを元に戻す
         enemyBase.rb.bodyType = originalBodyType;
         StandOk = true;
-        Debug.Log("目的地に到着！" + targetPos.position);
+        Debug.Log("目的地に到着！" + endPos);
     }
     void NeedleSpawn(Vector2 Ptransform)
     {

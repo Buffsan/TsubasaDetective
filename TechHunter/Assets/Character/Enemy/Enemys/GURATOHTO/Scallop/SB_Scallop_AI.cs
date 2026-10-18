@@ -34,6 +34,8 @@ public class SB_Scallop_AI : EnemyMoveBase
     [SerializeField] GameObject Denger_AttackArea;
     [SerializeField] GameObject Denger_Attackarea1;
     [SerializeField] GameObject AttackArea;
+    [SerializeField] GameObject LandingAttackPrefab;
+    Vector2 lockedChargeDirection = Vector2.right;
 
     public override void EnemyConfusionPlay()
     {
@@ -136,7 +138,8 @@ public class SB_Scallop_AI : EnemyMoveBase
 
                 EnemyContoroller controller = enemyBase as EnemyContoroller;
                 if (controller != null)
-                    controller.SpawnAttack(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity, 0.1f);
+                    controller.SpawnAttack(LandingAttackPrefab != null ? LandingAttackPrefab : enemyBase.AttackArea,
+                        enemyBase.transform.position, Quaternion.identity, 0.1f);
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
                 StandOk = false;
 
@@ -161,7 +164,9 @@ public class SB_Scallop_AI : EnemyMoveBase
                 enemyBase.animator.Play("待機");
                 LookAtCurrentTarget();
                 GameObject CL_Denger = SpawnAttackWarning(EnemyContoroller.WarningRectangle, DengerLenght, transform.position, Quaternion.identity, 2f, null, 0f, false);
-                CL_Denger.transform.up = TargetDirection.normalized;
+                lockedChargeDirection = TargetDirection.normalized;
+                if (lockedChargeDirection == Vector2.zero) lockedChargeDirection = Vector2.right;
+                CL_Denger.transform.up = lockedChargeDirection;
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M7;
             }
@@ -181,7 +186,7 @@ public class SB_Scallop_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M8)
         {
-            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 6;
+            enemyBase.rb.velocity = lockedChargeDirection * enemyBase.SPEED * 6;
             if (enemyBase.AttackCount > 1)
             {
                 AssultAttack.SetActive(false);
@@ -208,7 +213,9 @@ public class SB_Scallop_AI : EnemyMoveBase
             LookAtCurrentTarget();
 
             GameObject CL_Denger = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_Attackarea1, transform.position, Quaternion.identity, 1f, null, 0f, false);
-            CL_Denger.transform.up = TargetDirection.normalized;
+            lockedChargeDirection = TargetDirection.normalized;
+            if (lockedChargeDirection == Vector2.zero) lockedChargeDirection = Vector2.right;
+            CL_Denger.transform.up = lockedChargeDirection;
             Destroy(CL_Denger, 1);
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
@@ -234,7 +241,7 @@ public class SB_Scallop_AI : EnemyMoveBase
                 AttackCount1 = 0;
                 SpawnRockNeedle(transform.position);
             }
-            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 9;
+            enemyBase.rb.velocity = lockedChargeDirection * enemyBase.SPEED * 9;
             if (enemyBase.AttackCount > 0.3f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;

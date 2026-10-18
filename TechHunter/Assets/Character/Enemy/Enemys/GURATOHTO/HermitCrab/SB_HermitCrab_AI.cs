@@ -141,6 +141,7 @@ public class SB_HermitCrab_AI : EnemyMoveBase
     
         GameObject CL_Attack = Instantiate(BrackAngel,transform.position,Quaternion.identity);
         ConfigureSummonedAttack(CL_Attack);
+        ConfigureSummonedAttack(CL_Attack);
         BrackAngel_Spier brackAngel_Spier = CL_Attack.GetComponent<BrackAngel_Spier>();
         brackAngel_Spier.TargetPos = pos;
         return CL_Attack;

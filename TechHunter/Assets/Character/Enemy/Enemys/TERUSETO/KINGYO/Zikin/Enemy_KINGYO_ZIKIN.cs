@@ -22,7 +22,7 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
 
     // 群れのリーダー追従を優先し、それ以外は共通CurrentTargetで照準を取る。
     Vector2 ActiveTargetPosition => Target != null
-        ? (Vector2)Target.transform.position : TargetPosition;
+        ? (Vector2)Target.transform.position : (Vector2)TargetPosition;
     Vector2 ActiveTargetDirection => ActiveTargetPosition - (Vector2)enemyBase.transform.position;
     float ActiveTargetDistance => ActiveTargetDirection.magnitude;
     void LookAtActiveTarget()

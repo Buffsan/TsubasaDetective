@@ -24,7 +24,7 @@ public class CG_CosmicSurveyor_AI : EnemyMoveBase
                 enemyBase.animator.SetInteger("Anim", 3);
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 shotBullet();
             }
         }
@@ -55,11 +55,11 @@ public class CG_CosmicSurveyor_AI : EnemyMoveBase
 
     void shotBullet()
     {
-        //Vector2 ShotPos = enemyBase.Player.transform.position - enemyBase.AttackSpawnPoint.transform.position;
+        //Vector2 ShotPos = TargetPosition - enemyBase.AttackSpawnPoint.transform.position;
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
         
-        CL_Arrow.transform.up = enemyBase.PlayerDirection;
+        CL_Arrow.transform.up = TargetDirection;
         CL_Arrow.transform.Rotate(0, 0, 180);
 
         Destroy(CL_Arrow, enemyBase.AttackDellTimer);

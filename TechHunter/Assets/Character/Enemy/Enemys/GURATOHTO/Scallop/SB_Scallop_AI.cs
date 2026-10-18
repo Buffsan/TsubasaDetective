@@ -26,7 +26,7 @@ public class SB_Scallop_AI : EnemyMoveBase
     public float WaitCunt = 0;
 
 
-    private IEnumerator myRunningCoroutine; // Às’†‚ÌƒRƒ‹[ƒ`ƒ“‚ğ•Û‚·‚é‚½‚ß‚Ì•Ï”
+    private IEnumerator myRunningCoroutine; // å®Ÿè¡Œä¸­ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’ä¿æŒã™ã‚‹ãŸã‚ã®å¤‰æ•°
     public float duration = 1;
     public float arcHeight = 30;
     bool StandOk = false;
@@ -74,11 +74,11 @@ public class SB_Scallop_AI : EnemyMoveBase
             RandomTime = Random.Range(2f, 5f);
         }
 
-        enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
-        enemyBase.animator.Play("•às");
-        enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
-        float angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-        float offset = 100f / (enemyBase.PlayerDistance + 1f) * 3f; // ‹——£‚ª‰“‚¢‚Ù‚Ç¬‚³‚­
+        RefreshTargetInfo();
+        enemyBase.animator.Play("æ­©è¡Œ");
+        RefreshTargetInfo();
+        float angle = Mathf.Atan2(TargetDirection.y, TargetDirection.x) * Mathf.Rad2Deg;
+        float offset = 100f / (TargetDistance + 1f) * 3f; // è·é›¢ãŒé ã„ã»ã©å°ã•ã
 
         if (trune)
         {
@@ -91,7 +91,7 @@ public class SB_Scallop_AI : EnemyMoveBase
 
         Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
-        enemyBase.isPlayerLookBase();
+        LookAtCurrentTarget();
 
         enemyBase.rb.velocity = direction * enemyBase.SPEED;
     }
@@ -108,8 +108,8 @@ public class SB_Scallop_AI : EnemyMoveBase
             enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
             enemyBase.rb.velocity = Vector3.zero;
             enemyBase.mode = EnemyBase.ModeType.M2;
-            enemyBase.animator.Play("UŒ‚‘Ò‹@");
-            enemyBase.isPlayerLookBase();
+            enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ");
+            LookAtCurrentTarget();
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
@@ -123,9 +123,9 @@ public class SB_Scallop_AI : EnemyMoveBase
         {
             enemyBase.mode = EnemyBase.ModeType.M4;
             enemyBase.AttackCount = 0;
-            targetPos = enemyBase.Player.transform.position;
+            targetPos = TargetPosition;
             StartCoroutine(MoveInArc());
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
         }
         if (enemyBase.mode == EnemyBase.ModeType.M4)
         {
@@ -151,7 +151,7 @@ public class SB_Scallop_AI : EnemyMoveBase
         {
 
 
-           enemyBase.animator.Play("UŒ‚");
+           enemyBase.animator.Play("æ”»æ’ƒ");
             enemyBase.mode = EnemyBase.ModeType.M6; enemyBase.AttackCount = 0;
 
         }
@@ -159,10 +159,10 @@ public class SB_Scallop_AI : EnemyMoveBase
         {
             if (enemyBase.AttackCount > 1)
             {
-                enemyBase.animator.Play("‘Ò‹@");
-                enemyBase.isPlayerLookBase();
+                enemyBase.animator.Play("å¾…æ©Ÿ");
+                LookAtCurrentTarget();
                 GameObject CL_Denger = SpawnObjectNow_Input(DengerLenght, transform.position, 2);
-                CL_Denger.transform.up = enemyBase.PlayerDirection.normalized;
+                CL_Denger.transform.up = TargetDirection.normalized;
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M7;
             }
@@ -171,7 +171,7 @@ public class SB_Scallop_AI : EnemyMoveBase
         {
             if (enemyBase.AttackCount > 1) 
             {
-                enemyBase.animator.Play("•às");
+                enemyBase.animator.Play("æ­©è¡Œ");
 
                 AssultAttack.SetActive(true);
                 enemyBase.mode = EnemyBase.ModeType.M8; enemyBase.AttackCount = 0;
@@ -179,12 +179,12 @@ public class SB_Scallop_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M8)
         {
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 6;
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 6;
             if (enemyBase.AttackCount > 1)
             {
                 AssultAttack.SetActive(false);
                 enemyBase.rb.velocity = Vector2.zero;
-                enemyBase.animator.Play("‘Ò‹@");
+                enemyBase.animator.Play("å¾…æ©Ÿ");
                 enemyBase.mode = EnemyBase.ModeType.M1;
                 enemyBase.AttackCount = 0;
                 enemyBase.moveType = EnemyBase.MoveType.Move;
@@ -203,10 +203,10 @@ public class SB_Scallop_AI : EnemyMoveBase
             enemyBase.rb.velocity = Vector3.zero;
             enemyBase.mode = EnemyBase.ModeType.M2;
             enemyBase.animator.SetInteger("Anim", 2);
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
 
             GameObject CL_Denger = Instantiate(Denger_Attackarea1, transform.position, Quaternion.identity);
-            CL_Denger.transform.up = enemyBase.PlayerDirection.normalized;
+            CL_Denger.transform.up = TargetDirection.normalized;
             Destroy(CL_Denger, 1);
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
@@ -222,14 +222,14 @@ public class SB_Scallop_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            //enemyBase.isPlayerLookBase();
+            //LookAtCurrentTarget();
             AttackCount1 += Time.fixedDeltaTime;
             if (AttackCount1 > 0.05)
             {
                 AttackCount1 = 0;
                 SpawnRockNeedle(transform.position);
             }
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 9;
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 9;
             if (enemyBase.AttackCount > 0.3f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;
@@ -292,9 +292,9 @@ public class SB_Scallop_AI : EnemyMoveBase
     private IEnumerator MoveInArc()
     {
         myRunningCoroutine = MoveInArc();
-        // ˆÚ“®ŠJn‘O‚ÌBodyType‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+        // ç§»å‹•é–‹å§‹å‰ã®BodyTypeã‚’ä¿å­˜ã—ã¦ãŠã
         var originalBodyType = enemyBase.rb.bodyType;
-        // ˆÚ“®’†‚ÍKinematic‚É‚µ‚ÄA•¨—‰‰Z‚Ì‰e‹¿‚ğ‚È‚­‚·
+        // ç§»å‹•ä¸­ã¯Kinematicã«ã—ã¦ã€ç‰©ç†æ¼”ç®—ã®å½±éŸ¿ã‚’ãªãã™
         enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
 
         Vector2 startPos = enemyBase.transform.position;
@@ -308,38 +308,38 @@ public class SB_Scallop_AI : EnemyMoveBase
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsedTime / duration); // 0‚©‚ç1‚Ì”ÍˆÍ‚Éû‚ß‚é
+            float progress = Mathf.Clamp01(elapsedTime / duration); // 0ã‹ã‚‰1ã®ç¯„å›²ã«åã‚ã‚‹
 
-            // X‚ÆY‚Ì’¼ü“I‚ÈˆÚ“®‚ğŒvZ
+            // Xã¨Yã®ç›´ç·šçš„ãªç§»å‹•ã‚’è¨ˆç®—
             Vector2 linearPos = Vector2.Lerp(startPos, endPos, progress);
 
-            // ‚‚³‚ğŒvZ (SinƒJ[ƒu)
+            // é«˜ã•ã‚’è¨ˆç®— (Sinã‚«ãƒ¼ãƒ–)
             float height = Mathf.Sin(progress * Mathf.PI) * arcHeight;
 
-            // Rigidbody2D‚ğg‚Á‚ÄˆÊ’u‚ğXV‚·‚é
-            // 2D‚È‚Ì‚ÅAYÀ•W‚É‚‚³‚ğ‰Á‚¦‚é
+            // Rigidbody2Dã‚’ä½¿ã£ã¦ä½ç½®ã‚’æ›´æ–°ã™ã‚‹
+            // 2Dãªã®ã§ã€Yåº§æ¨™ã«é«˜ã•ã‚’åŠ ãˆã‚‹
             enemyBase.rb.MovePosition(new Vector2(linearPos.x, linearPos.y + height));
 
-            //yield return new WaitForFixedUpdate(); // •¨—‰‰Z‚ÌXVƒ^ƒCƒ~ƒ“ƒO‚Å‘Ò‚Â
+            //yield return new WaitForFixedUpdate(); // ç‰©ç†æ¼”ç®—ã®æ›´æ–°ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å¾…ã¤
             yield return new WaitForEndOfFrame();
         }
 
-        // ”O‚Ì‚½‚ßAÅI“I‚É‚«‚Á‚¿‚è–Ú•W’n“_‚É‡‚í‚¹‚é
+        // å¿µã®ãŸã‚ã€æœ€çµ‚çš„ã«ãã£ã¡ã‚Šç›®æ¨™åœ°ç‚¹ã«åˆã‚ã›ã‚‹
         transform.position = endPos;
-        // BodyType‚ğŒ³‚É–ß‚·
+        // BodyTypeã‚’å…ƒã«æˆ»ã™
         enemyBase.rb.bodyType = originalBodyType;
 
 
         StandOk = true;
-        // ”O‚Ì‚½‚ßAÅI“I‚É‚«‚Á‚¿‚è–Ú•W’n“_‚É‡‚í‚¹‚é
+        // å¿µã®ãŸã‚ã€æœ€çµ‚çš„ã«ãã£ã¡ã‚Šç›®æ¨™åœ°ç‚¹ã«åˆã‚ã›ã‚‹
         transform.position = targetPos;
-        Debug.Log("–Ú“I’n‚É“’…I" + targetPos);
+        Debug.Log("ç›®çš„åœ°ã«åˆ°ç€ï¼" + targetPos);
     }
     private IEnumerator NeedleSpawnLing(float delayTime, float Lange, int Plass)
     {
-        //Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ªŠJn‚³‚ê‚Ü‚µ‚½B¡‚©‚ç " + delayTime + " •b‘Ò‚¿‚Ü‚·...");
+        //Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ãŒé–‹å§‹ã•ã‚Œã¾ã—ãŸã€‚ä»Šã‹ã‚‰ " + delayTime + " ç§’å¾…ã¡ã¾ã™...");
 
-        // ‚±‚±‚Åw’è‚µ‚½•b”‚¾‚¯‘Ò‹@‚·‚é
+        // ã“ã“ã§æŒ‡å®šã—ãŸç§’æ•°ã ã‘å¾…æ©Ÿã™ã‚‹
         yield return new WaitForSeconds(delayTime);
         for (int i = 0; i < 10 + Plass; i++)
         {
@@ -350,7 +350,7 @@ public class SB_Scallop_AI : EnemyMoveBase
             float newX = enemyBase.transform.position.x + 2 * Lange * Mathf.Cos(angleRad);
             float newY = enemyBase.transform.position.y + 2 * Lange * Mathf.Sin(angleRad);
 
-            // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+            // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
             Vector2 newPosition = new Vector2(newX, newY);
 
             SpawnRockNeedle(newPosition);

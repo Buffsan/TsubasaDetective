@@ -21,6 +21,8 @@ public class EnemyMoveBase : MonoBehaviour
         {
             EnemyContoroller controller = enemyBase as EnemyContoroller;
             if (controller != null) return controller.CurrentTarget;
+            Boss_Controller boss = enemyBase as Boss_Controller;
+            if (boss != null) return boss.CurrentTarget;
             return enemyBase != null && enemyBase.Player != null
                 ? enemyBase.Player.transform : null;
         }
@@ -49,7 +51,9 @@ public class EnemyMoveBase : MonoBehaviour
     {
         if (enemyBase == null || CurrentTarget == null) return;
         EnemyContoroller controller = enemyBase as EnemyContoroller;
-        if (controller == null || controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+        Boss_Controller boss = enemyBase as Boss_Controller;
+        if ((controller == null || controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly) &&
+            (boss == null || boss.TargetMode == EnemyContoroller.TargetType.PlayerOnly))
         {
             enemyBase.PlayerDirection = TargetDirection;
             enemyBase.PlayerDistance = TargetDistance;

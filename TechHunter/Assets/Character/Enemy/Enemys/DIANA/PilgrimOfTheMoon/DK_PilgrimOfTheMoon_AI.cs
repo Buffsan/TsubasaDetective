@@ -327,6 +327,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
                       + stakeRotationOffset;
         GameObject stake = Instantiate(stakePrefab, position, Quaternion.Euler(0f, 0f, angle));
         ConfigureSummonedAttack(stake);
+        ConfigureSummonedAttack(stake);
         EnemyAttack attack = stake.GetComponent<EnemyAttack>();
         if (attack != null) attack.enemyBase = enemyBase;
         else Debug.LogError("杭PrefabにEnemyAttackがありません。", stake);

@@ -161,7 +161,7 @@ public class SB_Scallop_AI : EnemyMoveBase
             {
                 enemyBase.animator.Play("待機");
                 LookAtCurrentTarget();
-                GameObject CL_Denger = SpawnObjectNow_Input(DengerLenght, transform.position, 2);
+                GameObject CL_Denger = SpawnAttackWarning(EnemyContoroller.WarningRectangle, DengerLenght, transform.position, Quaternion.identity, 2f, null, 0f, false);
                 CL_Denger.transform.up = TargetDirection.normalized;
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M7;
@@ -205,7 +205,7 @@ public class SB_Scallop_AI : EnemyMoveBase
             enemyBase.animator.SetInteger("Anim", 2);
             LookAtCurrentTarget();
 
-            GameObject CL_Denger = Instantiate(Denger_Attackarea1, transform.position, Quaternion.identity);
+            GameObject CL_Denger = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_Attackarea1, transform.position, Quaternion.identity, 1f, null, 0f, false);
             CL_Denger.transform.up = TargetDirection.normalized;
             Destroy(CL_Denger, 1);
         }
@@ -300,7 +300,7 @@ public class SB_Scallop_AI : EnemyMoveBase
         Vector2 startPos = enemyBase.transform.position;
         Vector2 endPos = targetPos;
 
-        GameObject CL_AttackPPP = Instantiate(Denger_AttackArea, endPos, Quaternion.identity);
+        GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea, endPos, Quaternion.identity, 1.5f, null, 0f, false);
 
         Destroy(CL_AttackPPP, 1.5f);
         float elapsedTime = 0f;

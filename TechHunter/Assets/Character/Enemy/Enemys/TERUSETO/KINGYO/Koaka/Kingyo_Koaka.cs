@@ -24,7 +24,7 @@ public class Kingyo_Koaka : EnemyMoveBase
         {
             Vector2 Direction = Target.transform.position - transform.position;
             enemyBase.rb.velocity = Direction.normalized * enemyBase.SPEED;
-            enemyBase.isLookDistance();
+            RefreshTargetInfo();
             if (!Target) enemyContoroller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Out;
         }
         else 
@@ -36,7 +36,7 @@ public class Kingyo_Koaka : EnemyMoveBase
         }
         
         enemyBase.rb.velocity = Direction.normalized * enemyBase.SPEED;
-        enemyBase.isLookDistance();
+        RefreshTargetInfo();
         }
         
     }
@@ -52,7 +52,7 @@ public class Kingyo_Koaka : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 0.1)
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
@@ -61,8 +61,8 @@ public class Kingyo_Koaka : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            //enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 1.2f;
+            //LookAtCurrentTarget();
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 1.2f;
             if (enemyBase.AttackCount > 0.1f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;

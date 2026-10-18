@@ -133,9 +133,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 94a19eb241b73fe45801fae23390fdd1, type: 3}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetFactions
+      value: 12416
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: AttackStayAudio
       value: 
       objectReference: {fileID: 8300000, guid: 8c18d3b2cb6ea0348ab67878c930e209, type: 3}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetAllFactions
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: LookPlayerDistance
       value: 20

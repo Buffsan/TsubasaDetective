@@ -88,6 +88,10 @@ PrefabInstance:
       propertyPath: charadata
       value: 
       objectReference: {fileID: 11400000, guid: 643b302dd32e08245ae948ad41d0e701, type: 2}
+    - target: {fileID: 9001014436334237195, guid: 3aba6b891181e2a42a3408cda8c282d3, type: 3}
+      propertyPath: targetFactions
+      value: 8191
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -353,7 +353,6 @@ public class SO_Eshema_AI : Boss_MoveBase
                 CL_AttackPPP.transform.up = TargetDirection.normalized;
                 Vector2 NewLookDirection = Quaternion.Euler(0, 0, -80 + 40 * i) * TargetDirection.normalized;
                 CL_AttackPPP.transform.up = NewLookDirection.normalized;
-                Destroy(CL_AttackPPP, 1);
             }
         }
         if (AttackPhase == 1) 

@@ -103,16 +103,54 @@ public class EnemyMoveBase : MonoBehaviour
         enemyBase.isTargetLook(TargetPosition);
     }
 
+    // warningType: 0=四角 / 1=円 / 2=半円。
+    // 共通リスト未設定なら既存Prefabへフォールバックし、旧敵の表示を維持する。
+    public GameObject SpawnAttackWarning(int warningType, GameObject fallbackPrefab,
+        Vector3 position, Quaternion rotation, float duration, Transform parent = null,
+        float extraLifetime = 0.2f, bool syncAnimation = true)
+    {
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null)
+        {
+            if (controller.HasAttackWarningPrefab(warningType))
+                return controller.SpawnAttackWarning(warningType, position, rotation,
+                    duration, parent, extraLifetime, syncAnimation);
+
+            return controller.SpawnAttackWarningPrefab(fallbackPrefab, position, rotation,
+                duration, parent, extraLifetime, syncAnimation);
+        }
+
+        // EnemyContoroller以外の旧AIも従来どおり生成可能。
+        if (fallbackPrefab == null) return null;
+        GameObject instance = Instantiate(fallbackPrefab, position, rotation, parent);
+        if (syncAnimation && duration > 0f)
+        {
+            SaveComponent save = instance.GetComponentInChildren<SaveComponent>(true);
+            if (save != null && save.animator != null)
+                save.animator.speed = 1f / duration;
+        }
+        Destroy(instance, Mathf.Max(0.01f, duration + extraLifetime));
+        return instance;
+    }
+
+    // 既存のEnemyMoveBase.DengerAreaSpawn呼び出しを残す。
     public GameObject DengerAreaSpawn(GameObject Effect, Vector2 Pos, float AnimationSpeed)
     {
-
-        GameObject CL_dengerArea = Instantiate(Effect, Pos, Quaternion.identity);
-        Clone_DengerObjects.Add(CL_dengerArea);
-        SaveComponent saveComponent = CL_dengerArea.GetComponent<SaveComponent>();
-        saveComponent.animator.speed = 1.0f / AnimationSpeed;
-        Destroy(CL_dengerArea, AnimationSpeed + 0.2f);
-        return CL_dengerArea;
+        GameObject warning = SpawnAttackWarning(EnemyContoroller.WarningRectangle,
+            Effect, Pos, Quaternion.identity, AnimationSpeed);
+        if (warning != null) Clone_DengerObjects.Add(warning);
+        return warning;
     }
+
+    // 新しい敵はPrefabを指定せず、共通リストの警告タイプだけで呼べる。
+    public GameObject DengerAreaSpawn(int warningType, Vector2 pos, float duration)
+    {
+        GameObject warning = SpawnAttackWarning(warningType, null,
+            pos, Quaternion.identity, duration);
+        if (warning != null) Clone_DengerObjects.Add(warning);
+        return warning;
+    }
+
     public void SpawnObjectNow(GameObject SpawnObject , Vector2 Target , float DestroyTime) 
     { 
         GameObject CL_Object = Instantiate(SpawnObject,Target,Quaternion.identity);

@@ -59,7 +59,9 @@ public class CG_Sniper : EnemyMoveBase
     void shotBullet() 
     {
         // 攻撃開始時に決めた照準を維持し、発射直前には追尾しない。
-        Vector2 shotDirection = lockedShotPosition - (Vector2)enemyBase.transform.position;
+        Vector2 shotDirection = UsesLegacyPlayerTarget
+            ? TargetDirection
+            : lockedShotPosition - (Vector2)enemyBase.transform.position;
         if (shotDirection.sqrMagnitude < 0.0001f) shotDirection = TargetDirection;
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);

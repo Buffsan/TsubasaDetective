@@ -27,6 +27,7 @@ public class CG_CosmicSurveyor_AI : EnemyMoveBase
                 enemyBase.animator.SetInteger("Anim", 3);
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
+                if (UsesLegacyPlayerTarget) LookAtCurrentTarget();
                 shotBullet();
             }
         }
@@ -62,7 +63,9 @@ public class CG_CosmicSurveyor_AI : EnemyMoveBase
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
             ConfigureSummonedAttack(CL_Arrow);
         
-        Vector2 shotDirection = lockedShotPosition - (Vector2)enemyBase.transform.position;
+        Vector2 shotDirection = UsesLegacyPlayerTarget
+            ? TargetDirection
+            : lockedShotPosition - (Vector2)enemyBase.transform.position;
         if (shotDirection.sqrMagnitude < 0.0001f) shotDirection = TargetDirection;
         CL_Arrow.transform.up = shotDirection;
         CL_Arrow.transform.Rotate(0, 0, 180);

@@ -184,7 +184,9 @@ public class CG_HeavySniper_AI : EnemyMoveBase
         enemyAttack.enemyBase = enemyBase;
 
         // 攻撃開始時のSavePosを使用し、連射中も標的を追尾し直さない。
-        Vector2 PlayerLookDirecton = SavePos - (Vector2)enemyBase.transform.position;
+        Vector2 PlayerLookDirecton = UsesLegacyPlayerTarget
+            ? TargetPosition - (Vector2)enemyBase.transform.position
+            : SavePos - (Vector2)enemyBase.transform.position;
         if (PlayerLookDirecton.sqrMagnitude < 0.0001f)
             PlayerLookDirecton = TargetDirection;
 

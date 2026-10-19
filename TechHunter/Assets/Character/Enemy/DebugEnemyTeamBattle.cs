@@ -26,6 +26,8 @@ public class DebugEnemyTeamBattle : MonoBehaviour
     [SerializeField, Min(0.1f)] float spacing = 2f;
     [SerializeField] float teamDistance = 10f;
     [SerializeField] bool spawnOnStart = true;
+    [Header("デバッグ診断")]
+    [SerializeField] bool logTeamRegistration = true;
 
     readonly List<EnemyContoroller> spawned = new List<EnemyContoroller>();
     bool started;
@@ -83,6 +85,8 @@ public class DebugEnemyTeamBattle : MonoBehaviour
         if (parent == null) return;
 
         EnemyContoroller[] members = parent.GetComponentsInChildren<EnemyContoroller>(true);
+        if (logTeamRegistration)
+            Debug.Log($"[DebugBattle] {parent.name} から {members.Length} 体を検出（{faction}）", parent);
         foreach (EnemyContoroller controller in members)
         {
             if (controller == null) continue;
@@ -95,6 +99,8 @@ public class DebugEnemyTeamBattle : MonoBehaviour
             controller.SetDebugFaction(faction);
             spawned.Add(controller);
             RegisterInAllEnemy(controller);
+            if (logTeamRegistration)
+                Debug.Log($"[DebugBattle] 子階層登録: {controller.name} => {faction}", controller);
         }
     }
 
@@ -147,6 +153,8 @@ public class DebugEnemyTeamBattle : MonoBehaviour
             Faction opponent = controller.Factions == Faction.DebugA
                 ? Faction.DebugB : Faction.DebugA;
             controller.SetDebugOpponentFaction(opponent);
+            if (logTeamRegistration)
+                Debug.Log($"[DebugBattle] {controller.name}: 所属={controller.Factions}, モード={controller.TargetMode}, 標的={(controller.CurrentTarget != null ? controller.CurrentTarget.name : "なし")}", controller);
         }
     }
 

@@ -15,6 +15,11 @@ public class DebugEnemyTeamBattle : MonoBehaviour
     [Header("チームB（シーン配置済みの敵）")]
     [SerializeField] List<EnemyContoroller> placedTeamB = new List<EnemyContoroller>();
 
+    [Header("チームA（子階層の敵を自動登録）")]
+    [SerializeField] Transform teamAParent;
+    [Header("チームB（子階層の敵を自動登録）")]
+    [SerializeField] Transform teamBParent;
+
     [Header("出現位置（未指定ならこのオブジェクトから左右に配置）")]
     [SerializeField] Transform teamASpawnPoint;
     [SerializeField] Transform teamBSpawnPoint;
@@ -46,6 +51,8 @@ public class DebugEnemyTeamBattle : MonoBehaviour
         started = true;
         RegisterPlacedTeam(placedTeamA, Faction.DebugA);
         RegisterPlacedTeam(placedTeamB, Faction.DebugB);
+        RegisterChildTeam(teamAParent, Faction.DebugA);
+        RegisterChildTeam(teamBParent, Faction.DebugB);
         SpawnTeam(teamA, Faction.DebugA, teamASpawnPoint, -1f);
         SpawnTeam(teamB, Faction.DebugB, teamBSpawnPoint, 1f);
         StartCoroutine(InitializeTargets());
@@ -61,6 +68,27 @@ public class DebugEnemyTeamBattle : MonoBehaviour
                 Debug.LogWarning("同じ敵が複数チームに登録されています: " + controller.name, controller);
                 continue;
             }
+            controller.SetDebugFaction(faction);
+            spawned.Add(controller);
+            RegisterInAllEnemy(controller);
+        }
+    }
+
+    // 指定したEmptyObject以下に配置された敵を、孫階層も含めて登録する。
+    void RegisterChildTeam(Transform parent, Faction faction)
+    {
+        if (parent == null) return;
+
+        EnemyContoroller[] members = parent.GetComponentsInChildren<EnemyContoroller>(true);
+        foreach (EnemyContoroller controller in members)
+        {
+            if (controller == null) continue;
+            if (spawned.Contains(controller))
+            {
+                Debug.LogWarning("同じ敵が複数チームに登録されています: " + controller.name, controller);
+                continue;
+            }
+
             controller.SetDebugFaction(faction);
             spawned.Add(controller);
             RegisterInAllEnemy(controller);

@@ -183,7 +183,10 @@ public class CG_HeavySniper_AI : EnemyMoveBase
         EnemyAttack enemyAttack = CL_Arrow.GetComponent<EnemyAttack>();
         enemyAttack.enemyBase = enemyBase;
 
-        Vector2 PlayerLookDirecton = TargetPosition - enemyBase.transform.position;
+        // 攻撃開始時のSavePosを使用し、連射中も標的を追尾し直さない。
+        Vector2 PlayerLookDirecton = SavePos - (Vector2)enemyBase.transform.position;
+        if (PlayerLookDirecton.sqrMagnitude < 0.0001f)
+            PlayerLookDirecton = TargetDirection;
 
         Vector2 RadomDirection = new Vector2(
         Mathf.Cos(A_Random) * PlayerLookDirecton.x - Mathf.Sin(A_Random) * PlayerLookDirecton.y,

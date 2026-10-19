@@ -63,6 +63,7 @@ public class DebugEnemyTeamBattle : MonoBehaviour
             }
             controller.SetDebugFaction(faction);
             spawned.Add(controller);
+            RegisterInAllEnemy(controller);
         }
     }
 
@@ -90,7 +91,20 @@ public class DebugEnemyTeamBattle : MonoBehaviour
             // 相手の派閥のみを対象にする。Prefabアセット自体は変更しない。
             controller.SetDebugFaction(faction);
             spawned.Add(controller);
+            RegisterInAllEnemy(controller);
         }
+    }
+
+    void RegisterInAllEnemy(EnemyContoroller controller)
+    {
+        SystemManager manager = SystemManager.Instance;
+        if (manager == null || manager.AllEnemy == null)
+        {
+            Debug.LogWarning("SystemManager.AllEnemyが見つかりません。", controller);
+            return;
+        }
+        if (!manager.AllEnemy.Contains(controller.gameObject))
+            manager.AllEnemy.Add(controller.gameObject);
     }
 
     IEnumerator InitializeTargets()
@@ -100,6 +114,7 @@ public class DebugEnemyTeamBattle : MonoBehaviour
         foreach (EnemyContoroller controller in spawned)
         {
             if (controller == null) continue;
+            RegisterInAllEnemy(controller);
             Faction opponent = controller.Factions == Faction.DebugA
                 ? Faction.DebugB : Faction.DebugA;
             controller.SetDebugOpponentFaction(opponent);

@@ -41,6 +41,8 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
     [SerializeField] float fanSpreadAngle = 80f;
     [SerializeField] float fanStakeSpacing = 0.45f;
     [SerializeField] float fanShotInterval = 0.15f;
+    [SerializeField] float fanStakeSpinSpeed = 1080f; // degrees per second
+    [SerializeField, Min(0f)] float fanStakeAimLeadTime = 0.2f;
     readonly List<GameObject> fanStakes = new List<GameObject>();
     readonly Vector2[] fanDirections = new Vector2[5];
     readonly int[] fanOrder = { 0, 4, 1, 3, 2 };
@@ -321,6 +323,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
                 }
                 break;
             case 4:
+                UpdateFanStakeRotation(enemyBase.AttackCount);
                 if (enemyBase.AttackCount >= 1f)
                 {
                     enemyBase.animator.Play("詠唱発動", 0, 0f);
@@ -329,6 +332,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
                 }
                 break;
             case 5:
+                UpdateFanStakeRotation(1f + enemyBase.AttackCount);
                 if (enemyBase.AttackCount >= fanShotIndex * Mathf.Max(0.02f, fanShotInterval))
                 {
                     FireFanStake(fanOrder[fanShotIndex]);
@@ -397,6 +401,30 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
             Collider2D[] colliders = stake.GetComponentsInChildren<Collider2D>();
             foreach (Collider2D collider in colliders) collider.enabled = false;
             fanStakes.Add(stake);
+        }
+    }
+
+    // 杭ごとの射出予定時刻から逆算し、射出0.2秒前に狙いを固定する。
+    // 射出順は左端→右端→左内側→右内側→中央。
+    void UpdateFanStakeRotation(float elapsedSinceDeploy)
+    {
+        float interval = Mathf.Max(0.02f, fanShotInterval);
+        for (int order = 0; order < fanOrder.Length; order++)
+        {
+            int index = fanOrder[order];
+            if (index >= fanStakes.Count || fanStakes[index] == null) continue;
+            GameObject stake = fanStakes[index];
+            float shotTime = 1f + order * interval;
+            if (elapsedSinceDeploy >= shotTime - fanStakeAimLeadTime)
+            {
+                Vector2 direction = fanDirections[index];
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + stakeRotationOffset;
+                stake.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+            }
+            else
+            {
+                stake.transform.Rotate(0f, 0f, fanStakeSpinSpeed * Time.fixedDeltaTime);
+            }
         }
     }
 

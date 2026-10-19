@@ -88,7 +88,7 @@ public class CG_FarScout_AI : EnemyMoveBase
             Shot(AttackDirection);
 
             enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
-            enemyBase.animator.Play("UŒ‚");
+            enemyBase.animator.Play("攻撃");
             enemyBase.mode = EnemyBase.ModeType.M6;
 
         }
@@ -101,7 +101,7 @@ public class CG_FarScout_AI : EnemyMoveBase
                 enemyBase.AttackCount = 0;
                 enemyBase.moveType = EnemyBase.MoveType.Move;
                 enemyBase.PlayerDistance = 1000;
-                enemyBase.animator.Play("‘Ò‹@");
+                enemyBase.animator.Play("待機");
                 enemyBase.animator.SetInteger("Anim", 0);
             }
         }

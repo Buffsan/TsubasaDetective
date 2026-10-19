@@ -302,7 +302,7 @@ public class SB_Scallop_AI : EnemyMoveBase
     {
         EnemyContoroller controller = enemyBase as EnemyContoroller;
         if (controller != null)
-            controller.SpawnAttack(RockNeedle, pos, Quaternion.identity, 5f);
+            controller.SpawnAttack(RockNeedle, pos, Quaternion.identity, 5f, RockNeedle.GetComponentInChildren<EnemyAttack>(true) != null ? RockNeedle.GetComponentInChildren<EnemyAttack>(true).AttackPowerPercent : 100f);
     }
     private IEnumerator MoveInArc()
     {

@@ -55,6 +55,9 @@ public class DebugEnemyTeamBattle : MonoBehaviour
         RegisterChildTeam(teamBParent, Faction.DebugB);
         SpawnTeam(teamA, Faction.DebugA, teamASpawnPoint, -1f);
         SpawnTeam(teamB, Faction.DebugB, teamBSpawnPoint, 1f);
+        // 全メンバー登録後、初回FixedUpdateより前に敵対対象を確定する。
+        // 翌フレームまでPlayerOnlyのまま移動・攻撃させない。
+        SetOpponentTargets();
         StartCoroutine(InitializeTargets());
     }
 
@@ -135,10 +138,8 @@ public class DebugEnemyTeamBattle : MonoBehaviour
             manager.AllEnemy.Add(controller.gameObject);
     }
 
-    IEnumerator InitializeTargets()
+    void SetOpponentTargets()
     {
-        // 全敵のStartとSystemManagerへの登録を待ってからターゲットを確定。
-        yield return null;
         foreach (EnemyContoroller controller in spawned)
         {
             if (controller == null) continue;
@@ -146,7 +147,18 @@ public class DebugEnemyTeamBattle : MonoBehaviour
             Faction opponent = controller.Factions == Faction.DebugA
                 ? Faction.DebugB : Faction.DebugA;
             controller.SetDebugOpponentFaction(opponent);
+        }
+    }
 
+    IEnumerator InitializeTargets()
+    {
+        // 各EnemyContorollerのStart後に再確認し、既存攻撃判定も更新する。
+        yield return null;
+        SetOpponentTargets();
+        foreach (EnemyContoroller controller in spawned)
+        {
+            if (controller == null) continue;
+            RegisterInAllEnemy(controller);
             // 既に存在する攻撃判定にも設定を反映する。
             foreach (EnemyAttack attack in controller.GetComponentsInChildren<EnemyAttack>(true))
                 controller.ConfigureAttackTarget(attack);

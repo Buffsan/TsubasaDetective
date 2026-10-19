@@ -113,6 +113,18 @@ public class EnemyContoroller : EnemyBase
         activeAttackWarnings.Clear();
     }
 
+    // 模擬戦用。敵のターゲット選択と攻撃判定を同じ派閥に揃える。
+    public void SetDebugOpponentFaction(Faction opponent)
+    {
+        targetType = TargetType.EnemyOnly;
+        targetPriority = TargetPriority.Nearest;
+        targetAllFactions = false;
+        targetFactions = opponent;
+        excludedTargetFactions = Faction.None;
+        ClearForcedTarget();
+        ChooseTargetNow();
+    }
+
     public TargetType TargetMode => targetType;
     public Transform CurrentTarget { get; private set; }
     public Vector2 TargetDirection { get; private set; }

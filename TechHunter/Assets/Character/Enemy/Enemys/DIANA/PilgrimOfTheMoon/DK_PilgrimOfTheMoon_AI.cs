@@ -93,7 +93,7 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
         enemyBase.LookPlayerDistance = -1f;
         enemyBase.moveType = EnemyBase.MoveType.Move;
 
-        currentTarget = enemyBase.Player != null ? enemyBase.Player.transform : null;
+        ChooseTarget(false);
         searchTimer = targetSearchInterval;
     }
 
@@ -112,13 +112,14 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
     public override void EnemyStanPlay()
     {
         CancelAttack();
-        if (enemyBase.Player != null &&
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null && controller.TargetMode != EnemyContoroller.TargetType.EnemyOnly &&
+            enemyBase.Player != null &&
             Vector2.Distance(enemyBase.transform.position, enemyBase.Player.transform.position)
                 <= stunPlayerPriorityDistance)
         {
             currentTarget = enemyBase.Player.transform;
-            EnemyContoroller controller = enemyBase as EnemyContoroller;
-            if (controller != null) controller.ForceTarget(currentTarget);
+            controller.ForceTarget(currentTarget);
         }
     }
 
@@ -129,12 +130,14 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
 
     public override void EnemyMovePlay()
     {
-        if (enemyBase.Player == null) return;
-
-        // 共通Controllerの自動攻撃判定で使われる値は、実際のプレイヤー距離のまま維持。
-        enemyBase.PlayerDistance = Vector2.Distance(
-            enemyBase.transform.position, enemyBase.Player.transform.position);
-        enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
+        // プレイヤー専用の旧挙動は維持し、敵専用モードではPlayerを参照しない。
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null && controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly && enemyBase.Player != null)
+        {
+            enemyBase.PlayerDistance = Vector2.Distance(
+                enemyBase.transform.position, enemyBase.Player.transform.position);
+            enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
+        }
 
         searchTimer += Time.fixedDeltaTime;
         if (searchTimer >= targetSearchInterval || !IsTargetUsable(currentTarget))
@@ -143,8 +146,16 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
             ChooseTarget(false);
         }
 
-        if (!IsTargetUsable(currentTarget)) currentTarget = enemyBase.Player.transform;
-        if (currentTarget == null) return;
+        if (!IsTargetUsable(currentTarget))
+        {
+            ChooseTarget(false);
+            if (!IsTargetUsable(currentTarget))
+            {
+                currentTarget = null;
+                enemyBase.rb.velocity = Vector2.zero;
+                return;
+            }
+        }
 
         Vector2 targetPos = currentTarget.position;
         Vector2 toward = targetPos - (Vector2)enemyBase.transform.position;
@@ -189,11 +200,22 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
     bool IsTargetUsable(Transform target)
     {
         if (target == null) return false;
-        if (enemyBase.Player != null && target == enemyBase.Player.transform) return true;
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (enemyBase.Player != null && target == enemyBase.Player.transform)
+            return controller == null || controller.TargetMode != EnemyContoroller.TargetType.EnemyOnly;
+
         EnemyBase other = target.GetComponent<EnemyBase>();
-        return other != null && other != enemyBase &&
-               other.status != EnemyBase.Status.Die && other.HP > 0f &&
-               (other.Factions & Faction.Diana) == Faction.None;
+        if (other == null || other == enemyBase || other.status == EnemyBase.Status.Die || other.HP <= 0f)
+            return false;
+
+        if (controller != null && controller.TargetMode == EnemyContoroller.TargetType.EnemyOnly)
+        {
+            if ((controller.Factions & Faction.DebugA) != Faction.None)
+                return (other.Factions & Faction.DebugB) != Faction.None;
+            if ((controller.Factions & Faction.DebugB) != Faction.None)
+                return (other.Factions & Faction.DebugA) != Faction.None;
+        }
+        return (other.Factions & Faction.Diana) == Faction.None;
     }
 
     void StartAttack()

@@ -25,7 +25,7 @@ public class Enemy_DE_BigSword_AI : EnemyMoveBase
         if (A_Phase == 0) 
         {
             enemyBase.rb.velocity = Vector3.zero;
-            enemyBase.animator.Play("UŒ‚‘Ò‹@");
+            enemyBase.animator.Play("攻撃待機");
             DengerAreaSpawn(DengerArea, transform.position, 3);
             AUDIO_manager.PlaySE(audioClips[0]);
             AttackNext();
@@ -34,7 +34,7 @@ public class Enemy_DE_BigSword_AI : EnemyMoveBase
         {
             if (AttackCount > 3) 
             {
-                enemyBase.animator.Play("UŒ‚");
+                enemyBase.animator.Play("攻撃");
                 AUDIO_manager.PlaySE(audioClips[1]);
                 ALL_System.camera_Controller.Shake(0.1f,0.2f);
                 SpawnObjectNow(AttackArea,transform.position,0.2f);
@@ -46,7 +46,7 @@ public class Enemy_DE_BigSword_AI : EnemyMoveBase
         {
             if (AttackCount > 1) 
             {
-                enemyBase.animator.Play("‘Ò‹@");
+                enemyBase.animator.Play("待機");
                 enemyBase.animator.SetInteger("Anim", 0);
                 AttackNext();
             }

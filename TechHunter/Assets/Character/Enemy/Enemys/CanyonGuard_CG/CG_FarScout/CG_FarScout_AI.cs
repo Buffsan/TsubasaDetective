@@ -42,7 +42,7 @@ public class CG_FarScout_AI : EnemyMoveBase
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
-                Direction = TargetPosition - gameObject.transform.position;
+                Direction = TargetPosition - (UsesLegacyPlayerTarget ? gameObject.transform.position : enemyBase.transform.position);
                 AttackDirection = Direction;
                 int radom = Random.Range(0, 3);
                 switch (radom) 

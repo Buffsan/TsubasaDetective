@@ -43,7 +43,7 @@ public class SB_Squid_AI : EnemyMoveBase
             SaveComponent warningSave = CL_DengerArea.GetComponentInChildren<SaveComponent>(true);
             if (warningSave != null && warningSave.animator != null)
                 warningSave.animator.speed = 0.33f;
-            enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+            enemyBase.animator.Play("攻撃待機", 0, 0);
             AUDIO_manager.PlaySE(audioClips[0]);
             A_Phase = 1;
         }
@@ -58,7 +58,7 @@ public class SB_Squid_AI : EnemyMoveBase
                 enemyBase.AttackCount = 0;
                 A_Phase =2;
                 AUDIO_manager.PlaySE(audioClips[1]);
-                enemyBase.animator.Play("UŒ‚", 0, 0);
+                enemyBase.animator.Play("攻撃", 0, 0);
             }
         }
         if (A_Phase == 2) 
@@ -67,7 +67,7 @@ public class SB_Squid_AI : EnemyMoveBase
             if (enemyBase.AttackCount > 1) 
             {
                 
-                enemyBase.animator.Play("‘Ò‹@", 0, 0);
+                enemyBase.animator.Play("待機", 0, 0);
                 AttackFinish();
             }
         }

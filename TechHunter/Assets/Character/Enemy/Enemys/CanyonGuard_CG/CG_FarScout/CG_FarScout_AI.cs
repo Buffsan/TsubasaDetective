@@ -22,7 +22,8 @@ public class CG_FarScout_AI : EnemyMoveBase
     {
         RefreshTargetInfo();
         LookAtCurrentTarget();
-        enemyBase.rb.velocity = TargetDirection;
+        enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
+        enemyBase.animator.SetInteger("Anim", 1);
     }
     public override void EnemyAttackPlay()
     {

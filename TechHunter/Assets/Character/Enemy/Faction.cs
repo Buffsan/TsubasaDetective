@@ -22,4 +22,8 @@ public enum Faction
     Monster   = 1 << 11,
     SeaBeast  = 1 << 12,
     Kingyo    = 1 << 13,
+
+    // 敵同士の模擬戦専用
+    DebugA   = 1 << 14,
+    DebugB   = 1 << 15,
 }

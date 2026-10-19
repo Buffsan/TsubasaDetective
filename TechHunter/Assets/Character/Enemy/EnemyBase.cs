@@ -8,9 +8,15 @@ using UnityEngine.Rendering.Universal;
 
 public class EnemyBase : MonoBehaviour
 {
-    [Header("�h���ݒ�")]
+    [Header("”h”´Ý’è")]
     [SerializeField] Faction factions = Faction.None;
     public Faction Factions => factions;
+
+    // 模擬戦でのみ使用する一時的な派閥変更。
+    public void SetDebugFaction(Faction debugFaction)
+    {
+        factions = debugFaction;
+    }
 
     public charadata charadata;
     public CutSceneData CutSceneData;

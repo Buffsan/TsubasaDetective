@@ -10,6 +10,11 @@ public class DebugEnemyTeamBattle : MonoBehaviour
     [Header("チームB（敵Prefab）")]
     [SerializeField] List<GameObject> teamB = new List<GameObject>();
 
+    [Header("チームA（シーン配置済みの敵）")]
+    [SerializeField] List<EnemyContoroller> placedTeamA = new List<EnemyContoroller>();
+    [Header("チームB（シーン配置済みの敵）")]
+    [SerializeField] List<EnemyContoroller> placedTeamB = new List<EnemyContoroller>();
+
     [Header("出現位置（未指定ならこのオブジェクトから左右に配置）")]
     [SerializeField] Transform teamASpawnPoint;
     [SerializeField] Transform teamBSpawnPoint;
@@ -39,9 +44,26 @@ public class DebugEnemyTeamBattle : MonoBehaviour
             return;
         }
         started = true;
+        RegisterPlacedTeam(placedTeamA, Faction.DebugA);
+        RegisterPlacedTeam(placedTeamB, Faction.DebugB);
         SpawnTeam(teamA, Faction.DebugA, teamASpawnPoint, -1f);
         SpawnTeam(teamB, Faction.DebugB, teamBSpawnPoint, 1f);
         StartCoroutine(InitializeTargets());
+    }
+
+    void RegisterPlacedTeam(List<EnemyContoroller> members, Faction faction)
+    {
+        foreach (EnemyContoroller controller in members)
+        {
+            if (controller == null) continue;
+            if (spawned.Contains(controller))
+            {
+                Debug.LogWarning("同じ敵が複数チームに登録されています: " + controller.name, controller);
+                continue;
+            }
+            controller.SetDebugFaction(faction);
+            spawned.Add(controller);
+        }
     }
 
     void SpawnTeam(List<GameObject> prefabs, Faction faction, Transform point, float side)

@@ -243,7 +243,6 @@ public class EnemyContoroller : EnemyBase
             }
         }
         UpdateTargetDistance();
-        SyncLegacyTargetInfo();
     }
 
     public Transform FindNearestValidEnemyTarget()

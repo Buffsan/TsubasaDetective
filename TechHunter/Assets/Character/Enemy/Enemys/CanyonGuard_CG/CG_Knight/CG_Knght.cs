@@ -8,12 +8,38 @@ public class CG_Knght : EnemyBase
 
     // この旧式騎士はEnemyContorollerを継承していないため独自に互換対応。
     [SerializeField] EnemyContoroller.TargetType targetType = EnemyContoroller.TargetType.PlayerOnly;
+    [SerializeField] EnemyContoroller.TargetPriority targetPriority =
+        EnemyContoroller.TargetPriority.Nearest;
     [SerializeField] bool targetAllFactions = true;
     [SerializeField] Faction targetFactions = Faction.None;
     [SerializeField] Faction excludedTargetFactions = Faction.None;
+    [SerializeField, Min(0f)] float enemyFirstPlayerDistance = 0f;
     [SerializeField, Min(0.05f)] float targetSearchInterval = 0.25f;
     public Transform CurrentTarget { get; private set; }
     float targetSearchTimer;
+
+    // 旧式騎士にはEnemyContorollerがないので、召喚時の設定だけ受け取る。
+    public void CopyTargetSettings(EnemyContoroller.TargetType mode,
+        EnemyContoroller.TargetPriority priority, bool allFactions,
+        Faction factions, Faction excludedFactions, float playerDistance,
+        float searchInterval)
+    {
+        targetType = mode;
+        targetPriority = priority;
+        targetAllFactions = allFactions;
+        targetFactions = factions;
+        excludedTargetFactions = excludedFactions;
+        enemyFirstPlayerDistance = playerDistance;
+        targetSearchInterval = searchInterval;
+        CurrentTarget = null;
+        targetSearchTimer = searchInterval;
+    }
+
+    public void RefreshSummonedTarget()
+    {
+        targetSearchTimer = targetSearchInterval;
+        RefreshTarget();
+    }
 
     float TargetDistance => CurrentTarget != null
         ? Vector2.Distance(CurrentTarget.position, transform.position)
@@ -66,7 +92,13 @@ public class CG_Knght : EnemyBase
         else
         {
             float playerSqr = ((Vector2)(Player.transform.position - transform.position)).sqrMagnitude;
-            CurrentTarget = distanceSqr < playerSqr ? enemy : Player.transform;
+            if (targetPriority == EnemyContoroller.TargetPriority.PlayerFirst)
+                CurrentTarget = Player.transform;
+            else if (targetPriority == EnemyContoroller.TargetPriority.EnemyFirst)
+                CurrentTarget = playerSqr >= enemyFirstPlayerDistance * enemyFirstPlayerDistance
+                    ? enemy : Player.transform;
+            else
+                CurrentTarget = distanceSqr < playerSqr ? enemy : Player.transform;
         }
     }
 
@@ -215,7 +247,20 @@ public class CG_Knght : EnemyBase
         }
         if (mode == EnemyBase.ModeType.M6)
         {
-            AttackAreaSpawn();
+            if (targetType == EnemyContoroller.TargetType.PlayerOnly)
+                AttackAreaSpawn();
+            else
+            {
+                // 召喚された旧式騎士の攻撃判定にも、親の敵対派閥を反映。
+                GameObject instance = Instantiate(AttackArea,
+                    AttackSpawnPoint.transform.position, Quaternion.identity);
+                Faction targets = (targetAllFactions ? (Faction)(~0) : targetFactions)
+                    & ~excludedTargetFactions;
+                foreach (EnemyAttack attack in instance.GetComponentsInChildren<EnemyAttack>(true))
+                    attack.ConfigureAttack(this, attack.AttackPowerPercent, targets,
+                        targetType == EnemyContoroller.TargetType.PlayerAndEnemy);
+                Destroy(instance, AttackDellTimer);
+            }
                 mode = EnemyBase.ModeType.M7;
 
         }

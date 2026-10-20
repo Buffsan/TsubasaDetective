@@ -70,14 +70,14 @@ MonoBehaviour:
   roarDescentDuration: 0.3
   roarJumpHeight: 3
   roarRecoveryDuration: 0.5
-  roarAttackPrefab: {fileID: 4785101675307976934, guid: 7502b4f462fd7a8419dd9adde6760a86, type: 3}
-  roarWarningPrefab: {fileID: 5774931134636762755, guid: a6084e1cd6b220c4eb40565ddd5166d8, type: 3}
+  roarAttackPrefab: {fileID: 6748436049420721247, guid: 7502b4f462fd7a8419dd9adde6760a86, type: 3}
+  roarWarningPrefab: {fileID: 8256408126352757493, guid: a6084e1cd6b220c4eb40565ddd5166d8, type: 3}
   roarWarningScale: 1.5
   roarSludgeParticlePrefab: {fileID: 4934329167185786972, guid: 7dc49af022da06b4cb570a784b76be12, type: 3}
   roarParticleLifetime: 3
   roarParticleEmissionMultiplier: 5
   roarParticleBurstCount: 80
-  sludgePrefab: {fileID: 0}
+  sludgePrefab: {fileID: 6811983235509843388, guid: 92cff6ed9b4ece24a8aa2d26170e598d, type: 3}
   roarSludgeCount: 30
   normalLandingSludgeCount: 12
   shortLandingSludgeCount: 18
@@ -89,7 +89,7 @@ MonoBehaviour:
   shortLeapSelectionChance: 0.65
   shortLeapWindup: 0.25
   shortLeapDuration: 0.35
-  shortLeapHeight: 1.1
+  shortLeapHeight: 3
   shortLeapRecovery: 0.4
   landingTileTolerance: 0.75
 --- !u!1 &3262776185593759204

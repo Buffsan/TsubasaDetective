@@ -60,6 +60,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     [SerializeField, Min(0f)] float biteInitialSpeed = 15f;
     [SerializeField, Min(0f)] float biteAcceleration = 85f;
     [SerializeField, Min(0.05f)] float bitePause = 0.12f;
+    [SerializeField, Min(30f)] float biteTurnSpeed = 540f;
     [SerializeField, Min(0.1f)] float biteStopDistance = 0.65f;
 
     [Header("首を引いた後の薙ぎ払い")]
@@ -68,6 +69,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     [SerializeField, Min(0.05f)] float sweepDuration = 0.6f;
     [SerializeField, Range(30f, 270f)] float sweepAngle = 155f;
     [SerializeField, Min(0.5f)] float sweepMinimumRadius = 3.5f;
+    [SerializeField, Min(0.5f)] float sweepTravelSpeed = 42f;
 
     [Header("収納：頭は攻撃せず、首は被弾可能")]
     [SerializeField, Min(0.1f)] float neckReturnSpeed = 10f;
@@ -97,6 +99,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     bool sweepDone;
     Vector2 currentHeadPosition;
     Vector2 launchDirection = Vector2.right;
+    Vector2 headTravelDirection = Vector2.right;
     Vector2 lastHeadDirection = Vector2.right;
     bool warningMissingLogged;
 
@@ -401,6 +404,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         launchDirection = direction.sqrMagnitude > 0.001f
             ? direction.normalized : lastHeadDirection;
 
+        headTravelDirection = launchDirection;
         LookAtCurrentTarget();
         enemyBase.animator.SetInteger("Anim", 2);
         enemyBase.mode = EnemyBase.ModeType.M1;
@@ -437,6 +441,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     {
         SetHeadAttackActive(true);
         headSpeed += launchAcceleration * dt;
+        headTravelDirection = launchDirection;
         MoveHead(currentHeadPosition + launchDirection * headSpeed * dt);
 
         if (stateTime >= launchDuration ||
@@ -463,8 +468,14 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         Vector2 direction = toTarget.sqrMagnitude > 0.001f
             ? toTarget.normalized : lastHeadDirection;
 
+        // 旋回速度を制限し、向き直るときに首が自然に曲がるようにする。
+        float oldAngle = Mathf.Atan2(headTravelDirection.y, headTravelDirection.x) * Mathf.Rad2Deg;
+        float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        float angle = Mathf.MoveTowardsAngle(oldAngle, targetAngle, biteTurnSpeed * dt);
+        headTravelDirection = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad),
+            Mathf.Sin(angle * Mathf.Deg2Rad));
         headSpeed += biteAcceleration * dt;
-        MoveHead(currentHeadPosition + direction * headSpeed * dt);
+        MoveHead(currentHeadPosition + headTravelDirection * headSpeed * dt);
         SetHeadAttackActive(true);
 
         if (toTarget.magnitude <= biteStopDistance || stateTime >= biteDuration)
@@ -522,7 +533,13 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             sweepAngle * 0.5f, progress);
         Vector2 dir = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad),
             Mathf.Sin(angle * Mathf.Deg2Rad));
-        MoveHead(NeckBase + dir * sweepRadius);
+        // 円弧上の次の位置へ移動する。瞬間移動させない。
+        Vector2 destination = NeckBase + dir * sweepRadius;
+        Vector2 next = Vector2.MoveTowards(currentHeadPosition, destination,
+            sweepTravelSpeed * Time.fixedDeltaTime);
+        Vector2 travel = next - currentHeadPosition;
+        if (travel.sqrMagnitude > 0.0001f) headTravelDirection = travel.normalized;
+        MoveHead(next);
         SetHeadAttackActive(true);
 
         if (progress >= 1f)

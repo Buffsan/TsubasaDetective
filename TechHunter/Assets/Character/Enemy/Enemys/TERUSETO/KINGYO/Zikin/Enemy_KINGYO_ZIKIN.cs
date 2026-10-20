@@ -60,7 +60,7 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
                     EnemyContoroller enemyContoroller = CL_Enemy.GetComponent<EnemyContoroller>();
                     SS_FairySpear_AI sS_FairySpear_AI = enemyContoroller.moveBase.gameObject.GetComponent<SS_FairySpear_AI>();
                     sS_FairySpear_AI.Target = gameObject;
-                    systemManager.AllEnemy.Add(CL_Enemy);
+                    InitializeSummonedEnemy(CL_Enemy, true);
                 }
 
             }

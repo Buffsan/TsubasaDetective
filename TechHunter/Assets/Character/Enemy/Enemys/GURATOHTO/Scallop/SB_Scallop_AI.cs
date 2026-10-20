@@ -52,6 +52,7 @@ public class SB_Scallop_AI : EnemyMoveBase
     [SerializeField] GameObject roarSludgeParticlePrefab;
     [SerializeField, Min(0.1f)] float roarParticleLifetime = 3f;
     [SerializeField, Min(1f)] float roarParticleEmissionMultiplier = 5f;
+    [SerializeField, Min(0)] int roarParticleBurstCount = 80;
 
     [Header("第二形態：黒いヘドロ")]
     [SerializeField] GameObject sludgePrefab;
@@ -485,6 +486,8 @@ public class SB_Scallop_AI : EnemyMoveBase
                 ParticleSystem.EmissionModule emission = particle.emission;
                 emission.rateOverTimeMultiplier *= roarParticleEmissionMultiplier;
                 particle.Play(true);
+                if (roarParticleBurstCount > 0)
+                    particle.Emit(roarParticleBurstCount);
             }
             Destroy(particles, roarParticleLifetime);
         }

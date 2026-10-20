@@ -24,6 +24,7 @@ public class Enemy_CG_TANK_AI : EnemyMoveBase
     bool trune = false;
     public float RandomTime;
     float AttackCount1 = 0;
+    Vector2 lockedRushDirection;
 
     public float WaitCunt = 0;
 
@@ -82,9 +83,10 @@ public class Enemy_CG_TANK_AI : EnemyMoveBase
             enemyBase.mode = EnemyBase.ModeType.M2;
             enemyBase.animator.SetInteger("Anim", 2);
             LookAtCurrentTarget();
+            lockedRushDirection = TargetDirection.normalized;
 
             GameObject CL_Denger = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_Attackarea1, transform.position, Quaternion.identity, 1f, null, 0f, false);
-            CL_Denger.transform.up = TargetDirection.normalized;
+            CL_Denger.transform.up = lockedRushDirection;
             Destroy(CL_Denger, 1);
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
@@ -108,7 +110,7 @@ public class Enemy_CG_TANK_AI : EnemyMoveBase
                 AttackCount1 = 0;
                 
             }
-            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 4;
+            enemyBase.rb.velocity = lockedRushDirection * enemyBase.SPEED * 4;
             if (enemyBase.AttackCount > 2f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;

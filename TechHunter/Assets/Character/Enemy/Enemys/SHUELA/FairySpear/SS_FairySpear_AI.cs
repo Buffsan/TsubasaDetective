@@ -8,6 +8,8 @@ public class SS_FairySpear_AI : EnemyMoveBase
     [SerializeField] GameObject Arrow;
     [SerializeField] GameObject Effect;
     Vector2 PlayerDirSave;
+    [SerializeField, Min(0)] int maxEnemyDashRepeats = 1;
+    int enemyDashRepeatCount;
     [SerializeField] int AttackPhase = 0;
     [SerializeField] float spreadAngle = 15;
     [SerializeField] GameObject Denger_AttackArea;
@@ -156,6 +158,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
         enemyBase.AttackCount += Time.deltaTime;
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
+            enemyDashRepeatCount = 0;
 
             enemyBase.animator.SetInteger("Anim", 2);
             enemyBase.AttackCount = 0;
@@ -203,8 +206,14 @@ public class SS_FairySpear_AI : EnemyMoveBase
                 if (enemyBase.AttackCount > DashRange)
                 {
                     float playerDistance = TargetDistance;
-                    if (playerDistance < 1)
+                    bool hasTarget = CurrentTarget != null;
+                    bool targetsEnemy = hasTarget &&
+                        (enemyBase.Player == null || CurrentTarget != enemyBase.Player.transform);
+                    bool canRepeat = playerDistance < 1f && hasTarget &&
+                        (!targetsEnemy || enemyDashRepeatCount < maxEnemyDashRepeats);
+                    if (canRepeat)
                     {
+                        if (targetsEnemy) enemyDashRepeatCount++;
                         Debug.Log("再行動");
                         enemyBase.rb.velocity = enemyBase.rb.velocity * 0.1f;
                         enemyBase.animator.SetInteger("Anim", 5);

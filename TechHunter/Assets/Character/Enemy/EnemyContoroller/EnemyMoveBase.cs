@@ -208,6 +208,49 @@ public class EnemyMoveBase : MonoBehaviour
         Destroy(CL_Object, DestroyTime);
         return CL_Object;
     }
+    // 敵本体の召喚だけに適用。弾・攻撃判定・演出オブジェクトは変更しない。
+    // NoList召喚は通常戦闘では従来どおり一覧へ追加しない。
+    protected GameObject InitializeSummonedEnemy(GameObject instance, bool registerInAllEnemy)
+    {
+        if (instance == null) return null;
+
+        EnemyBase summoned = instance.GetComponent<EnemyBase>();
+        if (summoned == null) return instance;
+
+        EnemyContoroller owner = enemyBase as EnemyContoroller;
+        if (owner == null) owner = GetComponentInParent<EnemyContoroller>();
+        if (owner != null)
+            owner.CopyTargetSettingsTo(summoned);
+
+        // 敵VS敵ではNoList召喚体も標的探索のために登録する。
+        bool needsRegistration = registerInAllEnemy ||
+            (owner != null && owner.TargetMode != EnemyContoroller.TargetType.PlayerOnly);
+        if (needsRegistration)
+        {
+            SystemManager manager = SystemManager.Instance;
+            if (manager != null && manager.AllEnemy != null &&
+                !manager.AllEnemy.Contains(instance))
+                manager.AllEnemy.Add(instance);
+        }
+
+        if (owner != null && owner.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+        {
+            EnemyContoroller child = summoned as EnemyContoroller;
+            if (child != null)
+            {
+                foreach (EnemyAttack attack in child.GetComponentsInChildren<EnemyAttack>(true))
+                    child.ConfigureAttackTarget(attack);
+                child.RefreshSummonedTarget();
+            }
+            else
+            {
+                CG_Knght knight = summoned as CG_Knght;
+                if (knight != null) knight.RefreshSummonedTarget();
+            }
+        }
+        return instance;
+    }
+
     public GameObject SpawnEnemySpawn(
     GameObject enemy,
     Vector2 targetPos,
@@ -245,8 +288,7 @@ public class EnemyMoveBase : MonoBehaviour
             ALL_SystemManager.Instance.enemySpawnBASE
                 .Seve_TileMap_C.EnemysObject.transform;
 
-        ALL_SystemManager.Instance.systemManager
-            .AllEnemy.Add(enemyObj);
+        InitializeSummonedEnemy(enemyObj, true);
 
         return enemyObj;
     }
@@ -255,6 +297,7 @@ public class EnemyMoveBase : MonoBehaviour
 
         GameObject CL_enemy = Instantiate(enemy, targetPos, rotate);
         CL_enemy.transform.parent = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.EnemysObject.transform;
+        InitializeSummonedEnemy(CL_enemy, false);
         return CL_enemy;
     }
     public void AttackNext() 

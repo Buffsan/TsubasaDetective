@@ -50,6 +50,12 @@ public class EnemyAttack : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // ボスの飛び道具などはInstantiate後にenemyBaseが設定されることがある。
+        // 敵対モードのボスだけ、攻撃命中時に所属・対象派閥を反映する。
+        Boss_Controller boss = enemyBase as Boss_Controller;
+        if (boss != null && boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+            boss.ConfigureAttackTarget(this);
+
         if (other.CompareTag("PlayerArea"))
         {
             // PlayerControllerにはEnemyBaseがないため、従来のPlayerArea判定を維持。

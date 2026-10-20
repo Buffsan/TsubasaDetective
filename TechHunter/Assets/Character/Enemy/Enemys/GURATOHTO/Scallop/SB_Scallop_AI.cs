@@ -51,6 +51,7 @@ public class SB_Scallop_AI : EnemyMoveBase
     [SerializeField, Min(0.1f)] float roarWarningScale = 1.5f;
     [SerializeField] GameObject roarSludgeParticlePrefab;
     [SerializeField, Min(0.1f)] float roarParticleLifetime = 3f;
+    [SerializeField, Min(1f)] float roarParticleEmissionMultiplier = 5f;
 
     [Header("第二形態：黒いヘドロ")]
     [SerializeField] GameObject sludgePrefab;
@@ -81,6 +82,7 @@ public class SB_Scallop_AI : EnemyMoveBase
     Vector2 shortLeapDestination;
     Vector2 shortLeapFacing = Vector2.right;
     Vector2 roarOrigin;
+    Vector2 lockedRoarDirection = Vector2.right;
     RigidbodyType2D savedSpecialBodyType;
     bool specialPhysicsChanged;
     GameObject activeRoarWarning;
@@ -397,12 +399,19 @@ public class SB_Scallop_AI : EnemyMoveBase
         {
             enemyBase.rb.velocity = Vector2.zero;
             roarOrigin = enemyBase.transform.position;
+            LookAtCurrentTarget();
+            lockedRoarDirection = TargetDirection.normalized;
+            if (lockedRoarDirection.sqrMagnitude < 0.0001f)
+                lockedRoarDirection = Vector2.right;
             enemyBase.animator.Play("格納", 0, 0f);
             activeRoarWarning = SpawnAttackWarning(EnemyContoroller.WarningCircle,
                 roarWarningPrefab != null ? roarWarningPrefab : Denger_AttackArea,
                 roarOrigin, Quaternion.identity, roarShellDuration, null, 0f, false);
             if (activeRoarWarning != null)
+            {
+                activeRoarWarning.transform.up = lockedRoarDirection;
                 activeRoarWarning.transform.localScale *= roarWarningScale;
+            }
             enemyBase.AttackCount = 0f;
             enemyBase.mode = EnemyBase.ModeType.M2;
         }
@@ -449,14 +458,14 @@ public class SB_Scallop_AI : EnemyMoveBase
 
     void FireRoarAndSludge()
     {
-        Vector2 facing = TargetDirection.normalized;
-        if (facing.sqrMagnitude < 0.0001f) facing = lockedChargeDirection;
-        if (facing.sqrMagnitude < 0.0001f) facing = Vector2.right;
+        // 攻撃警告を出した時点の方向で固定し、発動直前の再追尾をしない。
+        Vector2 facing = lockedRoarDirection;
 
         if (roarAttackPrefab != null)
         {
             GameObject hitbox = Instantiate(roarAttackPrefab, roarOrigin, Quaternion.identity);
             ConfigureSummonedAttack(hitbox);
+            hitbox.transform.up = facing;
             // ギンリンの咆哮攻撃と同じく、ごく短い時間だけ判定を出す。
             Destroy(hitbox, 0.1f);
         }
@@ -470,6 +479,13 @@ public class SB_Scallop_AI : EnemyMoveBase
         {
             GameObject particles = Instantiate(roarSludgeParticlePrefab, enemyBase.transform.position,
                 Quaternion.identity);
+            // 元Prefabは変更せず、咆哮時のインスタンスだけ大量放出させる。
+            foreach (ParticleSystem particle in particles.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                ParticleSystem.EmissionModule emission = particle.emission;
+                emission.rateOverTimeMultiplier *= roarParticleEmissionMultiplier;
+                particle.Play(true);
+            }
             Destroy(particles, roarParticleLifetime);
         }
 
@@ -522,7 +538,7 @@ public class SB_Scallop_AI : EnemyMoveBase
                 EnemyContoroller controller = enemyBase as EnemyContoroller;
                 if (controller != null)
                     controller.SpawnAttack(LandingAttackPrefab != null ? LandingAttackPrefab : enemyBase.AttackArea,
-                        enemyBase.transform.position, Quaternion.identity, 0.1f);
+                        shortLeapDestination, Quaternion.identity, 0.1f);
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
                 ScatterSludge(shortLandingSludgeCount, shortLeapDestination,
                     shortLeapFacing, shortLandingSludgeArc);
@@ -647,13 +663,16 @@ public class SB_Scallop_AI : EnemyMoveBase
 
     void CancelSpecialAction()
     {
+        // 既存のA1/A2を中断したときは、従来のフェーズ処理を変えない。
+        if (A_Phase != 2 && A_Phase != 3) return;
         if (A_Phase == 3) roarPending = true; // 中断された咆哮は回復後に再実行。
         RestoreSpecialPhysics();
         if (activeRoarWarning != null) Destroy(activeRoarWarning);
         activeRoarWarning = null;
-        if (AssultAttack != null) AssultAttack.SetActive(false);
+        enemyBase.rb.velocity = Vector2.zero;
         enemyBase.mode = EnemyBase.ModeType.M1;
         enemyBase.AttackCount = 0f;
+        enemyBase.moveType = EnemyBase.MoveType.Move;
     }
 
     public void SpawnRockNeedle(Vector2 pos)

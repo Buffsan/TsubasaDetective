@@ -137,14 +137,9 @@ public class EnemyContoroller : EnemyBase
         EnemyContoroller child = summoned as EnemyContoroller;
         if (child != null)
         {
-            child.targetType = targetType;
-            child.targetPriority = targetPriority;
-            child.targetAllFactions = targetAllFactions;
-            child.targetFactions = targetFactions;
-            child.excludedTargetFactions = excludedTargetFactions;
-            child.enemyFirstPlayerDistance = enemyFirstPlayerDistance;
-            child.targetSearchInterval = targetSearchInterval;
-            child.ClearForcedTarget();
+            child.ApplySummonerTargetSettings(targetType, targetPriority,
+                targetAllFactions, targetFactions, excludedTargetFactions,
+                enemyFirstPlayerDistance, targetSearchInterval);
         }
         else
         {
@@ -155,6 +150,21 @@ public class EnemyContoroller : EnemyBase
                     targetFactions, excludedTargetFactions, enemyFirstPlayerDistance,
                     targetSearchInterval);
         }
+    }
+
+    // Boss_ControllerとEnemyContorollerのどちらからでも同じ設定を継承できる。
+    public void ApplySummonerTargetSettings(TargetType mode, TargetPriority priority,
+        bool allFactions, Faction factions, Faction excludedFactions,
+        float playerDistance, float searchInterval)
+    {
+        targetType = mode;
+        targetPriority = priority;
+        targetAllFactions = allFactions;
+        targetFactions = factions;
+        excludedTargetFactions = excludedFactions;
+        enemyFirstPlayerDistance = playerDistance;
+        targetSearchInterval = searchInterval;
+        ClearForcedTarget();
     }
 
     // AllEnemyへの登録後に呼ぶ。PrefabのStartより先に敵を選択できる。

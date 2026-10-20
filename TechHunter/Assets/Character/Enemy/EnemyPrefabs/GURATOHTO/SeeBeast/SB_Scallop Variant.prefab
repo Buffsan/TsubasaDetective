@@ -76,6 +76,7 @@ MonoBehaviour:
   roarSludgeParticlePrefab: {fileID: 4934329167185786972, guid: 7dc49af022da06b4cb570a784b76be12, type: 3}
   roarParticleLifetime: 3
   roarParticleEmissionMultiplier: 5
+  roarParticleBurstCount: 80
   sludgePrefab: {fileID: 0}
   roarSludgeCount: 30
   normalLandingSludgeCount: 12

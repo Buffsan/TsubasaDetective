@@ -6,8 +6,6 @@ public class CG_Spear : EnemyMoveBase
 {
     [SerializeField] GameObject Arrow;
     Vector2 PlayerDirSave;
-    [SerializeField, Min(0)] int maxEnemyTargetRepeats = 1;
-    int enemyTargetRepeatCount;
     
     
     
@@ -16,8 +14,6 @@ public class CG_Spear : EnemyMoveBase
         enemyBase.AttackCount += Time.deltaTime;
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
-            enemyTargetRepeatCount = 0;
-
              enemyBase.animator.SetInteger("Anim", 2);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M2;
@@ -67,16 +63,9 @@ public class CG_Spear : EnemyMoveBase
                 
                 
                 float playerDistance = Vector2.Distance(TargetPosition, enemyBase.transform.position);
-                // Player attacks retain the original chaining behavior.
-                // Against enemies, bound re-aims so a nearby target cannot cause an endless loop.
-                bool hasTarget = CurrentTarget != null;
-                bool targetsEnemy = hasTarget &&
-                    (enemyBase.Player == null || CurrentTarget != enemyBase.Player.transform);
-                bool repeatDash = playerDistance < 4f && hasTarget &&
-                    (!targetsEnemy || enemyTargetRepeatCount < maxEnemyTargetRepeats);
-                if (repeatDash)
+                // main と同じ再突進条件。距離の参照元だけ CurrentTarget に統一。
+                if (playerDistance < 4f)
                 {
-                    if (targetsEnemy) enemyTargetRepeatCount++;
                     Debug.Log("Äs“®");
                     enemyBase.rb.velocity = enemyBase.rb.velocity * 0.5f;
                     enemyBase.animator.SetInteger("Anim", 5);

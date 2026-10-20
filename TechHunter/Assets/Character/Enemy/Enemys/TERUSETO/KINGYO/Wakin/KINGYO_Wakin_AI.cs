@@ -19,6 +19,7 @@ public class KINGYO_Wakin_AI : EnemyMoveBase
     bool trune = false;
     public float RandomTime;
     float AttackCount1 = 0;
+    Vector2 lockedRushDirection;
 
     public float WaitCunt = 0;
 
@@ -177,9 +178,11 @@ public class KINGYO_Wakin_AI : EnemyMoveBase
             enemyBase.mode = EnemyBase.ModeType.M2;
             enemyBase.animator.SetInteger("Anim", 2);
             LookAtCurrentTarget();
+            // Keep the warning and rush aligned with the same snapshot.
+            lockedRushDirection = TargetDirection.normalized;
 
             GameObject CL_Denger = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_Attackarea1, transform.position, Quaternion.identity, 1f, null, 0f, false);
-            CL_Denger.transform.up = TargetDirection.normalized;
+            CL_Denger.transform.up = lockedRushDirection;
             Destroy(CL_Denger ,1);
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
@@ -189,6 +192,7 @@ public class KINGYO_Wakin_AI : EnemyMoveBase
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
+                ConfigureSummonedAttack(AttackArea);
                 AttackArea.SetActive(true);
 
             }
@@ -202,7 +206,7 @@ public class KINGYO_Wakin_AI : EnemyMoveBase
                 AttackCount1 = 0;
                 SpawnRockNeedle(transform.position);
             }
-            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 9;
+            enemyBase.rb.velocity = lockedRushDirection * enemyBase.SPEED * 9;
             if (enemyBase.AttackCount > 0.3f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;

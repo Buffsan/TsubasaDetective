@@ -63,6 +63,34 @@ MonoBehaviour:
   Denger_Attackarea1: {fileID: 520444690567741310, guid: e50319ecbfbf2a541bf859e37986ddd4, type: 3}
   AttackArea: {fileID: 2146240657863754078, guid: d97d26ae2f815934db888e93c303e94f, type: 3}
   LandingAttackPrefab: {fileID: 3454106823859442278, guid: 59dbbbc0dbeb99442a6b89dc88c855e1, type: 3}
+  secondPhaseHpRatio: 0.5
+  attacksPerRoar: 6
+  roarShellDuration: 1
+  roarAscentDuration: 0.28
+  roarDescentDuration: 0.3
+  roarJumpHeight: 3
+  roarRecoveryDuration: 0.5
+  roarAttackPrefab: {fileID: 4785101675307976934, guid: 7502b4f462fd7a8419dd9adde6760a86, type: 3}
+  roarWarningPrefab: {fileID: 5774931134636762755, guid: a6084e1cd6b220c4eb40565ddd5166d8, type: 3}
+  roarWarningScale: 1.5
+  roarSludgeParticlePrefab: {fileID: 4934329167185786972, guid: 7dc49af022da06b4cb570a784b76be12, type: 3}
+  roarParticleLifetime: 3
+  roarParticleEmissionMultiplier: 5
+  sludgePrefab: {fileID: 0}
+  roarSludgeCount: 30
+  normalLandingSludgeCount: 12
+  shortLandingSludgeCount: 18
+  sludgeSpeed: 7
+  sludgeLifetime: 6
+  shortLandingSludgeArc: 115
+  shortLeapTargetDistance: 1
+  shortLeapTriggerDistance: 3
+  shortLeapSelectionChance: 0.65
+  shortLeapWindup: 0.25
+  shortLeapDuration: 0.35
+  shortLeapHeight: 1.1
+  shortLeapRecovery: 0.4
+  landingTileTolerance: 0.75
 --- !u!1 &3262776185593759204
 GameObject:
   m_ObjectHideFlags: 0

@@ -29,6 +29,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
 
     [Header("連結首プール")]
     [SerializeField, Min(0.15f)] float neckSegmentSpacing = 0.65f;
+    [SerializeField] Vector2 neckSegmentSize = Vector2.one; // 各首パーツの見た目と判定を一緒に拡縮
     [SerializeField, Min(1)] int initialNeckSegments = 40;
     [SerializeField, Min(1)] int maxNeckSegments = 100;
     [SerializeField, Min(0.1f)] float neckFollowTightness = 18f;
@@ -181,7 +182,8 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         if (neckSprite == null || neckPool.Count >= maxNeckSegments) return;
         GameObject segment = Instantiate(neckSprite.gameObject, enemyBase.transform);
         segment.name = "WatounaiNeckSegment_" + neckPool.Count;
-        segment.transform.localScale = Vector3.one;
+        segment.transform.localScale = new Vector3(Mathf.Max(0.05f, neckSegmentSize.x),
+            Mathf.Max(0.05f, neckSegmentSize.y), 1f);
         SpriteRenderer renderer = segment.GetComponent<SpriteRenderer>();
         BoxCollider2D collider = segment.GetComponent<BoxCollider2D>();
         charaDamage damage = segment.GetComponent<charaDamage>();
@@ -220,6 +222,8 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     {
         if (neckPool.Count == 0) return;
         neckTime += dt;
+        Vector3 desiredScale = new Vector3(Mathf.Max(0.05f, neckSegmentSize.x),
+            Mathf.Max(0.05f, neckSegmentSize.y), 1f);
         Vector2 root = NeckBase;
         Vector2 tip = currentHeadPosition;
         Vector2 displacement = tip - previousHeadPosition;
@@ -286,6 +290,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
                 * neckWaveAmplitude * Mathf.Sin(Mathf.PI * (i + 0.5f) / count);
             position += normal * wave;
             Transform segment = neckPool[i];
+            if (segment.localScale != desiredScale) segment.localScale = desiredScale;
             if (!segment.gameObject.activeSelf)
             {
                 segment.position = position;

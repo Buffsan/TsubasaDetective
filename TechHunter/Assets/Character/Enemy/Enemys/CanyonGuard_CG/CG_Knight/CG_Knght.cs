@@ -247,19 +247,15 @@ public class CG_Knght : EnemyBase
         }
         if (mode == EnemyBase.ModeType.M6)
         {
-            if (targetType == EnemyContoroller.TargetType.PlayerOnly)
-                AttackAreaSpawn();
-            else
+            // 攻撃Prefabの生成は従来のEnemyBase経由で行い、敵VS敵の時だけ対象を上書き。
+            AttackAreaSpawn();
+            if (targetType != EnemyContoroller.TargetType.PlayerOnly && myAttack != null)
             {
-                // 召喚された旧式騎士の攻撃判定にも、親の敵対派閥を反映。
-                GameObject instance = Instantiate(AttackArea,
-                    AttackSpawnPoint.transform.position, Quaternion.identity);
                 Faction targets = (targetAllFactions ? (Faction)(~0) : targetFactions)
                     & ~excludedTargetFactions;
-                foreach (EnemyAttack attack in instance.GetComponentsInChildren<EnemyAttack>(true))
+                foreach (EnemyAttack attack in myAttack.GetComponentsInChildren<EnemyAttack>(true))
                     attack.ConfigureAttack(this, attack.AttackPowerPercent, targets,
                         targetType == EnemyContoroller.TargetType.PlayerAndEnemy);
-                Destroy(instance, AttackDellTimer);
             }
                 mode = EnemyBase.ModeType.M7;
 

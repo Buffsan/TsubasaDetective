@@ -14,6 +14,9 @@ public class CG_RightKnight : EnemyMoveBase
     Vector2 SaveAngle =Vector2.zero;
     Vector2 SavePosPhase= Vector2.zero;
 
+    // Locked when the attack windup finishes; used through the whole rush.
+    Vector2 lockedRushDirection;
+
     public override void EnemyMovePlay()
     {
         RefreshTargetInfo();
@@ -110,6 +113,7 @@ public class CG_RightKnight : EnemyMoveBase
             LookAtCurrentTarget();
             if (enemyBase.AttackCount > 0.2)
             {
+                lockedRushDirection = TargetDirection.normalized;
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
             }
@@ -117,7 +121,7 @@ public class CG_RightKnight : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
             //LookAtCurrentTarget();
-            enemyBase.rb.velocity = TargetDirection.normalized *enemyBase.SPEED * 1.2f;
+            enemyBase.rb.velocity = lockedRushDirection *enemyBase.SPEED * 1.2f;
             if (enemyBase.AttackCount > 0.5f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class SB_Scallop_AI : EnemyMoveBase
 {
@@ -37,8 +38,56 @@ public class SB_Scallop_AI : EnemyMoveBase
     [SerializeField] GameObject LandingAttackPrefab;
     Vector2 lockedChargeDirection = Vector2.right;
 
+    [Header("第二形態：HPと必殺技")]
+    [SerializeField, Range(0.01f, 1f)] float secondPhaseHpRatio = 0.5f;
+    [SerializeField, Min(1)] int attacksPerRoar = 6;
+    [SerializeField, Min(0.1f)] float roarShellDuration = 1f;
+    [SerializeField, Min(0.1f)] float roarAscentDuration = 0.28f;
+    [SerializeField, Min(0.1f)] float roarDescentDuration = 0.3f;
+    [SerializeField, Min(0f)] float roarJumpHeight = 3f;
+    [SerializeField, Min(0f)] float roarRecoveryDuration = 0.5f;
+    [SerializeField] GameObject roarAttackPrefab;
+    [SerializeField] GameObject roarWarningPrefab;
+    [SerializeField, Min(0.1f)] float roarWarningScale = 1.5f;
+    [SerializeField] GameObject roarSludgeParticlePrefab;
+    [SerializeField, Min(0.1f)] float roarParticleLifetime = 3f;
+
+    [Header("第二形態：黒いヘドロ")]
+    [SerializeField] GameObject sludgePrefab;
+    [SerializeField, Min(1)] int roarSludgeCount = 30;
+    [SerializeField, Min(1)] int normalLandingSludgeCount = 12;
+    [SerializeField, Min(1)] int shortLandingSludgeCount = 18;
+    [SerializeField, Min(0f)] float sludgeSpeed = 7f;
+    [SerializeField, Min(0.1f)] float sludgeLifetime = 6f;
+    [SerializeField, Range(0f, 360f)] float shortLandingSludgeArc = 115f;
+
+    [Header("第二形態：低空飛びかかり")]
+    [SerializeField, Min(0.1f)] float shortLeapTargetDistance = 1f;
+    [SerializeField, Min(0.1f)] float shortLeapTriggerDistance = 3f;
+    [SerializeField, Range(0f, 1f)] float shortLeapSelectionChance = 0.65f;
+    [SerializeField, Min(0.05f)] float shortLeapWindup = 0.25f;
+    [SerializeField, Min(0.1f)] float shortLeapDuration = 0.35f;
+    [SerializeField, Min(0f)] float shortLeapHeight = 1.1f;
+    [SerializeField, Min(0.1f)] float shortLeapRecovery = 0.4f;
+    [SerializeField, Min(0.1f)] float landingTileTolerance = 0.75f;
+
+    bool secondPhase;
+    bool roarPending;
+    int attacksSinceRoar;
+    bool roarMissingLogged;
+    bool sludgeMissingLogged;
+
+    Vector2 shortLeapStart;
+    Vector2 shortLeapDestination;
+    Vector2 shortLeapFacing = Vector2.right;
+    Vector2 roarOrigin;
+    RigidbodyType2D savedSpecialBodyType;
+    bool specialPhysicsChanged;
+    GameObject activeRoarWarning;
+
     public override void EnemyConfusionPlay()
     {
+        CancelSpecialAction();
         StandOk = false;
         A_Phase = 0;
         enemyBase.AttackCount = 0;
@@ -46,6 +95,7 @@ public class SB_Scallop_AI : EnemyMoveBase
     }
     public override void EnemyStanPlay()
     {
+        CancelSpecialAction();
         StandOk = false;
         A_Phase = 0;
         enemyBase.AttackCount = 0;
@@ -53,6 +103,18 @@ public class SB_Scallop_AI : EnemyMoveBase
     }
     public override void EnemyMovePlay()
     {
+        // 通常攻撃の途中で割り込まず、終了後の移動フェーズで第二形態へ。
+        if (!secondPhase && enemyBase.HP <= enemyBase.MAXHP * secondPhaseHpRatio)
+        {
+            secondPhase = true;
+            roarPending = true;
+        }
+        if (roarPending)
+        {
+            BeginRoar();
+            return;
+        }
+
         if (!one)
         {
             one = true;
@@ -70,7 +132,9 @@ public class SB_Scallop_AI : EnemyMoveBase
         WaitCunt += Time.deltaTime;
         if (WaitCunt > RandomTime)
         {
-            A_Phase = 1;
+            // 通常跳躍の代わりに、至近距離では約1mの低空飛びかかりを選ぶ。
+            A_Phase = secondPhase && TargetDistance <= shortLeapTriggerDistance &&
+                Random.value < shortLeapSelectionChance ? 2 : 1;
             WaitCunt = 0;
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             RandomTime = Random.Range(2f, 5f);
@@ -100,7 +164,9 @@ public class SB_Scallop_AI : EnemyMoveBase
     public override void EnemyAttackPlay()
     {
         if (A_Phase == 0) A1();
-        if (A_Phase == 1) A2();
+        else if (A_Phase == 1) A2();
+        else if (A_Phase == 2) ShortLeapAttack();
+        else if (A_Phase == 3) RoarAttack();
     }
     void A2()
     {
@@ -142,6 +208,9 @@ public class SB_Scallop_AI : EnemyMoveBase
                         enemyBase.transform.position, Quaternion.identity, 0.1f);
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
                 StandOk = false;
+                if (secondPhase)
+                    ScatterSludge(normalLandingSludgeCount, enemyBase.transform.position,
+                        Vector2.right, 360f);
 
                 for (int j = 0; j < 12; j++)
                 {
@@ -197,7 +266,7 @@ public class SB_Scallop_AI : EnemyMoveBase
                 enemyBase.AttackCount = 0;
                 enemyBase.moveType = EnemyBase.MoveType.Move;
                 enemyBase.PlayerDistance = 1000;
-
+                RegisterCompletedAttack();
             }
         }
     }
@@ -276,6 +345,7 @@ public class SB_Scallop_AI : EnemyMoveBase
 
             if (enemyBase.AttackCount > 0.1)
             {
+                RegisterCompletedAttack();
                 int i = Random.Range(0, 2);
                 if (i == 0)
                 {
@@ -293,11 +363,299 @@ public class SB_Scallop_AI : EnemyMoveBase
                     enemyBase.animator.SetInteger("Anim", 0);
                 }
 
+                // 6回目が突進だった場合、追加の突進より咆哮を優先する。
+                if (roarPending) enemyBase.moveType = EnemyBase.MoveType.Move;
             }
         }
 
 
     }
+    void RegisterCompletedAttack()
+    {
+        if (!secondPhase) return;
+        attacksSinceRoar++;
+        if (attacksSinceRoar >= Mathf.Max(1, attacksPerRoar))
+            roarPending = true;
+    }
+
+    void BeginRoar()
+    {
+        roarPending = false;
+        attacksSinceRoar = 0;
+        A_Phase = 3;
+        enemyBase.mode = EnemyBase.ModeType.M1;
+        enemyBase.AttackCount = 0f;
+        enemyBase.moveType = EnemyBase.MoveType.Attack;
+        enemyBase.rb.velocity = Vector2.zero;
+    }
+
+    void RoarAttack()
+    {
+        enemyBase.AttackCount += Time.fixedDeltaTime;
+
+        if (enemyBase.mode == EnemyBase.ModeType.M1)
+        {
+            enemyBase.rb.velocity = Vector2.zero;
+            roarOrigin = enemyBase.transform.position;
+            enemyBase.animator.Play("格納", 0, 0f);
+            activeRoarWarning = SpawnAttackWarning(EnemyContoroller.WarningCircle,
+                roarWarningPrefab != null ? roarWarningPrefab : Denger_AttackArea,
+                roarOrigin, Quaternion.identity, roarShellDuration, null, 0f, false);
+            if (activeRoarWarning != null)
+                activeRoarWarning.transform.localScale *= roarWarningScale;
+            enemyBase.AttackCount = 0f;
+            enemyBase.mode = EnemyBase.ModeType.M2;
+        }
+        else if (enemyBase.mode == EnemyBase.ModeType.M2)
+        {
+            if (enemyBase.AttackCount >= roarShellDuration)
+            {
+                BeginSpecialLeap();
+                enemyBase.animator.Play("攻撃", 0, 0f);
+                enemyBase.mode = EnemyBase.ModeType.M3;
+                enemyBase.AttackCount = 0f;
+            }
+        }
+        else if (enemyBase.mode == EnemyBase.ModeType.M3)
+        {
+            float t = Mathf.Clamp01(enemyBase.AttackCount / Mathf.Max(0.1f, roarAscentDuration));
+            enemyBase.rb.MovePosition(roarOrigin + Vector2.up * (Mathf.Sin(t * Mathf.PI * 0.5f) * roarJumpHeight));
+            if (t >= 1f)
+            {
+                FireRoarAndSludge();
+                enemyBase.mode = EnemyBase.ModeType.M4;
+                enemyBase.AttackCount = 0f;
+            }
+        }
+        else if (enemyBase.mode == EnemyBase.ModeType.M4)
+        {
+            float t = Mathf.Clamp01(enemyBase.AttackCount / Mathf.Max(0.1f, roarDescentDuration));
+            enemyBase.rb.MovePosition(roarOrigin + Vector2.up * ((1f - t) * roarJumpHeight));
+            if (t >= 1f)
+            {
+                enemyBase.rb.MovePosition(roarOrigin);
+                RestoreSpecialPhysics();
+                enemyBase.animator.Play("待機", 0, 0f);
+                enemyBase.mode = EnemyBase.ModeType.M5;
+                enemyBase.AttackCount = 0f;
+            }
+        }
+        else if (enemyBase.mode == EnemyBase.ModeType.M5 &&
+                 enemyBase.AttackCount >= roarRecoveryDuration)
+        {
+            CompleteAttack();
+        }
+    }
+
+    void FireRoarAndSludge()
+    {
+        Vector2 facing = TargetDirection.normalized;
+        if (facing.sqrMagnitude < 0.0001f) facing = lockedChargeDirection;
+        if (facing.sqrMagnitude < 0.0001f) facing = Vector2.right;
+
+        if (roarAttackPrefab != null)
+        {
+            GameObject hitbox = Instantiate(roarAttackPrefab, roarOrigin, Quaternion.identity);
+            ConfigureSummonedAttack(hitbox);
+            // ギンリンの咆哮攻撃と同じく、ごく短い時間だけ判定を出す。
+            Destroy(hitbox, 0.1f);
+        }
+        else if (!roarMissingLogged)
+        {
+            Debug.LogWarning("SB_Scallop: Roar Attack Prefab が未設定です。", this);
+            roarMissingLogged = true;
+        }
+
+        if (roarSludgeParticlePrefab != null)
+        {
+            GameObject particles = Instantiate(roarSludgeParticlePrefab, enemyBase.transform.position,
+                Quaternion.identity);
+            Destroy(particles, roarParticleLifetime);
+        }
+
+        ScatterSludge(roarSludgeCount, roarOrigin, facing, 360f);
+        enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
+    }
+
+    void ShortLeapAttack()
+    {
+        enemyBase.AttackCount += Time.fixedDeltaTime;
+        if (enemyBase.mode == EnemyBase.ModeType.M1)
+        {
+            LookAtCurrentTarget();
+            shortLeapStart = enemyBase.transform.position;
+            shortLeapFacing = TargetDirection.normalized;
+            if (shortLeapFacing.sqrMagnitude < 0.0001f)
+                shortLeapFacing = Vector2.right;
+            shortLeapDestination = FindShortLeapDestination(shortLeapStart, shortLeapFacing);
+
+            enemyBase.rb.velocity = Vector2.zero;
+            enemyBase.animator.Play("攻撃待機", 0, 0f);
+            // 有効な着地タイルがない場合でも、その場への着地を予告する。
+            SpawnAttackWarning(EnemyContoroller.WarningCircle, Denger_AttackArea,
+                shortLeapDestination, Quaternion.identity,
+                shortLeapWindup + shortLeapDuration, null, 0f, false);
+            enemyBase.AttackCount = 0f;
+            enemyBase.mode = EnemyBase.ModeType.M2;
+        }
+        else if (enemyBase.mode == EnemyBase.ModeType.M2)
+        {
+            if (enemyBase.AttackCount >= shortLeapWindup)
+            {
+                BeginSpecialLeap();
+                enemyBase.animator.Play("攻撃", 0, 0f);
+                enemyBase.mode = EnemyBase.ModeType.M3;
+                enemyBase.AttackCount = 0f;
+            }
+        }
+        else if (enemyBase.mode == EnemyBase.ModeType.M3)
+        {
+            float t = Mathf.Clamp01(enemyBase.AttackCount / Mathf.Max(0.1f, shortLeapDuration));
+            Vector2 pos = Vector2.Lerp(shortLeapStart, shortLeapDestination, t);
+            pos.y += Mathf.Sin(t * Mathf.PI) * shortLeapHeight;
+            enemyBase.rb.MovePosition(pos);
+            if (t >= 1f)
+            {
+                enemyBase.rb.MovePosition(shortLeapDestination);
+                RestoreSpecialPhysics();
+                // 着地攻撃は既存のLandingAttackPrefabと同じメソッドを使用。
+                EnemyContoroller controller = enemyBase as EnemyContoroller;
+                if (controller != null)
+                    controller.SpawnAttack(LandingAttackPrefab != null ? LandingAttackPrefab : enemyBase.AttackArea,
+                        enemyBase.transform.position, Quaternion.identity, 0.1f);
+                enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
+                ScatterSludge(shortLandingSludgeCount, shortLeapDestination,
+                    shortLeapFacing, shortLandingSludgeArc);
+                enemyBase.mode = EnemyBase.ModeType.M4;
+                enemyBase.AttackCount = 0f;
+            }
+        }
+        else if (enemyBase.mode == EnemyBase.ModeType.M4 &&
+                 enemyBase.AttackCount >= shortLeapRecovery)
+        {
+            RegisterCompletedAttack();
+            CompleteAttack();
+        }
+    }
+
+    // 月の巡礼者と同じStandFloorのHasTile/GetCellCenterWorldを使う。
+    // ただし遠くのタイルへのフォールバックはせず、約1m前方に候補がなければ現在位置。
+    Vector2 FindShortLeapDestination(Vector2 origin, Vector2 toward)
+    {
+        if (toward.sqrMagnitude < 0.0001f) return origin;
+        if (ALL_SystemManager.Instance == null ||
+            ALL_SystemManager.Instance.enemySpawnBASE == null ||
+            ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C == null)
+            return origin;
+
+        Tilemap floor = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.StandFloor;
+        if (floor == null) return origin;
+
+        Vector2 direction = toward.normalized;
+        Vector2 wanted = origin + direction * shortLeapTargetDistance;
+        Vector3Int center = floor.WorldToCell(wanted);
+        Vector2 best = origin;
+        float bestScore = float.PositiveInfinity;
+        // 隣接セルのみ確認する。範囲外のタイルは絶対に選ばない。
+        for (int x = -2; x <= 2; x++)
+        {
+            for (int y = -2; y <= 2; y++)
+            {
+                Vector3Int cell = new Vector3Int(center.x + x, center.y + y, center.z);
+                if (!floor.HasTile(cell)) continue;
+
+                Vector2 candidate = floor.GetCellCenterWorld(cell);
+                Vector2 displacement = candidate - origin;
+                float length = displacement.magnitude;
+                if (length < 0.2f ||
+                    Mathf.Abs(length - shortLeapTargetDistance) > landingTileTolerance)
+                    continue;
+                // 横や後方への飛びかかりは禁止。標的方向に概ね向いたセルだけ。
+                if (Vector2.Dot(displacement.normalized, direction) < 0.55f) continue;
+
+                float score = Vector2.Distance(candidate, wanted) +
+                    Mathf.Abs(length - shortLeapTargetDistance) * 0.15f;
+                if (score < bestScore)
+                {
+                    bestScore = score;
+                    best = candidate;
+                }
+            }
+        }
+        return best;
+    }
+
+    void ScatterSludge(int count, Vector2 origin, Vector2 direction, float arcDegrees)
+    {
+        if (sludgePrefab == null)
+        {
+            if (!sludgeMissingLogged)
+            {
+                Debug.LogWarning("SB_Scallop: Sludge Prefab を設定するとヘドロ攻撃を使用できます。", this);
+                sludgeMissingLogged = true;
+            }
+            return;
+        }
+        if (direction.sqrMagnitude < 0.0001f) direction = Vector2.right;
+        direction.Normalize();
+
+        for (int i = 0; i < count; i++)
+        {
+            float angle = arcDegrees >= 359.9f
+                ? Random.Range(0f, 360f)
+                : Random.Range(-arcDegrees * 0.5f, arcDegrees * 0.5f);
+            Vector2 velocityDirection = (Quaternion.Euler(0f, 0f, angle) * direction).normalized;
+            float distance = Random.Range(1.5f, 4f);
+            GameObject sludge = Instantiate(sludgePrefab, origin, Quaternion.identity);
+            ConfigureSummonedAttack(sludge);
+
+            Rigidbody2D sludgeRb = sludge.GetComponent<Rigidbody2D>();
+            if (sludgeRb != null)
+                sludgeRb.velocity = velocityDirection * sludgeSpeed * Random.Range(0.65f, 1.35f);
+            else
+                sludge.transform.position = origin + velocityDirection * distance;
+
+            Destroy(sludge, sludgeLifetime);
+        }
+    }
+
+    void BeginSpecialLeap()
+    {
+        if (specialPhysicsChanged) return;
+        savedSpecialBodyType = enemyBase.rb.bodyType;
+        enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
+        specialPhysicsChanged = true;
+    }
+
+    void RestoreSpecialPhysics()
+    {
+        if (!specialPhysicsChanged) return;
+        enemyBase.rb.bodyType = savedSpecialBodyType;
+        enemyBase.rb.velocity = Vector2.zero;
+        specialPhysicsChanged = false;
+    }
+
+    void CompleteAttack()
+    {
+        enemyBase.mode = EnemyBase.ModeType.M1;
+        enemyBase.AttackCount = 0f;
+        enemyBase.moveType = EnemyBase.MoveType.Move;
+        enemyBase.PlayerDistance = 1000f;
+        enemyBase.animator.Play("待機", 0, 0f);
+        A_Phase = 0;
+    }
+
+    void CancelSpecialAction()
+    {
+        if (A_Phase == 3) roarPending = true; // 中断された咆哮は回復後に再実行。
+        RestoreSpecialPhysics();
+        if (activeRoarWarning != null) Destroy(activeRoarWarning);
+        activeRoarWarning = null;
+        if (AssultAttack != null) AssultAttack.SetActive(false);
+        enemyBase.mode = EnemyBase.ModeType.M1;
+        enemyBase.AttackCount = 0f;
+    }
+
     public void SpawnRockNeedle(Vector2 pos)
     {
         EnemyContoroller controller = enemyBase as EnemyContoroller;

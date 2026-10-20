@@ -136,7 +136,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
                 {
                      GameObject CL_HeaveySniper_Sniper=Instantiate(CG_Sniper, enemyBase.transform.position, Quaternion.identity);
 
-                    systemManager.AllEnemy.Add(CL_HeaveySniper_Sniper);
+                    InitializeSummonedEnemy(CL_HeaveySniper_Sniper, true);
                     enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
                     enemyBase.animator.SetInteger("Anim", 1);
                     enemyBase.mode = EnemyBase.ModeType.M3;

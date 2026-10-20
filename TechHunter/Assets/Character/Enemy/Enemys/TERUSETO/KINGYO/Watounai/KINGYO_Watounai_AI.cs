@@ -9,6 +9,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
 {
     [Header("首と頭部（本体の子オブジェクト）")]
     [SerializeField] Transform headTransform;
+    [SerializeField] Vector2 headSize = Vector2.one; // 頭部の元サイズに対する倍率
     [SerializeField] Animator headAnimator;
     [SerializeField] SpriteRenderer headSprite;
     [SerializeField] SpriteRenderer neckSprite;
@@ -40,6 +41,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     readonly List<BoxCollider2D> neckColliders = new List<BoxCollider2D>();
     readonly List<Vector2> neckPoints = new List<Vector2>();
     readonly List<Vector2> headTrail = new List<Vector2>();
+    Vector3 initialHeadScale = Vector3.one;
     Vector2 headVelocity;
     Vector2 previousHeadPosition;
     float neckTime;
@@ -129,6 +131,8 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     {
         if (enemyBase == null) enemyBase = GetComponentInParent<EnemyBase>();
         if (enemyBase == null) { enabled = false; return; }
+        if (headTransform != null) initialHeadScale = headTransform.localScale;
+        ApplyHeadSize();
 
         if (bodyDamage == null)
             bodyDamage = enemyBase.transform.Find("DamageArea") != null
@@ -165,6 +169,15 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         enemyBase.LookPlayerDistance = Mathf.Max(1f, HeadReach - attackRangeMargin);
         InitializeNeckPool();
         HideExtendedParts();
+    }
+
+    void ApplyHeadSize()
+    {
+        if (headTransform == null) return;
+        headTransform.localScale = new Vector3(
+            initialHeadScale.x * Mathf.Max(0.05f, headSize.x),
+            initialHeadScale.y * Mathf.Max(0.05f, headSize.y),
+            initialHeadScale.z);
     }
 
     void InitializeNeckPool()
@@ -221,6 +234,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     void UpdateNeckChain(float dt)
     {
         if (neckPool.Count == 0) return;
+        ApplyHeadSize();
         neckTime += dt;
         Vector3 desiredScale = new Vector3(Mathf.Max(0.05f, neckSegmentSize.x),
             Mathf.Max(0.05f, neckSegmentSize.y), 1f);

@@ -27,6 +27,22 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     [SerializeField] bool neckSpriteAlongX = true;
     [SerializeField] float headAngleOffset = 0f;
 
+    [Header("連結首プール")]
+    [SerializeField, Min(0.15f)] float neckSegmentSpacing = 0.65f;
+    [SerializeField, Min(1)] int initialNeckSegments = 40;
+    [SerializeField, Min(1)] int maxNeckSegments = 100;
+    [SerializeField, Min(0.1f)] float neckFollowTightness = 18f;
+    [SerializeField, Min(0f)] float neckWaveAmplitude = 0.45f;
+    [SerializeField, Min(0f)] float neckWaveFrequency = 8f;
+    readonly List<Transform> neckPool = new List<Transform>();
+    readonly List<SpriteRenderer> neckRenderers = new List<SpriteRenderer>();
+    readonly List<BoxCollider2D> neckColliders = new List<BoxCollider2D>();
+    readonly List<Vector2> neckPoints = new List<Vector2>();
+    readonly List<Vector2> headTrail = new List<Vector2>();
+    Vector2 headVelocity;
+    Vector2 previousHeadPosition;
+    float neckTime;
+
     [Header("攻撃距離・移動")]
     [SerializeField, Min(1f)] float minimumHeadReach = 20f;
     [SerializeField, Min(0f)] float attackRangeMargin = 0.5f;
@@ -143,7 +159,151 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         }
 
         enemyBase.LookPlayerDistance = Mathf.Max(1f, HeadReach - attackRangeMargin);
+        InitializeNeckPool();
         HideExtendedParts();
+    }
+
+    void InitializeNeckPool()
+    {
+        if (neckSprite == null) return;
+        // 既存のWatounaiNeckを雛形として利用し、攻撃中はクローンのみを表示する。
+        // InstantiateでcharaDamage/Colliderも複製されるため共通クラスの変更は不要。
+        for (int i = 0; i < Mathf.Min(initialNeckSegments, maxNeckSegments); i++)
+            AddNeckSegment();
+        neckSprite.gameObject.SetActive(false);
+    }
+
+    void AddNeckSegment()
+    {
+        if (neckSprite == null || neckPool.Count >= maxNeckSegments) return;
+        GameObject segment = Instantiate(neckSprite.gameObject, enemyBase.transform);
+        segment.name = "WatounaiNeckSegment_" + neckPool.Count;
+        segment.transform.localScale = Vector3.one;
+        SpriteRenderer renderer = segment.GetComponent<SpriteRenderer>();
+        BoxCollider2D collider = segment.GetComponent<BoxCollider2D>();
+        charaDamage damage = segment.GetComponent<charaDamage>();
+        if (damage != null && weakDamageReceiver != null)
+        {
+            damage.DamageType = 1;
+            damage.passDamageAreas.Clear();
+            damage.passDamageAreas.Add(weakDamageReceiver);
+        }
+        if (collider != null)
+        {
+            collider.size = neckSpriteAlongX
+                ? new Vector2(neckSegmentSpacing * 1.1f, neckColliderThickness)
+                : new Vector2(neckColliderThickness, neckSegmentSpacing * 1.1f);
+            collider.enabled = false;
+        }
+        if (renderer != null) renderer.enabled = false;
+        segment.SetActive(false);
+        neckPool.Add(segment.transform);
+        neckRenderers.Add(renderer);
+        neckColliders.Add(collider);
+    }
+
+    void ResetNeckPath()
+    {
+        headTrail.Clear();
+        neckPoints.Clear();
+        previousHeadPosition = NeckBase;
+        headVelocity = Vector2.zero;
+        neckTime = 0f;
+        headTrail.Add(NeckBase);
+    }
+
+    // 軌跡を頭側から遡り、首の各節を同じ間隔で配置する。
+    void UpdateNeckChain(float dt)
+    {
+        if (neckPool.Count == 0) return;
+        neckTime += dt;
+        Vector2 root = NeckBase;
+        Vector2 tip = currentHeadPosition;
+        Vector2 displacement = tip - previousHeadPosition;
+        if (dt > 0f) headVelocity = Vector2.Lerp(headVelocity, displacement / dt, 0.35f);
+        previousHeadPosition = tip;
+
+        if (headTrail.Count == 0) headTrail.Add(root);
+        // 先頭は常に現在の頭部。頭部の軌跡を記録する。
+        if (Vector2.Distance(headTrail[headTrail.Count - 1], tip) > 0.02f)
+            headTrail.Add(tip);
+        else
+            headTrail[headTrail.Count - 1] = tip;
+
+        float maximumTrail = maxNeckSegments * neckSegmentSpacing * 2f;
+        float trailLength = 0f;
+        for (int i = headTrail.Count - 1; i > 0; i--)
+        {
+            trailLength += Vector2.Distance(headTrail[i], headTrail[i - 1]);
+            if (trailLength > maximumTrail)
+            {
+                headTrail.RemoveRange(0, i);
+                break;
+            }
+        }
+        // 伸びた首の距離に応じて表示数を調整。軌跡の曲がりを多少残せる余裕を取る。
+        int count = Mathf.Clamp(Mathf.CeilToInt(Vector2.Distance(root, tip) /
+            neckSegmentSpacing * 1.2f), 0, maxNeckSegments);
+        while (neckPool.Count < count) AddNeckSegment();
+
+        neckPoints.Clear();
+        float remaining = neckSegmentSpacing * 0.5f;
+        Vector2 cursor = tip;
+        for (int i = headTrail.Count - 2; i >= 0 && neckPoints.Count < count; i--)
+        {
+            Vector2 target = headTrail[i];
+            float length = Vector2.Distance(cursor, target);
+            while (length >= remaining && neckPoints.Count < count)
+            {
+                cursor = Vector2.MoveTowards(cursor, target, remaining);
+                neckPoints.Add(cursor);
+                length = Vector2.Distance(cursor, target);
+                remaining = neckSegmentSpacing;
+            }
+            remaining -= length;
+            cursor = target;
+        }
+
+        // 記録が短いときは根元へ補間。根元は常に本体に固定する。
+        while (neckPoints.Count < count)
+        {
+            Vector2 last = neckPoints.Count > 0 ? neckPoints[neckPoints.Count - 1] : tip;
+            neckPoints.Add(Vector2.MoveTowards(last, root, neckSegmentSpacing));
+        }
+        // 軌跡が蛇行していても、根元が置き去りにならないよう補正する。
+        for (int i = 0; i < neckPoints.Count; i++)
+        {
+            float anchorWeight = Mathf.Pow((i + 1f) / count, 3f);
+            Vector2 straight = Vector2.Lerp(tip, root, (i + 0.5f) / count);
+            Vector2 position = Vector2.Lerp(neckPoints[i], straight, anchorWeight);
+            // 曲がりを残しつつ、首に小さな波を伝える。
+            Vector2 axis = (tip - root).normalized;
+            Vector2 normal = new Vector2(-axis.y, axis.x);
+            float wave = Mathf.Sin(neckTime * neckWaveFrequency - i * 0.65f)
+                * neckWaveAmplitude * Mathf.Sin(Mathf.PI * (i + 0.5f) / count);
+            position += normal * wave;
+            Transform segment = neckPool[i];
+            if (!segment.gameObject.activeSelf)
+            {
+                segment.position = position;
+                segment.gameObject.SetActive(true);
+            }
+            else
+                segment.position = Vector2.Lerp(segment.position, position,
+                    1f - Mathf.Exp(-neckFollowTightness * dt));
+            Vector2 next = i == 0 ? tip : (Vector2)neckPool[i - 1].position;
+            Vector2 prev = i == count - 1 ? root : neckPoints[i + 1];
+            Vector2 tangent = next - prev;
+            float angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
+            segment.rotation = Quaternion.Euler(0f, 0f, angle + (neckSpriteAlongX ? 0f : -90f));
+            if (neckRenderers[i] != null) neckRenderers[i].enabled = true;
+            if (neckColliders[i] != null) neckColliders[i].enabled = true;
+        }
+        for (int i = count; i < neckPool.Count; i++)
+        {
+            if (neckColliders[i] != null) neckColliders[i].enabled = false;
+            neckPool[i].gameObject.SetActive(false);
+        }
     }
 
     public override void EnemyMovePlay()
@@ -234,6 +394,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         totalBites = Mathf.Max(0, bitesBeforeSweep) + Mathf.Max(0, bitesAfterSweep);
         sweepDone = false;
         currentHeadPosition = NeckBase;
+        ResetNeckPath();
 
         Vector2 direction = Target != null
             ? (Vector2)Target.position - NeckBase : lastHeadDirection;
@@ -406,47 +567,17 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
 
     void UpdateExtendedParts()
     {
-        if (headTransform == null || neckSprite == null) return;
-        Vector2 start = NeckBase;
-        Vector2 delta = currentHeadPosition - start;
-        float length = delta.magnitude;
-        Vector2 direction = length > 0.02f ? delta / length : lastHeadDirection;
-
+        if (headTransform == null) return;
+        Vector2 delta = currentHeadPosition - NeckBase;
+        Vector2 direction = delta.sqrMagnitude > 0.001f ? delta.normalized : lastHeadDirection;
         headTransform.position = currentHeadPosition;
+        // 頭は進行方向を向く。首の節だけが遅れて曲がる。
+        Vector2 face = headVelocity.sqrMagnitude > 0.04f ? headVelocity.normalized : direction;
         headTransform.rotation = Quaternion.Euler(0f, 0f,
-            Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + headAngleOffset);
-
+            Mathf.Atan2(face.y, face.x) * Mathf.Rad2Deg + headAngleOffset);
         if (headSprite != null) headSprite.enabled = state != Windup && state != Recovery;
-        if (neckSprite != null)
-        {
-            neckSprite.enabled = state != Windup && state != Recovery && length > 0.07f;
-            neckSprite.transform.position = start + delta * 0.5f;
-            neckSprite.transform.rotation = Quaternion.Euler(0f, 0f,
-                Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg
-                + (neckSpriteAlongX ? 0f : -90f));
-
-            // Spriteの寸法を使い、根元から頭まで首を伸縮させる。
-            float naturalLength = neckSprite.sprite != null
-                ? (neckSpriteAlongX ? neckSprite.sprite.bounds.size.x
-                    : neckSprite.sprite.bounds.size.y) : 1f;
-            float stretch = length / Mathf.Max(0.01f, naturalLength);
-            neckSprite.transform.localScale = neckSpriteAlongX
-                ? new Vector3(stretch, neckVisualThicknessScale, 1f)
-                : new Vector3(neckVisualThicknessScale, stretch, 1f);
-        }
-
-        if (neckDamageCollider != null)
-        {
-            neckDamageCollider.enabled = state != Windup && state != Recovery && length > 0.2f;
-            float naturalLength = neckSprite.sprite != null
-                ? (neckSpriteAlongX ? neckSprite.sprite.bounds.size.x
-                    : neckSprite.sprite.bounds.size.y) : 1f;
-            neckDamageCollider.size = neckSpriteAlongX
-                ? new Vector2(naturalLength, neckColliderThickness /
-                    Mathf.Max(0.05f, neckVisualThicknessScale))
-                : new Vector2(neckColliderThickness /
-                    Mathf.Max(0.05f, neckVisualThicknessScale), naturalLength);
-        }
+        if (state != Windup && state != Recovery)
+            UpdateNeckChain(Time.fixedDeltaTime);
 
         if (headDamageCollider != null)
             headDamageCollider.enabled = state != Windup && state != Recovery;
@@ -462,6 +593,13 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     {
         SetHeadAttackActive(false);
         if (neckDamageCollider != null) neckDamageCollider.enabled = false;
+        for (int i = 0; i < neckPool.Count; i++)
+        {
+            if (neckColliders[i] != null) neckColliders[i].enabled = false;
+            if (neckPool[i] != null) neckPool[i].gameObject.SetActive(false);
+        }
+        headTrail.Clear();
+        neckPoints.Clear();
         if (headDamageCollider != null) headDamageCollider.enabled = false;
         if (neckSprite != null) neckSprite.enabled = false;
         if (headSprite != null) headSprite.enabled = false;

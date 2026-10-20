@@ -127,6 +127,41 @@ public class EnemyContoroller : EnemyBase
 
     public TargetType TargetMode => targetType;
     public Transform CurrentTarget { get; private set; }
+
+    // 召喚体へ敵対設定だけを複製する。通常のPlayerOnly召喚は従来挙動を維持。
+    public void CopyTargetSettingsTo(EnemyBase summoned)
+    {
+        if (summoned == null || targetType == TargetType.PlayerOnly) return;
+
+        summoned.SetDebugFaction(Factions);
+        EnemyContoroller child = summoned as EnemyContoroller;
+        if (child != null)
+        {
+            child.targetType = targetType;
+            child.targetPriority = targetPriority;
+            child.targetAllFactions = targetAllFactions;
+            child.targetFactions = targetFactions;
+            child.excludedTargetFactions = excludedTargetFactions;
+            child.enemyFirstPlayerDistance = enemyFirstPlayerDistance;
+            child.targetSearchInterval = targetSearchInterval;
+            child.ClearForcedTarget();
+        }
+        else
+        {
+            // EnemyContorollerを継承しない旧式騎士も敵対設定を継承。
+            CG_Knght knight = summoned as CG_Knght;
+            if (knight != null)
+                knight.CopyTargetSettings(targetType, targetPriority, targetAllFactions,
+                    targetFactions, excludedTargetFactions, enemyFirstPlayerDistance,
+                    targetSearchInterval);
+        }
+    }
+
+    // AllEnemyへの登録後に呼ぶ。PrefabのStartより先に敵を選択できる。
+    public void RefreshSummonedTarget()
+    {
+        if (targetType != TargetType.PlayerOnly) ChooseTargetNow();
+    }
     public Vector2 TargetDirection { get; private set; }
     public float TargetDistance { get; private set; } = float.PositiveInfinity;
 

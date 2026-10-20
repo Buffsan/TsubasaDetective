@@ -628,6 +628,12 @@ public class SB_Scallop_AI : EnemyMoveBase
             GameObject sludge = Instantiate(sludgePrefab, origin, Quaternion.identity);
             ConfigureSummonedAttack(sludge);
 
+            // ヘドロがMortar_Controllerの場合は、着弾時に生成する攻撃判定にも
+            // このホタテの敵対設定を渡せるよう、発射元を登録しておく。
+            // Mortar_Controller側でAttackArea/BulletAttackの派閥が引き継がれる。
+            foreach (Mortar_Controller mortar in sludge.GetComponentsInChildren<Mortar_Controller>(true))
+                mortar.enemyBase = enemyBase;
+
             Rigidbody2D sludgeRb = sludge.GetComponent<Rigidbody2D>();
             if (sludgeRb != null)
                 sludgeRb.velocity = velocityDirection * sludgeSpeed * Random.Range(0.65f, 1.35f);

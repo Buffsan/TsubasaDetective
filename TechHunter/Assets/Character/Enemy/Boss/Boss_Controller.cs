@@ -95,6 +95,31 @@ public class Boss_Controller : EnemyBase
     }
 
     public EnemyContoroller.TargetType TargetMode => targetType;
+
+    // ボスの敵対設定を召喚した雑魚敵へ渡す。PlayerOnlyの従来召喚は変更しない。
+    public void CopyTargetSettingsTo(EnemyBase summoned)
+    {
+        if (summoned == null ||
+            targetType == EnemyContoroller.TargetType.PlayerOnly) return;
+
+        summoned.SetDebugFaction(Factions);
+        EnemyContoroller child = summoned as EnemyContoroller;
+        if (child != null)
+        {
+            child.ApplySummonerTargetSettings(targetType, targetPriority,
+                targetAllFactions, targetFactions, excludedTargetFactions,
+                enemyFirstPlayerDistance, targetSearchInterval);
+        }
+        else
+        {
+            CG_Knght knight = summoned as CG_Knght;
+            if (knight != null)
+                knight.CopyTargetSettings(targetType, targetPriority, targetAllFactions,
+                    targetFactions, excludedTargetFactions, enemyFirstPlayerDistance,
+                    targetSearchInterval);
+        }
+    }
+
     public Transform CurrentTarget { get; private set; }
     public Vector2 TargetDirection { get; private set; }
     public float TargetDistance { get; private set; } = float.PositiveInfinity;

@@ -160,6 +160,28 @@ public class Boss_MoveBase : MonoBehaviour
         GameObject CL_Enemy  = Instantiate(enemyprefab,SpawnPos,Quaternion.identity);
         AllEnemy.Add(CL_Enemy);
         aLL_System.systemManager.AllEnemy.Add(CL_Enemy);
+
+        Boss_Controller boss = enemyBase as Boss_Controller;
+        if (boss != null && boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+        {
+            EnemyBase summoned = CL_Enemy.GetComponent<EnemyBase>();
+            if (summoned != null)
+            {
+                boss.CopyTargetSettingsTo(summoned);
+                EnemyContoroller child = summoned as EnemyContoroller;
+                if (child != null)
+                {
+                    foreach (EnemyAttack attack in child.GetComponentsInChildren<EnemyAttack>(true))
+                        child.ConfigureAttackTarget(attack);
+                    child.RefreshSummonedTarget();
+                }
+                else
+                {
+                    CG_Knght knight = summoned as CG_Knght;
+                    if (knight != null) knight.RefreshSummonedTarget();
+                }
+            }
+        }
         return CL_Enemy;
     }
     public void SpawnObjectNow(GameObject SpawnObject, Vector2 Target, float DestroyTime)

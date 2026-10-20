@@ -22,6 +22,9 @@ public class StarKnight : EnemyMoveBase
     Vector2 SaveAngle = Vector2.zero;
     Vector2 SavePosPhase = Vector2.zero;
 
+    // Frozen at the end of the windup to preserve legacy non-homing dashes.
+    Vector2 lockedRushDirection;
+
     public override void EnemyMovePlay()
     {
         LookAtCurrentTarget();
@@ -57,6 +60,7 @@ public class StarKnight : EnemyMoveBase
                 LookAtCurrentTarget();
                 if (enemyBase.AttackCount > 0.2)
                 {
+                    lockedRushDirection = TargetDirection.normalized;
                     enemyBase.mode = EnemyBase.ModeType.M3;
                     enemyBase.AttackCount = 0;
                 }
@@ -64,7 +68,7 @@ public class StarKnight : EnemyMoveBase
             if (enemyBase.mode == EnemyBase.ModeType.M3)
             {
                 //LookAtCurrentTarget();
-                enemyBase.rb.velocity = TargetDirection.normalized * 6f;
+                enemyBase.rb.velocity = lockedRushDirection * 6f;
                 if (enemyBase.AttackCount > 0.2f)
                 {
                     enemyBase.mode = EnemyBase.ModeType.M4;
@@ -119,6 +123,7 @@ public class StarKnight : EnemyMoveBase
                 LookAtCurrentTarget();
                 if (enemyBase.AttackCount > 0.2)
                 {
+                    lockedRushDirection = TargetDirection.normalized;
                     enemyBase.mode = EnemyBase.ModeType.M3;
                     enemyBase.AttackCount = 0;
                 }
@@ -126,7 +131,7 @@ public class StarKnight : EnemyMoveBase
             if (enemyBase.mode == EnemyBase.ModeType.M3)
             {
                 //LookAtCurrentTarget();
-                enemyBase.rb.velocity = TargetDirection.normalized * 0.5f;
+                enemyBase.rb.velocity = lockedRushDirection * 0.5f;
                 if (enemyBase.AttackCount > 0.5f)
                 {
                     enemyBase.mode = EnemyBase.ModeType.M4;
@@ -186,6 +191,7 @@ public class StarKnight : EnemyMoveBase
                 LookAtCurrentTarget();
                 if (enemyBase.AttackCount > 0.2)
                 {
+                    lockedRushDirection = TargetDirection.normalized;
                     enemyBase.mode = EnemyBase.ModeType.M3;
                     enemyBase.AttackCount = 0;
                 }

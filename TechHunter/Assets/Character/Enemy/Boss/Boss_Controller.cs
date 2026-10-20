@@ -96,6 +96,30 @@ public class Boss_Controller : EnemyBase
 
     public EnemyContoroller.TargetType TargetMode => targetType;
 
+    // デバッグ専用。通常のボス戦のターゲット設定には影響しない。
+    public void SetDebugOpponentFaction(Faction opponent)
+    {
+        targetType = EnemyContoroller.TargetType.EnemyOnly;
+        targetPriority = EnemyContoroller.TargetPriority.Nearest;
+        targetAllFactions = false;
+        targetFactions = opponent;
+        excludedTargetFactions = Faction.None;
+        ClearForcedTarget();
+        ChooseTargetNow();
+    }
+
+    // ボスの既存・新規攻撃判定にも同じ敵対派閥を設定する。
+    public void ConfigureAttackTarget(EnemyAttack attack)
+    {
+        if (attack == null) return;
+        Faction factions = Faction.None;
+        if (targetType != EnemyContoroller.TargetType.PlayerOnly)
+            factions = (targetAllFactions ? (Faction)(~0) : targetFactions)
+                & ~excludedTargetFactions;
+        bool hitPlayer = targetType != EnemyContoroller.TargetType.EnemyOnly;
+        attack.ConfigureAttack(this, attack.AttackPowerPercent, factions, hitPlayer);
+    }
+
     // ボスの敵対設定を召喚した雑魚敵へ渡す。PlayerOnlyの従来召喚は変更しない。
     public void CopyTargetSettingsTo(EnemyBase summoned)
     {
@@ -278,7 +302,9 @@ public class Boss_Controller : EnemyBase
 
 
         if (status == Status.MovieStay) return;
-        ALL_System.systemManager.AllEnemy.Add(this.gameObject);
+        // デバッグ登録済みの場合でもAllEnemyに二重追加しない。
+        if (!ALL_System.systemManager.AllEnemy.Contains(this.gameObject))
+            ALL_System.systemManager.AllEnemy.Add(this.gameObject);
 
     }
     private void FixedUpdate()

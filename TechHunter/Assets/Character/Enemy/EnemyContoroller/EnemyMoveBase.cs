@@ -215,24 +215,27 @@ public class EnemyMoveBase : MonoBehaviour
         if (instance == null) return null;
 
         EnemyBase summoned = instance.GetComponent<EnemyBase>();
-        if (summoned == null) return instance;
-
         EnemyContoroller owner = enemyBase as EnemyContoroller;
         if (owner == null) owner = GetComponentInParent<EnemyContoroller>();
-        if (owner != null)
+        if (owner != null && summoned != null)
             owner.CopyTargetSettingsTo(summoned);
 
-        // 敵VS敵ではNoList召喚体も標的探索のために登録する。
+        // SpawnEnemySpawnは従来どおり必ずAllEnemyに登録する。
+        // NoListは通常戦闘で登録せず、敵VS敵だけ探索対象に加える。
         bool needsRegistration = registerInAllEnemy ||
-            (owner != null && owner.TargetMode != EnemyContoroller.TargetType.PlayerOnly);
+            (summoned != null && owner != null &&
+             owner.TargetMode != EnemyContoroller.TargetType.PlayerOnly);
         if (needsRegistration)
         {
             SystemManager manager = SystemManager.Instance;
+            if (manager == null && ALL_SystemManager.Instance != null)
+                manager = ALL_SystemManager.Instance.systemManager;
             if (manager != null && manager.AllEnemy != null &&
                 !manager.AllEnemy.Contains(instance))
                 manager.AllEnemy.Add(instance);
         }
 
+        if (summoned == null) return instance;
         if (owner != null && owner.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
         {
             EnemyContoroller child = summoned as EnemyContoroller;

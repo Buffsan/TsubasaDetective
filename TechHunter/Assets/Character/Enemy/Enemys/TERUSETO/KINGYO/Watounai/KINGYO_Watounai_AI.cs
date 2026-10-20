@@ -102,6 +102,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     bool sweepDone;
     Vector2 currentHeadPosition;
     Vector2 launchDirection = Vector2.right;
+    Vector2 fixedRushTarget;
     Vector2 headTravelDirection = Vector2.right;
     Vector2 lastHeadDirection = Vector2.right;
     bool warningMissingLogged;
@@ -451,6 +452,10 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         if (headAnimator != null) headAnimator.Play("頭部", 0, 0f);
         if (headSprite != null) headSprite.enabled = true;
         if (neckSprite != null) neckSprite.enabled = true;
+        // 突進直前の位置を固定する。突進中はターゲットの移動を追わない。
+        fixedRushTarget = Target != null ? (Vector2)Target.position : NeckBase + launchDirection * HeadReach;
+        Vector2 aim = fixedRushTarget - currentHeadPosition;
+        if (aim.sqrMagnitude > 0.0001f) launchDirection = aim.normalized;
         headSpeed = launchInitialSpeed;
         enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
         SwitchState(Launch);
@@ -461,11 +466,13 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         SetHeadAttackActive(true);
         headSpeed += launchAcceleration * dt;
         headTravelDirection = launchDirection;
-        MoveHead(currentHeadPosition + launchDirection * headSpeed * dt);
+        // 目的地を通過しない。高速で移動し、記憶した位置に激突して停止する。
+        MoveHead(Vector2.MoveTowards(currentHeadPosition, fixedRushTarget, headSpeed * dt));
 
-        if (stateTime >= launchDuration ||
+        if (Vector2.Distance(currentHeadPosition, fixedRushTarget) <= 0.08f ||
             Vector2.Distance(NeckBase, currentHeadPosition) >= HeadReach - 0.05f)
         {
+            SetHeadAttackActive(false);
             if (totalBites > 0) BeginBite();
             else SwitchState(Pullback);
         }
@@ -473,6 +480,10 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
 
     void BeginBite()
     {
+        // 一度激突した後、現在のプレイヤー座標を改めて記憶する。
+        fixedRushTarget = Target != null ? (Vector2)Target.position : currentHeadPosition;
+        Vector2 aim = fixedRushTarget - currentHeadPosition;
+        if (aim.sqrMagnitude > 0.0001f) headTravelDirection = aim.normalized;
         headSpeed = biteInitialSpeed;
         SwitchState(Bite);
         SetHeadAttackActive(true);
@@ -480,29 +491,28 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
 
     void StepBite(float dt)
     {
-        // 頭部射出後も現在の標的の位置を追尾してさらに加速する。
-        Vector2 targetPosition = Target != null
-            ? (Vector2)Target.position : currentHeadPosition + lastHeadDirection;
-        Vector2 toTarget = targetPosition - currentHeadPosition;
-        Vector2 direction = toTarget.sqrMagnitude > 0.001f
-            ? toTarget.normalized : lastHeadDirection;
-
-        // 旋回速度を制限し、向き直るときに首が自然に曲がるようにする。
-        float oldAngle = Mathf.Atan2(headTravelDirection.y, headTravelDirection.x) * Mathf.Rad2Deg;
-        float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        float angle = Mathf.MoveTowardsAngle(oldAngle, targetAngle, biteTurnSpeed * dt);
-        headTravelDirection = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad),
-            Mathf.Sin(angle * Mathf.Deg2Rad));
-        headSpeed += biteAcceleration * dt;
-        MoveHead(currentHeadPosition + headTravelDirection * headSpeed * dt);
-        SetHeadAttackActive(true);
-
-        if (toTarget.magnitude <= biteStopDistance || stateTime >= biteDuration)
+        // 各突進開始時に固定した位置へ直進。追い越さず、激突したら止まる。
+        Vector2 toTarget = fixedRushTarget - currentHeadPosition;
+        float distance = toTarget.magnitude;
+        if (distance <= 0.08f)
         {
-            bitesDone++;
-            SetHeadAttackActive(false);
-            SwitchState(BitePause);
+            CompleteBite();
+            return;
         }
+
+        headTravelDirection = toTarget / distance;
+        headSpeed += biteAcceleration * dt;
+        MoveHead(Vector2.MoveTowards(currentHeadPosition, fixedRushTarget, headSpeed * dt));
+        if (Vector2.Distance(currentHeadPosition, fixedRushTarget) <= 0.08f ||
+            Vector2.Distance(NeckBase, currentHeadPosition) >= HeadReach - 0.05f)
+            CompleteBite();
+    }
+
+    void CompleteBite()
+    {
+        bitesDone++;
+        SetHeadAttackActive(false);
+        SwitchState(BitePause);
     }
 
     void StepBitePause()

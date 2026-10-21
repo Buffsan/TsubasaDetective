@@ -651,6 +651,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         volume.transform.position = position;
         Rigidbody2D body = volume.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Kinematic;
+        body.useFullKinematicContacts = true;
         body.gravityScale = 0f;
         CircleCollider2D collider = volume.AddComponent<CircleCollider2D>();
         collider.isTrigger = true;

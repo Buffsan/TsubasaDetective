@@ -181,7 +181,11 @@ MonoBehaviour:
   rockNeedlesPerRow: 11
   rockNeedleRows: 4
   rockFanAngle: 110
-  rockRowSpacing: 1.3
+  rockRowSpacing: 2.5
+  rockAngleJitter: 0.6
+  rockDistanceJitter: 0.35
+  rockDelayPerUnit: 0.065
+  rockRandomDelay: 0.18
   rockNeedleLifetime: 5
   jumpDuration: 0.85
   jumpArcHeight: 3

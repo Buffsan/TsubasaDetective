@@ -31,6 +31,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
 
     [Header("連結首プール")]
     [SerializeField, Min(0.15f)] float neckSegmentSpacing = 0.65f;
+    [SerializeField, Min(1)] int neckDamageSegmentInterval = 3; // 3なら3節に1節だけ被弾
     [SerializeField] Vector2 neckSegmentSize = Vector2.one; // 各首パーツの見た目と判定を一緒に拡縮
     [SerializeField, Min(1)] int initialNeckSegments = 40;
     [SerializeField, Min(1)] int maxNeckSegments = 100;
@@ -355,7 +356,8 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             float angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
             segment.rotation = Quaternion.Euler(0f, 0f, angle + (neckSpriteAlongX ? 0f : -90f));
             if (neckRenderers[i] != null) neckRenderers[i].enabled = true;
-            if (neckColliders[i] != null) neckColliders[i].enabled = true;
+            if (neckColliders[i] != null)
+                neckColliders[i].enabled = i % Mathf.Max(1, neckDamageSegmentInterval) == 0;
         }
         for (int i = count; i < neckPool.Count; i++)
         {
@@ -793,7 +795,8 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             segment.rotation = Quaternion.Euler(0f, 0f, angle + (neckSpriteAlongX ? 0f : -90f));
             if (!segment.gameObject.activeSelf) segment.gameObject.SetActive(true);
             if (neckRenderers[i] != null) neckRenderers[i].enabled = true;
-            if (neckColliders[i] != null) neckColliders[i].enabled = true;
+            if (neckColliders[i] != null)
+                neckColliders[i].enabled = i % Mathf.Max(1, neckDamageSegmentInterval) == 0;
         }
         for (int i = count; i < neckPool.Count; i++)
         {

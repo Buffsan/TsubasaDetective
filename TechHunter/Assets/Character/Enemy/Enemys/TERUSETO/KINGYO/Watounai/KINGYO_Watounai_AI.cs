@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 // ワトウナイ：本体は移動せず、硬質な頭部だけを画面端まで射出する。
@@ -237,6 +238,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         SpriteRenderer renderer = segment.GetComponent<SpriteRenderer>();
         BoxCollider2D collider = segment.GetComponent<BoxCollider2D>();
         charaDamage damage = segment.GetComponent<charaDamage>();
+        RepairMissingDamageOwners(segment);
         if (damage != null && weakDamageReceiver != null)
         {
             damage.DamageType = 1;
@@ -838,6 +840,22 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     }
 
     // ワキンのRockNeedleを転用し、着弾方向に扇状の複数列で生成する。
+    // UnityでPrefabの一部だけを複製した場合など、charaDamageの
+    // 非公開enemyBase参照が切れていてもワトウナイ自身を所有者にする。
+    // 共通charaDamageは変更せず、生成物に限って初期化する。
+    static readonly FieldInfo DamageOwnerField = typeof(charaDamage).GetField(
+        "enemyBase", BindingFlags.Instance | BindingFlags.NonPublic);
+
+    void RepairMissingDamageOwners(GameObject spawnedObject)
+    {
+        if (spawnedObject == null || enemyBase == null) return;
+        foreach (charaDamage damage in spawnedObject.GetComponentsInChildren<charaDamage>(true))
+        {
+            if (damage != null && damage.OwnerEnemyBase == null && DamageOwnerField != null)
+                DamageOwnerField.SetValue(damage, enemyBase);
+        }
+    }
+
     void SpawnRockFan(Vector2 impactPoint, Vector2 direction)
     {
         if (rockNeedlePrefab == null) return;
@@ -873,6 +891,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         if (rockNeedlePrefab == null || enemyBase == null ||
             enemyBase.status == EnemyBase.Status.Die) yield break;
         GameObject needle = Instantiate(rockNeedlePrefab, position, Quaternion.identity);
+        RepairMissingDamageOwners(needle);
         ConfigureSummonedAttack(needle);
         Destroy(needle, rockNeedleLifetime);
     }

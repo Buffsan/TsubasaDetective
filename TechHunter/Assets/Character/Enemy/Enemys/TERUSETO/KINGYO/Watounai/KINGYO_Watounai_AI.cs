@@ -55,6 +55,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     [Header("攻撃1：ハープーンの高速着弾")]
     [SerializeField, Min(0.05f)] float windupTime = 0.5f;
     [SerializeField, Min(0f)] float rushInitialSpeed = 1.5f;
+    [SerializeField, Min(0f)] float rushSlowStartTime = 0.14f;
     [SerializeField, Min(1f)] float rushAcceleration = 1100f;
     [SerializeField, Min(1f)] float rushSpeed = 260f;
     [SerializeField, Min(0.1f)] float impactRadius = 1.4f;
@@ -482,7 +483,10 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         Vector2 delta = lockedPoint - currentHeadPosition;
         if (delta.sqrMagnitude > 0.001f) lastHeadDirection = delta.normalized;
         // 座標固定＋MoveTowardsで通り過ぎず確実に激突する。
-        currentRushSpeed = Mathf.Min(rushSpeed, currentRushSpeed + rushAcceleration * dt);
+        if (stateTime < rushSlowStartTime)
+            currentRushSpeed = rushInitialSpeed;
+        else
+            currentRushSpeed = Mathf.Min(rushSpeed, currentRushSpeed + rushAcceleration * dt);
         MoveHead(Vector2.MoveTowards(currentHeadPosition, lockedPoint, currentRushSpeed * dt));
         if (Vector2.Distance(currentHeadPosition, lockedPoint) <= 0.03f)
         {

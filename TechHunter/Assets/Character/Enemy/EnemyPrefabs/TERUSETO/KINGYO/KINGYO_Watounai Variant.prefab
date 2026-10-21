@@ -138,6 +138,7 @@ MonoBehaviour:
   AttackCount: 0
   Clone_DengerObjects: []
   headTransform: {fileID: 830000000000010002}
+  headSize: {x: 1, y: 1}
   headAnimator: {fileID: 830000000000010004}
   headSprite: {fileID: 830000000000010003}
   neckSprite: {fileID: 830000000000020003}
@@ -155,29 +156,38 @@ MonoBehaviour:
   neckBaseOffset: {x: 0, y: 0.15}
   neckSpriteAlongX: 1
   headAngleOffset: 0
+  neckSegmentSpacing: 0.65
+  neckSegmentSize: {x: 1, y: 1}
+  initialNeckSegments: 40
+  maxNeckSegments: 100
+  neckFollowTightness: 18
+  neckWaveAmplitude: 0.45
+  neckWaveFrequency: 8
   minimumHeadReach: 20
   attackRangeMargin: 0.5
-  shootingRestTime: 0.45
-  straightWarningPrefab: {fileID: 2501771257612049726, guid: e5aecc36db5df3343be606699a254b85, type: 3}
-  windupTime: 0.6
-  launchDuration: 0.45
-  launchInitialSpeed: 30
-  launchAcceleration: 100
-  bitesBeforeSweep: 2
-  bitesAfterSweep: 1
-  biteDuration: 0.46
-  biteInitialSpeed: 15
-  biteAcceleration: 85
-  bitePause: 0.12
-  biteStopDistance: 0.65
-  pullbackDuration: 0.25
-  pullbackFraction: 0.35
-  sweepDuration: 0.6
-  sweepAngle: 155
-  sweepMinimumRadius: 3.5
+  closeRange: 3
+  shootingRestTime: 0.65
+  windupTime: 0.5
+  rushSpeed: 240
+  impactRadius: 1.4
+  impactPowerPercent: 100
+  impactWait: 0.5
+  maximumRushes: 3
+  impactWarningPrefab: {fileID: 0}
+  jumpDuration: 0.85
+  jumpArcHeight: 3
+  roarWarningTime: 1
+  roarRadius: 3
+  roarPowerPercent: 100
+  roarWarningPrefab: {fileID: 0}
+  slowApproachSpeed: 2
+  biteStartDistance: 1.1
+  biteSpeed: 12
+  biteDuration: 0.3
+  biteReach: 1.6
+  approachTimeout: 4
   neckReturnSpeed: 10
   afterReturnRecovery: 0.55
-  maxSequenceDuration: 8
 --- !u!1001 &8350615655123635693
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -64,6 +64,14 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     [SerializeField, Range(1, 10)] int maximumRushes = 3;
     [SerializeField] GameObject impactWarningPrefab;
 
+    [Header("着弾時：進行方向へ扇状の岩針")]
+    [SerializeField] GameObject rockNeedlePrefab;
+    [SerializeField, Range(3, 25)] int rockNeedlesPerRow = 11;
+    [SerializeField, Range(1, 8)] int rockNeedleRows = 4;
+    [SerializeField, Range(15f, 180f)] float rockFanAngle = 110f;
+    [SerializeField, Min(0.1f)] float rockRowSpacing = 1.3f;
+    [SerializeField, Min(0f)] float rockNeedleLifetime = 5f;
+
     [Header("攻撃2：跳躍と咆哮")]
     [SerializeField, Min(0.1f)] float jumpDuration = 0.85f;
     [SerializeField, Min(0f)] float jumpArcHeight = 3f;
@@ -111,6 +119,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     Vector2 jumpLanding;
     Vector2 currentHeadPosition;
     Vector2 lastHeadDirection = Vector2.right;
+    Vector2 rushImpactDirection = Vector2.right;
     RigidbodyType2D previousBodyType;
     bool bodyTypeChanged;
     readonly List<GameObject> activeWarnings = new List<GameObject>();
@@ -481,7 +490,11 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     void StepRush(float dt)
     {
         Vector2 delta = lockedPoint - currentHeadPosition;
-        if (delta.sqrMagnitude > 0.001f) lastHeadDirection = delta.normalized;
+        if (delta.sqrMagnitude > 0.001f)
+        {
+            lastHeadDirection = delta.normalized;
+            rushImpactDirection = delta.normalized;
+        }
         // 座標固定＋MoveTowardsで通り過ぎず確実に激突する。
         if (stateTime < rushSlowStartTime)
             currentRushSpeed = rushInitialSpeed;
@@ -493,6 +506,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             SetHeadAttackActive(false);
             rushCount++;
             SpawnAreaAttack(lockedPoint, impactRadius, impactPowerPercent);
+            SpawnRockFan(lockedPoint, rushImpactDirection);
             SwitchState(ImpactPause);
         }
     }
@@ -757,6 +771,30 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         bodyTypeChanged = false;
     }
 
+    // ワキンのRockNeedleを転用し、着弾方向に扇状の複数列で生成する。
+    void SpawnRockFan(Vector2 impactPoint, Vector2 direction)
+    {
+        if (rockNeedlePrefab == null) return;
+        if (direction.sqrMagnitude < 0.0001f) direction = lastHeadDirection;
+        float heading = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        for (int row = 1; row <= rockNeedleRows; row++)
+        {
+            float distance = row * rockRowSpacing;
+            for (int i = 0; i < rockNeedlesPerRow; i++)
+            {
+                float normalized = rockNeedlesPerRow <= 1 ? 0.5f :
+                    (float)i / (rockNeedlesPerRow - 1);
+                float angle = heading + (normalized - 0.5f) * rockFanAngle;
+                float radians = angle * Mathf.Deg2Rad;
+                Vector2 offset = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) * distance;
+                GameObject needle = Instantiate(rockNeedlePrefab, impactPoint + offset,
+                    Quaternion.identity);
+                ConfigureSummonedAttack(needle);
+                Destroy(needle, rockNeedleLifetime);
+            }
+        }
+    }
+
     // 着弾と咆哮は、どちらも既存EnemyAttackの派閥・ダメージ処理を使用。
     void SpawnAreaAttack(Vector2 position, float radius, float damagePercent)
     {
@@ -834,6 +872,12 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         headTransform.position = currentHeadPosition;
         // 頭は進行方向を向く。首の節だけが遅れて曲がる。
         Vector2 face = headVelocity.sqrMagnitude > 0.04f ? headVelocity.normalized : direction;
+        // 首の射出中は移動先固定でも、頭の視線は生きている標的に追従する。
+        if (headExposed && state != Retract && Target != null)
+        {
+            Vector2 look = (Vector2)Target.position - currentHeadPosition;
+            if (look.sqrMagnitude > 0.0001f) face = look.normalized;
+        }
         headTransform.rotation = state == Retract ? retractHeadRotation :
             Quaternion.Euler(0f, 0f,
                 Mathf.Atan2(face.y, face.x) * Mathf.Rad2Deg + headAngleOffset);

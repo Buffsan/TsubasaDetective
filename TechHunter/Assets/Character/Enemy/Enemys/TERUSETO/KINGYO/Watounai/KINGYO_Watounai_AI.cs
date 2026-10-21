@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -69,7 +70,11 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     [SerializeField, Range(3, 25)] int rockNeedlesPerRow = 11;
     [SerializeField, Range(1, 8)] int rockNeedleRows = 4;
     [SerializeField, Range(15f, 180f)] float rockFanAngle = 110f;
-    [SerializeField, Min(0.1f)] float rockRowSpacing = 1.3f;
+    [SerializeField, Min(0.1f)] float rockRowSpacing = 2.5f;
+    [SerializeField, Range(0f, 1f)] float rockAngleJitter = 0.6f;
+    [SerializeField, Range(0f, 1f)] float rockDistanceJitter = 0.35f;
+    [SerializeField, Min(0f)] float rockDelayPerUnit = 0.065f;
+    [SerializeField, Min(0f)] float rockRandomDelay = 0.18f;
     [SerializeField, Min(0f)] float rockNeedleLifetime = 5f;
 
     [Header("攻撃2：跳躍と咆哮")]
@@ -124,6 +129,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     bool bodyTypeChanged;
     readonly List<GameObject> activeWarnings = new List<GameObject>();
     Material fallbackWarningMaterial;
+    readonly List<Coroutine> rockFanCoroutines = new List<Coroutine>();
 
     Transform Target => CurrentTarget;
     Vector2 NeckBase => (Vector2)enemyBase.transform.position + neckBaseOffset;
@@ -777,22 +783,38 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         if (rockNeedlePrefab == null) return;
         if (direction.sqrMagnitude < 0.0001f) direction = lastHeadDirection;
         float heading = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        for (int row = 1; row <= rockNeedleRows; row++)
+        int rows = Mathf.Max(1, rockNeedleRows);
+        int columns = Mathf.Max(1, rockNeedlesPerRow);
+        for (int row = 1; row <= rows; row++)
         {
-            float distance = row * rockRowSpacing;
-            for (int i = 0; i < rockNeedlesPerRow; i++)
+            for (int i = 0; i < columns; i++)
             {
-                float normalized = rockNeedlesPerRow <= 1 ? 0.5f :
-                    (float)i / (rockNeedlesPerRow - 1);
-                float angle = heading + (normalized - 0.5f) * rockFanAngle;
+                float normalized = columns == 1 ? 0.5f : (float)i / (columns - 1);
+                float spacingAngle = rockFanAngle / Mathf.Max(1, columns - 1);
+                float angle = heading + (normalized - 0.5f) * rockFanAngle
+                    + Random.Range(-spacingAngle, spacingAngle) * rockAngleJitter;
+                float distance = (row + Random.Range(-rockDistanceJitter, rockDistanceJitter))
+                    * rockRowSpacing;
+                distance = Mathf.Max(0.1f, distance);
                 float radians = angle * Mathf.Deg2Rad;
-                Vector2 offset = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) * distance;
-                GameObject needle = Instantiate(rockNeedlePrefab, impactPoint + offset,
-                    Quaternion.identity);
-                ConfigureSummonedAttack(needle);
-                Destroy(needle, rockNeedleLifetime);
+                Vector2 position = impactPoint +
+                    new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) * distance;
+                // 遠い岩針ほど遅い。ランダム差を加えて整列した出現を避ける。
+                float delay = distance * rockDelayPerUnit +
+                    Random.Range(0f, rockRandomDelay);
+                rockFanCoroutines.Add(StartCoroutine(SpawnDelayedRockNeedle(position, delay)));
             }
         }
+    }
+
+    IEnumerator SpawnDelayedRockNeedle(Vector2 position, float delay)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        if (rockNeedlePrefab == null || enemyBase == null ||
+            enemyBase.status == EnemyBase.Status.Die) yield break;
+        GameObject needle = Instantiate(rockNeedlePrefab, position, Quaternion.identity);
+        ConfigureSummonedAttack(needle);
+        Destroy(needle, rockNeedleLifetime);
     }
 
     // 着弾と咆哮は、どちらも既存EnemyAttackの派閥・ダメージ処理を使用。
@@ -957,7 +979,12 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             CancelAttack();
     }
 
-    void OnDisable() { if (attacking) CancelAttack(); }
+    void OnDisable()
+    {
+        if (attacking) CancelAttack();
+        StopAllCoroutines();
+        rockFanCoroutines.Clear();
+    }
 
     void OnDestroy()
     {

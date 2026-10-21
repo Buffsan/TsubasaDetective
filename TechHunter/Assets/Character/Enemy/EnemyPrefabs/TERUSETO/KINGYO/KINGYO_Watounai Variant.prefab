@@ -177,6 +177,11 @@ MonoBehaviour:
   impactWait: 0.5
   maximumRushes: 3
   impactWarningPrefab: {fileID: 0}
+  predictTargetMovement: 1
+  predictionStrength: 0.8
+  maxPredictionDistance: 5
+  maxTrackedTargetSpeed: 22
+  velocitySmoothing: 0.25
   rockNeedlePrefab: {fileID: 8836682513317167095, guid: 00c1a9ebd63f3d940bc176b33c7b5659, type: 3}
   rockNeedlesPerRow: 11
   rockNeedleRows: 4

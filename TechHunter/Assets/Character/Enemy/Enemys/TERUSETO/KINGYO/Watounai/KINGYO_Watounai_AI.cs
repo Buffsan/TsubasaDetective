@@ -54,7 +54,9 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
 
     [Header("攻撃1：ハープーンの高速着弾")]
     [SerializeField, Min(0.05f)] float windupTime = 0.5f;
-    [SerializeField, Min(1f)] float rushSpeed = 240f;
+    [SerializeField, Min(0f)] float rushInitialSpeed = 1.5f;
+    [SerializeField, Min(1f)] float rushAcceleration = 1100f;
+    [SerializeField, Min(1f)] float rushSpeed = 260f;
     [SerializeField, Min(0.1f)] float impactRadius = 1.4f;
     [SerializeField, Min(0f)] float impactPowerPercent = 100f;
     [SerializeField, Min(0.05f)] float impactWait = 0.5f;
@@ -100,6 +102,9 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     int rushCount;
     float stateTime;
     float delayUntilNextAttack;
+    float currentRushSpeed;
+    Quaternion retractHeadRotation;
+    readonly List<Vector2> retractPath = new List<Vector2>();
     Vector2 lockedPoint;
     Vector2 jumpStart;
     Vector2 jumpLanding;
@@ -466,6 +471,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             if (headAnimator != null) headAnimator.Play("頭部", 0, 0f);
             if (headSprite != null) headSprite.enabled = true;
         }
+        currentRushSpeed = rushInitialSpeed;
         SetHeadAttackActive(true);
         if (enemyBase.audioManager != null) enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
         SwitchState(Rush);
@@ -476,7 +482,8 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         Vector2 delta = lockedPoint - currentHeadPosition;
         if (delta.sqrMagnitude > 0.001f) lastHeadDirection = delta.normalized;
         // 座標固定＋MoveTowardsで通り過ぎず確実に激突する。
-        MoveHead(Vector2.MoveTowards(currentHeadPosition, lockedPoint, rushSpeed * dt));
+        currentRushSpeed = Mathf.Min(rushSpeed, currentRushSpeed + rushAcceleration * dt);
+        MoveHead(Vector2.MoveTowards(currentHeadPosition, lockedPoint, currentRushSpeed * dt));
         if (Vector2.Distance(currentHeadPosition, lockedPoint) <= 0.03f)
         {
             SetHeadAttackActive(false);
@@ -601,7 +608,12 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         RestoreBodyType();
         enemyBase.rb.velocity = Vector2.zero;
         SetHeadAttackActive(false);
-        if (headExposed) SwitchState(Retract);
+        if (headExposed)
+        {
+            retractHeadRotation = headTransform != null ? headTransform.rotation : Quaternion.identity;
+            BuildRetractPath();
+            SwitchState(Retract);
+        }
         else
         {
             HideExtendedParts();
@@ -609,15 +621,50 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         }
     }
 
+    // 頭部が伸びた首を逆に辿る。根元への直線移動ではない。
+    void BuildRetractPath()
+    {
+        retractPath.Clear();
+        retractPath.Add(currentHeadPosition);
+        for (int i = 0; i < neckPool.Count; i++)
+            if (neckPool[i] != null && neckPool[i].gameObject.activeSelf)
+                retractPath.Add(neckPool[i].position);
+        retractPath.Add(NeckBase);
+    }
+
     void StepRetract(float dt)
     {
-        MoveHead(Vector2.MoveTowards(currentHeadPosition, NeckBase, neckReturnSpeed * dt));
-        if (Vector2.Distance(currentHeadPosition, NeckBase) <= 0.04f)
+        float remaining = neckReturnSpeed * dt;
+        while (remaining > 0f && retractPath.Count > 1)
+        {
+            Vector2 next = retractPath[1];
+            float distance = Vector2.Distance(currentHeadPosition, next);
+            if (distance <= remaining + 0.0001f)
+            {
+                currentHeadPosition = next;
+                retractPath.RemoveAt(0);
+                remaining -= distance;
+            }
+            else
+            {
+                currentHeadPosition = Vector2.MoveTowards(currentHeadPosition, next, remaining);
+                remaining = 0f;
+            }
+        }
+        if (retractPath.Count <= 1 || Vector2.Distance(currentHeadPosition, NeckBase) <= 0.04f)
         {
             HideExtendedParts();
-            enemyBase.animator.SetInteger("Anim", 0);
+            RestoreBodyAnimation();
             SwitchState(Recovery);
         }
+    }
+
+    void RestoreBodyAnimation()
+    {
+        if (enemyBase == null || enemyBase.animator == null) return;
+        enemyBase.animator.SetInteger("Anim", 0);
+        if (enemyBase.status == EnemyBase.Status.Nomal)
+            enemyBase.animator.Play("待機", 0, 0f);
     }
 
     void SwitchState(int newState)
@@ -719,8 +766,9 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         headTransform.position = currentHeadPosition;
         // 頭は進行方向を向く。首の節だけが遅れて曲がる。
         Vector2 face = headVelocity.sqrMagnitude > 0.04f ? headVelocity.normalized : direction;
-        headTransform.rotation = Quaternion.Euler(0f, 0f,
-            Mathf.Atan2(face.y, face.x) * Mathf.Rad2Deg + headAngleOffset);
+        headTransform.rotation = state == Retract ? retractHeadRotation :
+            Quaternion.Euler(0f, 0f,
+                Mathf.Atan2(face.y, face.x) * Mathf.Rad2Deg + headAngleOffset);
         if (headSprite != null) headSprite.enabled = headExposed;
         if (headExposed)
             UpdateNeckChain(Time.fixedDeltaTime);
@@ -762,7 +810,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         HideExtendedParts();
         if (enemyBase == null) return;
         enemyBase.rb.velocity = Vector2.zero;
-        enemyBase.animator.SetInteger("Anim", 0);
+        RestoreBodyAnimation();
         enemyBase.mode = EnemyBase.ModeType.M1;
         enemyBase.AttackCount = 0f;
         delayUntilNextAttack = shootingRestTime;
@@ -778,7 +826,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         HideExtendedParts();
         if (enemyBase == null) return;
         enemyBase.rb.velocity = Vector2.zero;
-        enemyBase.animator.SetInteger("Anim", 0);
+        RestoreBodyAnimation();
         enemyBase.mode = EnemyBase.ModeType.M1;
         enemyBase.AttackCount = 0f;
         enemyBase.moveType = EnemyBase.MoveType.Move;

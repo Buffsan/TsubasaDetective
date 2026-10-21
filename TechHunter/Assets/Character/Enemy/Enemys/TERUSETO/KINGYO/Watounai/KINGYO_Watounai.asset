@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: KINGYO_Watounai
   m_EditorClassIdentifier: 
   NAME: "\u30EF\u30C8\u30A6\u30CA\u30A4"
-  MAXHP: 2800
+  MAXHP: 4400
   enemyStrength: 4
   Regen: 0
   MAXMP: 0
   SPEED: 2.5
-  ATK: 10
+  ATK: 6
   ATKDF: 40
   GOLD: 120
   XP: 0
   StanHP: 35
-  ConfusionResistance: 600
+  ConfusionResistance: 4400
   Critical: 0
   Range: 0
   ConfusionResistanceRegen: 1000

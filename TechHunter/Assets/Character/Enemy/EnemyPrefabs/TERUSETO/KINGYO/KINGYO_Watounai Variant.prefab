@@ -177,6 +177,12 @@ MonoBehaviour:
   impactWait: 0.5
   maximumRushes: 3
   impactWarningPrefab: {fileID: 0}
+  rockNeedlePrefab: {fileID: 8836682513317167095, guid: 00c1a9ebd63f3d940bc176b33c7b5659, type: 3}
+  rockNeedlesPerRow: 11
+  rockNeedleRows: 4
+  rockFanAngle: 110
+  rockRowSpacing: 1.3
+  rockNeedleLifetime: 5
   jumpDuration: 0.85
   jumpArcHeight: 3
   roarWarningTime: 1

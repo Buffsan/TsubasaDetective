@@ -168,7 +168,9 @@ MonoBehaviour:
   closeRange: 3
   shootingRestTime: 0.65
   windupTime: 0.5
-  rushSpeed: 240
+  rushInitialSpeed: 1.5
+  rushAcceleration: 1100
+  rushSpeed: 260
   impactRadius: 1.4
   impactPowerPercent: 100
   impactWait: 0.5

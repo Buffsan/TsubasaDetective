@@ -46,66 +46,69 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     Vector2 previousHeadPosition;
     float neckTime;
 
-    [Header("攻撃距離・移動")]
+    [Header("射程と待機")]
     [SerializeField, Min(1f)] float minimumHeadReach = 20f;
     [SerializeField, Min(0f)] float attackRangeMargin = 0.5f;
-    [SerializeField, Min(0f)] float shootingRestTime = 0.45f;
-    [SerializeField] GameObject straightWarningPrefab;
-    [SerializeField, Min(0.05f)] float windupTime = 0.6f;
+    [SerializeField, Min(0.1f)] float closeRange = 3f;
+    [SerializeField, Min(0f)] float shootingRestTime = 0.65f;
 
-    [Header("砲弾頭突き・加速噛みつき")]
-    [SerializeField, Min(0.05f)] float launchDuration = 0.45f;
-    [SerializeField, Min(0f)] float launchInitialSpeed = 30f;
-    [SerializeField, Min(0f)] float launchAcceleration = 100f;
-    [SerializeField, Min(0)] int bitesBeforeSweep = 2;
-    [SerializeField, Min(0)] int bitesAfterSweep = 1;
-    [SerializeField, Min(0.05f)] float biteDuration = 0.46f;
-    [SerializeField, Min(0f)] float biteInitialSpeed = 15f;
-    [SerializeField, Min(0f)] float biteAcceleration = 85f;
-    [SerializeField, Min(0.05f)] float bitePause = 0.12f;
-    [SerializeField, Min(30f)] float biteTurnSpeed = 540f;
-    [SerializeField, Min(0.1f)] float biteStopDistance = 0.65f;
+    [Header("攻撃1：ハープーンの高速着弾")]
+    [SerializeField, Min(0.05f)] float windupTime = 0.5f;
+    [SerializeField, Min(1f)] float rushSpeed = 240f;
+    [SerializeField, Min(0.1f)] float impactRadius = 1.4f;
+    [SerializeField, Min(0f)] float impactPowerPercent = 100f;
+    [SerializeField, Min(0.05f)] float impactWait = 0.5f;
+    [SerializeField, Range(1, 10)] int maximumRushes = 3;
+    [SerializeField] GameObject impactWarningPrefab;
 
-    [Header("首を引いた後の薙ぎ払い")]
-    [SerializeField, Min(0.05f)] float pullbackDuration = 0.25f;
-    [SerializeField, Range(0.05f, 0.95f)] float pullbackFraction = 0.35f;
-    [SerializeField, Min(0.05f)] float sweepDuration = 0.6f;
-    [SerializeField, Range(30f, 270f)] float sweepAngle = 155f;
-    [SerializeField, Min(0.5f)] float sweepMinimumRadius = 3.5f;
-    [SerializeField, Min(0.5f)] float sweepTravelSpeed = 42f;
+    [Header("攻撃2：跳躍と咆哮")]
+    [SerializeField, Min(0.1f)] float jumpDuration = 0.85f;
+    [SerializeField, Min(0f)] float jumpArcHeight = 3f;
+    [SerializeField, Min(0.1f)] float roarWarningTime = 1f;
+    [SerializeField, Min(0.25f)] float roarRadius = 3f;
+    [SerializeField, Min(0f)] float roarPowerPercent = 100f;
+    [SerializeField] GameObject roarWarningPrefab;
 
-    [Header("収納：頭は攻撃せず、首は被弾可能")]
+    [Header("攻撃3：低速追尾・噛みつき")]
+    [SerializeField, Min(0.1f)] float slowApproachSpeed = 2f;
+    [SerializeField, Min(0.2f)] float biteStartDistance = 1.1f;
+    [SerializeField, Min(0.1f)] float biteSpeed = 12f;
+    [SerializeField, Min(0.05f)] float biteDuration = 0.3f;
+    [SerializeField, Min(0.1f)] float biteReach = 1.6f;
+    [SerializeField, Min(0.1f)] float approachTimeout = 4f;
+
+    [Header("収納：攻撃チャンス")]
     [SerializeField, Min(0.1f)] float neckReturnSpeed = 10f;
     [SerializeField, Min(0.05f)] float afterReturnRecovery = 0.55f;
-    [SerializeField, Min(0.1f)] float maxSequenceDuration = 8f;
 
     const int Windup = 0;
-    const int Launch = 1;
-    const int Bite = 2;
-    const int BitePause = 3;
-    const int Pullback = 4;
-    const int Sweep = 5;
-    const int Retract = 6;
-    const int Recovery = 7;
+    const int Rush = 1;
+    const int ImpactPause = 2;
+    const int RoarWarning = 3;
+    const int RoarAfter = 4;
+    const int Jump = 5;
+    const int SlowApproach = 6;
+    const int Bite = 7;
+    const int Retract = 8;
+    const int Recovery = 9;
 
     bool attacking;
+    bool headExposed;
     int state;
-    int bitesDone;
-    int totalBites;
+    int attackFamily;
+    int nextCloseAttack = 2;
+    int rushCount;
     float stateTime;
-    float sequenceTime;
-    float headSpeed;
     float delayUntilNextAttack;
-    float pullbackInitialDistance;
-    float sweepRadius;
-    float sweepCenterAngle;
-    bool sweepDone;
+    Vector2 lockedPoint;
+    Vector2 jumpStart;
+    Vector2 jumpLanding;
     Vector2 currentHeadPosition;
-    Vector2 launchDirection = Vector2.right;
-    Vector2 fixedRushTarget;
-    Vector2 headTravelDirection = Vector2.right;
     Vector2 lastHeadDirection = Vector2.right;
-    bool warningMissingLogged;
+    RigidbodyType2D previousBodyType;
+    bool bodyTypeChanged;
+    readonly List<GameObject> activeWarnings = new List<GameObject>();
+    Material fallbackWarningMaterial;
 
     Transform Target => CurrentTarget;
     Vector2 NeckBase => (Vector2)enemyBase.transform.position + neckBaseOffset;

@@ -376,6 +376,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             }
             BeginAttack();
         }
+        if (weakDamageReceiver != null) weakDamageReceiver.DF = weakNeckDefense;
         float dt = Time.fixedDeltaTime;
         stateTime += dt;
         if (state != SlowApproach && state != Jump)
@@ -526,11 +527,12 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         enemyBase.rb.MovePosition(pos);
         if (progress >= 1f)
         {
-            enemyBase.rb.MovePosition(jumpLanding);
+            enemyBase.rb.position = jumpLanding;
             RestoreBodyType();
             enemyBase.rb.velocity = Vector2.zero;
             currentHeadPosition = NeckBase;
             headExposed = true;
+            enemyBase.animator.Play("首無し", 0, 0f);
             if (headSprite != null) headSprite.enabled = true;
             if (headAnimator != null) headAnimator.Play("頭部", 0, 0f);
             SpawnAreaAttack(jumpLanding, impactRadius, impactPowerPercent);

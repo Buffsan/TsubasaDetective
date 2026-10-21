@@ -521,9 +521,9 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         jumpStart = enemyBase.rb.position;
         jumpLanding = Target.position;
         enemyBase.rb.velocity = Vector2.zero;
-        previousBodyType = enemyBase.rb.bodyType;
-        enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
-        bodyTypeChanged = true;
+        // MovePositionはDynamicでも利用可能。混乱/スタン中断で
+        // Kinematic→Dynamicに戻す際の座標不整合を避ける。
+        bodyTypeChanged = false;
         enemyBase.animator.SetInteger("Anim", 2);
         SpawnCircleWarning(jumpLanding, impactRadius, jumpDuration, impactWarningPrefab);
         SwitchState(Jump);
@@ -663,6 +663,68 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         }
     }
 
+    // 収納時は頭と首を同一の経路上に直接配置する。
+    // 通常時のLerp追従を適用しないため、頭に首が置き去りにならない。
+    void UpdateRetractingNeckChain()
+    {
+        if (neckPool.Count == 0) return;
+        ApplyHeadSize();
+        float spacing = Mathf.Max(0.15f, neckSegmentSpacing);
+        float length = 0f;
+        Vector2 cursor = currentHeadPosition;
+        for (int i = 1; i < retractPath.Count; i++)
+        {
+            length += Vector2.Distance(cursor, retractPath[i]);
+            cursor = retractPath[i];
+        }
+        int count = Mathf.Min(maxNeckSegments, Mathf.CeilToInt(length / spacing));
+        while (neckPool.Count < count) AddNeckSegment();
+
+        Vector3 size = new Vector3(Mathf.Max(0.05f, neckSegmentSize.x),
+            Mathf.Max(0.05f, neckSegmentSize.y), 1f);
+        Vector2 sampleStart = currentHeadPosition;
+        int pathIndex = 1;
+        Vector2 sampleEnd = pathIndex < retractPath.Count ? retractPath[pathIndex] : NeckBase;
+        for (int i = 0; i < count; i++)
+        {
+            float remaining = spacing * 0.5f;
+            if (i > 0) remaining = spacing;
+            while (remaining > 0f && pathIndex < retractPath.Count)
+            {
+                float distance = Vector2.Distance(sampleStart, sampleEnd);
+                if (distance > remaining)
+                {
+                    sampleStart = Vector2.MoveTowards(sampleStart, sampleEnd, remaining);
+                    remaining = 0f;
+                }
+                else
+                {
+                    sampleStart = sampleEnd;
+                    remaining -= distance;
+                    pathIndex++;
+                    if (pathIndex < retractPath.Count) sampleEnd = retractPath[pathIndex];
+                }
+            }
+            Transform segment = neckPool[i];
+            segment.position = sampleStart;
+            segment.localScale = size;
+            Vector2 forward = i == 0 ? currentHeadPosition : (Vector2)neckPool[i - 1].position;
+            Vector2 tangent = forward - sampleStart;
+            if (tangent.sqrMagnitude < 0.0001f)
+                tangent = currentHeadPosition - NeckBase;
+            float angle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
+            segment.rotation = Quaternion.Euler(0f, 0f, angle + (neckSpriteAlongX ? 0f : -90f));
+            if (!segment.gameObject.activeSelf) segment.gameObject.SetActive(true);
+            if (neckRenderers[i] != null) neckRenderers[i].enabled = true;
+            if (neckColliders[i] != null) neckColliders[i].enabled = true;
+        }
+        for (int i = count; i < neckPool.Count; i++)
+        {
+            if (neckColliders[i] != null) neckColliders[i].enabled = false;
+            neckPool[i].gameObject.SetActive(false);
+        }
+    }
+
     void RestoreBodyAnimation()
     {
         if (enemyBase == null || enemyBase.animator == null) return;
@@ -689,7 +751,9 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     void RestoreBodyType()
     {
         if (!bodyTypeChanged || enemyBase == null || enemyBase.rb == null) return;
+        Vector2 stablePosition = enemyBase.rb.position;
         enemyBase.rb.bodyType = previousBodyType;
+        enemyBase.rb.position = stablePosition;
         bodyTypeChanged = false;
     }
 
@@ -775,7 +839,10 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
                 Mathf.Atan2(face.y, face.x) * Mathf.Rad2Deg + headAngleOffset);
         if (headSprite != null) headSprite.enabled = headExposed;
         if (headExposed)
-            UpdateNeckChain(Time.fixedDeltaTime);
+        {
+            if (state == Retract) UpdateRetractingNeckChain();
+            else UpdateNeckChain(Time.fixedDeltaTime);
+        }
 
         if (headDamageCollider != null)
             headDamageCollider.enabled = headExposed;

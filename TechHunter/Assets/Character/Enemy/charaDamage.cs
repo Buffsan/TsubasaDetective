@@ -12,9 +12,9 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     public List<charaDamage> passDamageAreas = new List<charaDamage>();
     public int DamageType = 0;
-    //ƒ_ƒ[ƒW‚ğ©g‚É•ÏŠ·
-    //ƒ_ƒ[ƒW‚ğpassDamageAreas[0]‚É•ÏŠ·
-    //ƒ_ƒ[ƒW‚ğpassDamageAreas[x]‘S‚Ä‚É•ÏŠ·
+    //ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’è‡ªèº«ã«å¤‰æ›
+    //ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’passDamageAreas[0]ã«å¤‰æ›
+    //ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’passDamageAreas[x]å…¨ã¦ã«å¤‰æ›
 
     public List<ActiveBuff> buffs = new();
 
@@ -65,7 +65,7 @@ public class charaDamage : MonoBehaviour, IDamageable
 
             if (active.statuseffectdata.effecttype == buffData.effecttype)
             {
-                // Œø‰ÊŠÔ‚¾‚¯‰„’·
+                // åŠ¹æœæ™‚é–“ã ã‘å»¶é•·
                 active.remainTime += buffData.Duration;
                 return;
             }
@@ -90,7 +90,7 @@ public class charaDamage : MonoBehaviour, IDamageable
             }
         }
 
-        // ‰‚ß‚Ä‚È‚ç’Ç‰Á
+        // åˆã‚ã¦ãªã‚‰è¿½åŠ 
         buffs.Add(activeBuff);
     }
 
@@ -100,7 +100,7 @@ public class charaDamage : MonoBehaviour, IDamageable
         
         if (DamageType != 0 && passDamageAreas.Count == 0)
         {
-            Debug.Log("ƒ_ƒ[ƒW‚ğ‰Ÿ‚µ•t‚¯‚éˆ—‚È‚Ì‚É‰Ÿ‚µ‚Â‚¯æ‚ª‚¢‚È‚¢@‚Ğ‚Ç‚¢‚æ‚Ì‚È‚©");
+            Debug.Log("ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’æŠ¼ã—ä»˜ã‘ã‚‹å‡¦ç†ãªã®ã«æŠ¼ã—ã¤ã‘å…ˆãŒã„ãªã„ã€€ã²ã©ã„ã‚ˆã®ãªã‹");
             return;
         }
         switch (DamageType)
@@ -175,7 +175,7 @@ public class charaDamage : MonoBehaviour, IDamageable
         enemyBase.TakeDamageColor();
         ConfusionHP -= (Attackvalue * HP_percent) * ConfusionPower;
         if (1 - (ConfusionHP / enemyBase.ConfusionHP) > enemyBase.HP / enemyBase.MAXHP && enemyBase.status != EnemyBase.Status.ConfusionResistance)
-        {//¬—
+        {//æ··ä¹±
 
             audioManager.PlaySE(enemyBase.ConfusionAudio);
             enemyBase.status = EnemyBase.Status.ConfusionResistance;
@@ -230,14 +230,14 @@ public class charaDamage : MonoBehaviour, IDamageable
 
                 case StatusEffect.StatusEffectType.ElectricShock:
 
-                    // Š´“dˆ—
+                    // æ„Ÿé›»å‡¦ç†
                     if (buff.tickTimer >= buff.statuseffectdata.TickTime)
                     {
                         buff.tickTimer = 0;
 
                         audioManager.PlaySE(buff.audioClips[0]);
                         Damage(0.1f, 9, 2, false);
-                        //Š´“d
+                        //æ„Ÿé›»
                     }
                     break;
             }
@@ -268,8 +268,39 @@ public class charaDamage : MonoBehaviour, IDamageable
             ConfusionHP = enemyBase.ConfusionHP;
         }
     }
+    string GetHierarchyPath()
+    {
+        string path = gameObject.name;
+        Transform current = transform.parent;
+        while (current != null)
+        {
+            path = current.name + "/" + path;
+            current = current.parent;
+        }
+        return path;
+    }
+
+    bool loggedMissingEnemyBase;
+
     private void FixedUpdate()
     {
+        if (enemyBase == null)
+        {
+            // ç”Ÿæˆã•ã‚ŒãŸåˆ¤å®šãŒæœ¬ä½“ã®å‚ç…§ã‚’å¤±ã£ãŸå ´åˆã€è¦ªã‹ã‚‰å¾©å…ƒã™ã‚‹ã€‚
+            enemyBase = GetComponentInParent<EnemyBase>();
+            if (enemyBase == null)
+            {
+                // åŒã˜ã‚¨ãƒ©ãƒ¼ã‚’æ¯FixedUpdateã§å‡ºã•ãšã€åŸå› ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å ±å‘Šã™ã‚‹ã€‚
+                if (!loggedMissingEnemyBase)
+                {
+                    Debug.LogError("charaDamage: EnemyBaseã®å‚ç…§ãŒã‚ã‚Šã¾ã›ã‚“ã€‚Object: " +
+                        gameObject.name + " / Hierarchy: " + GetHierarchyPath(), this);
+                    loggedMissingEnemyBase = true;
+                }
+                return;
+            }
+            loggedMissingEnemyBase = false;
+        }
 
         HP_percent = (enemyBase.HP / enemyBase.MAXHP);
 
@@ -353,9 +384,9 @@ public class charaDamage : MonoBehaviour, IDamageable
     {
         isDieCameraShake(enemyBase.charadata);
         enemyBase.status = EnemyBase.Status.Die;
-        //Debug.Log("‚µ‚ñ‚¾");
-        if (isDead) return;   // Šù‚É€–Sˆ—’†‚È‚ç‰½‚à‚µ‚È‚¢
-        isDead = true;        // ‚±‚±‚ÅÅ‰‚ÉƒƒbƒN‚ğ‚©‚¯‚é
+        //Debug.Log("ã—ã‚“ã ");
+        if (isDead) return;   // æ—¢ã«æ­»äº¡å‡¦ç†ä¸­ãªã‚‰ä½•ã‚‚ã—ãªã„
+        isDead = true;        // ã“ã“ã§æœ€åˆã«ãƒ­ãƒƒã‚¯ã‚’ã‹ã‘ã‚‹
 
 
         enemyBase.animator.SetBool("Damage", true);
@@ -369,15 +400,15 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     void isDamageTextPop(float value, int PP, bool Criticul)
     {
-        // ƒv[ƒ‹‚©‚çæ“¾
+        // ãƒ—ãƒ¼ãƒ«ã‹ã‚‰å–å¾—
         GameObject obj = DamageTextPool.instance.Get();
 
-        // ˆÊ’u’²®
+        // ä½ç½®èª¿æ•´
         Vector3 pos = enemyBase.transform.position;
         pos.y += 1;
         obj.transform.position = pos;
 
-        // î•ñƒZƒbƒg
+        // æƒ…å ±ã‚»ãƒƒãƒˆ
         DamageText text = obj.GetComponent<DamageText>();
         text.isChangeText(value);
         text.Criticul = Criticul;
@@ -408,13 +439,13 @@ public class charaDamage : MonoBehaviour, IDamageable
 
             for (int j = 0; j < count; j++)
             {
-                // ¥ Instantiate ‚Ì‘ã‚í‚è‚Éƒv[ƒ‹‚©‚çæ“¾‚·‚é
+                // â–¼ Instantiate ã®ä»£ã‚ã‚Šã«ãƒ—ãƒ¼ãƒ«ã‹ã‚‰å–å¾—ã™ã‚‹
                 GameObject coinObj = CoinPool.Instance.GetCoin(transform.position);
 
                 CoinManager coin = coinObj.GetComponent<CoinManager>();
                 coin.coinType = types[i];
 
-                // SystemManager ‚Ì coinManagers “o˜^i‚ ‚È‚½‚Ìd—l‚É‡‚í‚¹‚éj
+                // SystemManager ã® coinManagers ç™»éŒ²ï¼ˆã‚ãªãŸã®ä»•æ§˜ã«åˆã‚ã›ã‚‹ï¼‰
                 enemyBase.ALL_System.systemManager.coinManagers.Add(coin);
             }
         }

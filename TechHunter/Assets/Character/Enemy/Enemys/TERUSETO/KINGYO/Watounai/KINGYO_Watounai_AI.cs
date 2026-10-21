@@ -336,7 +336,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     {
         if (enemyBase == null) return;
         if (attacking) CancelAttack();
-
+        if (delayUntilNextAttack > 0f) delayUntilNextAttack -= Time.fixedDeltaTime;
         Transform target = Target;
         if (target == null)
         {
@@ -344,15 +344,11 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             enemyBase.animator.SetInteger("Anim", 0);
             return;
         }
-
         LookAtCurrentTarget();
-        Vector2 direction = (Vector2)target.position - (Vector2)enemyBase.transform.position;
-        float distance = direction.magnitude;
-
-        // 画面端相当の射程より外の敵は、従来の移動速度で接近する。
-        if (distance >= HeadReach - attackRangeMargin)
+        Vector2 delta = (Vector2)target.position - (Vector2)enemyBase.transform.position;
+        if (delta.magnitude >= HeadReach - attackRangeMargin)
         {
-            enemyBase.rb.velocity = direction.normalized * enemyBase.SPEED;
+            enemyBase.rb.velocity = delta.normalized * enemyBase.SPEED;
             enemyBase.animator.SetInteger("Anim", 1);
         }
         else
@@ -360,240 +356,264 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             enemyBase.rb.velocity = Vector2.zero;
             enemyBase.animator.SetInteger("Anim", 0);
         }
-
-        // Controllerが距離によってAttackへ移るため、独立した待機時間は短縮しない。
-        if (delayUntilNextAttack > 0f)
-            delayUntilNextAttack -= Time.fixedDeltaTime;
     }
 
     public override void EnemyAttackPlay()
     {
         if (enemyBase == null) return;
-        enemyBase.rb.velocity = Vector2.zero;
-
         if (!attacking)
         {
             if (delayUntilNextAttack > 0f)
             {
                 delayUntilNextAttack -= Time.fixedDeltaTime;
+                enemyBase.rb.velocity = Vector2.zero;
                 return;
             }
-            if (Target == null)
+            if (Target == null || Vector2.Distance(Target.position, NeckBase) >= HeadReach - attackRangeMargin)
             {
                 FinishAttack();
                 return;
             }
             BeginAttack();
         }
-
         float dt = Time.fixedDeltaTime;
         stateTime += dt;
-        sequenceTime += dt;
-        if (sequenceTime >= maxSequenceDuration && state != Retract && state != Recovery)
-            SwitchState(Retract);
+        if (state != SlowApproach && state != Jump)
+            enemyBase.rb.velocity = Vector2.zero;
 
         switch (state)
         {
-            case Windup: StepWindup(); break;
-            case Launch: StepLaunch(dt); break;
+            case Windup:
+                if (stateTime >= windupTime) StartRushMotion();
+                break;
+            case Rush: StepRush(dt); break;
+            case ImpactPause:
+                if (stateTime >= impactWait) DecideAfterImpact();
+                break;
+            case RoarWarning:
+                if (stateTime >= roarWarningTime) FireRoar();
+                break;
+            case RoarAfter:
+                if (stateTime >= 0.15f)
+                {
+                    if (attackFamily == 2) StartLockedRush();
+                    else BeginRetract();
+                }
+                break;
+            case Jump: StepJump(); break;
+            case SlowApproach: StepSlowApproach(); break;
             case Bite: StepBite(dt); break;
-            case BitePause: StepBitePause(); break;
-            case Pullback: StepPullback(); break;
-            case Sweep: StepSweep(); break;
             case Retract: StepRetract(dt); break;
             case Recovery:
                 if (stateTime >= afterReturnRecovery) FinishAttack();
                 break;
         }
-
-        if (attacking)
-            UpdateExtendedParts();
+        if (attacking && headExposed) UpdateExtendedParts();
     }
 
     void BeginAttack()
     {
         attacking = true;
-        state = Windup;
-        stateTime = 0f;
-        sequenceTime = 0f;
-        bitesDone = 0;
-        totalBites = Mathf.Max(0, bitesBeforeSweep) + Mathf.Max(0, bitesAfterSweep);
-        sweepDone = false;
+        rushCount = 0;
         currentHeadPosition = NeckBase;
         ResetNeckPath();
-
-        Vector2 direction = Target != null
-            ? (Vector2)Target.position - NeckBase : lastHeadDirection;
-        launchDirection = direction.sqrMagnitude > 0.001f
-            ? direction.normalized : lastHeadDirection;
-
-        headTravelDirection = launchDirection;
-        LookAtCurrentTarget();
-        enemyBase.animator.SetInteger("Anim", 2);
+        HideExtendedParts();
         enemyBase.mode = EnemyBase.ModeType.M1;
-        enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
+        enemyBase.rb.velocity = Vector2.zero;
 
-        if (straightWarningPrefab != null)
+        float distance = Target != null ? Vector2.Distance(Target.position, NeckBase) : float.PositiveInfinity;
+        if (distance > closeRange)
         {
-            GameObject warning = SpawnAttackWarning(EnemyContoroller.WarningRectangle,
-                straightWarningPrefab, NeckBase, Quaternion.identity,
-                windupTime, null, 0f, false);
-            if (warning != null) warning.transform.up = launchDirection;
+            attackFamily = 1;
+            StartLockedRush();
         }
-        else if (!warningMissingLogged)
+        else
         {
-            Debug.LogWarning("KINGYO_Watounai: 攻撃警告Prefabは未設定です。", this);
-            warningMissingLogged = true;
+            // 近距離攻撃2と3は交互に出す。両方を確実にテストできる。
+            attackFamily = nextCloseAttack;
+            nextCloseAttack = nextCloseAttack == 2 ? 3 : 2;
+            if (attackFamily == 2) BeginJump();
+            else SwitchState(SlowApproach);
         }
     }
 
-    void StepWindup()
+    // 攻撃1・攻撃2の追撃共通：構え開始時に標的座標を記憶する。
+    void StartLockedRush()
     {
-        if (stateTime < windupTime) return;
-
-        enemyBase.animator.Play("首無し", 0, 0f);
-        if (headAnimator != null) headAnimator.Play("頭部", 0, 0f);
-        if (headSprite != null) headSprite.enabled = true;
-        if (neckSprite != null) neckSprite.enabled = true;
-        // 突進直前の位置を固定する。突進中はターゲットの移動を追わない。
-        fixedRushTarget = Target != null ? (Vector2)Target.position : NeckBase + launchDirection * HeadReach;
-        Vector2 aim = fixedRushTarget - currentHeadPosition;
-        if (aim.sqrMagnitude > 0.0001f) launchDirection = aim.normalized;
-        headSpeed = launchInitialSpeed;
-        enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
-        SwitchState(Launch);
+        if (Target == null) { BeginRetract(); return; }
+        lockedPoint = Target.position;
+        if (Vector2.Distance(lockedPoint, NeckBase) > HeadReach - attackRangeMargin)
+        {
+            BeginRetract();
+            return;
+        }
+        Vector2 aim = lockedPoint - currentHeadPosition;
+        if (aim.sqrMagnitude > 0.001f) lastHeadDirection = aim.normalized;
+        enemyBase.animator.SetInteger("Anim", 2);
+        LookAtCurrentTarget();
+        if (enemyBase.audioManager != null) enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
+        SpawnCircleWarning(lockedPoint, impactRadius, windupTime, impactWarningPrefab);
+        SwitchState(Windup);
     }
 
-    void StepLaunch(float dt)
+    void StartRushMotion()
     {
+        if (!headExposed)
+        {
+            headExposed = true;
+            enemyBase.animator.Play("首無し", 0, 0f);
+            if (headAnimator != null) headAnimator.Play("頭部", 0, 0f);
+            if (headSprite != null) headSprite.enabled = true;
+        }
         SetHeadAttackActive(true);
-        headSpeed += launchAcceleration * dt;
-        headTravelDirection = launchDirection;
-        // 目的地を通過しない。高速で移動し、記憶した位置に激突して停止する。
-        MoveHead(Vector2.MoveTowards(currentHeadPosition, fixedRushTarget, headSpeed * dt));
+        if (enemyBase.audioManager != null) enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
+        SwitchState(Rush);
+    }
 
-        if (Vector2.Distance(currentHeadPosition, fixedRushTarget) <= 0.08f ||
-            Vector2.Distance(NeckBase, currentHeadPosition) >= HeadReach - 0.05f)
+    void StepRush(float dt)
+    {
+        Vector2 delta = lockedPoint - currentHeadPosition;
+        if (delta.sqrMagnitude > 0.001f) lastHeadDirection = delta.normalized;
+        // 座標固定＋MoveTowardsで通り過ぎず確実に激突する。
+        MoveHead(Vector2.MoveTowards(currentHeadPosition, lockedPoint, rushSpeed * dt));
+        if (Vector2.Distance(currentHeadPosition, lockedPoint) <= 0.03f)
         {
             SetHeadAttackActive(false);
-            if (totalBites > 0) BeginBite();
-            else SwitchState(Pullback);
+            rushCount++;
+            SpawnAreaAttack(lockedPoint, impactRadius, impactPowerPercent);
+            SwitchState(ImpactPause);
         }
     }
 
-    void BeginBite()
+    void DecideAfterImpact()
     {
-        // 一度激突した後、現在のプレイヤー座標を改めて記憶する。
-        fixedRushTarget = Target != null ? (Vector2)Target.position : currentHeadPosition;
-        Vector2 aim = fixedRushTarget - currentHeadPosition;
-        if (aim.sqrMagnitude > 0.0001f) headTravelDirection = aim.normalized;
-        headSpeed = biteInitialSpeed;
-        SwitchState(Bite);
-        SetHeadAttackActive(true);
+        if (Target == null) { BeginRetract(); return; }
+        float distanceFromHead = Vector2.Distance(Target.position, currentHeadPosition);
+        float distanceFromBase = Vector2.Distance(Target.position, NeckBase);
+        // 遠距離の激突後に3m以内なら予告1秒の咆哮。
+        if (attackFamily == 1 && distanceFromHead <= closeRange)
+        {
+            BeginRoar();
+            return;
+        }
+        // 初撃＋最大2回の追撃／跳躍後は最大3回の追撃。
+        if (rushCount < maximumRushes && distanceFromBase < HeadReach - attackRangeMargin)
+            StartLockedRush();
+        else
+            BeginRetract();
+    }
+
+    void BeginJump()
+    {
+        if (Target == null) { BeginRetract(); return; }
+        jumpStart = enemyBase.rb.position;
+        jumpLanding = Target.position;
+        enemyBase.rb.velocity = Vector2.zero;
+        previousBodyType = enemyBase.rb.bodyType;
+        enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
+        bodyTypeChanged = true;
+        enemyBase.animator.SetInteger("Anim", 2);
+        SpawnCircleWarning(jumpLanding, impactRadius, jumpDuration, impactWarningPrefab);
+        SwitchState(Jump);
+    }
+
+    // 和金やギンリンサンショクワキンと同じsinカーブ跳躍。
+    void StepJump()
+    {
+        float progress = Mathf.Clamp01(stateTime / jumpDuration);
+        Vector2 pos = Vector2.Lerp(jumpStart, jumpLanding, progress);
+        pos.y += Mathf.Sin(progress * Mathf.PI) * jumpArcHeight;
+        enemyBase.rb.MovePosition(pos);
+        if (progress >= 1f)
+        {
+            enemyBase.rb.MovePosition(jumpLanding);
+            RestoreBodyType();
+            enemyBase.rb.velocity = Vector2.zero;
+            currentHeadPosition = NeckBase;
+            headExposed = true;
+            if (headSprite != null) headSprite.enabled = true;
+            if (headAnimator != null) headAnimator.Play("頭部", 0, 0f);
+            SpawnAreaAttack(jumpLanding, impactRadius, impactPowerPercent);
+            BeginRoar();
+        }
+    }
+
+    void BeginRoar()
+    {
+        SetHeadAttackActive(false);
+        lockedPoint = attackFamily == 2 && rushCount == 0
+            ? NeckBase : currentHeadPosition;
+        if (enemyBase.audioManager != null) enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
+        SpawnCircleWarning(lockedPoint, roarRadius, roarWarningTime, roarWarningPrefab);
+        SwitchState(RoarWarning);
+    }
+
+    void FireRoar()
+    {
+        SpawnAreaAttack(lockedPoint, roarRadius, roarPowerPercent);
+        if (enemyBase.audioManager != null) enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
+        SwitchState(RoarAfter);
+    }
+
+    // 攻撃3は本体が低速で常時追尾して接近する。
+    void StepSlowApproach()
+    {
+        if (Target == null || stateTime >= approachTimeout)
+        {
+            BeginRetract();
+            return;
+        }
+        Vector2 toward = (Vector2)Target.position - (Vector2)enemyBase.transform.position;
+        if (toward.magnitude <= biteStartDistance)
+        {
+            enemyBase.rb.velocity = Vector2.zero;
+            currentHeadPosition = NeckBase;
+            ResetNeckPath();
+            headExposed = true;
+            enemyBase.animator.Play("首無し", 0, 0f);
+            if (headSprite != null) headSprite.enabled = true;
+            if (headAnimator != null) headAnimator.Play("頭部", 0, 0f);
+            SetHeadAttackActive(true);
+            SwitchState(Bite);
+        }
+        else
+        {
+            enemyBase.rb.velocity = toward.normalized * slowApproachSpeed;
+            enemyBase.animator.SetInteger("Anim", 1);
+            LookAtCurrentTarget();
+        }
     }
 
     void StepBite(float dt)
     {
-        // 各突進開始時に固定した位置へ直進。追い越さず、激突したら止まる。
-        Vector2 toTarget = fixedRushTarget - currentHeadPosition;
-        float distance = toTarget.magnitude;
-        if (distance <= 0.08f)
-        {
-            CompleteBite();
-            return;
-        }
-
-        headTravelDirection = toTarget / distance;
-        headSpeed += biteAcceleration * dt;
-        MoveHead(Vector2.MoveTowards(currentHeadPosition, fixedRushTarget, headSpeed * dt));
-        if (Vector2.Distance(currentHeadPosition, fixedRushTarget) <= 0.08f ||
-            Vector2.Distance(NeckBase, currentHeadPosition) >= HeadReach - 0.05f)
-            CompleteBite();
+        Vector2 toward = Target != null
+            ? (Vector2)Target.position - NeckBase : lastHeadDirection;
+        if (toward.sqrMagnitude > 0.001f) lastHeadDirection = toward.normalized;
+        Vector2 point = NeckBase + Vector2.ClampMagnitude(toward, biteReach);
+        MoveHead(Vector2.MoveTowards(currentHeadPosition, point, biteSpeed * dt));
+        if (stateTime >= biteDuration) BeginRetract();
     }
 
-    void CompleteBite()
+    void BeginRetract()
     {
-        bitesDone++;
+        RestoreBodyType();
+        enemyBase.rb.velocity = Vector2.zero;
         SetHeadAttackActive(false);
-        SwitchState(BitePause);
-    }
-
-    void StepBitePause()
-    {
-        if (stateTime < bitePause) return;
-
-        if (!sweepDone && bitesDone >= bitesBeforeSweep)
-        {
-            pullbackInitialDistance = Vector2.Distance(NeckBase, currentHeadPosition);
-            SwitchState(Pullback);
-        }
-        else if (bitesDone < totalBites)
-            BeginBite();
+        if (headExposed) SwitchState(Retract);
         else
-            SwitchState(Retract);
-    }
-
-    void StepPullback()
-    {
-        // 完全収納ではない。首をいったん引き下げて薙ぎ払いへつなぐ。
-        SetHeadAttackActive(false);
-        Vector2 dir = currentHeadPosition - NeckBase;
-        if (dir.sqrMagnitude < 0.001f) dir = lastHeadDirection;
-        float ratio = Mathf.Clamp01(stateTime / pullbackDuration);
-        float from = Mathf.Max(0.2f, pullbackInitialDistance);
-        float to = Mathf.Max(0.5f, from * pullbackFraction);
-        MoveHead(NeckBase + dir.normalized * Mathf.Lerp(from, to, ratio));
-
-        if (ratio >= 1f)
         {
-            Vector2 facing = Target != null
-                ? (Vector2)Target.position - NeckBase : lastHeadDirection;
-            if (facing.sqrMagnitude < 0.001f) facing = lastHeadDirection;
-            sweepCenterAngle = Mathf.Atan2(facing.y, facing.x) * Mathf.Rad2Deg;
-            sweepRadius = Mathf.Clamp(
-                Target != null ? Vector2.Distance(Target.position, NeckBase) : from,
-                sweepMinimumRadius, HeadReach);
-            SwitchState(Sweep);
-        }
-    }
-
-    void StepSweep()
-    {
-        // 頭を大きく振り回す間、伸びた首全体が低防御の攻撃チャンス。
-        float progress = Mathf.Clamp01(stateTime / sweepDuration);
-        float angle = sweepCenterAngle + Mathf.Lerp(-sweepAngle * 0.5f,
-            sweepAngle * 0.5f, progress);
-        Vector2 dir = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad),
-            Mathf.Sin(angle * Mathf.Deg2Rad));
-        // 円弧上の次の位置へ移動する。瞬間移動させない。
-        Vector2 destination = NeckBase + dir * sweepRadius;
-        Vector2 next = Vector2.MoveTowards(currentHeadPosition, destination,
-            sweepTravelSpeed * Time.fixedDeltaTime);
-        Vector2 travel = next - currentHeadPosition;
-        if (travel.sqrMagnitude > 0.0001f) headTravelDirection = travel.normalized;
-        MoveHead(next);
-        SetHeadAttackActive(true);
-
-        if (progress >= 1f)
-        {
-            sweepDone = true;
-            SetHeadAttackActive(false);
-            if (bitesDone < totalBites) BeginBite();
-            else SwitchState(Retract);
+            HideExtendedParts();
+            SwitchState(Recovery);
         }
     }
 
     void StepRetract(float dt)
     {
-        // 収縮中は頭部攻撃を無効化。首の被弾判定は最後まで残る。
-        SetHeadAttackActive(false);
-        MoveHead(Vector2.MoveTowards(currentHeadPosition, NeckBase,
-            neckReturnSpeed * dt));
-
-        if (Vector2.Distance(currentHeadPosition, NeckBase) <= 0.06f)
+        MoveHead(Vector2.MoveTowards(currentHeadPosition, NeckBase, neckReturnSpeed * dt));
+        if (Vector2.Distance(currentHeadPosition, NeckBase) <= 0.04f)
         {
             HideExtendedParts();
-            enemyBase.animator.Play("待機", 0, 0f);
+            enemyBase.animator.SetInteger("Anim", 0);
             SwitchState(Recovery);
         }
     }
@@ -602,16 +622,22 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     {
         state = newState;
         stateTime = 0f;
-        enemyBase.mode = (EnemyBase.ModeType)Mathf.Clamp(newState, 0, 7);
     }
 
-    void MoveHead(Vector2 wantedPosition)
+    void MoveHead(Vector2 position)
     {
-        Vector2 fromBase = wantedPosition - NeckBase;
-        currentHeadPosition = fromBase.sqrMagnitude > HeadReach * HeadReach
-            ? NeckBase + fromBase.normalized * HeadReach : wantedPosition;
-        if (fromBase.sqrMagnitude > 0.001f)
-            lastHeadDirection = fromBase.normalized;
+        Vector2 delta = position - NeckBase;
+        float limit = HeadReach;
+        currentHeadPosition = delta.sqrMagnitude > limit * limit
+            ? NeckBase + delta.normalized * limit : position;
+        if (delta.sqrMagnitude > 0.001f) lastHeadDirection = delta.normalized;
+    }
+
+    void RestoreBodyType()
+    {
+        if (!bodyTypeChanged || enemyBase == null || enemyBase.rb == null) return;
+        enemyBase.rb.bodyType = previousBodyType;
+        bodyTypeChanged = false;
     }
 
     void UpdateExtendedParts()

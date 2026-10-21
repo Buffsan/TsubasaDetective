@@ -640,6 +640,74 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         bodyTypeChanged = false;
     }
 
+    // 着弾と咆哮は、どちらも既存EnemyAttackの派閥・ダメージ処理を使用。
+    void SpawnAreaAttack(Vector2 position, float radius, float damagePercent)
+    {
+        GameObject volume = new GameObject("WatounaiAreaAttack");
+        volume.layer = headAttackCollider != null
+            ? headAttackCollider.gameObject.layer : gameObject.layer;
+        volume.transform.position = position;
+        Rigidbody2D body = volume.AddComponent<Rigidbody2D>();
+        body.bodyType = RigidbodyType2D.Kinematic;
+        body.gravityScale = 0f;
+        CircleCollider2D collider = volume.AddComponent<CircleCollider2D>();
+        collider.isTrigger = true;
+        collider.radius = radius;
+        EnemyAttack hit = volume.AddComponent<EnemyAttack>();
+        hit.ConfigureAttack(enemyBase, damagePercent);
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null) controller.ConfigureAttackTarget(hit);
+        Destroy(volume, 0.16f);
+    }
+
+    void SpawnCircleWarning(Vector2 center, float radius, float duration, GameObject prefab)
+    {
+        GameObject warning = null;
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (prefab != null ||
+            (controller != null && controller.HasAttackWarningPrefab(EnemyContoroller.WarningCircle)))
+            warning = SpawnAttackWarning(EnemyContoroller.WarningCircle, prefab,
+                center, Quaternion.identity, duration, null, 0f, true,
+                new Vector3(radius * 2f, radius * 2f, 1f));
+
+        // 共通警告Prefabがなくても、不可避の高速突進には必ず予測円を表示する。
+        if (warning == null)
+        {
+            if (fallbackWarningMaterial == null)
+            {
+                Shader shader = Shader.Find("Sprites/Default");
+                if (shader != null) fallbackWarningMaterial = new Material(shader);
+            }
+            warning = new GameObject("WatounaiWarningRing");
+            warning.transform.position = center;
+            LineRenderer line = warning.AddComponent<LineRenderer>();
+            line.useWorldSpace = false;
+            line.loop = true;
+            line.positionCount = 64;
+            line.widthMultiplier = 0.08f;
+            line.startColor = new Color(1f, 0.2f, 0.1f, 0.9f);
+            line.endColor = new Color(1f, 0.2f, 0.1f, 0.9f);
+            line.sortingOrder = 12;
+            if (fallbackWarningMaterial != null)
+                line.sharedMaterial = fallbackWarningMaterial;
+            for (int i = 0; i < 64; i++)
+            {
+                float angle = (Mathf.PI * 2f * i) / 64f;
+                line.SetPosition(i, new Vector3(Mathf.Cos(angle) * radius,
+                    Mathf.Sin(angle) * radius, 0f));
+            }
+            Destroy(warning, duration);
+        }
+        activeWarnings.Add(warning);
+    }
+
+    void ClearWarnings()
+    {
+        foreach (GameObject warning in activeWarnings)
+            if (warning != null) Destroy(warning);
+        activeWarnings.Clear();
+    }
+
     void UpdateExtendedParts()
     {
         if (headTransform == null) return;
@@ -650,12 +718,12 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         Vector2 face = headVelocity.sqrMagnitude > 0.04f ? headVelocity.normalized : direction;
         headTransform.rotation = Quaternion.Euler(0f, 0f,
             Mathf.Atan2(face.y, face.x) * Mathf.Rad2Deg + headAngleOffset);
-        if (headSprite != null) headSprite.enabled = state != Windup && state != Recovery;
-        if (state != Windup && state != Recovery)
+        if (headSprite != null) headSprite.enabled = headExposed;
+        if (headExposed)
             UpdateNeckChain(Time.fixedDeltaTime);
 
         if (headDamageCollider != null)
-            headDamageCollider.enabled = state != Windup && state != Recovery;
+            headDamageCollider.enabled = headExposed;
     }
 
     void SetHeadAttackActive(bool active)
@@ -678,6 +746,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         if (headDamageCollider != null) headDamageCollider.enabled = false;
         if (neckSprite != null) neckSprite.enabled = false;
         if (headSprite != null) headSprite.enabled = false;
+        headExposed = false;
         if (enemyBase != null && headTransform != null)
             headTransform.position = NeckBase;
     }
@@ -685,11 +754,12 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     void FinishAttack()
     {
         attacking = false;
+        RestoreBodyType();
+        ClearWarnings();
         HideExtendedParts();
         if (enemyBase == null) return;
         enemyBase.rb.velocity = Vector2.zero;
         enemyBase.animator.SetInteger("Anim", 0);
-        enemyBase.animator.Play("待機", 0, 0f);
         enemyBase.mode = EnemyBase.ModeType.M1;
         enemyBase.AttackCount = 0f;
         delayUntilNextAttack = shootingRestTime;
@@ -699,30 +769,32 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
 
     void CancelAttack()
     {
-        if (!attacking) return;
         attacking = false;
+        RestoreBodyType();
+        ClearWarnings();
         HideExtendedParts();
-        if (enemyBase != null)
-        {
-            enemyBase.rb.velocity = Vector2.zero;
-            enemyBase.mode = EnemyBase.ModeType.M1;
-            enemyBase.AttackCount = 0f;
-            enemyBase.moveType = EnemyBase.MoveType.Move;
-        }
+        if (enemyBase == null) return;
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.animator.SetInteger("Anim", 0);
+        enemyBase.mode = EnemyBase.ModeType.M1;
+        enemyBase.AttackCount = 0f;
+        enemyBase.moveType = EnemyBase.MoveType.Move;
+        delayUntilNextAttack = shootingRestTime;
     }
 
-    public override void EnemyStanPlay() { CancelAttack(); }
-    public override void EnemyConfusionPlay() { CancelAttack(); }
+    public override void EnemyStanPlay() { if (attacking) CancelAttack(); }
+    public override void EnemyConfusionPlay() { if (attacking) CancelAttack(); }
 
     void LateUpdate()
     {
-        // 死亡処理ではEnemyStanPlayが呼ばれないので、伸びた頭部をここで消す。
         if (enemyBase != null && enemyBase.status == EnemyBase.Status.Die && attacking)
             CancelAttack();
     }
 
-    void OnDisable()
+    void OnDisable() { if (attacking) CancelAttack(); }
+
+    void OnDestroy()
     {
-        if (attacking) CancelAttack();
+        if (fallbackWarningMaterial != null) Destroy(fallbackWarningMaterial);
     }
 }

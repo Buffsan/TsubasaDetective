@@ -65,6 +65,13 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     [SerializeField, Range(1, 10)] int maximumRushes = 3;
     [SerializeField] GameObject impactWarningPrefab;
 
+    [Header("ハープーンの移動予測")]
+    [SerializeField] bool predictTargetMovement = true;
+    [SerializeField, Range(0f, 1f)] float predictionStrength = 0.8f;
+    [SerializeField, Min(0f)] float maxPredictionDistance = 5f;
+    [SerializeField, Min(1f)] float maxTrackedTargetSpeed = 22f;
+    [SerializeField, Range(0.01f, 1f)] float velocitySmoothing = 0.25f;
+
     [Header("着弾時：進行方向へ扇状の岩針")]
     [SerializeField] GameObject rockNeedlePrefab;
     [SerializeField, Range(3, 25)] int rockNeedlesPerRow = 11;
@@ -125,6 +132,10 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     Vector2 currentHeadPosition;
     Vector2 lastHeadDirection = Vector2.right;
     Vector2 rushImpactDirection = Vector2.right;
+    Transform trackedTarget;
+    Vector2 lastTrackedPosition;
+    Vector2 trackedVelocity;
+    bool hasTrackedPosition;
     RigidbodyType2D previousBodyType;
     bool bodyTypeChanged;
     readonly List<GameObject> activeWarnings = new List<GameObject>();
@@ -460,10 +471,56 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     }
 
     // 攻撃1・攻撃2の追撃共通：構え開始時に標的座標を記憶する。
+    void FixedUpdate()
+    {
+        Transform target = Target;
+        if (target == null || target != trackedTarget)
+        {
+            trackedTarget = target;
+            trackedVelocity = Vector2.zero;
+            hasTrackedPosition = false;
+        }
+        if (target == null) return;
+        Vector2 pos = target.position;
+        if (hasTrackedPosition)
+        {
+            Vector2 measured = (pos - lastTrackedPosition) / Mathf.Max(0.001f, Time.fixedDeltaTime);
+            // ワープ等の異常な移動は予測に使用しない。
+            if (measured.magnitude > maxTrackedTargetSpeed * 2f)
+                trackedVelocity = Vector2.zero;
+            else
+                trackedVelocity = Vector2.Lerp(trackedVelocity,
+                    Vector2.ClampMagnitude(measured, maxTrackedTargetSpeed), velocitySmoothing);
+        }
+        lastTrackedPosition = pos;
+        hasTrackedPosition = true;
+    }
+
+    Vector2 PredictRushPoint(Transform target)
+    {
+        Vector2 current = target.position;
+        if (!predictTargetMovement || !hasTrackedPosition || trackedTarget != target)
+            return current;
+
+        float distance = Vector2.Distance(currentHeadPosition, current);
+        // 構え0.5秒＋低速伸長＋加速区間の概算を見込む。
+        float flightTime = rushSlowStartTime +
+            Mathf.Sqrt(2f * distance / Mathf.Max(1f, rushAcceleration));
+        float horizon = windupTime + flightTime;
+        Vector2 lead = Vector2.ClampMagnitude(
+            trackedVelocity * horizon * predictionStrength, maxPredictionDistance);
+        Vector2 predicted = current + lead;
+        // 射程外へ予測した場合も境界に着弾できるようクランプ。
+        Vector2 fromBase = predicted - NeckBase;
+        float reach = Mathf.Max(0.1f, HeadReach - attackRangeMargin);
+        return fromBase.magnitude > reach
+            ? NeckBase + fromBase.normalized * reach : predicted;
+    }
+
     void StartLockedRush()
     {
         if (Target == null) { BeginRetract(); return; }
-        lockedPoint = Target.position;
+        lockedPoint = PredictRushPoint(Target);
         if (Vector2.Distance(lockedPoint, NeckBase) > HeadReach - attackRangeMargin)
         {
             BeginRetract();

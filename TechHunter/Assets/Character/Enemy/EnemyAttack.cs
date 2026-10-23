@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
@@ -37,6 +38,28 @@ public class EnemyAttack : MonoBehaviour
     }
     public DellCondition dellCondition = DellCondition.none;
 
+    // 高速移動・瞬間生成された攻撃だけで利用する明示的な衝突チェック。
+    // 通常のEnemyAttackは従来どおりOnTriggerEnter2Dのみで動作する。
+    bool useManualCollisionChecks;
+    readonly HashSet<Collider2D> checkedColliders = new HashSet<Collider2D>();
+
+    public void BeginManualHitWindow()
+    {
+        checkedColliders.Clear();
+        useManualCollisionChecks = true;
+    }
+
+    public void EndManualHitWindow()
+    {
+        useManualCollisionChecks = false;
+        checkedColliders.Clear();
+    }
+
+    public void CheckHitNow(Collider2D other)
+    {
+        if (other != null) ProcessTriggerHit(other);
+    }
+
     public AudioManager audioManager => AudioManager.instance;
 
     private void FixedUpdate()
@@ -50,6 +73,14 @@ public class EnemyAttack : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        ProcessTriggerHit(other);
+    }
+
+    void ProcessTriggerHit(Collider2D other)
+    {
+        if (other == null) return;
+        // 手動スイープと通常の物理イベントが同じColliderに当たっても二重処理しない。
+        if (useManualCollisionChecks && !checkedColliders.Add(other)) return;
         // ボスの飛び道具などはInstantiate後にenemyBaseが設定されることがある。
         // 敵対モードのボスだけ、攻撃命中時に所属・対象派閥を反映する。
         Boss_Controller boss = enemyBase as Boss_Controller;

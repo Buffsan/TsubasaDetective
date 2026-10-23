@@ -567,7 +567,10 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             currentRushSpeed = rushInitialSpeed;
         else
             currentRushSpeed = Mathf.Min(rushSpeed, currentRushSpeed + rushAcceleration * dt);
+        Vector2 headBeforeRush = currentHeadPosition;
         MoveHead(Vector2.MoveTowards(currentHeadPosition, lockedPoint, currentRushSpeed * dt));
+        // 260m/sではFixedUpdate間をすり抜けるため、通過経路も当たり判定する。
+        CheckHeadTravelHit(headBeforeRush, currentHeadPosition);
         if (Vector2.Distance(currentHeadPosition, lockedPoint) <= 0.03f)
         {
             SetHeadAttackActive(false);
@@ -684,7 +687,9 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             ? (Vector2)Target.position - NeckBase : lastHeadDirection;
         if (toward.sqrMagnitude > 0.001f) lastHeadDirection = toward.normalized;
         Vector2 point = NeckBase + Vector2.ClampMagnitude(toward, biteReach);
+        Vector2 headBeforeBite = currentHeadPosition;
         MoveHead(Vector2.MoveTowards(currentHeadPosition, point, biteSpeed * dt));
+        CheckHeadTravelHit(headBeforeBite, currentHeadPosition);
         if (stateTime >= biteDuration) BeginRetract();
     }
 
@@ -914,6 +919,13 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         hit.ConfigureAttack(enemyBase, damagePercent);
         EnemyContoroller controller = enemyBase as EnemyContoroller;
         if (controller != null) controller.ConfigureAttackTarget(hit);
+        // 生成直後から範囲内にいる対象はOnTriggerEnter2Dを待つだけでは
+        // 取り逃すことがあるため、明示的に調べる。二重ヒットはEnemyAttack側で抑止。
+        hit.BeginManualHitWindow();
+        Physics2D.SyncTransforms();
+        Collider2D[] targets = Physics2D.OverlapCircleAll(position, radius);
+        for (int i = 0; i < targets.Length; i++)
+            hit.CheckHitNow(targets[i]);
         Destroy(volume, 0.16f);
     }
 
@@ -993,10 +1005,45 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             headDamageCollider.enabled = headExposed;
     }
 
+    // 首の射出・噛みつきに共通：移動区間を円形でスイープ判定する。
+    // Colliderの通常Triggerと共存し、EnemyAttackの派閥判定とATK倍率を使う。
+    void CheckHeadTravelHit(Vector2 from, Vector2 to)
+    {
+        if (headAttack == null || headAttackCollider == null ||
+            !headAttackCollider.enabled) return;
+
+        CircleCollider2D circle = headAttackCollider as CircleCollider2D;
+        float radius = circle != null
+            ? circle.radius * Mathf.Max(Mathf.Abs(circle.transform.lossyScale.x),
+                Mathf.Abs(circle.transform.lossyScale.y))
+            : 0.5f;
+        Vector2 offset = (Vector2)(headAttackCollider.transform.position -
+            headTransform.position);
+        Vector2 start = from + offset;
+        Vector2 end = to + offset;
+        Vector2 travel = end - start;
+        float distance = travel.magnitude;
+        if (distance > 0.001f)
+        {
+            RaycastHit2D[] hits = Physics2D.CircleCastAll(start, radius,
+                travel / distance, distance);
+            for (int i = 0; i < hits.Length; i++)
+                headAttack.CheckHitNow(hits[i].collider);
+        }
+        Collider2D[] overlaps = Physics2D.OverlapCircleAll(end, radius);
+        for (int i = 0; i < overlaps.Length; i++)
+            headAttack.CheckHitNow(overlaps[i]);
+    }
+
     void SetHeadAttackActive(bool active)
     {
         if (headAttackCollider != null)
             headAttackCollider.enabled = active;
+        if (headAttack != null)
+        {
+            if (active) headAttack.BeginManualHitWindow();
+            else headAttack.EndManualHitWindow();
+        }
     }
 
     void HideExtendedParts()

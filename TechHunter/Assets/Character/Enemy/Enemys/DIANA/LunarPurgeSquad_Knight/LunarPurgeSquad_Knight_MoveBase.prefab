@@ -56,10 +56,11 @@ MonoBehaviour:
   attackCooldown: 0.65
   approachTriggerDistance: 2.5
   windupSeconds: 0.7
+  aimLockBeforeAttack: 0.2
   dashSeconds: 0.3
   dashSpeedMultiplier: 4
   recoverySeconds: 0.35
-  meleeHitboxPrefab: {fileID: 100100, guid: 649e12fc9c8b4c8583eafb478d04e16b, type: 3}
+  meleeHitboxPrefab: {fileID: 100100, guid: 6f02d9c7bb8b448b982f7a9efb7b608e, type: 3}
   attackWarningPrefab: {fileID: 8317282966728204219, guid: f065bb0c5e9e4ee4481698931e5c0cc8, type: 3}
   attackPowerPercent: 100
   warningSizeMultiplier: {x: 1, y: 1}

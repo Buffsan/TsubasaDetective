@@ -584,7 +584,14 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             rushCount++;
             SpawnAreaAttack(lockedPoint, impactRadius, impactPowerPercent);
             if (harpoonImpactEffect != null)
-                Destroy(Instantiate(harpoonImpactEffect, lockedPoint, Quaternion.identity), harpoonImpactEffectLifetime);
+            {
+                GameObject effect = Instantiate(harpoonImpactEffect, lockedPoint, Quaternion.identity);
+                effect.transform.localScale *= 2f / 3f;
+                Destroy(effect, harpoonImpactEffectLifetime);
+            }
+            if (ALL_SystemManager.Instance != null &&
+                ALL_SystemManager.Instance.camera_Controller != null)
+                ALL_SystemManager.Instance.camera_Controller.Shake(0.2f, 0.2f);
             SpawnRockFan(lockedPoint, rushImpactDirection);
             SwitchState(ImpactPause);
         }

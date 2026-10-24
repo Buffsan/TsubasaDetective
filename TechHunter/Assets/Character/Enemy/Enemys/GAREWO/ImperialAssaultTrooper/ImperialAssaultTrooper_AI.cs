@@ -44,6 +44,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
 
     EnemyContoroller controller;
     Transform lockedTarget;
+    Transform lastNavigationTarget;
     readonly List<Vector3> route = new List<Vector3>();
     int waypoint;
     float repathTimer;
@@ -87,7 +88,8 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     {
         if (enemyBase == null || enemyBase.status != EnemyBase.Status.Nomal) return;
         Transform target = CurrentTarget;
-        if (target == null) { Stop(); return; }
+        if (target == null) { Stop(); lastNavigationTarget = null; repathTimer = 0f; return; }
+        if (lastNavigationTarget != target) { lastNavigationTarget = target; repathTimer = 0f; }
         Vector2 toTarget = target.position - enemyBase.transform.position;
         bool visible = IsVisible(target);
         TurnAim(toTarget, aimTurnDegreesPerSecond);
@@ -181,6 +183,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         ClearAttackWarning();
         if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 0);
         enemyBase.moveType = EnemyBase.MoveType.Move;
+        repathTimer = 0f;
     }
     void Stop(bool idleAnimation = true)
     {
@@ -229,6 +232,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         ClearAttackWarning();
         route.Clear();
         waypoint = 0;
+        repathTimer = 0f;
         Stop();
         if (enemyBase != null && enemyBase.status == EnemyBase.Status.Nomal)
             enemyBase.moveType = EnemyBase.MoveType.Move;
@@ -304,9 +308,10 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     {
         if (standFloor == null) { Stop(); return; }
         repathTimer -= Time.fixedDeltaTime;
-        if (repathTimer <= 0f || waypoint >= route.Count)
+        // 経路がなくても毎FixedUpdateで全マス探索しない。
+        if (repathTimer <= 0f)
         {
-            repathTimer = repathSeconds;
+            repathTimer = Mathf.Max(0.05f, repathSeconds);
             FindPath(enemyBase.transform.position, destination);
         }
         if (waypoint >= route.Count) { Stop(); return; }

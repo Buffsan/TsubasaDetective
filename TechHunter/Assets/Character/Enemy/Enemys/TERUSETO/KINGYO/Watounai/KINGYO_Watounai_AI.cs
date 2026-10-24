@@ -93,6 +93,8 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     [SerializeField, Min(0.25f)] float roarRadius = 3f;
     [SerializeField, Min(0f)] float roarPowerPercent = 100f;
     [SerializeField] GameObject roarWarningPrefab;
+    [Header("攻撃判定の可視化（Sceneビュー）")]
+    [SerializeField] bool showAttackGizmos = true;
 
     [Header("攻撃3：低速追尾・噛みつき")]
     [SerializeField, Min(0.1f)] float slowApproachSpeed = 2f;
@@ -549,7 +551,9 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             if (headSprite != null) headSprite.enabled = true;
         }
         currentRushSpeed = rushInitialSpeed;
-        SetHeadAttackActive(true);
+        // ハープーンは着弾地点の警告円内だけでダメージを与える。
+        // 移動経路での直撃判定は警告範囲と一致しないため無効にする。
+        SetHeadAttackActive(false);
         if (enemyBase.audioManager != null) enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
         SwitchState(Rush);
     }
@@ -567,10 +571,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             currentRushSpeed = rushInitialSpeed;
         else
             currentRushSpeed = Mathf.Min(rushSpeed, currentRushSpeed + rushAcceleration * dt);
-        Vector2 headBeforeRush = currentHeadPosition;
         MoveHead(Vector2.MoveTowards(currentHeadPosition, lockedPoint, currentRushSpeed * dt));
-        // 260m/sではFixedUpdate間をすり抜けるため、通過経路も当たり判定する。
-        CheckHeadTravelHit(headBeforeRush, currentHeadPosition);
         if (Vector2.Distance(currentHeadPosition, lockedPoint) <= 0.03f)
         {
             SetHeadAttackActive(false);
@@ -1110,6 +1111,22 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         if (attacking) CancelAttack();
         StopAllCoroutines();
         rockFanCoroutines.Clear();
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (!showAttackGizmos || !Application.isPlaying || !attacking) return;
+        // 黄色＝着弾範囲、赤＝咆哮範囲（Sceneビューで判定を確認）
+        if (state == Windup || state == Rush || state == ImpactPause)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(lockedPoint, impactRadius);
+        }
+        if (state == RoarWarning || state == RoarAfter)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(lockedPoint, roarRadius);
+        }
     }
 
     void OnDestroy()

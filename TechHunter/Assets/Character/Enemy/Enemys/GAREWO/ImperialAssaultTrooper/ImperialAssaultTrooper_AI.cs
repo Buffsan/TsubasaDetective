@@ -218,7 +218,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
             if (obstacle == null || obstacle.transform.IsChildOf(enemyBase.transform) ||
                 obstacle.transform == target || obstacle.transform.IsChildOf(target)) continue;
             bool onMask = (lineOfSightMask.value & (1 << obstacle.gameObject.layer)) != 0;
-            if (obstacle.CompareTag("wall") || onMask) return false;
+            if (obstacle.CompareTag("Stage_Wall") || onMask) return false;
         }
         return true;
     }
@@ -299,7 +299,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
             RaycastHit2D hit = sightRayHits[i];
             if (hit.collider == null || hit.collider.transform.IsChildOf(enemyBase.transform)) continue;
             bool onMask = (lineOfSightMask.value & (1 << hit.collider.gameObject.layer)) != 0;
-            if (hit.collider.CompareTag("wall") || onMask)
+            if (hit.collider.CompareTag("Stage_Wall") || onMask)
                 length = Mathf.Min(length, Mathf.Max(0.05f, hit.distance));
         }
         return length;
@@ -348,7 +348,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
             Collider2D hit = nearbyObstacles[i];
             if (hit == null || hit.transform == standFloor.transform ||
                 hit.transform.IsChildOf(enemyBase.transform)) continue;
-            if (hit.CompareTag("wall")) return false;
+            if (hit.CompareTag("Stage_Wall")) return false;
         }
         return true;
     }

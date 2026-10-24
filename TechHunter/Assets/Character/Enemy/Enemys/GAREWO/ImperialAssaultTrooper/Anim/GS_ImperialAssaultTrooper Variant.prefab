@@ -316,6 +316,7 @@ MonoBehaviour:
   standFloor: {fileID: 0}
   blockedTiles: {fileID: 0}
   searchRadiusCells: 24
+  maxPathSearchNodes: 700
   repathSeconds: 0.45
   arrivalDistance: 0.18
   ammoText: {fileID: 8195900921025005025}

@@ -123,10 +123,11 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
         retreatFirst = true;
         repositionTimer = 0f;
         bool hasAlly = HasLivingAlly();
-        repositionDuration = initialRetreatSeconds +
-            (hasAlly ? Random.Range(Mathf.Min(repositionSeconds.x, repositionSeconds.y),
-                                    Mathf.Max(repositionSeconds.x, repositionSeconds.y))
-                     : soloReengageDelay);
+        repositionDuration = hasAlly
+            ? Mathf.Max(initialRetreatSeconds,
+                Random.Range(Mathf.Min(repositionSeconds.x, repositionSeconds.y),
+                             Mathf.Max(repositionSeconds.x, repositionSeconds.y)))
+            : initialRetreatSeconds + soloReengageDelay;
         orbitSign = Random.value < 0.5f ? -1 : 1;
     }
 

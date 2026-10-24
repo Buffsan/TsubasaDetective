@@ -242,7 +242,11 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     {
         ClearAttackWarning();
         if (attackWarningPrefab == null) return;
-        warningObject = Instantiate(attackWarningPrefab);
+        warningObject = controller != null
+            ? controller.SpawnAttackWarningPrefab(attackWarningPrefab, Vector3.zero,
+                Quaternion.identity, 10f, null, 0f, false)
+            : Instantiate(attackWarningPrefab);
+        if (warningObject == null) return;
         warningRenderer = warningObject.GetComponentInChildren<SpriteRenderer>(true);
         if (warningRenderer == null)
         {

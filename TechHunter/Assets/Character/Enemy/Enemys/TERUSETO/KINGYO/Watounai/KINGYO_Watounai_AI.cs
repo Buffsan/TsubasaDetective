@@ -189,6 +189,15 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
                 : enemyBase.CharaDamage;
         if (bodyDamage == null) bodyDamage = enemyBase.charaDamage;
 
+        // 首の弱点と本体は同一の混乱耐性を使用する。
+        // 初撃時に弱点用charaDamageの未初期化値(0)が使われないよう、
+        // 生成時には両方を本体の最大混乱耐性で初期化する。
+        if (bodyDamage != null && weakDamageReceiver != null && bodyDamage != weakDamageReceiver)
+        {
+            bodyDamage.ConfusionHP = enemyBase.ConfusionHP;
+            weakDamageReceiver.ConfusionHP = enemyBase.ConfusionHP;
+        }
+
         // 首の被弾 -> 低防御の受け口 -> 本体HP。
         // 頭部の被弾 -> 本体の通常判定（硬い頭部の防御力）。
         if (weakDamageReceiver != null)
@@ -488,6 +497,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     // 攻撃1・攻撃2の追撃共通：構え開始時に標的座標を記憶する。
     void FixedUpdate()
     {
+        SyncNeckConfusionResistance();
         Transform target = Target;
         if (target == null || target != trackedTarget)
         {
@@ -509,6 +519,20 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         }
         lastTrackedPosition = pos;
         hasTrackedPosition = true;
+    }
+
+    void SyncNeckConfusionResistance()
+    {
+        if (bodyDamage == null || weakDamageReceiver == null ||
+            bodyDamage == weakDamageReceiver || enemyBase == null) return;
+
+        // 両受け口のうち、より減っているほうを共有する。
+        // これにより首/本体どちらで攻撃を受けても耐性減少が維持され、
+        // 各charaDamageの自然回復も引き続き有効になる。
+        float remaining = Mathf.Min(bodyDamage.ConfusionHP, weakDamageReceiver.ConfusionHP);
+        remaining = Mathf.Clamp(remaining, 0f, enemyBase.ConfusionHP);
+        bodyDamage.ConfusionHP = remaining;
+        weakDamageReceiver.ConfusionHP = remaining;
     }
 
     Vector2 PredictRushPoint(Transform target)

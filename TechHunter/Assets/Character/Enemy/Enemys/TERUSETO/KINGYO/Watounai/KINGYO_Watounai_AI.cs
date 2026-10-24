@@ -106,6 +106,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
 
     [Header("収納：攻撃チャンス")]
     [SerializeField, Min(0.1f)] float neckReturnSpeed = 10f;
+    [SerializeField, Range(0f, 0.95f)] float neckReturnAcceleration = 0.65f;
     [SerializeField, Min(0.05f)] float afterReturnRecovery = 0.55f;
 
     const int Windup = 0;
@@ -130,6 +131,9 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     float currentRushSpeed;
     Quaternion retractHeadRotation;
     readonly List<Vector2> retractPath = new List<Vector2>();
+    float retractTotalDistance;
+    float retractDistanceAdvanced;
+    float retractElapsed;
     Vector2 lockedPoint;
     Vector2 jumpStart;
     Vector2 jumpLanding;
@@ -721,11 +725,22 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             if (neckPool[i] != null && neckPool[i].gameObject.activeSelf)
                 retractPath.Add(neckPool[i].position);
         retractPath.Add(NeckBase);
+        retractTotalDistance = 0f;
+        for (int i = 1; i < retractPath.Count; i++)
+            retractTotalDistance += Vector2.Distance(retractPath[i - 1], retractPath[i]);
+        retractDistanceAdvanced = 0f;
+        retractElapsed = 0f;
     }
 
     void StepRetract(float dt)
     {
-        float remaining = neckReturnSpeed * dt;
+        // 同じ総収納時間で、前半を遅く・後半を速くする二次イージング。
+        float duration = retractTotalDistance / Mathf.Max(0.1f, neckReturnSpeed);
+        retractElapsed += dt;
+        float progress = duration > 0f ? Mathf.Clamp01(retractElapsed / duration) : 1f;
+        float eased = Mathf.Lerp(progress, progress * progress, neckReturnAcceleration);
+        float desiredDistance = retractTotalDistance * eased;
+        float remaining = Mathf.Max(0f, desiredDistance - retractDistanceAdvanced);
         while (remaining > 0f && retractPath.Count > 1)
         {
             Vector2 next = retractPath[1];
@@ -742,6 +757,7 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
                 remaining = 0f;
             }
         }
+        retractDistanceAdvanced = desiredDistance;
         if (retractPath.Count <= 1 || Vector2.Distance(currentHeadPosition, NeckBase) <= 0.04f)
         {
             HideExtendedParts();

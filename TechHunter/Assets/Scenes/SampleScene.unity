@@ -15859,6 +15859,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 603967649825818640, guid: d6ceaf704cd02db49a8f432f42f23796, type: 3}
+      propertyPath: m_Name
+      value: GS_ImperialAssaultTrooper Variant
+      objectReference: {fileID: 0}
     - target: {fileID: 3392873506688693677, guid: d6ceaf704cd02db49a8f432f42f23796, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.167884
@@ -15903,10 +15907,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6183940172458360917, guid: d6ceaf704cd02db49a8f432f42f23796, type: 3}
-      propertyPath: m_Name
-      value: GS_ImperialAssaultTrooper Variant
-      objectReference: {fileID: 0}
     - target: {fileID: 7398881990732882531, guid: d6ceaf704cd02db49a8f432f42f23796, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -15915,6 +15915,22 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7692004062471786740, guid: d6ceaf704cd02db49a8f432f42f23796, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.356
+      objectReference: {fileID: 0}
+    - target: {fileID: 7692004062471786740, guid: d6ceaf704cd02db49a8f432f42f23796, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.103
+      objectReference: {fileID: 0}
+    - target: {fileID: 8284862813409512861, guid: d6ceaf704cd02db49a8f432f42f23796, type: 3}
+      propertyPath: muzzle
+      value: 
+      objectReference: {fileID: 1722436304}
+    - target: {fileID: 8284862813409512861, guid: d6ceaf704cd02db49a8f432f42f23796, type: 3}
+      propertyPath: bulletPrefab
+      value: 
+      objectReference: {fileID: 8405152973178493141, guid: c3a67381a2c798740a79513e6c500816, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -162348,6 +162364,11 @@ Transform:
   - {fileID: 1582458021}
   m_Father: {fileID: 249735124}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1722436304 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7692004062471786740, guid: d6ceaf704cd02db49a8f432f42f23796, type: 3}
+  m_PrefabInstance: {fileID: 329787722}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1725063636
 PrefabInstance:
   m_ObjectHideFlags: 0

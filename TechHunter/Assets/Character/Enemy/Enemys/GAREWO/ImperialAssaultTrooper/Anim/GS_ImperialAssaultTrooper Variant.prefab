@@ -310,6 +310,8 @@ MonoBehaviour:
   bulletSpeed: 19
   bulletLifetime: 5
   aimTurnDegreesPerSecond: 100
+  aimingSeconds: 1
+  preparationAimDegreesPerSecond: 720
   firingTurnDegreesPerSecond: 28
   lineOfSightMask:
     serializedVersion: 2

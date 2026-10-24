@@ -1,0 +1,250 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+
+// 帝国突撃兵。EnemyContorollerのSpecial移動を使用し、共通クラスは変更しない。
+public class ImperialAssaultTrooper_AI : EnemyMoveBase
+{
+    [Header("射撃")]
+    [SerializeField] GameObject bulletPrefab;
+    [SerializeField] Transform muzzle;
+    [SerializeField, Min(1)] int magazineSize = 24;
+    [SerializeField, Min(1)] int minimumBurst = 12;
+    [SerializeField, Min(0.02f)] float shotInterval = 0.12f;
+    [SerializeField, Min(0f)] float reloadSeconds = 2f;
+    [SerializeField, Min(0f)] float spreadDegrees = 7f;
+    [SerializeField, Min(1f)] float bulletSpeed = 19f;
+    [SerializeField, Min(0.1f)] float bulletLifetime = 5f;
+    [SerializeField, Min(0f)] float aimTurnDegreesPerSecond = 100f;
+    [SerializeField, Min(0f)] float firingTurnDegreesPerSecond = 28f;
+    [SerializeField] LayerMask lineOfSightMask; // 遮蔽物ColliderのLayerをInspectorで設定
+    [SerializeField] float preferredRange = 5f;
+    [SerializeField] float maxEngagementRange = 12f;
+
+    [Header("床タイル経路探索")]
+    [SerializeField] Tilemap standFloor;
+    [SerializeField] Tilemap blockedTiles;
+    [SerializeField, Range(1, 50)] int searchRadiusCells = 24;
+    [SerializeField, Min(0.05f)] float repathSeconds = 0.45f;
+    [SerializeField, Min(0.02f)] float arrivalDistance = 0.18f;
+
+    public int CurrentAmmo { get; private set; }
+    public int MaximumAmmo => magazineSize;
+    public bool IsReloading => reloading;
+
+    EnemyContoroller controller;
+    Transform lockedTarget;
+    readonly List<Vector3> route = new List<Vector3>();
+    int waypoint;
+    float repathTimer;
+    float firingTimer;
+    float reloadTimer;
+    int mandatoryShotsRemaining;
+    bool reloading;
+    bool firing;
+    Vector2 aimDirection = Vector2.right;
+
+    void Awake() { CurrentAmmo = Mathf.Max(1, magazineSize); }
+    void Start()
+    {
+        controller = enemyBase as EnemyContoroller;
+        if (controller == null) { Debug.LogError("帝国突撃兵にはEnemyContorollerが必要です。", this); enabled = false; return; }
+        controller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Special;
+        // 標準の距離依存攻撃遷移を抑止する。攻撃開始は本AIが制御。
+        enemyBase.LookPlayerDistance = -1f;
+        if (standFloor == null && ALL_SystemManager.Instance != null &&
+            ALL_SystemManager.Instance.enemySpawnBASE != null &&
+            ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C != null)
+            standFloor = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.StandFloor;
+    }
+
+    public override void EnemyMovePlay()
+    {
+        if (enemyBase == null || enemyBase.status != EnemyBase.Status.Nomal) return;
+        Transform target = CurrentTarget;
+        if (target == null) { Stop(); return; }
+        Vector2 toTarget = target.position - enemyBase.transform.position;
+        bool visible = IsVisible(target);
+        TurnAim(toTarget, aimTurnDegreesPerSecond);
+        if (CurrentAmmo == 0) { BeginReload(); return; }
+        if (visible && toTarget.magnitude <= maxEngagementRange)
+        {
+            lockedTarget = target;
+            mandatoryShotsRemaining = Mathf.Min(minimumBurst, CurrentAmmo);
+            firing = true;
+            firingTimer = 0f;
+            enemyBase.moveType = EnemyBase.MoveType.Attack;
+            Stop();
+            return;
+        }
+        if (visible && toTarget.magnitude <= preferredRange) { Stop(); return; }
+        Navigate(target.position);
+    }
+
+    public override void EnemyAttackPlay()
+    {
+        Stop();
+        if (reloading) { TickReload(); return; }
+        if (!firing) { FinishBurst(); return; }
+        if (CurrentAmmo <= 0) { firing = false; BeginReload(); return; }
+
+        // 開始時に固定した相手を追い続け、旋回速度は射撃中だけ落ちる。
+        if (lockedTarget != null)
+            TurnAim((Vector2)lockedTarget.position - (Vector2)enemyBase.transform.position,
+                firingTurnDegreesPerSecond);
+        // 最初の12発は中断せず、遮蔽物に隠れた間は射撃を一時停止。
+        // 12発以降も見えている限り撃ち続け、遮蔽されたら区切る。
+        bool visible = lockedTarget != null && IsVisible(lockedTarget);
+        if (!visible)
+        {
+            if (mandatoryShotsRemaining <= 0) FinishBurst();
+            return;
+        }
+        firingTimer -= Time.fixedDeltaTime;
+        if (firingTimer > 0f) return;
+        FireOne();
+        firingTimer = Mathf.Max(0.02f, shotInterval);
+        if (mandatoryShotsRemaining > 0) mandatoryShotsRemaining--;
+        if (CurrentAmmo <= 0) { firing = false; BeginReload(); }
+    }
+
+    void FireOne()
+    {
+        if (bulletPrefab == null) { Debug.LogWarning("帝国突撃兵の弾丸Prefabが未登録です。", this); FinishBurst(); return; }
+        Vector2 origin = muzzle != null ? muzzle.position : enemyBase.transform.position;
+        float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg
+                      + Random.Range(-spreadDegrees, spreadDegrees);
+        Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+        GameObject shot = Instantiate(bulletPrefab, origin, Quaternion.Euler(0f, 0f, angle));
+        ConfigureSummonedAttack(shot);
+        ImperialAssaultTrooper_Bullet bullet = shot.GetComponent<ImperialAssaultTrooper_Bullet>();
+        if (bullet == null) bullet = shot.AddComponent<ImperialAssaultTrooper_Bullet>();
+        bullet.Launch(direction, bulletSpeed, bulletLifetime);
+        CurrentAmmo--;
+    }
+
+    void BeginReload()
+    {
+        firing = false;
+        reloading = true;
+        reloadTimer = reloadSeconds;
+        enemyBase.moveType = EnemyBase.MoveType.Attack;
+        Stop();
+    }
+    void TickReload()
+    {
+        reloadTimer -= Time.fixedDeltaTime;
+        if (reloadTimer > 0f) return;
+        CurrentAmmo = Mathf.Max(1, magazineSize);
+        reloading = false;
+        FinishBurst();
+    }
+    void FinishBurst()
+    {
+        firing = false;
+        mandatoryShotsRemaining = 0;
+        lockedTarget = null;
+        enemyBase.moveType = EnemyBase.MoveType.Move;
+    }
+    void Stop()
+    {
+        if (enemyBase.rb != null) enemyBase.rb.velocity = Vector2.zero;
+        if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 0);
+    }
+    void TurnAim(Vector2 toTarget, float angularSpeed)
+    {
+        if (toTarget.sqrMagnitude < 0.0001f) return;
+        aimDirection = Vector2.RotateTowards(aimDirection, toTarget.normalized,
+            angularSpeed * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f).normalized;
+        enemyBase.isTargetLook((Vector2)enemyBase.transform.position + aimDirection);
+    }
+    bool IsVisible(Transform target)
+    {
+        if (target == null) return false;
+        Vector2 origin = muzzle != null ? muzzle.position : enemyBase.transform.position;
+        Vector2 delta = (Vector2)target.position - origin;
+        if (delta.sqrMagnitude < 0.001f) return true;
+        if (lineOfSightMask.value == 0) return true; // レイヤー未設定は遮蔽を判定できない
+        RaycastHit2D hit = Physics2D.Raycast(origin, delta.normalized, delta.magnitude, lineOfSightMask);
+        return hit.collider == null || hit.collider.transform == target ||
+               hit.collider.transform.IsChildOf(target);
+    }
+    public override void EnemyStanPlay() { Cancel(); }
+    public override void EnemyConfusionPlay() { Cancel(); }
+    void OnDisable() { if (enemyBase != null) Cancel(); }
+    void Cancel()
+    {
+        firing = false;
+        mandatoryShotsRemaining = 0;
+        lockedTarget = null;
+        route.Clear();
+        waypoint = 0;
+        Stop();
+        if (enemyBase != null && enemyBase.status == EnemyBase.Status.Nomal)
+            enemyBase.moveType = EnemyBase.MoveType.Move;
+    }
+    void Navigate(Vector3 destination)
+    {
+        if (standFloor == null) { Stop(); return; }
+        repathTimer -= Time.fixedDeltaTime;
+        if (repathTimer <= 0f || waypoint >= route.Count)
+        {
+            repathTimer = repathSeconds;
+            FindPath(enemyBase.transform.position, destination);
+        }
+        if (waypoint >= route.Count) { Stop(); return; }
+        Vector2 step = (Vector2)route[waypoint] - (Vector2)enemyBase.transform.position;
+        if (step.magnitude <= arrivalDistance)
+        {
+            waypoint++;
+            if (waypoint >= route.Count) { Stop(); return; }
+            step = (Vector2)route[waypoint] - (Vector2)enemyBase.transform.position;
+        }
+        enemyBase.rb.velocity = step.normalized * enemyBase.SPEED;
+        if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 1);
+    }
+    bool CanWalk(Vector3Int cell)
+    {
+        return standFloor.HasTile(cell) && (blockedTiles == null || !blockedTiles.HasTile(cell));
+    }
+    void FindPath(Vector3 start, Vector3 goal)
+    {
+        route.Clear();
+        waypoint = 0;
+        Vector3Int source = standFloor.WorldToCell(start);
+        Vector3Int finish = standFloor.WorldToCell(goal);
+        if (!CanWalk(source)) return;
+        // 半径を制限した4近傍BFS。穴を跨いだ直進を行わない。
+        Queue<Vector3Int> queue = new Queue<Vector3Int>();
+        Dictionary<Vector3Int, Vector3Int> parent = new Dictionary<Vector3Int, Vector3Int>();
+        queue.Enqueue(source);
+        parent[source] = source;
+        Vector3Int best = source;
+        int bestScore = Mathf.Abs(source.x - finish.x) + Mathf.Abs(source.y - finish.y);
+        Vector3Int[] steps = { Vector3Int.up, Vector3Int.down, Vector3Int.left, Vector3Int.right };
+        while (queue.Count > 0)
+        {
+            Vector3Int cell = queue.Dequeue();
+            if (cell == finish) { best = cell; break; }
+            foreach (Vector3Int offset in steps)
+            {
+                Vector3Int next = cell + offset;
+                if (Mathf.Abs(next.x - source.x) > searchRadiusCells ||
+                    Mathf.Abs(next.y - source.y) > searchRadiusCells ||
+                    parent.ContainsKey(next) || !CanWalk(next)) continue;
+                parent[next] = cell;
+                queue.Enqueue(next);
+                int score = Mathf.Abs(next.x - finish.x) + Mathf.Abs(next.y - finish.y);
+                if (score < bestScore) { bestScore = score; best = next; }
+            }
+        }
+        if (best == source) return;
+        Vector3Int cursor = best;
+        while (cursor != source)
+        {
+            route.Add(standFloor.GetCellCenterWorld(cursor));
+            cursor = parent[cursor];
+        }
+        route.Reverse();
+    }
+}

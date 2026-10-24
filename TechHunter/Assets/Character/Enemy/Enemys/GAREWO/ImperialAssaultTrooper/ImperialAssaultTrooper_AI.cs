@@ -32,6 +32,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     [SerializeField] Tilemap standFloor;
     [SerializeField] Tilemap blockedTiles;
     [SerializeField, Range(1, 50)] int searchRadiusCells = 24;
+    [SerializeField, Range(100, 2000)] int maxPathSearchNodes = 700;
     [SerializeField, Min(0.05f)] float repathSeconds = 0.45f;
     [SerializeField, Min(0.02f)] float arrivalDistance = 0.18f;
 
@@ -57,7 +58,8 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     GameObject warningObject;
     SpriteRenderer warningRenderer;
     int lastDisplayedAmmo = -1;
-    readonly Collider2D[] nearbyObstacles = new Collider2D[16];
+    readonly Collider2D[] nearbyObstacles = new Collider2D[32];
+    readonly RaycastHit2D[] sightRayHits = new RaycastHit2D[32];
 
     void Awake()
     {
@@ -93,7 +95,8 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         Vector2 toTarget = target.position - enemyBase.transform.position;
         bool visible = IsVisible(target);
         TurnAim(toTarget, aimTurnDegreesPerSecond);
-        if (CurrentAmmo <= 0) { BeginReload(); return; }
+        // 次の連射で最低12発を保証できない場合は先にリロードする。
+        if (CurrentAmmo < Mathf.Min(minimumBurst, magazineSize)) { BeginReload(); return; }
         if (visible && toTarget.magnitude <= maxEngagementRange)
         {
             lockedTarget = target;
@@ -208,10 +211,10 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         Vector2 delta = (Vector2)target.position - origin;
         if (delta.sqrMagnitude < 0.001f) return true;
         // wallタグはレイヤー設定なしでも検知。任意の追加遮蔽物はmaskで指定。
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, delta.normalized, delta.magnitude);
-        foreach (RaycastHit2D hit in hits)
+        int hitCount = Physics2D.RaycastNonAlloc(origin, delta.normalized, sightRayHits, delta.magnitude);
+        for (int i = 0; i < hitCount; i++)
         {
-            Collider2D obstacle = hit.collider;
+            Collider2D obstacle = sightRayHits[i].collider;
             if (obstacle == null || obstacle.transform.IsChildOf(enemyBase.transform) ||
                 obstacle.transform == target || obstacle.transform.IsChildOf(target)) continue;
             bool onMask = (lineOfSightMask.value & (1 << obstacle.gameObject.layer)) != 0;
@@ -290,9 +293,10 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     float GetUnobstructedWarningLength(Vector2 origin)
     {
         float length = Mathf.Max(0.1f, maxEngagementRange);
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, aimDirection, length);
-        foreach (RaycastHit2D hit in hits)
+        int hitCount = Physics2D.RaycastNonAlloc(origin, aimDirection, sightRayHits, length);
+        for (int i = 0; i < hitCount; i++)
         {
+            RaycastHit2D hit = sightRayHits[i];
             if (hit.collider == null || hit.collider.transform.IsChildOf(enemyBase.transform)) continue;
             bool onMask = (lineOfSightMask.value & (1 << hit.collider.gameObject.layer)) != 0;
             if (hit.collider.CompareTag("wall") || onMask)
@@ -348,43 +352,98 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         }
         return true;
     }
+    static int GridDistance(Vector3Int a, Vector3Int b)
+    {
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+    }
+
     void FindPath(Vector3 start, Vector3 goal)
     {
         route.Clear();
         waypoint = 0;
+        if (standFloor == null) return;
+
         Vector3Int source = standFloor.WorldToCell(start);
         Vector3Int finish = standFloor.WorldToCell(goal);
         if (!CanWalk(source)) return;
-        // 半径を制限した4近傍BFS。穴を跨いだ直進を行わない。
-        Queue<Vector3Int> queue = new Queue<Vector3Int>();
-        Dictionary<Vector3Int, Vector3Int> parent = new Dictionary<Vector3Int, Vector3Int>();
-        queue.Enqueue(source);
-        parent[source] = source;
-        Vector3Int best = source;
-        int bestScore = Mathf.Abs(source.x - finish.x) + Mathf.Abs(source.y - finish.y);
+        if (source == finish) return;
+
+        // A*: 壁と穴を避け、到達できる経路を探索。
+        // 物理判定はセルごとにキャッシュし、探索上限で大量出現時の負荷を抑制する。
+        List<Vector3Int> open = new List<Vector3Int> { source };
+        HashSet<Vector3Int> closed = new HashSet<Vector3Int>();
+        Dictionary<Vector3Int, Vector3Int> previous = new Dictionary<Vector3Int, Vector3Int>();
+        Dictionary<Vector3Int, int> pathCost = new Dictionary<Vector3Int, int>();
+        Dictionary<Vector3Int, bool> walkable = new Dictionary<Vector3Int, bool>();
+        pathCost[source] = 0;
+        walkable[source] = true;
+        Vector3Int closest = source;
+        int closestScore = GridDistance(source, finish);
+        int expanded = 0;
         Vector3Int[] steps = { Vector3Int.up, Vector3Int.down, Vector3Int.left, Vector3Int.right };
-        while (queue.Count > 0)
+
+        while (open.Count > 0 && expanded < Mathf.Max(100, maxPathSearchNodes))
         {
-            Vector3Int cell = queue.Dequeue();
-            if (cell == finish) { best = cell; break; }
+            int bestIndex = 0;
+            int bestPriority = int.MaxValue;
+            for (int i = 0; i < open.Count; i++)
+            {
+                Vector3Int pos = open[i];
+                int priority = pathCost[pos] + GridDistance(pos, finish);
+                if (priority < bestPriority) { bestPriority = priority; bestIndex = i; }
+            }
+
+            Vector3Int cell = open[bestIndex];
+            open.RemoveAt(bestIndex);
+            if (!closed.Add(cell)) continue;
+            expanded++;
+
+            int score = GridDistance(cell, finish);
+            if (score < closestScore)
+            {
+                closestScore = score;
+                closest = cell;
+            }
+            if (cell == finish) { closest = cell; break; }
+
             foreach (Vector3Int offset in steps)
             {
                 Vector3Int next = cell + offset;
                 if (Mathf.Abs(next.x - source.x) > searchRadiusCells ||
                     Mathf.Abs(next.y - source.y) > searchRadiusCells ||
-                    parent.ContainsKey(next) || !CanWalk(next)) continue;
-                parent[next] = cell;
-                queue.Enqueue(next);
-                int score = Mathf.Abs(next.x - finish.x) + Mathf.Abs(next.y - finish.y);
-                if (score < bestScore) { bestScore = score; best = next; }
+                    closed.Contains(next)) continue;
+
+                bool isWalkable;
+                if (!walkable.TryGetValue(next, out isWalkable))
+                {
+                    isWalkable = CanWalk(next);
+                    walkable[next] = isWalkable;
+                }
+                if (!isWalkable) continue;
+
+                int nextCost = pathCost[cell] + 1;
+                int knownCost;
+                if (pathCost.TryGetValue(next, out knownCost) && knownCost <= nextCost)
+                    continue;
+
+                pathCost[next] = nextCost;
+                previous[next] = cell;
+                if (!open.Contains(next)) open.Add(next);
             }
         }
-        if (best == source) return;
-        Vector3Int cursor = best;
-        while (cursor != source)
+
+        if (closest == source) return;
+        Vector3Int current = closest;
+        while (current != source)
         {
-            route.Add(standFloor.GetCellCenterWorld(cursor));
-            cursor = parent[cursor];
+            route.Add(standFloor.GetCellCenterWorld(current));
+            Vector3Int parent;
+            if (!previous.TryGetValue(current, out parent))
+            {
+                route.Clear();
+                return;
+            }
+            current = parent;
         }
         route.Reverse();
     }

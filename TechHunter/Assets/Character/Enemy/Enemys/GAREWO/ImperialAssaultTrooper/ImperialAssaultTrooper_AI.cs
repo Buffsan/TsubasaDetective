@@ -51,7 +51,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     void Awake() { CurrentAmmo = Mathf.Max(1, magazineSize); }
     void LateUpdate()
     {
-        if (ammoText != null) ammoText.text = CurrentAmmo.ToString();
+        if (ammoText != null) ammoText.text = CurrentAmmo + "/" + MaximumAmmo;
     }
     void Start()
     {
@@ -83,6 +83,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
             firingTimer = 0f;
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             Stop();
+            if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 2);
             return;
         }
         if (visible && toTarget.magnitude <= preferredRange) { Stop(); return; }
@@ -100,14 +101,10 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         if (lockedTarget != null)
             TurnAim((Vector2)lockedTarget.position - (Vector2)enemyBase.transform.position,
                 firingTurnDegreesPerSecond);
-        // 最初の12発は中断せず、遮蔽物に隠れた間は射撃を一時停止。
-        // 12発以降も見えている限り撃ち続け、遮蔽されたら区切る。
+        // 一度発射したら必ず12発射撃。途中で隠れられても最初の12発は続ける。
+        // 12発以降は射線が通る間だけ、残弾を撃ち切る。
         bool visible = lockedTarget != null && IsVisible(lockedTarget);
-        if (!visible)
-        {
-            if (mandatoryShotsRemaining <= 0) FinishBurst();
-            return;
-        }
+        if (!visible && mandatoryShotsRemaining <= 0) { FinishBurst(); return; }
         firingTimer -= Time.fixedDeltaTime;
         if (firingTimer > 0f) return;
         FireOne();
@@ -129,6 +126,11 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         if (bullet == null) bullet = shot.AddComponent<ImperialAssaultTrooper_Bullet>();
         bullet.Launch(direction, bulletSpeed, bulletLifetime);
         CurrentAmmo--;
+        if (enemyBase.animator != null)
+        {
+            enemyBase.animator.SetInteger("Anim", 3);
+            enemyBase.animator.Play("攻撃", 0, 0f);
+        }
     }
 
     void BeginReload()
@@ -138,6 +140,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         reloadTimer = reloadSeconds;
         enemyBase.moveType = EnemyBase.MoveType.Attack;
         Stop();
+        if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 2);
     }
     void TickReload()
     {

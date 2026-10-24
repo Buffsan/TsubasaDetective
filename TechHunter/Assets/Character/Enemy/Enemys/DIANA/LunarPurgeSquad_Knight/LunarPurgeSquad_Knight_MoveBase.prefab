@@ -62,6 +62,8 @@ MonoBehaviour:
   meleeHitboxPrefab: {fileID: 100100, guid: 649e12fc9c8b4c8583eafb478d04e16b, type: 3}
   attackWarningPrefab: {fileID: 8317282966728204219, guid: f065bb0c5e9e4ee4481698931e5c0cc8, type: 3}
   attackPowerPercent: 100
+  warningSizeMultiplier: {x: 1, y: 1}
+  warningOffset: {x: 0, y: 0}
   repositionHpRatio: 0.5
   initialRetreatSeconds: 0.65
   repositionSeconds: {x: 3, y: 7}

@@ -48,13 +48,18 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     bool firing;
     Vector2 aimDirection = Vector2.right;
 
-    void Awake() { CurrentAmmo = Mathf.Max(1, magazineSize); }
+    void Awake()
+    {
+        CurrentAmmo = Mathf.Max(1, magazineSize);
+        if (enemyBase == null) enemyBase = GetComponent<EnemyContoroller>();
+    }
     void LateUpdate()
     {
         if (ammoText != null) ammoText.text = CurrentAmmo + "/" + MaximumAmmo;
     }
     void Start()
     {
+        if (enemyBase == null) enemyBase = GetComponent<EnemyContoroller>();
         controller = enemyBase as EnemyContoroller;
         if (controller == null) { Debug.LogError("帝国突撃兵にはEnemyContorollerが必要です。", this); enabled = false; return; }
         controller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Special;
@@ -74,7 +79,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         Vector2 toTarget = target.position - enemyBase.transform.position;
         bool visible = IsVisible(target);
         TurnAim(toTarget, aimTurnDegreesPerSecond);
-        if (CurrentAmmo == 0) { BeginReload(); return; }
+        if (CurrentAmmo < Mathf.Min(minimumBurst, magazineSize)) { BeginReload(); return; }
         if (visible && toTarget.magnitude <= maxEngagementRange)
         {
             lockedTarget = target;
@@ -166,8 +171,11 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     void TurnAim(Vector2 toTarget, float angularSpeed)
     {
         if (toTarget.sqrMagnitude < 0.0001f) return;
-        aimDirection = Vector2.RotateTowards(aimDirection, toTarget.normalized,
-            angularSpeed * Mathf.Deg2Rad * Time.fixedDeltaTime, 0f).normalized;
+        float currentAngle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+        float targetAngle = Mathf.Atan2(toTarget.y, toTarget.x) * Mathf.Rad2Deg;
+        float newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle,
+            angularSpeed * Time.fixedDeltaTime) * Mathf.Deg2Rad;
+        aimDirection = new Vector2(Mathf.Cos(newAngle), Mathf.Sin(newAngle));
         enemyBase.isTargetLook((Vector2)enemyBase.transform.position + aimDirection);
     }
     bool IsVisible(Transform target)
@@ -177,10 +185,17 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
             (enemyBase.AttackSpawnPoint != null ? enemyBase.AttackSpawnPoint.transform.position : enemyBase.transform.position);
         Vector2 delta = (Vector2)target.position - origin;
         if (delta.sqrMagnitude < 0.001f) return true;
-        if (lineOfSightMask.value == 0) return true; // レイヤー未設定は遮蔽を判定できない
-        RaycastHit2D hit = Physics2D.Raycast(origin, delta.normalized, delta.magnitude, lineOfSightMask);
-        return hit.collider == null || hit.collider.transform == target ||
-               hit.collider.transform.IsChildOf(target);
+        // wallタグはレイヤー設定なしでも検知。任意の追加遮蔽物はmaskで指定。
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, delta.normalized, delta.magnitude);
+        foreach (RaycastHit2D hit in hits)
+        {
+            Collider2D obstacle = hit.collider;
+            if (obstacle == null || obstacle.transform.IsChildOf(enemyBase.transform) ||
+                obstacle.transform == target || obstacle.transform.IsChildOf(target)) continue;
+            bool onMask = (lineOfSightMask.value & (1 << obstacle.gameObject.layer)) != 0;
+            if (obstacle.CompareTag("wall") || onMask) return false;
+        }
+        return true;
     }
     public override void EnemyStanPlay() { Cancel(); }
     public override void EnemyConfusionPlay() { Cancel(); }

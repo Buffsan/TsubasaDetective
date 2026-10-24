@@ -17,6 +17,8 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     [SerializeField, Min(1f)] float bulletSpeed = 19f;
     [SerializeField, Min(0.1f)] float bulletLifetime = 5f;
     [SerializeField, Min(0f)] float aimTurnDegreesPerSecond = 100f;
+    [SerializeField, Min(0f)] float aimingSeconds = 1f;
+    [SerializeField, Min(0f)] float preparationAimDegreesPerSecond = 720f;
     [SerializeField, Min(0f)] float firingTurnDegreesPerSecond = 28f;
     [SerializeField] LayerMask lineOfSightMask; // 遮蔽物ColliderのLayerをInspectorで設定
     [SerializeField] float preferredRange = 5f;
@@ -50,6 +52,8 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     int waypoint;
     float repathTimer;
     float firingTimer;
+    float aimingTimer;
+    bool preparingShot;
     float reloadTimer;
     int mandatoryShotsRemaining;
     bool reloading;
@@ -102,18 +106,13 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
             lockedTarget = target;
             mandatoryShotsRemaining = Mathf.Min(minimumBurst, CurrentAmmo);
             firing = true;
+            preparingShot = true;
+            aimingTimer = Mathf.Max(0f, aimingSeconds);
             firingTimer = 0f;
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             Stop(false);
             if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 2);
-            // 初弾を確実に撃ってから予告を作成。警告生成時の問題で射撃が止まるのを防ぐ。
-            if (TryFireOne())
-            {
-                mandatoryShotsRemaining--;
-                firingTimer = Mathf.Max(0.02f, shotInterval);
-                if (CurrentAmmo <= 0) BeginReload();
-                else CreateAttackWarning();
-            }
+            CreateAttackWarning();
             return;
         }
         if (visible && toTarget.magnitude <= preferredRange) { Stop(); return; }
@@ -127,7 +126,24 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         if (!firing) { FinishBurst(); return; }
         if (CurrentAmmo <= 0) { firing = false; BeginReload(); return; }
 
-        // 開始時に固定した相手を追い続け、旋回速度は射撃中だけ落ちる。
+        // 構え中は高速照準して警告も追従。1秒経過してから初弾を発射する。
+        if (preparingShot)
+        {
+            if (lockedTarget != null)
+                TurnAim((Vector2)lockedTarget.position - (Vector2)enemyBase.transform.position,
+                    preparationAimDegreesPerSecond);
+            UpdateAttackWarning();
+            aimingTimer -= Time.fixedDeltaTime;
+            if (aimingTimer > 0f) return;
+            preparingShot = false;
+            if (!TryFireOne()) return;
+            if (mandatoryShotsRemaining > 0) mandatoryShotsRemaining--;
+            firingTimer = Mathf.Max(0.02f, shotInterval);
+            if (CurrentAmmo <= 0) { firing = false; BeginReload(); }
+            return;
+        }
+
+        // 射撃開始後は低速照準に移行する。
         if (lockedTarget != null)
             TurnAim((Vector2)lockedTarget.position - (Vector2)enemyBase.transform.position,
                 firingTurnDegreesPerSecond);
@@ -184,6 +200,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     void BeginReload()
     {
         firing = false;
+        preparingShot = false;
         ClearAttackWarning();
         reloading = true;
         reloadTimer = reloadSeconds;
@@ -202,6 +219,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     void FinishBurst()
     {
         firing = false;
+        preparingShot = false;
         mandatoryShotsRemaining = 0;
         lockedTarget = null;
         ClearAttackWarning();
@@ -249,6 +267,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     void Cancel()
     {
         firing = false;
+        preparingShot = false;
         // スタン・混乱時はリロードを中断。残弾は維持する。
         reloading = false;
         mandatoryShotsRemaining = 0;

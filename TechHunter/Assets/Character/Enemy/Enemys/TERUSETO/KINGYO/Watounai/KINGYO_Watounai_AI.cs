@@ -667,6 +667,10 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     void FireRoar()
     {
         SpawnAreaAttack(lockedPoint, roarRadius, roarPowerPercent);
+        // 咆哮時はハープーン着弾エフェクトを元のスケールで使用する。
+        if (harpoonImpactEffect != null)
+            Destroy(Instantiate(harpoonImpactEffect, lockedPoint, Quaternion.identity),
+                harpoonImpactEffectLifetime);
         if (enemyBase.audioManager != null) enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
         SwitchState(RoarAfter);
     }

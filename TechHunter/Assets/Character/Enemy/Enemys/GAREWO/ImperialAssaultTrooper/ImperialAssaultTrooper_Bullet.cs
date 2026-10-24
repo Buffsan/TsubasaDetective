@@ -38,7 +38,7 @@ public class ImperialAssaultTrooper_Bullet : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             Collider2D hit = wallSweepHits[i].collider;
-            if (hit != null && hit.gameObject != gameObject && hit.CompareTag("wall"))
+            if (hit != null && hit.gameObject != gameObject && hit.CompareTag("Stage_Wall"))
             {
                 Destroy(gameObject);
                 return;
@@ -47,10 +47,10 @@ public class ImperialAssaultTrooper_Bullet : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("wall")) Destroy(gameObject);
+        if (other.CompareTag("Stage_Wall")) Destroy(gameObject);
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.CompareTag("wall")) Destroy(gameObject);
+        if (collision.collider.CompareTag("Stage_Wall")) Destroy(gameObject);
     }
 }

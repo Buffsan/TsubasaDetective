@@ -142,6 +142,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5315938453462939683, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
+      propertyPath: moveBase
+      value: 
+      objectReference: {fileID: 8284862813409512861}
+    - target: {fileID: 5315938453462939683, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
+      propertyPath: EnemyMoveBaseObject
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5315938453462939683, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
+      propertyPath: factions
+      value: 1028
+      objectReference: {fileID: 0}
     - target: {fileID: 1397849005360211085, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -252,10 +264,58 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3008200536617617639, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9222550474608216698}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9054921199967653630, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8284862813409512861}
   m_SourcePrefab: {fileID: 100100000, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
 --- !u!224 &6662923678536191497 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3008200536617617639, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
   m_PrefabInstance: {fileID: 8487090378691561198}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &6183940172458360917 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9054921199967653630, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
+  m_PrefabInstance: {fileID: 8487090378691561198}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8284862813409512861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6183940172458360917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1d96ccf2e6b4d2381b59e79da4f641a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnemyName: 帝国突撃兵
+  enemyBase: {fileID: 0}
+  A_Phase: 0
+  attacktype: 0
+  AttackCount: 0
+  Clone_DengerObjects: []
+  bulletPrefab: {fileID: 2532427505246366082, guid: c3a67381a2c798740a79513e6c500816, type: 3}
+  muzzle: {fileID: 0}
+  magazineSize: 24
+  minimumBurst: 12
+  shotInterval: 0.12
+  reloadSeconds: 2
+  spreadDegrees: 7
+  bulletSpeed: 19
+  bulletLifetime: 5
+  aimTurnDegreesPerSecond: 100
+  firingTurnDegreesPerSecond: 28
+  lineOfSightMask:
+    serializedVersion: 2
+    m_Bits: 0
+  preferredRange: 5
+  maxEngagementRange: 12
+  standFloor: {fileID: 0}
+  blockedTiles: {fileID: 0}
+  searchRadiusCells: 24
+  repathSeconds: 0.45
+  arrivalDistance: 0.18
+  ammoText: {fileID: 8195900921025005025}

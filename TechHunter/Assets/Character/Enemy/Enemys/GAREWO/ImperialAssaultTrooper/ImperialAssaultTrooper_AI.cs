@@ -22,6 +22,12 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     [SerializeField] float preferredRange = 5f;
     [SerializeField] float maxEngagementRange = 12f;
 
+    [Header("攻撃範囲表示・射撃SE")]
+    [SerializeField] GameObject attackWarningPrefab;
+    [SerializeField, Range(0.1f, 1f)] float warningOpacity = 0.26f;
+    [SerializeField, Min(0.1f)] float warningMinWidth = 0.35f;
+    [SerializeField] AudioClip shotSE;
+
     [Header("床タイル経路探索")]
     [SerializeField] Tilemap standFloor;
     [SerializeField] Tilemap blockedTiles;
@@ -47,6 +53,9 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     bool reloading;
     bool firing;
     Vector2 aimDirection = Vector2.right;
+    GameObject warningObject;
+    SpriteRenderer warningRenderer;
+    readonly Collider2D[] nearbyObstacles = new Collider2D[16];
 
     void Awake()
     {
@@ -89,6 +98,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             Stop(false);
             if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 2);
+            CreateAttackWarning();
             return;
         }
         if (visible && toTarget.magnitude <= preferredRange) { Stop(); return; }
@@ -106,6 +116,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         if (lockedTarget != null)
             TurnAim((Vector2)lockedTarget.position - (Vector2)enemyBase.transform.position,
                 firingTurnDegreesPerSecond);
+        UpdateAttackWarning();
         // 一度発射したら必ず12発射撃。途中で隠れられても最初の12発は続ける。
         // 12発以降は射線が通る間だけ、残弾を撃ち切る。
         bool visible = lockedTarget != null && IsVisible(lockedTarget);
@@ -132,6 +143,8 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         if (bullet == null) bullet = shot.AddComponent<ImperialAssaultTrooper_Bullet>();
         bullet.Launch(direction, bulletSpeed, bulletLifetime);
         CurrentAmmo--;
+        if (shotSE != null && enemyBase.audioManager != null)
+            enemyBase.audioManager.PlaySE(shotSE);
         if (enemyBase.animator != null)
         {
             enemyBase.animator.SetInteger("Anim", 3);
@@ -142,6 +155,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     void BeginReload()
     {
         firing = false;
+        ClearAttackWarning();
         reloading = true;
         reloadTimer = reloadSeconds;
         enemyBase.moveType = EnemyBase.MoveType.Attack;
@@ -161,6 +175,8 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         firing = false;
         mandatoryShotsRemaining = 0;
         lockedTarget = null;
+        ClearAttackWarning();
+        if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 0);
         enemyBase.moveType = EnemyBase.MoveType.Move;
     }
     void Stop(bool idleAnimation = true)
@@ -207,12 +223,66 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         reloading = false;
         mandatoryShotsRemaining = 0;
         lockedTarget = null;
+        ClearAttackWarning();
         route.Clear();
         waypoint = 0;
         Stop();
         if (enemyBase != null && enemyBase.status == EnemyBase.Status.Nomal)
             enemyBase.moveType = EnemyBase.MoveType.Move;
     }
+    // 共通攻撃警告Prefabを射撃中のみ帯状に表示する。
+    void CreateAttackWarning()
+    {
+        ClearAttackWarning();
+        if (attackWarningPrefab == null) return;
+        warningObject = Instantiate(attackWarningPrefab);
+        warningRenderer = warningObject.GetComponentInChildren<SpriteRenderer>(true);
+        if (warningRenderer == null)
+        {
+            Destroy(warningObject);
+            warningObject = null;
+            return;
+        }
+        // 既存フェードアニメが再生途中で消さないよう固定表示する。
+        foreach (Animator animator in warningObject.GetComponentsInChildren<Animator>(true))
+            animator.enabled = false;
+        Color color = warningRenderer.color;
+        color.a = warningOpacity;
+        warningRenderer.color = color;
+        warningRenderer.sortingOrder = Mathf.Max(warningRenderer.sortingOrder, -5);
+        UpdateAttackWarning();
+    }
+
+    void UpdateAttackWarning()
+    {
+        if (warningObject == null || warningRenderer == null || enemyBase == null) return;
+        Vector2 origin = muzzle != null ? (Vector2)muzzle.position :
+            (enemyBase.AttackSpawnPoint != null ? (Vector2)enemyBase.AttackSpawnPoint.transform.position :
+                (Vector2)enemyBase.transform.position);
+        float range = Mathf.Max(0.1f, maxEngagementRange);
+        // 発砲のばらつきを含む帯の最大幅を表示する。実弾の判定とは独立。
+        float width = Mathf.Max(warningMinWidth,
+            2f * range * Mathf.Tan(Mathf.Min(80f, spreadDegrees) * Mathf.Deg2Rad));
+        warningObject.transform.position = origin + aimDirection * (range * 0.5f);
+        warningObject.transform.rotation = Quaternion.Euler(0f, 0f,
+            Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg);
+        if (warningRenderer.sprite != null)
+        {
+            Vector2 spriteSize = warningRenderer.sprite.bounds.size;
+            Vector3 childScale = warningRenderer.transform.localScale;
+            float sx = Mathf.Max(0.001f, spriteSize.x * Mathf.Abs(childScale.x));
+            float sy = Mathf.Max(0.001f, spriteSize.y * Mathf.Abs(childScale.y));
+            warningObject.transform.localScale = new Vector3(range / sx, width / sy, 1f);
+        }
+    }
+
+    void ClearAttackWarning()
+    {
+        if (warningObject != null) Destroy(warningObject);
+        warningObject = null;
+        warningRenderer = null;
+    }
+
     void Navigate(Vector3 destination)
     {
         if (standFloor == null) { Stop(); return; }
@@ -235,7 +305,22 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     }
     bool CanWalk(Vector3Int cell)
     {
-        return standFloor.HasTile(cell) && (blockedTiles == null || !blockedTiles.HasTile(cell));
+        if (standFloor == null || !standFloor.HasTile(cell)) return false;
+        if (blockedTiles != null && blockedTiles.HasTile(cell)) return false;
+        // 候補の床セルがwall Colliderに埋まっていれば進入しない。
+        Vector2 center = standFloor.GetCellCenterWorld(cell);
+        Vector3 size = standFloor.cellSize;
+        Vector2 probeSize = new Vector2(Mathf.Max(0.05f, size.x * 0.75f),
+                                         Mathf.Max(0.05f, size.y * 0.75f));
+        int count = Physics2D.OverlapBoxNonAlloc(center, probeSize, 0f, nearbyObstacles);
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D hit = nearbyObstacles[i];
+            if (hit == null || hit.transform == standFloor.transform ||
+                hit.transform.IsChildOf(enemyBase.transform)) continue;
+            if (hit.CompareTag("wall")) return false;
+        }
+        return true;
     }
     void FindPath(Vector3 start, Vector3 goal)
     {

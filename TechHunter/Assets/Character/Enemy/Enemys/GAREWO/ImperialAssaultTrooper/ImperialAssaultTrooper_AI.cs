@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using TMPro;
 
 // 帝国突撃兵。EnemyContorollerのSpecial移動を使用し、共通クラスは変更しない。
 public class ImperialAssaultTrooper_AI : EnemyMoveBase
@@ -28,6 +29,9 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     [SerializeField, Min(0.05f)] float repathSeconds = 0.45f;
     [SerializeField, Min(0.02f)] float arrivalDistance = 0.18f;
 
+    [Header("弾数UI（既存HPゲージ中央のTextMeshProを指定）")]
+    [SerializeField] TMP_Text ammoText;
+
     public int CurrentAmmo { get; private set; }
     public int MaximumAmmo => magazineSize;
     public bool IsReloading => reloading;
@@ -45,6 +49,10 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     Vector2 aimDirection = Vector2.right;
 
     void Awake() { CurrentAmmo = Mathf.Max(1, magazineSize); }
+    void LateUpdate()
+    {
+        if (ammoText != null) ammoText.text = CurrentAmmo.ToString();
+    }
     void Start()
     {
         controller = enemyBase as EnemyContoroller;
@@ -175,6 +183,8 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     void Cancel()
     {
         firing = false;
+        // スタン・混乱時はリロードを中断。残弾は維持する。
+        reloading = false;
         mandatoryShotsRemaining = 0;
         lockedTarget = null;
         route.Clear();

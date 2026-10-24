@@ -27,12 +27,13 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     [SerializeField, Min(0.05f)] float neckColliderThickness = 0.45f;
     [SerializeField, Min(0.05f)] float neckVisualThicknessScale = 1f;
     [SerializeField] Vector2 neckBaseOffset = new Vector2(0f, 0.15f);
+    [SerializeField] Transform neckBasePoint; // Emptyを指定するとこの位置が首の根元になる
     [SerializeField] bool neckSpriteAlongX = true;
     [SerializeField] float headAngleOffset = 0f;
 
     [Header("連結首プール")]
     [SerializeField, Min(0.15f)] float neckSegmentSpacing = 0.65f;
-    [SerializeField, Min(1)] int neckDamageSegmentInterval = 3; // 3なら3節に1節だけ被弾
+    [SerializeField, Min(1)] int neckDamageSegmentInterval = 6; // 6なら6節に1節だけ被弾
     [SerializeField] Vector2 neckSegmentSize = Vector2.one; // 各首パーツの見た目と判定を一緒に拡縮
     [SerializeField, Min(1)] int initialNeckSegments = 40;
     [SerializeField, Min(1)] int maxNeckSegments = 100;
@@ -153,7 +154,9 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     readonly List<Coroutine> rockFanCoroutines = new List<Coroutine>();
 
     Transform Target => CurrentTarget;
-    Vector2 NeckBase => (Vector2)enemyBase.transform.position + neckBaseOffset;
+    Vector2 NeckBase => neckBasePoint != null
+        ? (Vector2)neckBasePoint.position
+        : (Vector2)enemyBase.transform.position + neckBaseOffset;
     float HeadReach
     {
         get

@@ -82,7 +82,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
             firing = true;
             firingTimer = 0f;
             enemyBase.moveType = EnemyBase.MoveType.Attack;
-            Stop();
+            Stop(false);
             if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 2);
             return;
         }
@@ -92,7 +92,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
 
     public override void EnemyAttackPlay()
     {
-        Stop();
+        Stop(false);
         if (reloading) { TickReload(); return; }
         if (!firing) { FinishBurst(); return; }
         if (CurrentAmmo <= 0) { firing = false; BeginReload(); return; }
@@ -116,7 +116,8 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     void FireOne()
     {
         if (bulletPrefab == null) { Debug.LogWarning("帝国突撃兵の弾丸Prefabが未登録です。", this); FinishBurst(); return; }
-        Vector2 origin = muzzle != null ? muzzle.position : enemyBase.transform.position;
+        Vector2 origin = muzzle != null ? muzzle.position :
+            (enemyBase.AttackSpawnPoint != null ? enemyBase.AttackSpawnPoint.transform.position : enemyBase.transform.position);
         float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg
                       + Random.Range(-spreadDegrees, spreadDegrees);
         Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
@@ -139,7 +140,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         reloading = true;
         reloadTimer = reloadSeconds;
         enemyBase.moveType = EnemyBase.MoveType.Attack;
-        Stop();
+        Stop(false);
         if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 2);
     }
     void TickReload()
@@ -157,10 +158,10 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         lockedTarget = null;
         enemyBase.moveType = EnemyBase.MoveType.Move;
     }
-    void Stop()
+    void Stop(bool idleAnimation = true)
     {
         if (enemyBase.rb != null) enemyBase.rb.velocity = Vector2.zero;
-        if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 0);
+        if (idleAnimation && enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 0);
     }
     void TurnAim(Vector2 toTarget, float angularSpeed)
     {
@@ -172,7 +173,8 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     bool IsVisible(Transform target)
     {
         if (target == null) return false;
-        Vector2 origin = muzzle != null ? muzzle.position : enemyBase.transform.position;
+        Vector2 origin = muzzle != null ? muzzle.position :
+            (enemyBase.AttackSpawnPoint != null ? enemyBase.AttackSpawnPoint.transform.position : enemyBase.transform.position);
         Vector2 delta = (Vector2)target.position - origin;
         if (delta.sqrMagnitude < 0.001f) return true;
         if (lineOfSightMask.value == 0) return true; // レイヤー未設定は遮蔽を判定できない

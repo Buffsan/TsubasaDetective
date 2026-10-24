@@ -206,6 +206,7 @@ MonoBehaviour:
   biteReach: 1.6
   approachTimeout: 4
   neckReturnSpeed: 10
+  neckReturnAcceleration: 0.65
   afterReturnRecovery: 0.55
 --- !u!1001 &8350615655123635693
 PrefabInstance:

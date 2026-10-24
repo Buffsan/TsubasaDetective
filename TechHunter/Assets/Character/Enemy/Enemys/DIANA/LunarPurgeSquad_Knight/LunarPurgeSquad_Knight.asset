@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
+  m_Name: LunarPurgeSquad_Knight
+  m_EditorClassIdentifier:
+  NAME: "\u6708\u306E\u7C9B\u6E05\u968A\u5263\u58EB"
+  MAXHP: 1800
+  enemyStrength: 3
+  Regen: 0
+  MAXMP: 0
+  SPEED: 4
+  ATK: 5
+  ATKDF: 3
+  GOLD: 65
+  XP: 0
+  StanHP: 8
+  ConfusionResistance: 1000
+  Critical: 0
+  Range: 0
+  ConfusionResistanceRegen: 25

@@ -106,7 +106,14 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             Stop(false);
             if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 2);
-            CreateAttackWarning();
+            // 初弾を確実に撃ってから予告を作成。警告生成時の問題で射撃が止まるのを防ぐ。
+            if (TryFireOne())
+            {
+                mandatoryShotsRemaining--;
+                firingTimer = Mathf.Max(0.02f, shotInterval);
+                if (CurrentAmmo <= 0) BeginReload();
+                else CreateAttackWarning();
+            }
             return;
         }
         if (visible && toTarget.magnitude <= preferredRange) { Stop(); return; }
@@ -124,28 +131,33 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         if (lockedTarget != null)
             TurnAim((Vector2)lockedTarget.position - (Vector2)enemyBase.transform.position,
                 firingTurnDegreesPerSecond);
-        UpdateAttackWarning();
         // 一度発射したら必ず12発射撃。途中で隠れられても最初の12発は続ける。
         // 12発以降は射線が通る間だけ、残弾を撃ち切る。
         bool visible = lockedTarget != null && IsVisible(lockedTarget);
         if (!visible && mandatoryShotsRemaining <= 0) { FinishBurst(); return; }
         firingTimer -= Time.fixedDeltaTime;
         if (firingTimer > 0f) return;
-        FireOne();
+        if (!TryFireOne()) return;
         firingTimer = Mathf.Max(0.02f, shotInterval);
         if (mandatoryShotsRemaining > 0) mandatoryShotsRemaining--;
+        UpdateAttackWarning();
         if (CurrentAmmo <= 0) { firing = false; BeginReload(); }
     }
 
-    void FireOne()
+    bool TryFireOne()
     {
-        if (bulletPrefab == null) { Debug.LogWarning("帝国突撃兵の弾丸Prefabが未登録です。", this); FinishBurst(); return; }
+        if (bulletPrefab == null) { Debug.LogError("帝国突撃兵: 弾丸Prefabが未登録です。", this); FinishBurst(); return false; }
+        try
+        {
         Vector2 origin = muzzle != null ? muzzle.position :
             (enemyBase.AttackSpawnPoint != null ? enemyBase.AttackSpawnPoint.transform.position : enemyBase.transform.position);
         float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg
                       + Random.Range(-spreadDegrees, spreadDegrees);
         Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
-        GameObject shot = Instantiate(bulletPrefab, origin, Quaternion.Euler(0f, 0f, angle));
+        // Prefab変換エラーも捕捉して詳細を出す。
+        UnityEngine.Object spawned = Instantiate((UnityEngine.Object)bulletPrefab, origin, Quaternion.Euler(0f, 0f, angle));
+        GameObject shot = spawned as GameObject;
+        if (shot == null) throw new System.InvalidOperationException("Bullet prefab did not instantiate as GameObject");
         ConfigureSummonedAttack(shot);
         ImperialAssaultTrooper_Bullet bullet = shot.GetComponent<ImperialAssaultTrooper_Bullet>();
         if (bullet == null) bullet = shot.AddComponent<ImperialAssaultTrooper_Bullet>();
@@ -157,6 +169,15 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         {
             enemyBase.animator.SetInteger("Anim", 3);
             enemyBase.animator.Play("攻撃", 0, 0f);
+        }
+        return true;
+        }
+        catch (System.Exception exception)
+        {
+            Debug.LogException(exception, this);
+            Debug.LogError("帝国突撃兵: 弾丸生成・設定に失敗しました。PrefabとEnemyAttackを確認してください。", this);
+            FinishBurst();
+            return false;
         }
     }
 
@@ -245,10 +266,17 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     {
         ClearAttackWarning();
         if (attackWarningPrefab == null) return;
-        warningObject = controller != null
-            ? controller.SpawnAttackWarningPrefab(attackWarningPrefab, Vector3.zero,
-                Quaternion.identity, 10f, null, 0f, false)
-            : Instantiate(attackWarningPrefab);
+        // 警告生成は射撃処理から独立させる。エラー時に発砲を巻き込まない。
+        try
+        {
+            warningObject = Instantiate(attackWarningPrefab);
+        }
+        catch (System.Exception exception)
+        {
+            Debug.LogException(exception, this);
+            warningObject = null;
+            return;
+        }
         if (warningObject == null) return;
         warningRenderer = warningObject.GetComponentInChildren<SpriteRenderer>(true);
         if (warningRenderer == null)

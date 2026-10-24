@@ -19,6 +19,10 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
     [SerializeField] GameObject attackWarningPrefab;
     [SerializeField, Range(1f, 300f)] float attackPowerPercent = 100f;
 
+    [Header("攻撃警告の微調整（X=横幅 / Y=踏み込み方向）")]
+    [SerializeField] Vector2 warningSizeMultiplier = Vector2.one;
+    [SerializeField] Vector2 warningOffset = Vector2.zero;
+
     [Header("HP半減時の回り込み（1回）")]
     [SerializeField, Range(0.01f, 1f)] float repositionHpRatio = 0.5f;
     [SerializeField, Min(0f)] float initialRetreatSeconds = 0.65f;
@@ -31,6 +35,10 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
     Transform lockedTarget;
     GameObject activeHitbox;
     GameObject activeWarning;
+    BoxCollider2D[] meleeBoxes;
+    Vector2 warningVisualCenter;
+    Vector2 warningVisualSize = Vector2.one;
+    bool hasWarningVisualBounds;
     Vector2 lockedDirection = Vector2.right;
     Vector2 lastKnownTarget;
     float startingHp;
@@ -55,6 +63,9 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
             return;
         }
         startingHp = Mathf.Max(1f, enemyBase.HP);
+        meleeBoxes = meleeHitboxPrefab != null
+            ? meleeHitboxPrefab.GetComponentsInChildren<BoxCollider2D>(true)
+            : new BoxCollider2D[0];
         controller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Special;
         enemyBase.LookPlayerDistance = -1f; // 自動攻撃を無効化し、個別AIが攻撃を開始する。
         enemyBase.moveType = EnemyBase.MoveType.Move;
@@ -182,7 +193,10 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
         if (!initialized) return;
         // 攻撃中は対象を変更しない。
         if (lockedTarget != null) lastKnownTarget = lockedTarget.position;
-        enemyBase.isTargetLook(lastKnownTarget);
+        // 踏み込み開始後に振り向くと攻撃判定が反転するため、方向を固定する。
+        enemyBase.isTargetLook(A_Phase >= 2
+            ? (Vector2)transform.position + lockedDirection
+            : lastKnownTarget);
         float dt = Time.fixedDeltaTime;
         switch (A_Phase)
         {
@@ -229,12 +243,23 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
         enemyBase.animator.SetInteger("Anim", 2);
         enemyBase.animator.Play("攻撃待機", 0, 0f);
         ClearWarning();
-        Quaternion rotation = WarningRotation(AimDirection());
-        try {
-            activeWarning = SpawnAttackWarning(EnemyContoroller.WarningRectangle, attackWarningPrefab,
-                transform.position, rotation, Mathf.Max(0.05f, windupSeconds), null, 0f, true);
+
+        Vector2 direction = AimDirection();
+        Vector2 center, size;
+        GetSweptHitboxArea(direction, out center, out size);
+        try
+        {
+            activeWarning = SpawnAttackWarning(EnemyContoroller.WarningRectangle,
+                attackWarningPrefab, center, WarningRotation(direction),
+                Mathf.Max(0.05f, windupSeconds), null, 0f, true);
+            if (activeWarning != null)
+            {
+                CacheWarningVisualBounds();
+                UpdateWarning();
+            }
         }
-        catch (System.InvalidCastException ex) {
+        catch (System.InvalidCastException ex)
+        {
             Debug.LogWarning("月の粛清隊剣士: 攻撃警告Prefabの生成をスキップ: " + ex.Message, this);
         }
     }
@@ -247,13 +272,128 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
 
     static Quaternion WarningRotation(Vector2 direction)
     {
+        // 攻撃警告のローカルY軸を踏み込み方向に向ける。
         return Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f);
+    }
+
+    // 踏み込み中にBoxCollider2Dが通過する全範囲を矩形として算出。
+    // AttackSpawnPointの位置・回転・Scale、ColliderのOffset/Sizeと子Transformを反映する。
+    void GetSweptHitboxArea(Vector2 direction, out Vector2 center, out Vector2 size)
+    {
+        Transform anchor = enemyBase.AttackSpawnPoint != null
+            ? enemyBase.AttackSpawnPoint.transform : transform;
+        Vector2 origin = anchor.position;
+        Vector2 side = new Vector2(-direction.y, direction.x);
+        float minForward = float.PositiveInfinity;
+        float maxForward = float.NegativeInfinity;
+        float minSide = float.PositiveInfinity;
+        float maxSide = float.NegativeInfinity;
+
+        if (meleeHitboxPrefab != null && meleeBoxes != null)
+        {
+            Transform prefabRoot = meleeHitboxPrefab.transform;
+            foreach (BoxCollider2D box in meleeBoxes)
+            {
+                if (box == null || !box.enabled) continue;
+                Vector2 half = box.size * 0.5f;
+                for (int x = -1; x <= 1; x += 2)
+                {
+                    for (int y = -1; y <= 1; y += 2)
+                    {
+                        Vector3 boxLocalPoint = (Vector3)(box.offset +
+                            new Vector2(half.x * x, half.y * y));
+                        // Prefab内の子オブジェクト座標を、出現位置のワールド座標へ変換。
+                        Vector3 prefabLocal = prefabRoot.InverseTransformPoint(
+                            box.transform.TransformPoint(boxLocalPoint));
+                        Vector3 worldPoint = anchor.TransformPoint(
+                            Vector3.Scale(prefabLocal, prefabRoot.localScale));
+                        Vector2 relative = (Vector2)worldPoint - origin;
+                        float along = Vector2.Dot(relative, direction);
+                        float across = Vector2.Dot(relative, side);
+                        minForward = Mathf.Min(minForward, along);
+                        maxForward = Mathf.Max(maxForward, along);
+                        minSide = Mathf.Min(minSide, across);
+                        maxSide = Mathf.Max(maxSide, across);
+                    }
+                }
+            }
+        }
+
+        // BoxColliderが未設定の場合でも、警告を生成できるよう最低限の矩形を使う。
+        if (float.IsInfinity(minForward))
+        {
+            minForward = -0.5f;
+            maxForward = 0.5f;
+            minSide = -0.5f;
+            maxSide = 0.5f;
+        }
+
+        // 実際の踏み込みは一定方向に直進するため、初期矩形をその方向へ延長する。
+        float dashTravel = Mathf.Max(0f, enemyBase.SPEED * dashSpeedMultiplier * dashSeconds);
+        maxForward += dashTravel;
+        center = origin + direction * ((minForward + maxForward) * 0.5f) +
+                 side * ((minSide + maxSide) * 0.5f);
+        center += side * warningOffset.x + direction * warningOffset.y;
+        size = new Vector2(
+            Mathf.Max(0.05f, (maxSide - minSide) * Mathf.Max(0.05f, warningSizeMultiplier.x)),
+            Mathf.Max(0.05f, (maxForward - minForward) * Mathf.Max(0.05f, warningSizeMultiplier.y)));
+    }
+
+    // 警告Prefabの画像が1x1とは限らないため、実際のスプライト寸法を測って補正する。
+    void CacheWarningVisualBounds()
+    {
+        hasWarningVisualBounds = false;
+        warningVisualCenter = Vector2.zero;
+        warningVisualSize = Vector2.one;
+        if (activeWarning == null) return;
+        float minX = float.PositiveInfinity, minY = float.PositiveInfinity;
+        float maxX = float.NegativeInfinity, maxY = float.NegativeInfinity;
+        Transform root = activeWarning.transform;
+        foreach (SpriteRenderer spriteRenderer in activeWarning.GetComponentsInChildren<SpriteRenderer>(true))
+        {
+            if (!spriteRenderer.enabled || spriteRenderer.sprite == null) continue;
+            Bounds spriteBounds = spriteRenderer.sprite.bounds;
+            Vector2 spriteSize = spriteRenderer.drawMode == SpriteDrawMode.Simple
+                ? (Vector2)spriteBounds.size : spriteRenderer.size;
+            Vector3 visualCenter = spriteBounds.center;
+            Vector2 half = spriteSize * 0.5f;
+            for (int x = -1; x <= 1; x += 2)
+            {
+                for (int y = -1; y <= 1; y += 2)
+                {
+                    Vector3 point = visualCenter + new Vector3(half.x * x, half.y * y, 0f);
+                    Vector3 inRoot = root.InverseTransformPoint(
+                        spriteRenderer.transform.TransformPoint(point));
+                    minX = Mathf.Min(minX, inRoot.x);
+                    maxX = Mathf.Max(maxX, inRoot.x);
+                    minY = Mathf.Min(minY, inRoot.y);
+                    maxY = Mathf.Max(maxY, inRoot.y);
+                }
+            }
+        }
+        if (!float.IsInfinity(minX) && maxX - minX > 0.0001f && maxY - minY > 0.0001f)
+        {
+            hasWarningVisualBounds = true;
+            warningVisualSize = new Vector2(maxX - minX, maxY - minY);
+            warningVisualCenter = new Vector2((minX + maxX) * 0.5f, (minY + maxY) * 0.5f);
+        }
     }
 
     void UpdateWarning()
     {
-        if (activeWarning != null)
-            activeWarning.transform.rotation = WarningRotation(AimDirection());
+        if (activeWarning == null) return;
+        Vector2 direction = AimDirection();
+        Vector2 center, size;
+        GetSweptHitboxArea(direction, out center, out size);
+        Transform warning = activeWarning.transform;
+        warning.rotation = WarningRotation(direction);
+        // 子オブジェクトの元Scaleは維持し、親のScaleで警告の縦横を調整。
+        Vector2 unit = hasWarningVisualBounds ? warningVisualSize : Vector2.one;
+        warning.localScale = new Vector3(size.x / unit.x, size.y / unit.y, warning.localScale.z);
+        Vector3 localCenter = new Vector3(
+            warningVisualCenter.x * warning.localScale.x,
+            warningVisualCenter.y * warning.localScale.y, 0f);
+        warning.position = (Vector3)center - warning.rotation * localCenter;
     }
 
     void BeginDash()

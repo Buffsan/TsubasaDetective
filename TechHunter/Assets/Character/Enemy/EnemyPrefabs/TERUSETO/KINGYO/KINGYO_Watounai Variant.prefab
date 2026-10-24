@@ -178,7 +178,7 @@ MonoBehaviour:
   impactWait: 0.5
   maximumRushes: 3
   impactWarningPrefab: {fileID: 0}
-  harpoonImpactEffect: {fileID: 2938968278944105543, guid: 916a488a0ef4f6a4d9803e0930b2eecd, type: 3}
+  harpoonImpactEffect: {fileID: 7711856317104832382, guid: 916a488a0ef4f6a4d9803e0930b2eecd, type: 3}
   harpoonImpactEffectLifetime: 3
   predictTargetMovement: 1
   predictionStrength: 0.8

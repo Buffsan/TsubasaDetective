@@ -55,6 +55,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     Vector2 aimDirection = Vector2.right;
     GameObject warningObject;
     SpriteRenderer warningRenderer;
+    int lastDisplayedAmmo = -1;
     readonly Collider2D[] nearbyObstacles = new Collider2D[16];
 
     void Awake()
@@ -64,7 +65,9 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
     }
     void LateUpdate()
     {
-        if (ammoText != null) ammoText.text = CurrentAmmo + "/" + MaximumAmmo;
+        if (ammoText == null || lastDisplayedAmmo == CurrentAmmo) return;
+        ammoText.text = CurrentAmmo + "/" + MaximumAmmo;
+        lastDisplayedAmmo = CurrentAmmo;
     }
     void Start()
     {
@@ -88,7 +91,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         Vector2 toTarget = target.position - enemyBase.transform.position;
         bool visible = IsVisible(target);
         TurnAim(toTarget, aimTurnDegreesPerSecond);
-        if (CurrentAmmo < Mathf.Min(minimumBurst, magazineSize)) { BeginReload(); return; }
+        if (CurrentAmmo <= 0) { BeginReload(); return; }
         if (visible && toTarget.magnitude <= maxEngagementRange)
         {
             lockedTarget = target;
@@ -259,7 +262,7 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         Vector2 origin = muzzle != null ? (Vector2)muzzle.position :
             (enemyBase.AttackSpawnPoint != null ? (Vector2)enemyBase.AttackSpawnPoint.transform.position :
                 (Vector2)enemyBase.transform.position);
-        float range = Mathf.Max(0.1f, maxEngagementRange);
+        float range = GetUnobstructedWarningLength(origin);
         // 発砲のばらつきを含む帯の最大幅を表示する。実弾の判定とは独立。
         float width = Mathf.Max(warningMinWidth,
             2f * range * Mathf.Tan(Mathf.Min(80f, spreadDegrees) * Mathf.Deg2Rad));
@@ -274,6 +277,20 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
             float sy = Mathf.Max(0.001f, spriteSize.y * Mathf.Abs(childScale.y));
             warningObject.transform.localScale = new Vector3(range / sx, width / sy, 1f);
         }
+    }
+
+    float GetUnobstructedWarningLength(Vector2 origin)
+    {
+        float length = Mathf.Max(0.1f, maxEngagementRange);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, aimDirection, length);
+        foreach (RaycastHit2D hit in hits)
+        {
+            if (hit.collider == null || hit.collider.transform.IsChildOf(enemyBase.transform)) continue;
+            bool onMask = (lineOfSightMask.value & (1 << hit.collider.gameObject.layer)) != 0;
+            if (hit.collider.CompareTag("wall") || onMask)
+                length = Mathf.Min(length, Mathf.Max(0.05f, hit.distance));
+        }
+        return length;
     }
 
     void ClearAttackWarning()

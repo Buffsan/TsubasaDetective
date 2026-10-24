@@ -12,6 +12,7 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
 
     [Header("踏み込み攻撃")]
     [SerializeField, Min(0f)] float windupSeconds = 0.7f;
+    [SerializeField, Min(0f)] float aimLockBeforeAttack = 0.2f;
     [SerializeField, Min(0.05f)] float dashSeconds = 0.3f;
     [SerializeField, Min(0f)] float dashSpeedMultiplier = 4f;
     [SerializeField, Min(0f)] float recoverySeconds = 0.35f;
@@ -51,6 +52,7 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
     bool repositioning;
     bool retreatFirst;
     bool orbitAttack;
+    bool aimLocked;
     bool initialized;
 
     void Start()
@@ -193,8 +195,8 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
         if (!initialized) return;
         // 攻撃中は対象を変更しない。
         if (lockedTarget != null) lastKnownTarget = lockedTarget.position;
-        // 踏み込み開始後に振り向くと攻撃判定が反転するため、方向を固定する。
-        enemyBase.isTargetLook(A_Phase >= 2
+        // 発動0.2秒前に照準を固定。以降は標的が移動しても見た目・警告・攻撃方向を変えない。
+        enemyBase.isTargetLook(aimLocked || A_Phase >= 2
             ? (Vector2)transform.position + lockedDirection
             : lastKnownTarget);
         float dt = Time.fixedDeltaTime;
@@ -211,9 +213,11 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
                 enemyBase.AttackCount += dt;
                 if (enemyBase.AttackCount >= orbitTimer) BeginWindup();
                 break;
-            case 1: // 構え中は高速で標的を向く
+            case 1: // 構え後半の0.2秒は方向を固定して攻撃を予告する。
                 enemyBase.rb.velocity = Vector2.zero;
                 enemyBase.AttackCount += dt;
+                if (!aimLocked && enemyBase.AttackCount >= Mathf.Max(0f, windupSeconds - aimLockBeforeAttack))
+                    LockAim();
                 UpdateWarning();
                 if (enemyBase.AttackCount >= windupSeconds) BeginDash();
                 break;
@@ -238,6 +242,7 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
     void BeginWindup()
     {
         A_Phase = 1;
+        aimLocked = false;
         enemyBase.AttackCount = 0f;
         enemyBase.rb.velocity = Vector2.zero;
         enemyBase.animator.SetInteger("Anim", 2);
@@ -262,6 +267,17 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
         {
             Debug.LogWarning("月の粛清隊剣士: 攻撃警告Prefabの生成をスキップ: " + ex.Message, this);
         }
+        // 構えが0.2秒以下なら開始時から照準を固定する。
+        if (windupSeconds <= aimLockBeforeAttack) LockAim();
+    }
+
+    void LockAim()
+    {
+        if (aimLocked) return;
+        lockedDirection = AimDirection();
+        aimLocked = true;
+        enemyBase.isTargetLook((Vector2)transform.position + lockedDirection);
+        UpdateWarning();
     }
 
     Vector2 AimDirection()
@@ -382,7 +398,7 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
     void UpdateWarning()
     {
         if (activeWarning == null) return;
-        Vector2 direction = AimDirection();
+        Vector2 direction = aimLocked ? lockedDirection : AimDirection();
         Vector2 center, size;
         GetSweptHitboxArea(direction, out center, out size);
         Transform warning = activeWarning.transform;
@@ -398,7 +414,7 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
 
     void BeginDash()
     {
-        lockedDirection = AimDirection();
+        if (!aimLocked) LockAim();
         ClearWarning();
         enemyBase.animator.SetInteger("Anim", 3);
         enemyBase.animator.Play("攻撃", 0, 0f);
@@ -422,6 +438,7 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
         ClearHitbox();
         ClearWarning();
         lockedTarget = null;
+        aimLocked = false;
         enemyBase.AttackCount = 0f;
         A_Phase = 0;
         enemyBase.rb.velocity = Vector2.zero;
@@ -435,6 +452,7 @@ public class LunarPurgeSquad_Knight_AI : EnemyMoveBase
         ClearHitbox();
         ClearWarning();
         lockedTarget = null;
+        aimLocked = false;
         A_Phase = 0;
         enemyBase.AttackCount = 0f;
         if (enemyBase.moveType == EnemyBase.MoveType.Attack)

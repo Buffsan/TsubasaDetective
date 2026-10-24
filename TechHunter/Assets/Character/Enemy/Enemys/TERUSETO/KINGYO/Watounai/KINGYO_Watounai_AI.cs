@@ -66,6 +66,8 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
     [SerializeField, Min(0.05f)] float impactWait = 0.5f;
     [SerializeField, Range(1, 10)] int maximumRushes = 3;
     [SerializeField] GameObject impactWarningPrefab;
+    [SerializeField] GameObject harpoonImpactEffect;
+    [SerializeField, Min(0.1f)] float harpoonImpactEffectLifetime = 3f;
 
     [Header("ハープーンの移動予測")]
     [SerializeField] bool predictTargetMovement = true;
@@ -581,6 +583,8 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
             SetHeadAttackActive(false);
             rushCount++;
             SpawnAreaAttack(lockedPoint, impactRadius, impactPowerPercent);
+            if (harpoonImpactEffect != null)
+                Destroy(Instantiate(harpoonImpactEffect, lockedPoint, Quaternion.identity), harpoonImpactEffectLifetime);
             SpawnRockFan(lockedPoint, rushImpactDirection);
             SwitchState(ImpactPause);
         }
@@ -591,15 +595,15 @@ public class KINGYO_Watounai_AI : EnemyMoveBase
         if (Target == null) { BeginRetract(); return; }
         float distanceFromHead = Vector2.Distance(Target.position, currentHeadPosition);
         float distanceFromBase = Vector2.Distance(Target.position, NeckBase);
-        // 遠距離の激突後に3m以内なら予告1秒の咆哮。
-        if (attackFamily == 1 && distanceFromHead <= closeRange)
+        // 射程内であれば距離に関係なく規定回数のハープーンを優先する。
+        if (rushCount < maximumRushes && distanceFromBase < HeadReach - attackRangeMargin)
         {
-            BeginRoar();
+            StartLockedRush();
             return;
         }
-        // 初撃＋最大2回の追撃／跳躍後は最大3回の追撃。
-        if (rushCount < maximumRushes && distanceFromBase < HeadReach - attackRangeMargin)
-            StartLockedRush();
+        // 3回目の着弾後、頭付近に標的がいれば咆哮へ移行する。
+        if (rushCount >= maximumRushes && distanceFromHead <= closeRange)
+            BeginRoar();
         else
             BeginRetract();
     }

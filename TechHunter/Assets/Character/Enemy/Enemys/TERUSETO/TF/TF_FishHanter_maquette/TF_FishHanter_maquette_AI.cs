@@ -31,9 +31,9 @@ public class TF_FishHanter_maquette_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
 
-                Laser.transform.up = enemyBase.PlayerDirection.normalized;
+                Laser.transform.up = TargetDirection.normalized;
             if (enemyBase.AttackCount > 1)
             {
                 enemyBase.animator.SetInteger("Anim", 2);
@@ -74,15 +74,16 @@ public class TF_FishHanter_maquette_AI : EnemyMoveBase
 
     void shotBullet()
     {
-        //Vector2 ShotPos = enemyBase.Player.transform.position - enemyBase.AttackSpawnPoint.transform.position;
+        //Vector2 ShotPos = TargetPosition - enemyBase.AttackSpawnPoint.transform.position;
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Arrow);
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
-        rb.velocity = enemyBase.PlayerDirection.normalized * 23;
+        rb.velocity = TargetDirection.normalized * 23;
 
        
 
-        CL_Arrow.transform.up = enemyBase.PlayerDirection;
+        CL_Arrow.transform.up = TargetDirection;
         CL_Arrow.transform.Rotate(0, 0, 90);
 
         Destroy(CL_Arrow, enemyBase.AttackDellTimer);

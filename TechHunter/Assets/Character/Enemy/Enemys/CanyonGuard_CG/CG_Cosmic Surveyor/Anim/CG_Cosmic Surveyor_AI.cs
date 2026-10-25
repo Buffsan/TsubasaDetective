@@ -5,12 +5,15 @@ using UnityEngine;
 public class CG_CosmicSurveyor_AI : EnemyMoveBase
 {
     [SerializeField] GameObject Arrow;
+    Vector2 lockedShotPosition;
     public override void EnemyAttackPlay()
     {
         enemyBase.AttackCount += Time.deltaTime;
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
             enemyBase.rb.velocity = Vector2.zero;
+            lockedShotPosition = TargetPosition;
+            LookAtCurrentTarget();
             enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
             enemyBase.mode = EnemyBase.ModeType.M2;
             enemyBase.animator.SetInteger("Anim", 2);
@@ -24,7 +27,7 @@ public class CG_CosmicSurveyor_AI : EnemyMoveBase
                 enemyBase.animator.SetInteger("Anim", 3);
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
-                enemyBase.isPlayerLookBase();
+                if (UsesLegacyPlayerTarget) LookAtCurrentTarget();
                 shotBullet();
             }
         }
@@ -55,11 +58,16 @@ public class CG_CosmicSurveyor_AI : EnemyMoveBase
 
     void shotBullet()
     {
-        //Vector2 ShotPos = enemyBase.Player.transform.position - enemyBase.AttackSpawnPoint.transform.position;
+        //Vector2 ShotPos = TargetPosition - enemyBase.AttackSpawnPoint.transform.position;
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Arrow);
         
-        CL_Arrow.transform.up = enemyBase.PlayerDirection;
+        Vector2 shotDirection = UsesLegacyPlayerTarget
+            ? TargetDirection
+            : lockedShotPosition - (Vector2)enemyBase.transform.position;
+        if (shotDirection.sqrMagnitude < 0.0001f) shotDirection = TargetDirection;
+        CL_Arrow.transform.up = shotDirection;
         CL_Arrow.transform.Rotate(0, 0, 180);
 
         Destroy(CL_Arrow, enemyBase.AttackDellTimer);

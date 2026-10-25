@@ -36,6 +36,14 @@ PrefabInstance:
       propertyPath: MinmoveRange
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 3902036277752086413, guid: 0819bb5c844015c428af6377ea4d3ad5, type: 3}
+      propertyPath: enemyBase
+      value: 
+      objectReference: {fileID: 3710089057513221164}
+    - target: {fileID: 3902036277752086413, guid: 0819bb5c844015c428af6377ea4d3ad5, type: 3}
+      propertyPath: attackableFactions
+      value: 12418
+      objectReference: {fileID: 0}
     - target: {fileID: 3902890100778363850, guid: 0819bb5c844015c428af6377ea4d3ad5, type: 3}
       propertyPath: m_LocalPosition.x
       value: -10.53544
@@ -101,3 +109,14 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0819bb5c844015c428af6377ea4d3ad5, type: 3}
+--- !u!114 &3710089057513221164 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9005227939480646900, guid: 0819bb5c844015c428af6377ea4d3ad5, type: 3}
+  m_PrefabInstance: {fileID: 5729736847304235224}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b5af40ab1267e74385425600ec45b46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

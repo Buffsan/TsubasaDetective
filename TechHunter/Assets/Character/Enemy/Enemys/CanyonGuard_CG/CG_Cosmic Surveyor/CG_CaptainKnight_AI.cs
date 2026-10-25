@@ -15,20 +15,23 @@ public class CG_CaptainKnight_AI : EnemyMoveBase
     Vector2 SaveAngle = Vector2.zero;
     Vector2 SavePosPhase = Vector2.zero;
 
+    // Locked when the attack windup finishes; used through the whole rush.
+    Vector2 lockedRushDirection;
+
     public override void EnemyMovePlay()
     {
-        enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
+        RefreshTargetInfo();
 
         if (!enemyBase.ALL_System.systemManager.isMinEnemy)
         {
             enemyContoroller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Out;
         }
 
-        if (enemyBase.PlayerDistance < 5)
-        {//enemyBase.isPlayerLookBase();
-            enemyBase.isPlayerLookBase();
+        if (TargetDistance < 5)
+        {//LookAtCurrentTarget();
+            LookAtCurrentTarget();
 
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
             enemyBase.animator.SetInteger("Anim", 1);
         }
         else
@@ -80,7 +83,7 @@ public class CG_CaptainKnight_AI : EnemyMoveBase
                     if (SaveDistance < 0.5)
                     {
                         enemyBase.rb.velocity = Vector2.zero;
-                        //Debug.Log("ˆÚ“®Œo˜HÄŒŸõ" + SaveDistance);
+                        //Debug.Log("Ë†Ãšâ€œÂ®Å’oËœHÂÃ„Å’Å¸ÂÃµ" + SaveDistance);
                         PhaseCount = 1;
                         Phase = 0;
                         Vector2 SavePosPhase = new Vector2(999, 999);
@@ -108,17 +111,18 @@ public class CG_CaptainKnight_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 0.2)
             {
+                lockedRushDirection = TargetDirection.normalized;
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
             }
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            //enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 1.2f;
+            //LookAtCurrentTarget();
+            enemyBase.rb.velocity = lockedRushDirection * enemyBase.SPEED * 1.2f;
             if (enemyBase.AttackCount > 0.5f)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;
@@ -137,6 +141,7 @@ public class CG_CaptainKnight_AI : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M5)
         {
             GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Attack);
             EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
             for(int i =0; i < 1;i++)
             SpawnEnemySpawn(CG_Spear, transform.position, Quaternion.Euler(0, 0, 0), 3);

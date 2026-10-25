@@ -5,7 +5,7 @@ using UnityEngine;
 public class SB_Whale_AI : Boss_MoveBase
 {
 
-    private IEnumerator myRunningCoroutine; // Às’†‚ÌƒRƒ‹[ƒ`ƒ“‚ğ•Û‚·‚é‚½‚ß‚Ì•Ï”
+    private IEnumerator myRunningCoroutine; // å®Ÿè¡Œä¸­ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’ä¿æŒã™ã‚‹ãŸã‚ã®å¤‰æ•°
     public float duration = 1;
     public float arcHeight = 30;
     float AttackCount1 = 0;
@@ -56,9 +56,9 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             AttackCount1 = 0;
             asaltAttackArea.SetActive(false);
-            StopCoroutine(myRunningCoroutine); // “Á’è‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~
-            Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ğ’â~‚µ‚Ü‚µ‚½B");
-            myRunningCoroutine = null; // QÆ‚ğƒNƒŠƒA
+            StopCoroutine(myRunningCoroutine); // ç‰¹å®šã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢
+            Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢ã—ã¾ã—ãŸã€‚");
+            myRunningCoroutine = null; // å‚ç…§ã‚’ã‚¯ãƒªã‚¢
         }
     }
     public override void M_Con()
@@ -68,9 +68,9 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             AttackCount1 = 0;
             asaltAttackArea.SetActive(false);
-            StopCoroutine(myRunningCoroutine); // “Á’è‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~
-            Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ğ’â~‚µ‚Ü‚µ‚½B");
-            myRunningCoroutine = null; // QÆ‚ğƒNƒŠƒA
+            StopCoroutine(myRunningCoroutine); // ç‰¹å®šã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢
+            Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢ã—ã¾ã—ãŸã€‚");
+            myRunningCoroutine = null; // å‚ç…§ã‚’ã‚¯ãƒªã‚¢
         }
     }
     public override void M_AI()
@@ -78,11 +78,11 @@ public class SB_Whale_AI : Boss_MoveBase
         
         if (enemyBase.moveType != EnemyBase.MoveType.Attack)
         {
-            enemyBase.animator.Play("ˆÚ“®");
+            enemyBase.animator.Play("ç§»å‹•");
             AttackWaitTime += Time.deltaTime;
 
-            enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+            LookAtCurrentTarget();
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
 
             if (phase == Phase.P1)
             {
@@ -255,7 +255,7 @@ public class SB_Whale_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+            enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ", 0, 0);
             DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, 2);
             
             NextPhase();
@@ -264,7 +264,7 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             if (attackcount() > 2) 
             {
-                enemyBase.animator.Play("UŒ‚", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒ", 0, 0);
                 SpawnObjectNow(HoukouAttack, transform.position, 0.1f);
                 SpawnObjectNow(Effects[0], transform.position, 3);
                 all_System.camera_Controller.Shake(0.2f, 0.3f);
@@ -340,7 +340,7 @@ public class SB_Whale_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("UŒ‚");
+            enemyBase.animator.Play("æ”»æ’ƒ");
             saveAngle = 0;
             if (attackcount() > 1) 
             {
@@ -373,7 +373,7 @@ public class SB_Whale_AI : Boss_MoveBase
                     CL_Effect.transform.Rotate(0, 0, saveAngle + 90 * i);
                 }
                 saveAngle += 45;
-                enemyBase.animator.Play("UŒ‚‘Ò‹@");
+                enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ");
 
                 audioManager.PlaySE(audioclips[1]);
                 all_System.camera_Controller.Shake(0.3f, 0.2f);
@@ -410,7 +410,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 else
                 {
                     ChoiseNextPhase(1);
-                    enemyBase.animator.Play("UŒ‚");
+                    enemyBase.animator.Play("æ”»æ’ƒ");
                 }
             }
         }
@@ -423,12 +423,12 @@ public class SB_Whale_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ", 0, 0);
 
-            GameObject CL_AttackPPP = Instantiate(Denger_4AttackArea, enemyBase.transform.position, Quaternion.identity);
-            CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
-            Destroy(CL_AttackPPP, 1);
+            GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_4AttackArea, enemyBase.transform.position, Quaternion.identity, 1f, null, 0f, false);
+            CL_AttackPPP.transform.up = TargetDirection.normalized;
+            
 
             NextPhase();
         }
@@ -437,16 +437,16 @@ public class SB_Whale_AI : Boss_MoveBase
             if (enemyBase.AttackCount > 0.8)
             {
                 asaltAttackArea.SetActive(true);
-                enemyBase.animator.Play("•às", 0, 0);
+                enemyBase.animator.Play("æ­©è¡Œ", 0, 0);
                 NextPhase();
             }
         }
         if (AttackPhase == 2)
         {
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 8;
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 8;
             if (enemyBase.AttackCount > 2 * (1 + AttackNumber * 0.5))
             {
-                enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ", 0, 0);
                 asaltAttackArea.SetActive(false);
                 NextPhase();
             }
@@ -458,14 +458,14 @@ public class SB_Whale_AI : Boss_MoveBase
                 {
                     for (int i = 0; i < 10; i++)
                     {
-                        // ‚’¼•ûŒüi¶‰EjƒxƒNƒgƒ‹
-                        Vector2 perp = new Vector2(-enemyBase.PlayerDirection.normalized.y, enemyBase.PlayerDirection.normalized.x);
+                        // å‚ç›´æ–¹å‘ï¼ˆå·¦å³ï¼‰ãƒ™ã‚¯ãƒˆãƒ«
+                        Vector2 perp = new Vector2(-TargetDirection.normalized.y, TargetDirection.normalized.x);
 
-                        // UŒ‚”»’è‚ğ¶‰E‚É¶¬‚·‚éˆÊ’u
+                        // æ”»æ’ƒåˆ¤å®šã‚’å·¦å³ã«ç”Ÿæˆã™ã‚‹ä½ç½®
                         Vector2 leftPos = (Vector2)transform.position + perp * 0.5f * (i + 3);
                         Vector2 rightPos = (Vector2)transform.position - perp * 0.5f * (i + 3);
 
-                        // UŒ‚”»’èƒIƒuƒWƒFƒNƒg‚ğ¶‰E‚É¶¬
+                        // æ”»æ’ƒåˆ¤å®šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å·¦å³ã«ç”Ÿæˆ
                         GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
                         GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
                         Destroy(leftAttack, 5);
@@ -476,14 +476,14 @@ public class SB_Whale_AI : Boss_MoveBase
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        // ‚’¼•ûŒüi¶‰EjƒxƒNƒgƒ‹
-                        Vector2 perp = new Vector2(-enemyBase.PlayerDirection.normalized.y, enemyBase.PlayerDirection.normalized.x);
+                        // å‚ç›´æ–¹å‘ï¼ˆå·¦å³ï¼‰ãƒ™ã‚¯ãƒˆãƒ«
+                        Vector2 perp = new Vector2(-TargetDirection.normalized.y, TargetDirection.normalized.x);
 
-                        // UŒ‚”»’è‚ğ¶‰E‚É¶¬‚·‚éˆÊ’u
+                        // æ”»æ’ƒåˆ¤å®šã‚’å·¦å³ã«ç”Ÿæˆã™ã‚‹ä½ç½®
                         Vector2 leftPos = (Vector2)transform.position + perp * 0.5f * (i + 3);
                         Vector2 rightPos = (Vector2)transform.position - perp * 0.5f * (i + 3);
 
-                        // UŒ‚”»’èƒIƒuƒWƒFƒNƒg‚ğ¶‰E‚É¶¬
+                        // æ”»æ’ƒåˆ¤å®šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å·¦å³ã«ç”Ÿæˆ
                         GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
                         GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
                         Destroy(leftAttack, 5);
@@ -531,7 +531,7 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             if (attackcount() > 0.2) 
             {
-                enemyBase.animator.Play("ƒ[ƒv", 0, 0);
+                enemyBase.animator.Play("ãƒ¯ãƒ¼ãƒ—", 0, 0);
                 DamageArea.SetActive(false);
                 audioManager.PlaySE(audioclips[2]);
                 NextPhase();
@@ -544,15 +544,15 @@ public class SB_Whale_AI : Boss_MoveBase
                 audioManager.PlaySE(audioclips[2]);
 
                 bool FindPlayerPos = false;
-                int safeCount = 0; // ˆÀ‘SƒJƒEƒ“ƒ^
+                int safeCount = 0; // å®‰å…¨ã‚«ã‚¦ãƒ³ã‚¿
 
                 while (!FindPlayerPos && safeCount < 100)
                 {
                     safeCount++;
 
                     Vector2 TargetFindPlayerPos = new Vector2(
-                        Random.Range(-4f, 4f) + enemyBase.Player.transform.position.x,
-                        Random.Range(-2f, 2f) + enemyBase.Player.transform.position.y
+                        Random.Range(-4f, 4f) + TargetPosition.x,
+                        Random.Range(-2f, 2f) + TargetPosition.y
                     );
 
                     FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
@@ -565,18 +565,18 @@ public class SB_Whale_AI : Boss_MoveBase
                     }
                 }
 
-                // Œ©‚Â‚©‚ç‚È‚©‚Á‚½‚Æ‚«‚Ì‘ã‘Öˆ—
+                // è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã¨ãã®ä»£æ›¿å‡¦ç†
                 if (!FindPlayerPos)
                 {
-                    // ‘ã‘ÖˆÊ’u‚ğİ’èi—áFŒ»İˆÊ’u‚Ì‚Ü‚Ü or ƒfƒtƒHƒ‹ƒgÀ•Wj
-                    targetPos = new Vector2 (enemyBase.Player.transform.position.x, enemyBase.Player.transform.position.y+2);
+                    // ä»£æ›¿ä½ç½®ã‚’è¨­å®šï¼ˆä¾‹ï¼šç¾åœ¨ä½ç½®ã®ã¾ã¾ or ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆåº§æ¨™ï¼‰
+                    targetPos = new Vector2 (TargetPosition.x, TargetPosition.y+2);
                     
                     Debug.LogWarning("Floor not found. Using player position as fallback.");
                 }
 
 
                 enemyBase.transform.position = targetPos;
-                enemyBase.animator.Play("oŒ»", 0, 0);
+                enemyBase.animator.Play("å‡ºç¾", 0, 0);
                 NextPhase();
 
                 for (int i = 0; i < 5; i++)
@@ -623,11 +623,11 @@ public class SB_Whale_AI : Boss_MoveBase
     {
         if (AttackPhase == 0) 
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("UŒ‚‘Ò‹@");
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ");
             GameObject CL_denger = DengerAreaSpawn(Denger_4AttackArea, transform.position, 1);
-            CL_denger.transform.up = enemyBase.PlayerDirection.normalized;
-            targetPos = enemyBase.Player.transform.position;
+            CL_denger.transform.up = TargetDirection.normalized;
+            targetPos = TargetPosition;
             NextPhase();
         }
         if (AttackPhase == 1)
@@ -635,7 +635,7 @@ public class SB_Whale_AI : Boss_MoveBase
             if (attackcount() > 1)
             {
                 GameObject CL_Attack = SpawnObjectNow_Input(AttackArea4, transform.position, 0.1f);
-                CL_Attack.transform.up = enemyBase.PlayerDirection.normalized;
+                CL_Attack.transform.up = TargetDirection.normalized;
                 NextPhase();
                 audioManager.PlaySE(audioclips[1]);
 
@@ -673,7 +673,7 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             if (attackcount() > 0.2)
             {
-                enemyBase.animator.Play("ƒ[ƒv", 0, 0);
+                enemyBase.animator.Play("ãƒ¯ãƒ¼ãƒ—", 0, 0);
                 DamageArea.SetActive(false);
                 audioManager.PlaySE(audioclips[2]);
                 NextPhase();
@@ -686,15 +686,15 @@ public class SB_Whale_AI : Boss_MoveBase
                 audioManager.PlaySE(audioclips[2]);
 
                 bool FindPlayerPos = false;
-                int safeCount = 0; // ˆÀ‘SƒJƒEƒ“ƒ^
+                int safeCount = 0; // å®‰å…¨ã‚«ã‚¦ãƒ³ã‚¿
 
                 while (!FindPlayerPos && safeCount < 100)
                 {
                     safeCount++;
 
                     Vector2 TargetFindPlayerPos = new Vector2(
-                        Random.Range(-4f, 4f) + enemyBase.Player.transform.position.x,
-                        Random.Range(-2f, 2f) + enemyBase.Player.transform.position.y
+                        Random.Range(-4f, 4f) + TargetPosition.x,
+                        Random.Range(-2f, 2f) + TargetPosition.y
                     );
 
                     FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
@@ -707,17 +707,17 @@ public class SB_Whale_AI : Boss_MoveBase
                     }
                 }
 
-                // Œ©‚Â‚©‚ç‚È‚©‚Á‚½‚Æ‚«‚Ì‘ã‘Öˆ—
+                // è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã¨ãã®ä»£æ›¿å‡¦ç†
                 if (!FindPlayerPos)
                 {
-                    // ‘ã‘ÖˆÊ’u‚ğİ’èi—áFŒ»İˆÊ’u‚Ì‚Ü‚Ü or ƒfƒtƒHƒ‹ƒgÀ•Wj
-                    targetPos = new Vector2(enemyBase.Player.transform.position.x, enemyBase.Player.transform.position.y + 2);
+                    // ä»£æ›¿ä½ç½®ã‚’è¨­å®šï¼ˆä¾‹ï¼šç¾åœ¨ä½ç½®ã®ã¾ã¾ or ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆåº§æ¨™ï¼‰
+                    targetPos = new Vector2(TargetPosition.x, TargetPosition.y + 2);
                     Debug.LogWarning("Floor not found. Using player position as fallback.");
                 }
 
 
                 enemyBase.transform.position = targetPos;
-                enemyBase.animator.Play("oŒ»", 0, 0);
+                enemyBase.animator.Play("å‡ºç¾", 0, 0);
                 NextPhase();
 
                 for (int i = 0; i < 5; i++)
@@ -750,20 +750,20 @@ public class SB_Whale_AI : Boss_MoveBase
         }
         if (AttackPhase == 4)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("UŒ‚");
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("æ”»æ’ƒ");
             GameObject CL_denger = DengerAreaSpawn(Denger_4AttackArea, transform.position, 1);
-            CL_denger.transform.up = enemyBase.PlayerDirection.normalized;
-            targetPos = enemyBase.Player.transform.position;
+            CL_denger.transform.up = TargetDirection.normalized;
+            targetPos = TargetPosition;
             NextPhase();
         }
         if (AttackPhase == 5)
         {
             if (attackcount() > 1)
             {
-                enemyBase.animator.Play("UŒ‚‘Ò‹@");
+                enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ");
                 GameObject CL_Attack = SpawnObjectNow_Input(AttackArea4, transform.position, 0.1f);
-                CL_Attack.transform.up = enemyBase.PlayerDirection.normalized;
+                CL_Attack.transform.up = TargetDirection.normalized;
                 NextPhase();
                 audioManager.PlaySE(audioclips[1]);
 
@@ -803,27 +803,27 @@ public class SB_Whale_AI : Boss_MoveBase
 
             all_System.camera_Controller.Shake(1, 0.3f);
             audioManager.PlaySE(audioclips[0]);
-            enemyBase.animator.Play("”í’e");
+            enemyBase.animator.Play("è¢«å¼¾");
         }
         if (AttackPhase == 1) 
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -enemyBase.SPEED;
+            LookAtCurrentTarget();
+            enemyBase.rb.velocity = TargetDirection.normalized * -enemyBase.SPEED;
             if (attackcount() > 1) 
             {
                 NextPhase();
-                enemyBase.animator.Play("UŒ‚");
+                enemyBase.animator.Play("æ”»æ’ƒ");
             }
         }
         if (AttackPhase == 2) 
         {
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -enemyBase.SPEED *0.5f;
+            enemyBase.rb.velocity = TargetDirection.normalized * -enemyBase.SPEED *0.5f;
             if (attackcount() > 0.5)
             {
                 enemyBase.rb.velocity = Vector2.zero;
                 
                 audioManager.PlaySE(audioclips[2]);
-                enemyBase.animator.Play("Á‚¦‚é");
+                enemyBase.animator.Play("æ¶ˆãˆã‚‹");
                 NextPhase();
             }
         }
@@ -844,7 +844,7 @@ public class SB_Whale_AI : Boss_MoveBase
 
 
                 enemyBase.transform.position = targetPos;
-                enemyBase.animator.Play("oŒ»", 0, 0);
+                enemyBase.animator.Play("å‡ºç¾", 0, 0);
                 DamageArea.SetActive(true);
                 audioManager.BgmSource.Play();
 
@@ -877,48 +877,48 @@ public class SB_Whale_AI : Boss_MoveBase
     private IEnumerator MoveInArc()
     {
         myRunningCoroutine = MoveInArc();
-        // ˆÚ“®ŠJn‘O‚ÌBodyType‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+        // ç§»å‹•é–‹å§‹å‰ã®BodyTypeã‚’ä¿å­˜ã—ã¦ãŠã
         var originalBodyType = enemyBase.rb.bodyType;
-        // ˆÚ“®’†‚ÍKinematic‚É‚µ‚ÄA•¨—‰‰Z‚Ì‰e‹¿‚ğ‚È‚­‚·
+        // ç§»å‹•ä¸­ã¯Kinematicã«ã—ã¦ã€ç‰©ç†æ¼”ç®—ã®å½±éŸ¿ã‚’ãªãã™
         enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
 
         Vector2 startPos = enemyBase.transform.position;
         Vector2 endPos = targetPos;
 
-        GameObject CL_AttackPPP = Instantiate(Denger_AttackArea_Stand, endPos, Quaternion.identity);
+        GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea_Stand, endPos, Quaternion.identity, 1.5f, null, 0f, false);
 
-        Destroy(CL_AttackPPP, 1.5f);
+        
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsedTime / duration); // 0‚©‚ç1‚Ì”ÍˆÍ‚Éû‚ß‚é
+            float progress = Mathf.Clamp01(elapsedTime / duration); // 0ã‹ã‚‰1ã®ç¯„å›²ã«åã‚ã‚‹
 
-            // X‚ÆY‚Ì’¼ü“I‚ÈˆÚ“®‚ğŒvZ
+            // Xã¨Yã®ç›´ç·šçš„ãªç§»å‹•ã‚’è¨ˆç®—
             Vector2 linearPos = Vector2.Lerp(startPos, endPos, progress);
 
-            // ‚‚³‚ğŒvZ (SinƒJ[ƒu)
+            // é«˜ã•ã‚’è¨ˆç®— (Sinã‚«ãƒ¼ãƒ–)
             float height = Mathf.Sin(progress * Mathf.PI) * arcHeight;
 
-            // Rigidbody2D‚ğg‚Á‚ÄˆÊ’u‚ğXV‚·‚é
-            // 2D‚È‚Ì‚ÅAYÀ•W‚É‚‚³‚ğ‰Á‚¦‚é
+            // Rigidbody2Dã‚’ä½¿ã£ã¦ä½ç½®ã‚’æ›´æ–°ã™ã‚‹
+            // 2Dãªã®ã§ã€Yåº§æ¨™ã«é«˜ã•ã‚’åŠ ãˆã‚‹
             enemyBase.rb.MovePosition(new Vector2(linearPos.x, linearPos.y + height));
 
-            //yield return new WaitForFixedUpdate(); // •¨—‰‰Z‚ÌXVƒ^ƒCƒ~ƒ“ƒO‚Å‘Ò‚Â
+            //yield return new WaitForFixedUpdate(); // ç‰©ç†æ¼”ç®—ã®æ›´æ–°ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å¾…ã¤
             yield return new WaitForEndOfFrame();
         }
 
-        // ”O‚Ì‚½‚ßAÅI“I‚É‚«‚Á‚¿‚è–Ú•W’n“_‚É‡‚í‚¹‚é
+        // å¿µã®ãŸã‚ã€æœ€çµ‚çš„ã«ãã£ã¡ã‚Šç›®æ¨™åœ°ç‚¹ã«åˆã‚ã›ã‚‹
         transform.position = endPos;
-        // BodyType‚ğŒ³‚É–ß‚·
+        // BodyTypeã‚’å…ƒã«æˆ»ã™
         enemyBase.rb.bodyType = originalBodyType;
 
 
         StandOk = true;
-        // ”O‚Ì‚½‚ßAÅI“I‚É‚«‚Á‚¿‚è–Ú•W’n“_‚É‡‚í‚¹‚é
+        // å¿µã®ãŸã‚ã€æœ€çµ‚çš„ã«ãã£ã¡ã‚Šç›®æ¨™åœ°ç‚¹ã«åˆã‚ã›ã‚‹
         transform.position = targetPos;
-        Debug.Log("–Ú“I’n‚É“’…I" + targetPos);
+        Debug.Log("ç›®çš„åœ°ã«åˆ°ç€ï¼" + targetPos);
     }
     float attackcount() 
     {
@@ -930,7 +930,7 @@ public class SB_Whale_AI : Boss_MoveBase
     void BulletShot()
     {
         audioManager.PlaySE(audioclips[0]);
-        Vector2 ARMdirection = enemyBase.Player.transform.position - ArmAttackPoint.transform.position;
+        Vector2 ARMdirection = TargetPosition - ArmAttackPoint.transform.position;
         GameObject CL_Bullet = Instantiate(Bullet, ArmAttackPoint.transform.position, Quaternion.identity);
         CL_Bullet.transform.up = ARMdirection.normalized;
 
@@ -942,14 +942,14 @@ public class SB_Whale_AI : Boss_MoveBase
     void DoubleBulletShot()
     {
         audioManager.PlaySE(audioclips[0]);
-        Vector2 ARMdirection = enemyBase.Player.transform.position - ArmAttackPoint.transform.position;
+        Vector2 ARMdirection = TargetPosition - ArmAttackPoint.transform.position;
         for (int i = 0; i < 2; i++)
         {
             GameObject CL_Slash = Instantiate(HalfBullet, ArmAttackPoint.transform.position, Quaternion.identity);
             Vector2 NewLookDirection = Quaternion.Euler(0, 0, -6 + 12 * i) * ARMdirection.normalized;
             CL_Slash.transform.up = NewLookDirection.normalized;
 
-            if (enemyBase.PlayerDirection.x > 0)
+            if (TargetDirection.x > 0)
             {
                 CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
             }
@@ -965,9 +965,9 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     private IEnumerator NeedleSpawnLing(float delayTime, float Lange, int Plass)
     {
-        //Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ªŠJn‚³‚ê‚Ü‚µ‚½B¡‚©‚ç " + delayTime + " •b‘Ò‚¿‚Ü‚·...");
+        //Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ãŒé–‹å§‹ã•ã‚Œã¾ã—ãŸã€‚ä»Šã‹ã‚‰ " + delayTime + " ç§’å¾…ã¡ã¾ã™...");
 
-        // ‚±‚±‚Åw’è‚µ‚½•b”‚¾‚¯‘Ò‹@‚·‚é
+        // ã“ã“ã§æŒ‡å®šã—ãŸç§’æ•°ã ã‘å¾…æ©Ÿã™ã‚‹
         yield return new WaitForSeconds(delayTime);
         for (int i = 0; i < 10 + Plass; i++)
         {
@@ -978,7 +978,7 @@ public class SB_Whale_AI : Boss_MoveBase
             float newX = enemyBase.transform.position.x + 2 * Lange * Mathf.Cos(angleRad);
             float newY = enemyBase.transform.position.y + 2 * Lange * Mathf.Sin(angleRad);
 
-            // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+            // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
             Vector2 newPosition = new Vector2(newX, newY);
 
             NeedleSpawn(newPosition);
@@ -1004,9 +1004,9 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     private IEnumerator LiftSpawnLing(float delayTime, Vector2 Pos)
     {
-        //Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ªŠJn‚³‚ê‚Ü‚µ‚½B¡‚©‚ç " + delayTime + " •b‘Ò‚¿‚Ü‚·...");
+        //Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ãŒé–‹å§‹ã•ã‚Œã¾ã—ãŸã€‚ä»Šã‹ã‚‰ " + delayTime + " ç§’å¾…ã¡ã¾ã™...");
 
-        // ‚±‚±‚Åw’è‚µ‚½•b”‚¾‚¯‘Ò‹@‚·‚é
+        // ã“ã“ã§æŒ‡å®šã—ãŸç§’æ•°ã ã‘å¾…æ©Ÿã™ã‚‹
         yield return new WaitForSeconds(delayTime);
         SpawnObjectNow(SlashLit, Pos, 5);
     }
@@ -1017,10 +1017,10 @@ public class SB_Whale_AI : Boss_MoveBase
 
         float AttackDistance = number / 2.5f;
 
-        // ƒ‰ƒ“ƒ_ƒ€‚ÈŠp“x‚ğ¶¬ (0 ~ 360“x)
+        // ãƒ©ãƒ³ãƒ€ãƒ ãªè§’åº¦ã‚’ç”Ÿæˆ (0 ~ 360åº¦)
         float randomAngle = Random.Range(-80f, 80f);
 
-        // ƒ‰ƒ“ƒ_ƒ€‚ÈŠp“x‚ğƒ‰ƒWƒAƒ“‚É•ÏŠ·
+        // ãƒ©ãƒ³ãƒ€ãƒ ãªè§’åº¦ã‚’ãƒ©ã‚¸ã‚¢ãƒ³ã«å¤‰æ›
         float radians = randomAngle * Mathf.Deg2Rad;
 
        
@@ -1028,8 +1028,8 @@ public class SB_Whale_AI : Boss_MoveBase
         Vector2 newDirection = (pos - (Vector2)transform.position).normalized;
 
        
-        Vector2 rotatedDirection = rotation * newDirection; // SavePos•ûŒü‚ğŠî€‚ÉŠp“x‚ğ‰ñ“]
-        Vector2 newPosition = (Vector2)transform.position + rotatedDirection * AttackDistance; // ‰ñ“]•ûŒü‚ÅV‚µ‚¢ˆÊ’u‚ğŒvZ
+        Vector2 rotatedDirection = rotation * newDirection; // SavePosæ–¹å‘ã‚’åŸºæº–ã«è§’åº¦ã‚’å›è»¢
+        Vector2 newPosition = (Vector2)transform.position + rotatedDirection * AttackDistance; // å›è»¢æ–¹å‘ã§æ–°ã—ã„ä½ç½®ã‚’è¨ˆç®—
 
         SpawnObjectNow(SlashLit,newPosition,2);
     }

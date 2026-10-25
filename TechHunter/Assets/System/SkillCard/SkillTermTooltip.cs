@@ -77,6 +77,8 @@ public class SkillTermTooltip : MonoBehaviour
         return sb.ToString();
     }
 
+    int previousTerm = -1;
+
     void Update()
     {
         // Prefab生成後、親Canvasを自動取得する
@@ -109,17 +111,22 @@ public class SkillTermTooltip : MonoBehaviour
         if (!id.StartsWith("term") || !int.TryParse(id.Substring(4), out int term) || term < 0 || term >= Details.Length)
         { Hide(); return; }
 
-        tooltipText.text = "<b>" + Terms[term] + "</b>\n" + Details[term];
-        tooltipRoot.gameObject.SetActive(true);
+        if (previousTerm != term || !tooltipRoot.gameObject.activeSelf)
+        {
+            previousTerm = term;
+            tooltipText.text = "<b>" + Terms[term] + "</b>\n" + Details[term];
+            tooltipRoot.gameObject.SetActive(true);
+            LayoutRebuilderForce();
+        }
 
         // スクリーン座標をCanvasローカル座標に変換して画面内に収める。
         RectTransform canvasRect = canvas.transform as RectTransform;
         if (canvasRect == null) return;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Input.mousePosition, cam, out Vector2 pos);
         pos += cursorOffset;
-        tooltipRoot.SetParent(canvasRect, false);
+        if (tooltipRoot.parent != canvasRect)
+            tooltipRoot.SetParent(canvasRect, false);
         tooltipRoot.pivot = new Vector2(0f, 1f);
-        LayoutRebuilderForce();
         Vector2 size = tooltipRoot.rect.size;
         Rect bounds = canvasRect.rect;
         pos.x = Mathf.Clamp(pos.x, bounds.xMin, bounds.xMax - size.x);
@@ -134,7 +141,9 @@ public class SkillTermTooltip : MonoBehaviour
 
     void Hide()
     {
-        if (tooltipRoot != null) tooltipRoot.gameObject.SetActive(false);
+        if (tooltipRoot != null && tooltipRoot.gameObject.activeSelf)
+            tooltipRoot.gameObject.SetActive(false);
+        previousTerm = -1;
     }
 
     void OnDisable() { Hide(); }

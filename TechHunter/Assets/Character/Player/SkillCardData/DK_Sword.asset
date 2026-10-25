@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillImage: {fileID: 21300000, guid: af053d2246ff9784a83964398907c646, type: 3}
   SkillName: "\u9996\u3092\u520E\u306D\u3088"
-  SkillMessage: "\u30AB\u30FC\u30BD\u30EB\u65B9\u5411\u306B\u7121\u6575\u3092\u7372\u5F97\u3057\u306A\u304C\u3089<color=#CC4400>\u4E00\u5B9A\u8DDD\u96E2\u524D\u9032\u3057\u3066\u65AC\u6483\u3092\u884C\u3046\u3002</color>\n\u30B9\u30BF\u30F3\u653B\u6483\u529B\u304C\u9AD8\u304F\u3001\u30B9\u30AD\u30EB\u3092\u4E00\u56DE\u30B9\u30C8\u30C3\u30AF\u3067\u304D\u308B\u3002"
+  SkillMessage: "<color=#CC4400>無敵になりながらカーソル方向へ一定距離前進し、斬撃を放つ。</color>\nスタン攻撃力が高い。\n追加で1回までスタック可能。"
   CoolTime: 10
   SkillData: {fileID: 4897924349016876913, guid: 6e6031fdc5e45924cbb21135cb11e5af, type: 3}
   SkillDataList: []

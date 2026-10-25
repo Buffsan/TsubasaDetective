@@ -50,6 +50,7 @@ MonoBehaviour:
   attackableFactions: 0
   attackPlayer: 1
   canAttackSelf: 0
+  attackPowerPercent: 100
   dellCondition: 0
 --- !u!58 &7884803263579478972
 CircleCollider2D:
@@ -242,6 +243,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 4710ffa588f4b4f499b8b30fecec901f, type: 2}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetFactions
+      value: 8191
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetPriority
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: AttackAreaSize.x
       value: 5
       objectReference: {fileID: 0}
@@ -252,6 +265,10 @@ PrefabInstance:
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: Choice_MoveToBase
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetAllFactions
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: EnemyMoveBaseObject

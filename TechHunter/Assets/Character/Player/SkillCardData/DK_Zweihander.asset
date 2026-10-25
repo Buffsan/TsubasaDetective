@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillImage: {fileID: 21300000, guid: 6f1adb5fb96ece64b87e447a7dea1b79, type: 3}
   SkillName: "\u4E0D\u6F54\u3092\u4E00\u6383\u3057\u307E\u3057\u3087\u3046"
-  SkillMessage: "\u5263\u3067\u9AD8\u3044\u30B9\u30BF\u30F3\u653B\u6483\u529B\u3092\u6301\u3063\u305F<color=#CC4400>\u7BC4\u56F2\u653B\u6483\u3092\uFF12\u5EA6\u884C\u3046\u3002</color>"
+  SkillMessage: "<color=#CC4400>剣を振るい、スタン攻撃力の高い範囲攻撃を2回行う。</color>"
   CoolTime: 18
   SkillData: {fileID: 6927534978535640121, guid: 813e544e266854e4ea2ad8f62a328798, type: 3}
   SkillDataList:

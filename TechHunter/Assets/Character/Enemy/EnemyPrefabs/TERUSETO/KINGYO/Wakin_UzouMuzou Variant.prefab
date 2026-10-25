@@ -64,6 +64,18 @@ PrefabInstance:
       propertyPath: charadata
       value: 
       objectReference: {fileID: 11400000, guid: eb73ebd41d2886441b58466ec3db0ab7, type: 2}
+    - target: {fileID: 4896941735978477047, guid: 9beca1fadcb8eec4d8a31f06306b979f, type: 3}
+      propertyPath: targetType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4896941735978477047, guid: 9beca1fadcb8eec4d8a31f06306b979f, type: 3}
+      propertyPath: targetPriority
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4896941735978477047, guid: 9beca1fadcb8eec4d8a31f06306b979f, type: 3}
+      propertyPath: targetAllFactions
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7597822842976299392, guid: 9beca1fadcb8eec4d8a31f06306b979f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

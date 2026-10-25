@@ -35,7 +35,7 @@ public class Eaterofleftovers_AI : EnemyMoveBase
     }
     public override void EnemyStanPlay()
     {
-        enemyBase.DamageBody.SetActive(false); //Debug.Log("¬—");
+        enemyBase.DamageBody.SetActive(false); //Debug.Log("ÂÂ¬â€”Â");
     }
     public override void EnemyMovePlay()
     {
@@ -71,24 +71,24 @@ public class Eaterofleftovers_AI : EnemyMoveBase
             }
             WaitCunt += Time.deltaTime;
 
-            enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
+            RefreshTargetInfo();
             enemyBase.animator.SetInteger("Anim", 1);
-            enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
+            RefreshTargetInfo();
 
             if (Strate)
             {
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+                enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
             }
             else
             {
-                float angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
+                float angle = Mathf.Atan2(TargetDirection.y, TargetDirection.x) * Mathf.Rad2Deg;
                 if (trune)
                 {
-                    angle += 150 - enemyBase.PlayerDistance * 12;
+                    angle += 150 - TargetDistance * 12;
                 }
                 else
                 {
-                    angle -= 150 - enemyBase.PlayerDistance * 12;
+                    angle -= 150 - TargetDistance * 12;
                 }
                 Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
@@ -126,9 +126,9 @@ public class Eaterofleftovers_AI : EnemyMoveBase
             enemyBase.mode = EnemyBase.ModeType.M2;
             enemyBase.animator.SetInteger("Anim", 2); 
             
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             GameObject CL_Before = Instantiate(AttackBefore, enemyBase.AttackSpawnPoint.transform.position,Quaternion.identity);
-            CL_Before.transform.up = enemyBase.PlayerDirection.normalized;
+            CL_Before.transform.up = TargetDirection.normalized;
             Destroy(CL_Before, 1);
 
             
@@ -146,7 +146,7 @@ public class Eaterofleftovers_AI : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
             
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * DashSpeed;
+            enemyBase.rb.velocity = TargetDirection.normalized * DashSpeed;
             if (enemyBase.AttackCount > 0.5f)
             {
                 enemyBase.DamageBody.SetActive(false);
@@ -168,6 +168,7 @@ public class Eaterofleftovers_AI : EnemyMoveBase
         {
             /*
             GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Attack);
             EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
             enemyAttack.enemyBase = enemyBase;
             Destroy(CL_Attack, 0.01f);*/

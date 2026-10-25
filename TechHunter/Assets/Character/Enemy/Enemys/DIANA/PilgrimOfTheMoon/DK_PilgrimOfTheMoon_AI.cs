@@ -1,0 +1,704 @@
+using System.Collections.Generic;
+using UnityEngine.Tilemaps;
+using UnityEngine;
+
+// 月の巡礼者。EnemyContoroller の Special 移動を使用し、共通クラスは変更しない。
+public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
+{
+    [Header("ターゲット")]
+    [SerializeField] float stunPlayerPriorityDistance = 4f;
+    [SerializeField] float targetSearchInterval = 0.25f;
+    [SerializeField] float attackStartDistance = 1.5f;
+    [SerializeField] float forcedAttackInterval = 2f;
+
+    [Header("ジグザグ接近")]
+    [SerializeField] float zigzagInterval = 0.4f;
+    [SerializeField, Range(0f, 80f)] float zigzagAngle = 35f;
+
+    [Header("攻撃の位置調整")]
+    [SerializeField] float adjustmentDistance = 2f;
+    [SerializeField] float retreatMaxTime = 0.8f;
+    [SerializeField] float sideStepDuration = 0.25f;
+    [SerializeField] float sideStepSpeedMultiplier = 1.2f;
+
+    [Header("杭投げ（PrefabにはRigidbody2DとTrigger Collider2Dが必要）")]
+    [SerializeField] GameObject stakePrefab;
+    [SerializeField] float stakeSpeed = 22f;
+    [SerializeField] float stakeLifetime = 5f;
+    [SerializeField] float stakeRotationOffset = 0f;
+    [SerializeField] float throwRecoveryTime = 0.3f;
+
+    [Header("近接突進（PrefabにはTrigger Collider2Dが必要）")]
+    [SerializeField] GameObject meleeHitboxPrefab;
+    [SerializeField] float dashSpeedMultiplier = 4f;
+    [SerializeField] float dashDuration = 0.35f;
+    [SerializeField] float meleeRecoveryTime = 0.3f;
+
+    [Header("跳躍・扇状杭攻撃")]
+    [SerializeField] float leapTargetDistance = 5f;
+    [SerializeField] float leapDuration = 0.8f;
+    [SerializeField] float leapArcHeight = 3f;
+    [SerializeField] float fanSpreadAngle = 80f;
+    [SerializeField] float fanStakeSpacing = 0.45f;
+    [SerializeField] float fanShotInterval = 0.15f;
+    [SerializeField] float fanStakeSpinSpeed = 1080f; // degrees per second
+    [SerializeField, Min(0f)] float fanStakeAimLeadTime = 0.2f;
+    readonly List<GameObject> fanStakes = new List<GameObject>();
+    readonly Vector2[] fanDirections = new Vector2[5];
+    readonly int[] fanOrder = { 0, 4, 1, 3, 2 };
+    int fanShotIndex;
+    Vector2 leapStart, leapDestination, fanTargetPosition;
+    RigidbodyType2D originalBodyType;
+    bool leapPhysicsChanged;
+
+    [Header("攻撃警告（未設定時はControllerの四角形警告を使用）")]
+    [SerializeField] GameObject stakeWarningPrefab;
+    [SerializeField] GameObject meleeWarningPrefab;
+    [SerializeField, Min(0.01f)] float warningDuration = 1f;
+
+    GameObject activeAttackWarning;
+    Transform currentTarget;
+    Transform attackTarget;
+    Vector2 lastAttackTargetPosition;
+    Vector2 lockedDirection = Vector2.right;
+
+    float noAttackTimer;
+    float searchTimer;
+    float zigzagTimer;
+    bool zigzagRight = true;
+    bool needsAdjustment;
+    int orbitDirection = 1;
+    int attackKind; // 0=杭投げ、1=近接攻撃、2=跳躍・扇状杭
+    GameObject activeMeleeHitbox;
+
+    void Start()
+    {
+        if (enemyBase == null)
+        {
+            Debug.LogError("月の巡礼者: EnemyMoveBase.enemyBase が未設定です。", this);
+            enabled = false;
+            return;
+        }
+
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller == null)
+        {
+            Debug.LogError("月の巡礼者: EnemyContoroller を使用してください。", this);
+            enabled = false;
+            return;
+        }
+
+        // EnemyContoroller の通常のプレイヤー直進移動・自動攻撃を無効にする。
+        controller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Special;
+        enemyBase.LookPlayerDistance = -1f;
+        enemyBase.moveType = EnemyBase.MoveType.Move;
+
+        ChooseTarget(false);
+        searchTimer = targetSearchInterval;
+    }
+
+    void Update()
+    {
+        if (enemyBase == null) return;
+
+        // 死亡や特殊状態で突進判定が残留しないようにする。
+        if (enemyBase.status != EnemyBase.Status.Nomal &&
+            (enemyBase.moveType == EnemyBase.MoveType.Attack || activeMeleeHitbox != null))
+        {
+            CancelAttack();
+        }
+    }
+
+    public override void EnemyStanPlay()
+    {
+        CancelAttack();
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null && controller.TargetMode != EnemyContoroller.TargetType.EnemyOnly &&
+            enemyBase.Player != null &&
+            Vector2.Distance(enemyBase.transform.position, enemyBase.Player.transform.position)
+                <= stunPlayerPriorityDistance)
+        {
+            currentTarget = enemyBase.Player.transform;
+            controller.ForceTarget(currentTarget);
+        }
+    }
+
+    public override void EnemyConfusionPlay()
+    {
+        CancelAttack();
+    }
+
+    public override void EnemyMovePlay()
+    {
+        // プレイヤー専用の旧挙動は維持し、敵専用モードではPlayerを参照しない。
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null && controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly && enemyBase.Player != null)
+        {
+            enemyBase.PlayerDistance = Vector2.Distance(
+                enemyBase.transform.position, enemyBase.Player.transform.position);
+            enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
+        }
+
+        searchTimer += Time.fixedDeltaTime;
+        if (searchTimer >= targetSearchInterval || !IsTargetUsable(currentTarget))
+        {
+            searchTimer = 0f;
+            ChooseTarget(false);
+        }
+
+        if (!IsTargetUsable(currentTarget))
+        {
+            ChooseTarget(false);
+            if (!IsTargetUsable(currentTarget))
+            {
+                currentTarget = null;
+                enemyBase.rb.velocity = Vector2.zero;
+                return;
+            }
+        }
+
+        Vector2 targetPos = currentTarget.position;
+        Vector2 toward = targetPos - (Vector2)enemyBase.transform.position;
+        float distance = toward.magnitude;
+        enemyBase.isTargetLook(targetPos);
+
+        noAttackTimer += Time.fixedDeltaTime;
+        if (distance <= attackStartDistance || noAttackTimer >= forcedAttackInterval)
+        {
+            bool forced = noAttackTimer >= forcedAttackInterval;
+            if (forced) ChooseTarget(true); // 強制攻撃時にはプレイヤーより近い敵を再検索。
+            StartAttack();
+            return;
+        }
+
+        zigzagTimer += Time.fixedDeltaTime;
+        if (zigzagTimer >= zigzagInterval)
+        {
+            zigzagTimer = 0f;
+            zigzagRight = !zigzagRight;
+        }
+
+        float angle = zigzagRight ? zigzagAngle : -zigzagAngle;
+        Vector2 movement = Rotate(toward.normalized, angle);
+        enemyBase.rb.velocity = movement * enemyBase.SPEED;
+        enemyBase.animator.SetInteger("Anim", 1);
+        if (!enemyBase.animator.GetCurrentAnimatorStateInfo(0).IsName("歩行"))
+            enemyBase.animator.Play("歩行");
+    }
+
+    // 対象選択・派閥検索は共通EnemyContorollerに集約。
+    void ChooseTarget(bool forcedAttack)
+    {
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller == null) return;
+
+        // 通常はControllerの更新結果を利用。2秒の強制攻撃時だけ再選択する。
+        if (forcedAttack) controller.ChooseTargetNow(true);
+        currentTarget = controller.CurrentTarget;
+    }
+
+    bool IsTargetUsable(Transform target)
+    {
+        if (target == null) return false;
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (enemyBase.Player != null && target == enemyBase.Player.transform)
+            return controller == null || controller.TargetMode != EnemyContoroller.TargetType.EnemyOnly;
+
+        EnemyBase other = target.GetComponent<EnemyBase>();
+        if (other == null || other == enemyBase || other.status == EnemyBase.Status.Die || other.HP <= 0f)
+            return false;
+
+        if (controller != null && controller.TargetMode == EnemyContoroller.TargetType.EnemyOnly)
+        {
+            if ((controller.Factions & Faction.DebugA) != Faction.None)
+                return (other.Factions & Faction.DebugB) != Faction.None;
+            if ((controller.Factions & Faction.DebugB) != Faction.None)
+                return (other.Factions & Faction.DebugA) != Faction.None;
+        }
+        return (other.Factions & Faction.Diana) == Faction.None;
+    }
+
+    void StartAttack()
+    {
+        if (currentTarget == null) return;
+        attackTarget = currentTarget; // 攻撃終了まで別の相手へ変更しない。
+        lastAttackTargetPosition = attackTarget.position;
+        attackKind = Random.Range(0, 5) == 0 ? 0 : (Random.Range(0, 4) == 0 ? 2 : 1);
+        if (attackKind == 2) fanTargetPosition = lastAttackTargetPosition;
+        orbitDirection = Random.value < 0.5f ? -1 : 1;
+        needsAdjustment = Vector2.Distance(enemyBase.transform.position, lastAttackTargetPosition)
+                          <= adjustmentDistance;
+        noAttackTimer = 0f;
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null) controller.ClearForcedTarget();
+        A_Phase = 0;
+        enemyBase.AttackCount = 0f;
+        enemyBase.mode = EnemyBase.ModeType.M1;
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.moveType = EnemyBase.MoveType.Attack;
+    }
+
+    public override void EnemyAttackPlay()
+    {
+        if (enemyBase == null) return;
+        if (attackTarget != null && IsTargetUsable(attackTarget))
+            lastAttackTargetPosition = attackTarget.position;
+
+        if (attackKind == 2) { PlayLeapFanAttack(); return; }
+
+        switch (A_Phase)
+        {
+            case 0:
+                enemyBase.rb.velocity = Vector2.zero;
+                enemyBase.animator.Play("汎用攻撃待機", 0, 0f);
+                if (enemyBase.AttackStayAudio != null)
+                    enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
+                NextPhase();
+                break;
+            case 1:
+                PositionForAttack();
+                break;
+            case 2:
+                enemyBase.rb.velocity = Vector2.zero;
+                // 斬撃は発動直前に再照準するため、警告も予備動作中に追従させる。
+                if (attackKind == 1) UpdateMeleeWarningDirection();
+                enemyBase.AttackCount += Time.fixedDeltaTime;
+                if (enemyBase.AttackCount >= 1f)
+                {
+                    if (attackKind == 0) ThrowStake();
+                    else BeginDash();
+                    NextPhase();
+                }
+                break;
+            case 3:
+                enemyBase.AttackCount += Time.fixedDeltaTime;
+                if (attackKind == 0)
+                {
+                    enemyBase.rb.velocity = Vector2.zero;
+                    if (enemyBase.AttackCount >= throwRecoveryTime) FinishAttack();
+                }
+                else
+                {
+                    enemyBase.rb.velocity = lockedDirection * enemyBase.SPEED * dashSpeedMultiplier;
+                    if (enemyBase.AttackCount >= dashDuration)
+                    {
+                        ClearMeleeHitbox();
+                        enemyBase.rb.velocity = Vector2.zero;
+                        NextPhase();
+                    }
+                }
+                break;
+            case 4:
+                enemyBase.rb.velocity = Vector2.zero;
+                enemyBase.AttackCount += Time.fixedDeltaTime;
+                if (enemyBase.AttackCount >= meleeRecoveryTime) FinishAttack();
+                break;
+        }
+    }
+
+
+    // 跳躍と杭の展開は固定更新のフェーズで管理し、スタン時にも確実に中断する。
+    void PlayLeapFanAttack()
+    {
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.AttackCount += Time.fixedDeltaTime;
+        switch (A_Phase)
+        {
+            case 0:
+                enemyBase.animator.Play("跳躍待機", 0, 0f);
+                leapStart = enemyBase.transform.position;
+                leapDestination = FindLeapDestination(fanTargetPosition);
+                NextPhase();
+                break;
+            case 1:
+                if (enemyBase.AttackCount >= 1f)
+                {
+                    originalBodyType = enemyBase.rb.bodyType;
+                    enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
+                    leapPhysicsChanged = true;
+                    leapStart = enemyBase.transform.position;
+                    enemyBase.animator.Play("跳躍", 0, 0f);
+                    NextPhase();
+                }
+                break;
+            case 2:
+                float progress = Mathf.Clamp01(enemyBase.AttackCount / Mathf.Max(0.05f, leapDuration));
+                Vector2 pos = Vector2.Lerp(leapStart, leapDestination, progress);
+                pos.y += Mathf.Sin(progress * Mathf.PI) * leapArcHeight;
+                enemyBase.rb.MovePosition(pos);
+                if (progress >= 1f)
+                {
+                    enemyBase.rb.MovePosition(leapDestination);
+                    RestoreLeapPhysics();
+                    enemyBase.animator.Play("着地", 0, 0f);
+                    NextPhase();
+                }
+                break;
+            case 3:
+                if (enemyBase.AttackCount >= 0.5f)
+                {
+                    // 跳躍前に固定した攻撃対象の現在位置を、着地後に一度だけ取得する。
+                    if (attackTarget != null && IsTargetUsable(attackTarget))
+                        fanTargetPosition = attackTarget.position;
+                    DeployFanStakes();
+                    NextPhase();
+                }
+                break;
+            case 4:
+                UpdateFanStakeRotation(enemyBase.AttackCount);
+                if (enemyBase.AttackCount >= 1f)
+                {
+                    enemyBase.animator.Play("詠唱発動", 0, 0f);
+                    fanShotIndex = 0;
+                    NextPhase();
+                }
+                break;
+            case 5:
+                UpdateFanStakeRotation(1f + enemyBase.AttackCount);
+                if (enemyBase.AttackCount >= fanShotIndex * Mathf.Max(0.02f, fanShotInterval))
+                {
+                    FireFanStake(fanOrder[fanShotIndex]);
+                    fanShotIndex++;
+                    if (fanShotIndex >= 5) NextPhase();
+                }
+                break;
+            case 6:
+                if (enemyBase.AttackCount >= 1f) FinishAttack();
+                break;
+        }
+    }
+
+    Vector2 FindLeapDestination(Vector2 target)
+    {
+        // EnemySpawnArea のタイルだけを着地点として採用する。
+        if (ALL_SystemManager.Instance == null ||
+            ALL_SystemManager.Instance.enemySpawnBASE == null ||
+            ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C == null)
+            return enemyBase.transform.position;
+
+        Tilemap tilemap = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.StandFloor;
+        if (tilemap == null) return enemyBase.transform.position;
+        Vector2 fallback = enemyBase.transform.position;
+        float bestDifference = float.MaxValue;
+        List<Vector2> preferred = new List<Vector2>();
+        BoundsInt bounds = tilemap.cellBounds;
+        foreach (Vector3Int cell in bounds.allPositionsWithin)
+        {
+            if (!tilemap.HasTile(cell)) continue;
+            Vector2 candidate = tilemap.GetCellCenterWorld(cell);
+            float distance = Vector2.Distance(candidate, target);
+            float difference = Mathf.Abs(distance - leapTargetDistance);
+            if (difference < bestDifference)
+            {
+                bestDifference = difference;
+                fallback = candidate;
+            }
+            if (difference <= 0.75f) preferred.Add(candidate);
+        }
+        return preferred.Count > 0 ? preferred[Random.Range(0, preferred.Count)] : fallback;
+    }
+
+    void DeployFanStakes()
+    {
+        ClearFanStakes();
+        if (stakePrefab == null) return;
+        Vector2 direction = fanTargetPosition - (Vector2)enemyBase.transform.position;
+        if (direction.sqrMagnitude < 0.0001f) direction = Vector2.right;
+        direction.Normalize();
+        Vector2 origin = enemyBase.AttackSpawnPoint != null
+            ? (Vector2)enemyBase.AttackSpawnPoint.transform.position
+            : (Vector2)enemyBase.transform.position;
+        for (int i = 0; i < 5; i++)
+        {
+            float angle = (i - 2) * fanSpreadAngle / 4f;
+            Vector2 shotDirection = Rotate(direction, angle);
+            fanDirections[i] = shotDirection;
+            Vector2 position = origin + shotDirection * fanStakeSpacing;
+            float rotation = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg + stakeRotationOffset;
+            GameObject stake = Instantiate(stakePrefab, position, Quaternion.Euler(0f, 0f, rotation));
+            ConfigureSummonedAttack(stake);
+            Rigidbody2D rb = stake.GetComponent<Rigidbody2D>();
+            if (rb != null) { rb.velocity = Vector2.zero; rb.gravityScale = 0f; }
+            // 展開中は衝突しない。射出時に有効化する。
+            Collider2D[] colliders = stake.GetComponentsInChildren<Collider2D>();
+            foreach (Collider2D collider in colliders) collider.enabled = false;
+            fanStakes.Add(stake);
+        }
+    }
+
+    // 杭ごとの射出予定時刻から逆算し、射出0.2秒前に狙いを固定する。
+    // 射出順は左端→右端→左内側→右内側→中央。
+    void UpdateFanStakeRotation(float elapsedSinceDeploy)
+    {
+        float interval = Mathf.Max(0.02f, fanShotInterval);
+        for (int order = 0; order < fanOrder.Length; order++)
+        {
+            int index = fanOrder[order];
+            if (index >= fanStakes.Count || fanStakes[index] == null) continue;
+            GameObject stake = fanStakes[index];
+            float shotTime = 1f + order * interval;
+            if (elapsedSinceDeploy >= shotTime - fanStakeAimLeadTime)
+            {
+                Vector2 direction = fanDirections[index];
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + stakeRotationOffset;
+                stake.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+            }
+            else
+            {
+                stake.transform.Rotate(0f, 0f, fanStakeSpinSpeed * Time.fixedDeltaTime);
+            }
+        }
+    }
+
+    void FireFanStake(int index)
+    {
+        if (index >= fanStakes.Count || fanStakes[index] == null) return;
+        GameObject stake = fanStakes[index];
+        fanStakes[index] = null;
+        foreach (Collider2D collider in stake.GetComponentsInChildren<Collider2D>())
+            collider.enabled = true;
+        Rigidbody2D rb = stake.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            rb.velocity = fanDirections[index] * stakeSpeed;
+        }
+        Destroy(stake, stakeLifetime);
+    }
+
+    void ClearFanStakes()
+    {
+        foreach (GameObject stake in fanStakes)
+            if (stake != null) Destroy(stake);
+        fanStakes.Clear();
+    }
+
+    void RestoreLeapPhysics()
+    {
+        if (!leapPhysicsChanged || enemyBase == null || enemyBase.rb == null) return;
+        enemyBase.rb.bodyType = originalBodyType;
+        leapPhysicsChanged = false;
+    }
+
+    void PositionForAttack()
+    {
+        Vector2 toTarget = lastAttackTargetPosition - (Vector2)enemyBase.transform.position;
+        enemyBase.isTargetLook(lastAttackTargetPosition);
+
+        if (!needsAdjustment)
+        {
+            StartWindup();
+            return;
+        }
+
+        enemyBase.AttackCount += Time.fixedDeltaTime;
+        if (attackKind == 0)
+        {
+            // 杭投げ: 距離が約2になるまで後退（安全のため最大時間を設ける）。
+            if (toTarget.magnitude >= adjustmentDistance ||
+                enemyBase.AttackCount >= retreatMaxTime)
+            {
+                StartWindup();
+                return;
+            }
+
+            Vector2 backwards = toTarget.sqrMagnitude > 0.0001f
+                ? -toTarget.normalized : Vector2.left;
+            enemyBase.rb.velocity = backwards * enemyBase.SPEED;
+        }
+        else
+        {
+            // 近接: ターゲットの周囲を同じ方向へ2回サイドステップする。
+            if (enemyBase.AttackCount >= sideStepDuration * 2f)
+            {
+                StartWindup();
+                return;
+            }
+
+            Vector2 inward = toTarget.sqrMagnitude > 0.0001f
+                ? toTarget.normalized : Vector2.right;
+            Vector2 tangent = new Vector2(-inward.y, inward.x) * orbitDirection;
+            Vector2 orbit = (tangent + inward * 0.18f).normalized;
+            enemyBase.rb.velocity = orbit * enemyBase.SPEED * sideStepSpeedMultiplier;
+        }
+    }
+
+    void StartWindup()
+    {
+        enemyBase.rb.velocity = Vector2.zero;
+        if (attackKind == 0)
+        {
+            // 角度は「杭投げ初動」の再生時に確定し、発射まで変えない。
+            lockedDirection = AimAtLastTarget();
+            enemyBase.animator.Play("杭投げ初動", 0, 0f);
+            // 「杭投げループ」への遷移はAnimator Controller側に任せる。
+        }
+        else
+        {
+            enemyBase.animator.Play("近接攻撃待機", 0, 0f);
+        }
+        ShowAttackWarning();
+        NextPhase();
+    }
+
+    void ThrowStake()
+    {
+        ClearAttackWarning();
+        enemyBase.animator.Play("杭投げ攻撃", 0, 0f);
+        if (enemyBase.AttackAudio != null)
+            enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
+        if (stakePrefab == null) return;
+
+        Vector3 position = enemyBase.AttackSpawnPoint != null
+            ? enemyBase.AttackSpawnPoint.transform.position : enemyBase.transform.position;
+        float angle = Mathf.Atan2(lockedDirection.y, lockedDirection.x) * Mathf.Rad2Deg
+                      + stakeRotationOffset;
+        GameObject stake = Instantiate(stakePrefab, position, Quaternion.Euler(0f, 0f, angle));
+        ConfigureSummonedAttack(stake);
+        EnemyAttack attack = stake.GetComponent<EnemyAttack>();
+        if (attack != null) attack.enemyBase = enemyBase;
+        else Debug.LogError("杭PrefabにEnemyAttackがありません。", stake);
+
+        Rigidbody2D bulletRb = stake.GetComponent<Rigidbody2D>();
+        if (bulletRb != null)
+        {
+            bulletRb.gravityScale = 0f;
+            bulletRb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            bulletRb.velocity = lockedDirection * stakeSpeed;
+        }
+        else Debug.LogError("杭PrefabにRigidbody2Dがありません。", stake);
+        Destroy(stake, stakeLifetime); // 無限貫通は維持、寿命は有限。
+    }
+
+    void BeginDash()
+    {
+        ClearAttackWarning();
+        lockedDirection = AimAtLastTarget();
+        enemyBase.isTargetLook(lastAttackTargetPosition);
+        enemyBase.animator.Play("近接攻撃", 0, 0f);
+        if (enemyBase.AttackAudio != null)
+            enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
+
+        if (meleeHitboxPrefab == null) return;
+        Transform anchor = enemyBase.AttackSpawnPoint != null
+            ? enemyBase.AttackSpawnPoint.transform : enemyBase.transform;
+        activeMeleeHitbox = Instantiate(meleeHitboxPrefab, anchor.position, anchor.rotation);
+        activeMeleeHitbox.transform.SetParent(anchor, true);
+        ConfigureSummonedAttack(activeMeleeHitbox);
+
+        EnemyAttack attack = activeMeleeHitbox.GetComponent<EnemyAttack>();
+        if (attack != null) attack.enemyBase = enemyBase;
+        else Debug.LogError("近接PrefabにEnemyAttackがありません。", activeMeleeHitbox);
+    }
+
+    // 警告は1秒の予備動作中に表示。既存Prefabのサイズ・子階層をそのまま利用する。
+    void ShowAttackWarning()
+    {
+        ClearAttackWarning();
+        GameObject warningPrefab = attackKind == 0 ? stakeWarningPrefab : meleeWarningPrefab;
+        Vector2 direction = attackKind == 0 ? lockedDirection : AimAtLastTarget();
+        Quaternion rotation = WarningRotation(direction);
+        // 斬撃用Prefabの参照が不正な場合、共通の警告Prefabに切り替える。
+        // 杭投げ用Prefabや正常な斬撃用Prefabの表示は従来どおり維持する。
+        try
+        {
+            activeAttackWarning = SpawnAttackWarning(
+                EnemyContoroller.WarningRectangle, warningPrefab,
+                enemyBase.transform.position, rotation, warningDuration,
+                null, 0f, true);
+        }
+        catch (System.InvalidCastException exception)
+        {
+            Debug.LogError("攻撃警告Prefabの生成に失敗しました: " +
+                (warningPrefab != null ? warningPrefab.name : "null") +
+                "。共通の警告Prefabで再試行します。\n" + exception, enemyBase);
+            activeAttackWarning = SpawnAttackWarning(
+                EnemyContoroller.WarningRectangle, null,
+                enemyBase.transform.position, rotation, warningDuration,
+                null, 0f, true);
+        }
+    }
+
+    void UpdateMeleeWarningDirection()
+    {
+        if (activeAttackWarning == null) return;
+        activeAttackWarning.transform.rotation = WarningRotation(AimAtLastTarget());
+    }
+
+    static Quaternion WarningRotation(Vector2 direction)
+    {
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+        return Quaternion.Euler(0f, 0f, angle);
+    }
+
+    void ClearAttackWarning()
+    {
+        if (activeAttackWarning != null) Destroy(activeAttackWarning);
+        activeAttackWarning = null;
+    }
+
+    Vector2 AimAtLastTarget()
+    {
+        Vector2 aim = lastAttackTargetPosition - (Vector2)enemyBase.transform.position;
+        if (aim.sqrMagnitude > 0.0001f) return aim.normalized;
+        return enemyBase.EnemyAnimBody.transform.localScale.x < 0f ? Vector2.left : Vector2.right;
+    }
+
+    static Vector2 Rotate(Vector2 dir, float angle)
+    {
+        float radians = angle * Mathf.Deg2Rad;
+        float sin = Mathf.Sin(radians);
+        float cos = Mathf.Cos(radians);
+        return new Vector2(dir.x * cos - dir.y * sin, dir.x * sin + dir.y * cos);
+    }
+
+    void NextPhase()
+    {
+        A_Phase++;
+        enemyBase.AttackCount = 0f;
+    }
+
+    void ClearMeleeHitbox()
+    {
+        if (activeMeleeHitbox != null) Destroy(activeMeleeHitbox);
+        activeMeleeHitbox = null;
+    }
+
+    void FinishAttack()
+    {
+        ClearAttackWarning();
+        ClearMeleeHitbox();
+        ClearFanStakes();
+        RestoreLeapPhysics();
+        A_Phase = 0;
+        attackTarget = null;
+        enemyBase.mode = EnemyBase.ModeType.M1;
+        enemyBase.AttackCount = 0f;
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.moveType = EnemyBase.MoveType.Move;
+        enemyBase.animator.SetInteger("Anim", 1);
+        enemyBase.animator.Play("歩行", 0, 0f);
+        searchTimer = targetSearchInterval;
+    }
+
+    void CancelAttack()
+    {
+        ClearAttackWarning();
+        ClearMeleeHitbox();
+        A_Phase = 0;
+        attackTarget = null;
+        enemyBase.mode = EnemyBase.ModeType.M1;
+        enemyBase.AttackCount = 0f;
+        noAttackTimer = 0f;
+        enemyBase.moveType = EnemyBase.MoveType.Move;
+        // スタン時のノックバック速度は共通処理に任せる。
+    }
+
+    void OnDisable()
+    {
+        ClearAttackWarning();
+        ClearMeleeHitbox();
+        ClearFanStakes();
+        RestoreLeapPhysics();
+    }
+}

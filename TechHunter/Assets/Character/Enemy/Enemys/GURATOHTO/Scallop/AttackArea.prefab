@@ -92,7 +92,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 0}
   charadata: {fileID: 11400000, guid: 5c72b9602abc288438b7c5a2339b1098, type: 2}
-  attackableFactions: 0
-  attackPlayer: 1
+  attackableFactions: 32768
+  attackPlayer: 0
   canAttackSelf: 0
-  dellCondition: 0
+  attackPowerPercent: 100
+  dellCondition: 1

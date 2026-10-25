@@ -6,14 +6,14 @@ using UnityEngine;
 public class ParticipantInThemeal_AI : Boss_MoveBase
 {
 
-    private IEnumerator myRunningCoroutine; // é¿çsíÜÇÃÉRÉãÅ[É`ÉìÇï€éùÇ∑ÇÈÇΩÇﬂÇÃïœêî
-    // InspectorÇ©ÇÁñ⁄ïWínì_ÇÃTransformÇê›íË
+    private IEnumerator myRunningCoroutine; // ÂÆüË°å‰∏≠„ÅÆ„Ç≥„É´„Éº„ÉÅ„É≥„Çí‰øùÊåÅ„Åô„Çã„Åü„ÇÅ„ÅÆÂ§âÊï∞
+    // Inspector„Åã„ÇâÁõÆÊ®ôÂú∞ÁÇπ„ÅÆTransform„ÇíË®≠ÂÆö
     public Transform targetPos;
     bool StandOk = false;
-    // à⁄ìÆÇ…Ç©Ç©ÇÈéûä‘
+    // ÁßªÂãï„Å´„Åã„Åã„ÇãÊôÇÈñì
     public float duration = 1;
 
-    // éRÇ»ÇËÇÃçÇÇ≥
+    // Â±±„Å™„Çä„ÅÆÈ´ò„Åï
     public float arcHeight = 30;
 
     [SerializeField] float PlayerDistanceNow = 0;
@@ -44,7 +44,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
     // Update is called once per frame
     void Update()
     {
-        PlayerDistanceNow = Vector2.Distance(enemyBase.transform.position, enemyBase.Player.transform.position);
+        PlayerDistanceNow = Vector2.Distance(enemyBase.transform.position, TargetPosition);
 
         if (enemyBase.status == EnemyBase.Status.ConfusionResistance)
         {
@@ -55,9 +55,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
             if (myRunningCoroutine != null)
             {
-                StopCoroutine(myRunningCoroutine); // ì¡íËÇÃÉRÉãÅ[É`ÉìÇí‚é~
-                Debug.Log("ÉRÉãÅ[É`ÉìÇí‚é~ÇµÇ‹ÇµÇΩÅB");
-                myRunningCoroutine = null; // éQè∆ÇÉNÉäÉA
+                StopCoroutine(myRunningCoroutine); // ÁâπÂÆö„ÅÆ„Ç≥„É´„Éº„ÉÅ„É≥„ÇíÂÅúÊ≠¢
+                Debug.Log("„Ç≥„É´„Éº„ÉÅ„É≥„ÇíÂÅúÊ≠¢„Åó„Åæ„Åó„Åü„ÄÇ");
+                myRunningCoroutine = null; // ÂèÇÁÖß„Çí„ÇØ„É™„Ç¢
             }
         }
     }
@@ -248,10 +248,10 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
     {
         if (AttackPhase == 0) 
         {
-            enemyBase.animator.Play("íµñÙèÄîı");
+            enemyBase.animator.Play("Ë∑≥Ë∫çÊ∫ñÂÇô");
             if (enemyBase.AttackCount > 0.8) 
             {
-                targetPos = enemyBase.Player.transform;
+                targetPos = CurrentTarget != null ? CurrentTarget : enemyBase.transform;
                 StopAllCoroutines();
                 StartCoroutine(MoveInArc());
 
@@ -271,7 +271,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             GameObject CL_Attack = Instantiate(AttackAreas[0], enemyBase.transform.position, Quaternion.identity);
             AttackSpawnBase(CL_Attack);
             Destroy(CL_Attack,0.2f);
-            enemyBase.animator.Play("ë“ã@");
+            enemyBase.animator.Play("ÂæÖÊ©ü");
 
 
             for (int j = 0; j < 15; j++)
@@ -297,17 +297,17 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
         if (AttackPhase == 0) 
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("çUåÇë“ã@",0,0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("ÊîªÊíÉÂæÖÊ©ü",0,0);
             if (AttackNumber == 3) 
             {
                 for (int i = 0; i < 3; i++)
                 {
 
                     GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
-                    CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
+                    CL_AttackPPP.transform.up = TargetDirection.normalized;
 
-                    Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30 * i) * enemyBase.PlayerDirection.normalized;
+                    Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30 * i) * TargetDirection.normalized;
                     CL_AttackPPP.transform.up = NewLookDirection.normalized;
 
                     Destroy(CL_AttackPPP, 1);
@@ -316,7 +316,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             else
             {
                 GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
-                CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
+                CL_AttackPPP.transform.up = TargetDirection.normalized;
                 //Animator animator = CL_AttackPPP.GetComponent<Animator>();
                 //animator.speed = 1.2f;
                 Destroy(CL_AttackPPP, 1);
@@ -328,7 +328,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 0.6) 
             {
-                enemyBase.animator.Play("çUåÇ");
+                enemyBase.animator.Play("ÊîªÊíÉ");
                 NEXT();
             }
         }
@@ -340,10 +340,13 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 {
 
                     GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
 
-                    Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30 * i) * enemyBase.PlayerDirection.normalized;
+                    Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30 * i) * TargetDirection.normalized;
 
-                    if (enemyBase.PlayerDirection.x > 0)
+                    if (TargetDirection.x > 0)
                     {
                         CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
                     }
@@ -362,7 +365,10 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             else
             {
                 GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
-                if (enemyBase.PlayerDirection.x > 0)
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
+                if (TargetDirection.x > 0)
                 {
                     CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
                 }
@@ -372,7 +378,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 }
 
                 Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
-                rb.velocity = enemyBase.PlayerDirection.normalized * 10;
+                rb.velocity = TargetDirection.normalized * 10;
                 Destroy(CL_Slash, 10);
 
                 AttackSpawnBase(CL_Slash);
@@ -385,7 +391,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
             if (enemyBase.AttackCount > 0.2)
             {
-                enemyBase.animator.Play("ë“ã@");
+                enemyBase.animator.Play("ÂæÖÊ©ü");
                 AttackNumber++;
                 if (AttackNumber > 3)
                 {
@@ -398,13 +404,13 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 }
             }
         }
-        //------------------------------------íµñÙ
+        //------------------------------------Ë∑≥Ë∫ç
         if (AttackPhase == 4)
         {
-            enemyBase.animator.Play("íµñÙèÄîı");
+            enemyBase.animator.Play("Ë∑≥Ë∫çÊ∫ñÂÇô");
             if (enemyBase.AttackCount > 1.5)
             {
-                targetPos = enemyBase.Player.transform;
+                targetPos = CurrentTarget != null ? CurrentTarget : enemyBase.transform;
                 StopAllCoroutines();
                 StartCoroutine(MoveInArc());
 
@@ -424,7 +430,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             GameObject CL_Attack = Instantiate(AttackAreas[0], enemyBase.transform.position, Quaternion.identity);
             AttackSpawnBase(CL_Attack);
             Destroy(CL_Attack, 0.2f);
-            enemyBase.animator.Play("ë“ã@");
+            enemyBase.animator.Play("ÂæÖÊ©ü");
 
             for (int j = 0; j < 10; j++)
             {
@@ -450,22 +456,25 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
         if (AttackPhase == 0)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("çUåÇë“ã@", 0, 0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("ÊîªÊíÉÂæÖÊ©ü", 0, 0);
             NEXT();
         }
         if (AttackPhase == 1)
         {
             if (enemyBase.AttackCount > 1)
             {
-                enemyBase.animator.Play("çUåÇ");
+                enemyBase.animator.Play("ÊîªÊíÉ");
                 NEXT();
             }
         }
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
-            if (enemyBase.PlayerDirection.x > 0)
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
+            if (TargetDirection.x > 0)
             {
                 CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
             }
@@ -475,7 +484,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             }
 
             Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
-            rb.velocity = enemyBase.PlayerDirection.normalized * 10;
+            rb.velocity = TargetDirection.normalized * 10;
             Destroy(CL_Slash, 10);
 
             AttackSpawnBase(CL_Slash);
@@ -487,7 +496,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
             if (enemyBase.AttackCount > 0.4)
             {
-                enemyBase.animator.Play("ë“ã@");
+                enemyBase.animator.Play("ÂæÖÊ©ü");
                 ATTCKFINISH();
 
             }
@@ -498,11 +507,11 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("çUåÇë“ã@", 0, 0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("ÊîªÊíÉÂæÖÊ©ü", 0, 0);
 
             GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
-            CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
+            CL_AttackPPP.transform.up = TargetDirection.normalized;
             //Animator animator = CL_AttackPPP.GetComponent<Animator>();
             //animator.speed = 1.2f;
             Destroy(CL_AttackPPP, 1);
@@ -513,14 +522,17 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 0.6)
             {
-                enemyBase.animator.Play("çUåÇ");
+                enemyBase.animator.Play("ÊîªÊíÉ");
                 NEXT();
             }
         }
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
-            if (enemyBase.PlayerDirection.x > 0)
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
+            if (TargetDirection.x > 0)
             {
                 CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
             }
@@ -530,7 +542,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             }
 
             Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
-            rb.velocity = enemyBase.PlayerDirection.normalized * 10;
+            rb.velocity = TargetDirection.normalized * 10;
             Destroy(CL_Slash, 10);
 
             AttackSpawnBase(CL_Slash);
@@ -542,7 +554,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
             if (enemyBase.AttackCount > 0.2)
             {
-                enemyBase.animator.Play("ë“ã@");
+                enemyBase.animator.Play("ÂæÖÊ©ü");
                 AttackNumber++;
                 if (AttackNumber > 2)
                 {
@@ -555,13 +567,13 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 }
             }
         }
-        //------------------------------------íµñÙ
+        //------------------------------------Ë∑≥Ë∫ç
         if (AttackPhase == 4)
         {
-            enemyBase.animator.Play("íµñÙèÄîı");
+            enemyBase.animator.Play("Ë∑≥Ë∫çÊ∫ñÂÇô");
             if (enemyBase.AttackCount > 0.8)
             {
-                targetPos = enemyBase.Player.transform;
+                targetPos = CurrentTarget != null ? CurrentTarget : enemyBase.transform;
                 StopAllCoroutines();
                 StartCoroutine(MoveInArc());
 
@@ -581,7 +593,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             GameObject CL_Attack = Instantiate(AttackAreas[0], enemyBase.transform.position, Quaternion.identity);
             AttackSpawnBase(CL_Attack);
             Destroy(CL_Attack, 0.2f);
-            enemyBase.animator.Play("ë“ã@");
+            enemyBase.animator.Play("ÂæÖÊ©ü");
 
             NEXT();
         }
@@ -609,12 +621,12 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("çUåÇë“ã@â°", 0, 0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("ÊîªÊíÉÂæÖÊ©üÊ®™", 0, 0);
             NEXT();
             GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
 
-            CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
+            CL_AttackPPP.transform.up = TargetDirection.normalized;
             CL_AttackPPP.transform.localScale = new Vector2(4, 2);
             Destroy(CL_AttackPPP, 1);
 
@@ -623,16 +635,19 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 1)
             {
-                enemyBase.animator.Play("çUåÇâ°");
+                enemyBase.animator.Play("ÊîªÊíÉÊ®™");
                 NEXT();
             }
         }
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
-            CL_Slash.transform.up = enemyBase.PlayerDirection.normalized;
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
+            CL_Slash.transform.up = TargetDirection.normalized;
             Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
-            rb.velocity = enemyBase.PlayerDirection.normalized *0.5f;
+            rb.velocity = TargetDirection.normalized *0.5f;
             Destroy(CL_Slash, 30);
 
             AttackSpawnBase(CL_Slash);
@@ -644,7 +659,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
             if (enemyBase.AttackCount > 0.4)
             {
-                enemyBase.animator.Play("ë“ã@");
+                enemyBase.animator.Play("ÂæÖÊ©ü");
                 //ATTCKFINISH();
                 AttackNumber2 = 0;
                 AttackNumber =0;
@@ -672,12 +687,12 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("çUåÇë“ã@â°", 0, 0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("ÊîªÊíÉÂæÖÊ©üÊ®™", 0, 0);
             NEXT();
             GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
 
-            CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
+            CL_AttackPPP.transform.up = TargetDirection.normalized;
             CL_AttackPPP.transform.localScale = new Vector2(4, 20);
             
             Destroy(CL_AttackPPP, 1);
@@ -687,16 +702,19 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 1)
             {
-                enemyBase.animator.Play("çUåÇâ°");
+                enemyBase.animator.Play("ÊîªÊíÉÊ®™");
                 NEXT();
             }
         }
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
-            CL_Slash.transform.up = enemyBase.PlayerDirection.normalized;
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
+            CL_Slash.transform.up = TargetDirection.normalized;
             Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
-            rb.velocity = enemyBase.PlayerDirection.normalized * 14f;
+            rb.velocity = TargetDirection.normalized * 14f;
             Destroy(CL_Slash, 30);
 
             AttackSpawnBase(CL_Slash);
@@ -708,23 +726,23 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
             if (enemyBase.AttackCount > 0.7)
             {
-                enemyBase.animator.Play("ë“ã@");
+                enemyBase.animator.Play("ÂæÖÊ©ü");
                 NEXT();
 
             }
         }
         if (AttackPhase == 4)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("çUåÇë“ã@", 0, 0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("ÊîªÊíÉÂæÖÊ©ü", 0, 0);
 
             for (int i = 0; i < 3; i++) 
             {
 
                 GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
-                 CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
+                 CL_AttackPPP.transform.up = TargetDirection.normalized;
 
-                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30*i) * enemyBase.PlayerDirection.normalized;
+                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30*i) * TargetDirection.normalized;
                 CL_AttackPPP.transform.up = NewLookDirection.normalized;
 
                 Destroy(CL_AttackPPP,1);
@@ -736,7 +754,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 1)
             {
-                enemyBase.animator.Play("çUåÇ");
+                enemyBase.animator.Play("ÊîªÊíÉ");
                 NEXT();
             }
         }
@@ -746,10 +764,13 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
 
-                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30 * i) * enemyBase.PlayerDirection.normalized;
+                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30 * i) * TargetDirection.normalized;
                 
-                if (enemyBase.PlayerDirection.x > 0)
+                if (TargetDirection.x > 0)
                 {
                     CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
                 }
@@ -774,7 +795,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
             if (enemyBase.AttackCount > 0.4)
             {
-                enemyBase.animator.Play("ë“ã@");
+                enemyBase.animator.Play("ÂæÖÊ©ü");
                 if (AttackNumber > 2)
                 {
                     //ATTCKFINISH();
@@ -797,10 +818,10 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("íµñÙèÄîı");
+            enemyBase.animator.Play("Ë∑≥Ë∫çÊ∫ñÂÇô");
             if (enemyBase.AttackCount > 0.8)
             {
-                targetPos = enemyBase.Player.transform;
+                targetPos = CurrentTarget != null ? CurrentTarget : enemyBase.transform;
                 StopAllCoroutines();
                 StartCoroutine(MoveInArc());
 
@@ -820,7 +841,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             GameObject CL_Attack = Instantiate(AttackAreas[0], enemyBase.transform.position, Quaternion.identity);
             AttackSpawnBase(CL_Attack);
             Destroy(CL_Attack, 0.2f);
-            enemyBase.animator.Play("ë“ã@");
+            enemyBase.animator.Play("ÂæÖÊ©ü");
 
 
             for (int j = 0; j < 15; j++)
@@ -854,16 +875,16 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         
         if (AttackPhase == 0)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("çUåÇë“ã@", 0, 0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("ÊîªÊíÉÂæÖÊ©ü", 0, 0);
 
             for (int i = 0; i < 5; i++)
             {
 
                 GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
-                CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
+                CL_AttackPPP.transform.up = TargetDirection.normalized;
                 CL_AttackPPP.transform.localScale = new Vector2(4, 20);
-                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -40 + 20 * i) * enemyBase.PlayerDirection.normalized;
+                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -40 + 20 * i) * TargetDirection.normalized;
                 CL_AttackPPP.transform.up = NewLookDirection.normalized;
 
                 Destroy(CL_AttackPPP, 2);
@@ -875,7 +896,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 2)
             {
-                enemyBase.animator.Play("çUåÇ");
+                enemyBase.animator.Play("ÊîªÊíÉ");
                 NEXT();
             }
         }
@@ -885,8 +906,11 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
 
-                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -40 + 20 * i) * enemyBase.PlayerDirection.normalized;
+                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -40 + 20 * i) * TargetDirection.normalized;
 
                 CL_Slash.transform.up = NewLookDirection.normalized;
                 Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
@@ -900,8 +924,11 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
 
-                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -40 + 40 * i) * enemyBase.PlayerDirection.normalized;
+                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -40 + 40 * i) * TargetDirection.normalized;
 
                 CL_Slash.transform.up = NewLookDirection.normalized;
                 Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
@@ -921,10 +948,10 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("íµñÙèÄîı");
+            enemyBase.animator.Play("Ë∑≥Ë∫çÊ∫ñÂÇô");
             if (enemyBase.AttackCount > 0.8)
             {
-                targetPos = enemyBase.Player.transform;
+                targetPos = CurrentTarget != null ? CurrentTarget : enemyBase.transform;
                 StopAllCoroutines();
                 StartCoroutine(MoveInArc());
 
@@ -944,7 +971,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             GameObject CL_Attack = Instantiate(AttackAreas[0], enemyBase.transform.position, Quaternion.identity);
             AttackSpawnBase(CL_Attack);
             Destroy(CL_Attack, 0.2f);
-            enemyBase.animator.Play("ë“ã@");
+            enemyBase.animator.Play("ÂæÖÊ©ü");
 
 
             for (int j = 0; j < 20; j++)
@@ -966,15 +993,15 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         }
         if (AttackPhase == 4)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("çUåÇë“ã@", 0, 0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("ÊîªÊíÉÂæÖÊ©ü", 0, 0);
             if (AttackNumber == 3)
             {
                 for (int i = 0; i < 10; i++)
                 {
 
                     GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
-                    CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
+                    CL_AttackPPP.transform.up = TargetDirection.normalized;
 
                     float angle = 360 / 10;
                     Vector3 NewLookDirection = Quaternion.Euler(0, 0, angle * i)*Vector2.zero;
@@ -986,7 +1013,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             else
             {
                 GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
-                CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
+                CL_AttackPPP.transform.up = TargetDirection.normalized;
                 //Animator animator = CL_AttackPPP.GetComponent<Animator>();
                 //animator.speed = 1.2f;
                 Destroy(CL_AttackPPP, 1);
@@ -998,7 +1025,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 0.6)
             {
-                enemyBase.animator.Play("çUåÇ");
+                enemyBase.animator.Play("ÊîªÊíÉ");
                 NEXT();
             }
         }
@@ -1010,7 +1037,10 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 {
 
                     GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
-                    CL_Slash.transform.up = enemyBase.PlayerDirection.normalized;
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
+                    CL_Slash.transform.up = TargetDirection.normalized;
 
                     float angle = 360 / 10;
                     Vector3 NewLookDirection = Quaternion.Euler(0, 0, angle * i) * Vector2.zero;
@@ -1026,7 +1056,10 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             else
             {
                 GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
-                if (enemyBase.PlayerDirection.x > 0)
+                    foreach (ParticipantInThemeal_CarseFire homing in
+                             CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
+                        homing.SetOwner(enemyBase);
+                if (TargetDirection.x > 0)
                 {
                     CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
                 }
@@ -1036,7 +1069,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 }
 
                 Rigidbody2D rb = CL_Slash.GetComponent<Rigidbody2D>();
-                rb.velocity = enemyBase.PlayerDirection.normalized * 10;
+                rb.velocity = TargetDirection.normalized * 10;
                 Destroy(CL_Slash, 10);
 
                 AttackSpawnBase(CL_Slash);
@@ -1049,7 +1082,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
             if (enemyBase.AttackCount > 0.2)
             {
-                enemyBase.animator.Play("ë“ã@");
+                enemyBase.animator.Play("ÂæÖÊ©ü");
                 AttackNumber++;
                 if (AttackNumber > 3)
                 {
@@ -1077,10 +1110,17 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
     private IEnumerator MoveInArc()
     {
+        // ÁßªÂãïÈñãÂßãÊôÇÁÇπ„ÅßÊîªÊíÉÂØæË±°„ÅåÊ∂àÊªÖ„Åó„Å¶„ÅÑ„ÇãÂ†¥Âêà„ÅØ‰∏≠Êñ≠„Åô„Çã„ÄÇ
+        if (targetPos == null)
+        {
+            StandOk = true;
+            yield break;
+        }
+
         myRunningCoroutine = MoveInArc();
-        // à⁄ìÆäJénëOÇÃBodyTypeÇï€ë∂ÇµÇƒÇ®Ç≠
+        // ÁßªÂãïÈñãÂßãÂâç„ÅÆBodyType„Çí‰øùÂ≠ò„Åó„Å¶„Åä„Åè
         var originalBodyType = enemyBase.rb.bodyType;
-        // à⁄ìÆíÜÇÕKinematicÇ…ÇµÇƒÅAï®óùââéZÇÃâeãøÇÇ»Ç≠Ç∑
+        // ÁßªÂãï‰∏≠„ÅØKinematic„Å´„Åó„Å¶„ÄÅÁâ©ÁêÜÊºîÁÆó„ÅÆÂΩ±Èüø„Çí„Å™„Åè„Åô
         enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
 
         Vector2 startPos = enemyBase.transform.position;
@@ -1094,39 +1134,40 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsedTime / duration); // 0Ç©ÇÁ1ÇÃîÕàÕÇ…é˚ÇﬂÇÈ
+            float progress = Mathf.Clamp01(elapsedTime / duration); // 0„Åã„Çâ1„ÅÆÁØÑÂõ≤„Å´Âèé„ÇÅ„Çã
 
-            // XÇ∆YÇÃíºê¸ìIÇ»à⁄ìÆÇåvéZ
+            // X„Å®Y„ÅÆÁõ¥Á∑öÁöÑ„Å™ÁßªÂãï„ÇíË®àÁÆó
             Vector2 linearPos = Vector2.Lerp(startPos, endPos, progress);
 
-            // çÇÇ≥ÇåvéZ (SinÉJÅ[Éu)
+            // È´ò„Åï„ÇíË®àÁÆó (Sin„Ç´„Éº„Éñ)
             float height = Mathf.Sin(progress * Mathf.PI) * arcHeight;
 
-            // Rigidbody2DÇégÇ¡Çƒà íuÇçXêVÇ∑ÇÈ
-            // 2DÇ»ÇÃÇ≈ÅAYç¿ïWÇ…çÇÇ≥Çâ¡Ç¶ÇÈ
+            // Rigidbody2D„Çí‰Ωø„Å£„Å¶‰ΩçÁΩÆ„ÇíÊõ¥Êñ∞„Åô„Çã
+            // 2D„Å™„ÅÆ„Åß„ÄÅYÂ∫ßÊ®ô„Å´È´ò„Åï„ÇíÂä†„Åà„Çã
             enemyBase.rb.MovePosition(new Vector2(linearPos.x, linearPos.y + height));
 
-            //yield return new WaitForFixedUpdate(); // ï®óùââéZÇÃçXêVÉ^ÉCÉ~ÉìÉOÇ≈ë“Ç¬
+            //yield return new WaitForFixedUpdate(); // Áâ©ÁêÜÊºîÁÆó„ÅÆÊõ¥Êñ∞„Çø„Ç§„Éü„É≥„Ç∞„ÅßÂæÖ„Å§
             yield return new WaitForEndOfFrame();
         }
 
-        // îOÇÃÇΩÇﬂÅAç≈èIìIÇ…Ç´Ç¡ÇøÇËñ⁄ïWínì_Ç…çáÇÌÇπÇÈ
+        // Âøµ„ÅÆ„Åü„ÇÅ„ÄÅÊúÄÁµÇÁöÑ„Å´„Åç„Å£„Å°„ÇäÁõÆÊ®ôÂú∞ÁÇπ„Å´Âêà„Çè„Åõ„Çã
         transform.position = endPos;
-        // BodyTypeÇå≥Ç…ñﬂÇ∑
+        // BodyType„ÇíÂÖÉ„Å´Êàª„Åô
         enemyBase.rb.bodyType = originalBodyType;
 
 
         StandOk = true;
-        // îOÇÃÇΩÇﬂÅAç≈èIìIÇ…Ç´Ç¡ÇøÇËñ⁄ïWínì_Ç…çáÇÌÇπÇÈ
-        transform.position = targetPos.position;
-        Debug.Log("ñ⁄ìIínÇ…ìûíÖÅI" + targetPos.position);
+        // Âøµ„ÅÆ„Åü„ÇÅ„ÄÅÊúÄÁµÇÁöÑ„Å´„Åç„Å£„Å°„ÇäÁõÆÊ®ôÂú∞ÁÇπ„Å´Âêà„Çè„Åõ„Çã
+        if (targetPos != null) transform.position = targetPos.position;
+        else transform.position = endPos;
+        Debug.Log("ÁõÆÁöÑÂú∞„Å´Âà∞ÁùÄÔºÅ" + transform.position);
     }
     private IEnumerator ChoiceMoveInArc(Vector2 Target)
     {
         myRunningCoroutine = MoveInArc();
-        // à⁄ìÆäJénëOÇÃBodyTypeÇï€ë∂ÇµÇƒÇ®Ç≠
+        // ÁßªÂãïÈñãÂßãÂâç„ÅÆBodyType„Çí‰øùÂ≠ò„Åó„Å¶„Åä„Åè
         var originalBodyType = enemyBase.rb.bodyType;
-        // à⁄ìÆíÜÇÕKinematicÇ…ÇµÇƒÅAï®óùââéZÇÃâeãøÇÇ»Ç≠Ç∑
+        // ÁßªÂãï‰∏≠„ÅØKinematic„Å´„Åó„Å¶„ÄÅÁâ©ÁêÜÊºîÁÆó„ÅÆÂΩ±Èüø„Çí„Å™„Åè„Åô
         enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
 
         Vector2 startPos = enemyBase.transform.position;
@@ -1140,26 +1181,26 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsedTime / duration); // 0Ç©ÇÁ1ÇÃîÕàÕÇ…é˚ÇﬂÇÈ
+            float progress = Mathf.Clamp01(elapsedTime / duration); // 0„Åã„Çâ1„ÅÆÁØÑÂõ≤„Å´Âèé„ÇÅ„Çã
 
-            // XÇ∆YÇÃíºê¸ìIÇ»à⁄ìÆÇåvéZ
+            // X„Å®Y„ÅÆÁõ¥Á∑öÁöÑ„Å™ÁßªÂãï„ÇíË®àÁÆó
             Vector2 linearPos = Vector2.Lerp(startPos, endPos, progress);
 
-            // çÇÇ≥ÇåvéZ (SinÉJÅ[Éu)
+            // È´ò„Åï„ÇíË®àÁÆó (Sin„Ç´„Éº„Éñ)
             float height = Mathf.Sin(progress * Mathf.PI) * arcHeight;
 
-            // Rigidbody2DÇégÇ¡Çƒà íuÇçXêVÇ∑ÇÈ
-            // 2DÇ»ÇÃÇ≈ÅAYç¿ïWÇ…çÇÇ≥Çâ¡Ç¶ÇÈ
+            // Rigidbody2D„Çí‰Ωø„Å£„Å¶‰ΩçÁΩÆ„ÇíÊõ¥Êñ∞„Åô„Çã
+            // 2D„Å™„ÅÆ„Åß„ÄÅYÂ∫ßÊ®ô„Å´È´ò„Åï„ÇíÂä†„Åà„Çã
             enemyBase.rb.MovePosition(new Vector2(linearPos.x, linearPos.y + height));
 
-            //yield return new WaitForFixedUpdate(); // ï®óùââéZÇÃçXêVÉ^ÉCÉ~ÉìÉOÇ≈ë“Ç¬
+            //yield return new WaitForFixedUpdate(); // Áâ©ÁêÜÊºîÁÆó„ÅÆÊõ¥Êñ∞„Çø„Ç§„Éü„É≥„Ç∞„ÅßÂæÖ„Å§
             yield return new WaitForEndOfFrame();
         }
 
-        // BodyTypeÇå≥Ç…ñﬂÇ∑
+        // BodyType„ÇíÂÖÉ„Å´Êàª„Åô
         enemyBase.rb.bodyType = originalBodyType;
         StandOk = true;
-        Debug.Log("ñ⁄ìIínÇ…ìûíÖÅI" + targetPos.position);
+        Debug.Log("ÁõÆÁöÑÂú∞„Å´Âà∞ÁùÄÔºÅ" + endPos);
     }
     void NeedleSpawn(Vector2 Ptransform)
     {
@@ -1173,9 +1214,9 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
     }
     private IEnumerator NeedleSpawnLing(float delayTime,float Lange,int Plass)
     {
-        //Debug.Log("ÉRÉãÅ[É`ÉìÇ™äJénÇ≥ÇÍÇ‹ÇµÇΩÅBç°Ç©ÇÁ " + delayTime + " ïbë“ÇøÇ‹Ç∑...");
+        //Debug.Log("„Ç≥„É´„Éº„ÉÅ„É≥„ÅåÈñãÂßã„Åï„Çå„Åæ„Åó„Åü„ÄÇ‰ªä„Åã„Çâ " + delayTime + " ÁßíÂæÖ„Å°„Åæ„Åô...");
 
-        // Ç±Ç±Ç≈éwíËÇµÇΩïbêîÇæÇØë“ã@Ç∑ÇÈ
+        // „Åì„Åì„ÅßÊåáÂÆö„Åó„ÅüÁßíÊï∞„Å†„ÅëÂæÖÊ©ü„Åô„Çã
         yield return new WaitForSeconds(delayTime);
         for (int i = 0; i < 10+ Plass; i++)
         {
@@ -1186,7 +1227,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             float newX = enemyBase.transform.position.x + 2 * Lange * Mathf.Cos(angleRad);
             float newY = enemyBase.transform.position.y + 2 * Lange * Mathf.Sin(angleRad);
 
-            // êVÇµÇ¢à íuÇ…ÉNÉçÅ[ÉìÇçÏê¨
+            // Êñ∞„Åó„ÅÑ‰ΩçÁΩÆ„Å´„ÇØ„É≠„Éº„É≥„Çí‰ΩúÊàê
             Vector2 newPosition = new Vector2(newX, newY);
 
             NeedleSpawn(newPosition);

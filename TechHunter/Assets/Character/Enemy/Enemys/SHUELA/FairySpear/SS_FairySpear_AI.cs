@@ -21,6 +21,17 @@ public class SS_FairySpear_AI : EnemyMoveBase
     [SerializeField] float DashSpeed =3;
     public GameObject Target;
 
+    // ç¾¤ã‚Œã®ãƒªãƒ¼ãƒ€ãƒ¼è¿½å¾“ã‚’å„ªå…ˆã—ã€ãã‚Œä»¥å¤–ã¯å…±é€šCurrentTargetã§ç…§æº–ã‚’å–ã‚‹ã€‚
+    Vector2 ActiveTargetPosition => Target != null
+        ? (Vector2)Target.transform.position : (Vector2)TargetPosition;
+    Vector2 ActiveTargetDirection => ActiveTargetPosition - (Vector2)enemyBase.transform.position;
+    float ActiveTargetDistance => ActiveTargetDirection.magnitude;
+    void LookAtActiveTarget()
+    {
+        if (Target != null) enemyBase.isTargetLook(ActiveTargetPosition);
+        else LookAtCurrentTarget();
+    }
+
     bool one = false;
     Vector2 Direction;
     bool trune = false;
@@ -50,7 +61,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
                     EnemyContoroller enemyContoroller = CL_Enemy.GetComponent<EnemyContoroller>();
                     SS_FairySpear_AI sS_FairySpear_AI = enemyContoroller.moveBase.gameObject.GetComponent<SS_FairySpear_AI>();
                     sS_FairySpear_AI.Target = gameObject;
-                    systemManager.AllEnemy.Add(CL_Enemy);
+                    InitializeSummonedEnemy(CL_Enemy, true);
                 }
 
             }
@@ -99,20 +110,20 @@ public class SS_FairySpear_AI : EnemyMoveBase
         if (Target)
         {
             
-            enemyBase.PlayerDistance = Vector2.Distance(Target.transform.position, enemyBase.gameObject.transform.position);
+            enemyBase.PlayerDistance = ActiveTargetDistance;
             enemyBase.animator.SetInteger("Anim", 1);
-            enemyBase.PlayerDirection = Target.transform.position - enemyBase.transform.position;
-            angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-            offset = 100f / (enemyBase.PlayerDistance + 1f) * moveRabge; // ‹——£‚ª‰“‚¢‚Ù‚Ç¬‚³‚­
+            enemyBase.PlayerDirection = ActiveTargetDirection;
+            angle = Mathf.Atan2(ActiveTargetDirection.y, ActiveTargetDirection.x) * Mathf.Rad2Deg;
+            offset = 100f / (ActiveTargetDistance + 1f) * moveRabge; // è·é›¢ãŒé ã„ã»ã©å°ã•ã
         }
         else 
         {
             
-            enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
+            RefreshTargetInfo();
             enemyBase.animator.SetInteger("Anim", 1);
-            enemyBase.PlayerDirection = enemyBase.Player.transform.position - enemyBase.transform.position;
-            angle = Mathf.Atan2(enemyBase.PlayerDirection.y, enemyBase.PlayerDirection.x) * Mathf.Rad2Deg;
-            offset = 100f / (enemyBase.PlayerDistance + 1f) * moveRabge; // ‹——£‚ª‰“‚¢‚Ù‚Ç¬‚³‚­
+            enemyBase.PlayerDirection = ActiveTargetDirection;
+            angle = Mathf.Atan2(ActiveTargetDirection.y, ActiveTargetDirection.x) * Mathf.Rad2Deg;
+            offset = 100f / (ActiveTargetDistance + 1f) * moveRabge; // è·é›¢ãŒé ã„ã»ã©å°ã•ã
         }
         
 
@@ -127,7 +138,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
 
         Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
-        enemyBase.isPlayerLookBase();
+        LookAtActiveTarget();
 
         if (Target)
         {
@@ -145,7 +156,6 @@ public class SS_FairySpear_AI : EnemyMoveBase
         enemyBase.AttackCount += Time.deltaTime;
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
-
             enemyBase.animator.SetInteger("Anim", 2);
             enemyBase.AttackCount = 0;
             enemyBase.mode = EnemyBase.ModeType.M2;
@@ -159,7 +169,7 @@ public class SS_FairySpear_AI : EnemyMoveBase
                 enemyBase.animator.SetInteger("Anim", 5);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M3;
-                PlayerDirSave = enemyBase.PlayerDirection;
+                PlayerDirSave = TargetDirection;
 
 
                 if (AttackPhase == 1)
@@ -171,16 +181,17 @@ public class SS_FairySpear_AI : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 1.5f)
             {
                 enemyBase.animator.SetInteger("Anim", 3);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M4;
-                PlayerDirSave = enemyBase.PlayerDirection;
+                PlayerDirSave = TargetDirection;
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
 
-                AttackArea.SetActive(true);
+                ConfigureSummonedAttack(AttackArea);
+        AttackArea.SetActive(true);
             }
         }
         if (enemyBase.mode == EnemyBase.ModeType.M4)
@@ -190,10 +201,11 @@ public class SS_FairySpear_AI : EnemyMoveBase
                 enemyBase.rb.velocity = PlayerDirSave.normalized * (enemyBase.SPEED * DashSpeed);
                 if (enemyBase.AttackCount > DashRange)
                 {
-                    float playerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.transform.position);
-                    if (playerDistance < 1)
+                    float playerDistance = TargetDistance;
+                    // main ã¨åŒã˜å†çªé€²æ¡ä»¶ã€‚è·é›¢ã®å‚ç…§å…ƒã ã‘ CurrentTarget ã«çµ±ä¸€ã€‚
+                    if (playerDistance < 1f)
                     {
-                        Debug.Log("Äs“®");
+                        Debug.Log("å†è¡Œå‹•");
                         enemyBase.rb.velocity = enemyBase.rb.velocity * 0.1f;
                         enemyBase.animator.SetInteger("Anim", 5);
                         enemyBase.AttackCount = 0;
@@ -221,11 +233,11 @@ public class SS_FairySpear_AI : EnemyMoveBase
             }
             else if (AttackPhase == 2)
             {
-                // ”­Ë•ûŒü‚ğ³‹K‰»
+                // ç™ºå°„æ–¹å‘ã‚’æ­£è¦åŒ–
                 PlayerDirSave = PlayerDirSave.normalized;
 
-                // ’†SE¶E‰E‚Ì3•ûŒü‚ğì‚é
-                ShootBullet(PlayerDirSave); // ’†S
+                // ä¸­å¿ƒãƒ»å·¦ãƒ»å³ã®3æ–¹å‘ã‚’ä½œã‚‹
+                ShootBullet(PlayerDirSave); // ä¸­å¿ƒ
                 enemyBase.animator.SetInteger("Anim", 3);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M5;
@@ -251,24 +263,26 @@ public class SS_FairySpear_AI : EnemyMoveBase
     }
     public void Fire(Vector2 direction)
     {
-        // ”­Ë•ûŒü‚ğ³‹K‰»
+        // ç™ºå°„æ–¹å‘ã‚’æ­£è¦åŒ–
         direction = direction.normalized;
 
-        // ’†SE¶E‰E‚Ì3•ûŒü‚ğì‚é
-        ShootBullet(direction); // ’†S
-        ShootBullet(Rotate(direction, spreadAngle));  // ‰E
-        ShootBullet(Rotate(direction, -spreadAngle)); // ¶
+        // ä¸­å¿ƒãƒ»å·¦ãƒ»å³ã®3æ–¹å‘ã‚’ä½œã‚‹
+        ShootBullet(direction); // ä¸­å¿ƒ
+        ShootBullet(Rotate(direction, spreadAngle));  // å³
+        ShootBullet(Rotate(direction, -spreadAngle)); // å·¦
     }
 
     private void ShootBullet(Vector2 dir)
     {
         GameObject bullet = Instantiate(Arrow, transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(bullet);
+        ConfigureSummonedAttack(bullet);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         rb.velocity = dir * 1;
         Destroy(bullet,20);
     }
 
-    // •ûŒüƒxƒNƒgƒ‹‚ğŠp“x‚Å‰ñ“]‚³‚¹‚éŠÖ”
+    // æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’è§’åº¦ã§å›è»¢ã•ã›ã‚‹é–¢æ•°
     private Vector2 Rotate(Vector2 v, float degrees)
     {
         float rad = degrees * Mathf.Deg2Rad;

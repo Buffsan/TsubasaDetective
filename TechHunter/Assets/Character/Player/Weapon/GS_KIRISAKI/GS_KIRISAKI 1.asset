@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillImage: {fileID: 21300000, guid: f0e022b0555759944a26bb1454063320, type: 3}
   SkillName: "\u5965\u7FA9-\u9727\u88C2\u304D"
-  SkillMessage: "3\u79D2\u9593\u7121\u6575\u306B\u306A\u308B\u3002\u653B\u6483\u3092\u7121\u52B9\u5316\u3059\u308B\u5EA6\u306B\u9727\u3092\u767A\u751F\u3055\u305B\u3001\u7121\u6575\u7D42\u4E86\u6642\u306B\u65AC\u6483\u306B\u5909\u5316\u3055\u305B\u3066\u5468\u56F2\u3092\u5207\u308A\u523B\u3080\u3002"
+  SkillMessage: "3秒間無敵になる。攻撃を無効化するたびに霧を発生させる。\n無敵終了時、発生させた霧が斬撃に変わり、周囲を斬り刻む。"
   CoolTime: 69
   SkillData: {fileID: 7214290329064039677, guid: 8f1a632a59a4f5c4ba9fada3e037d658, type: 3}
   SkillDataList: []

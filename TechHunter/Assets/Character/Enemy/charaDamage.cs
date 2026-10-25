@@ -8,13 +8,12 @@ public class charaDamage : MonoBehaviour, IDamageable
     public EnemyBase OwnerEnemyBase => enemyBase;
     public Faction MyFactions => enemyBase != null ? enemyBase.Factions : Faction.None;
     [SerializeField] GameObject Coin;
-    CoinManager coinManager;
 
     public List<charaDamage> passDamageAreas = new List<charaDamage>();
     public int DamageType = 0;
-    //ƒ_ƒ[ƒW‚ğ©g‚É•ÏŠ·
-    //ƒ_ƒ[ƒW‚ğpassDamageAreas[0]‚É•ÏŠ·
-    //ƒ_ƒ[ƒW‚ğpassDamageAreas[x]‘S‚Ä‚É•ÏŠ·
+    //ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’è‡ªèº«ã«å¤‰æ›
+    //ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’passDamageAreas[0]ã«å¤‰æ›
+    //ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’passDamageAreas[x]å…¨ã¦ã«å¤‰æ›
 
     public List<ActiveBuff> buffs = new();
 
@@ -35,6 +34,12 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     AudioManager audioManager => AudioManager.instance;
 
+    float CameraShakeDertionNormal = 0.1f;
+    float CameraShakeStrengthNormal = 0.1f;
+    float CameraShakeDertionVeteran = 0.2f;
+    float CameraShakeStrengthVeteran = 0.2f;
+    float CameraShakeDertionElite = 0.2f;
+    float CameraShakeStrengthElite = 0.4f;
 
     private void Start()
     {
@@ -42,7 +47,6 @@ public class charaDamage : MonoBehaviour, IDamageable
         Stan = enemyBase.StanHP;
         ConfusionHP = enemyBase.ConfusionHP;
 
-        coinManager = Coin.GetComponent<CoinManager>();
         enemyBase.DefaltColor = enemyBase.spriteRenderer.color;
     }
 
@@ -59,7 +63,7 @@ public class charaDamage : MonoBehaviour, IDamageable
 
             if (active.statuseffectdata.effecttype == buffData.effecttype)
             {
-                // Œø‰ÊŠÔ‚¾‚¯‰„’·
+                // åŠ¹æœæ™‚é–“ã ã‘å»¶é•·
                 active.remainTime += buffData.Duration;
                 return;
             }
@@ -84,37 +88,79 @@ public class charaDamage : MonoBehaviour, IDamageable
             }
         }
 
-        // ‰‚ß‚Ä‚È‚ç’Ç‰Á
+        // åˆã‚ã¦ãªã‚‰è¿½åŠ 
         buffs.Add(activeBuff);
     }
 
+    // Each damage chain has a unique token: cycles cannot recurse indefinitely.
+    static uint damageTraversalSerial;
+    uint lastDamageTraversal;
+    bool reportedDamageCycle;
+
     public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical)
     {
-        if (isDead) return;
+        uint token = ++damageTraversalSerial;
+        if (token == 0) token = ++damageTraversalSerial;
+        ForwardDamage(Attackvalue, Stanvalue, ConfusionPower, Critical, token);
+    }
 
-        if (DamageType != 0 && passDamageAreas.Count == 0)
+    void ForwardDamage(float attack, float stagger, float confusion, bool critical, uint token)
+    {
+        if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die) return;
+        if (lastDamageTraversal == token)
         {
-            Debug.Log("ƒ_ƒ[ƒW‚ğ‰Ÿ‚µ•t‚¯‚éˆ—‚È‚Ì‚É‰Ÿ‚µ‚Â‚¯æ‚ª‚¢‚È‚¢@‚Ğ‚Ç‚¢‚æ‚Ì‚È‚©");
+            if (!reportedDamageCycle)
+            {
+                Debug.LogWarning("Damage forwarding cycle or duplicate path on " + name, this);
+                reportedDamageCycle = true;
+            }
             return;
         }
+        lastDamageTraversal = token;
+
         switch (DamageType)
         {
-
             case 0:
-                receiveDamage(Attackvalue, Stanvalue, ConfusionPower, Critical);
+                receiveDamage(attack, stagger, confusion, critical);
                 break;
             case 1:
-                passDamageAreas[0].Damage(Attackvalue, Stanvalue, ConfusionPower, Critical);
+                if (passDamageAreas.Count > 0 && passDamageAreas[0] != null)
+                    passDamageAreas[0].ForwardDamage(attack, stagger, confusion, critical, token);
                 break;
             case 2:
-                foreach (var d in passDamageAreas)
-                {
-                    d.Damage(Attackvalue, Stanvalue, ConfusionPower, Critical);
-                }
+                foreach (charaDamage receiver in passDamageAreas)
+                    if (receiver != null)
+                        receiver.ForwardDamage(attack, stagger, confusion, critical, token);
                 break;
         }
+    }
 
+    void isDieCameraShake(charadata data) 
+    {
 
+        switch (data.enemyStrength) 
+        {
+
+            case charadata.EnemyStrength.None:
+                
+                break;
+            case charadata.EnemyStrength.Fodder:
+                
+                break;
+            case charadata.EnemyStrength.Normal:
+                enemyBase.ALL_System.camera_Controller.Shake(CameraShakeDertionNormal,CameraShakeStrengthNormal);
+                break;
+            case charadata.EnemyStrength.Veteran:
+                enemyBase.ALL_System.camera_Controller.Shake(CameraShakeDertionNormal, CameraShakeStrengthNormal);
+                break;
+            case charadata.EnemyStrength.Elite:
+                enemyBase.ALL_System.camera_Controller.Shake(CameraShakeDertionElite, CameraShakeStrengthElite);
+                break;
+            case charadata.EnemyStrength.Boss:
+                
+                break;
+
+        }
 
     }
 
@@ -140,7 +186,7 @@ public class charaDamage : MonoBehaviour, IDamageable
         enemyBase.TakeDamageColor();
         ConfusionHP -= (Attackvalue * HP_percent) * ConfusionPower;
         if (1 - (ConfusionHP / enemyBase.ConfusionHP) > enemyBase.HP / enemyBase.MAXHP && enemyBase.status != EnemyBase.Status.ConfusionResistance)
-        {//¬—
+        {//æ··ä¹±
 
             audioManager.PlaySE(enemyBase.ConfusionAudio);
             enemyBase.status = EnemyBase.Status.ConfusionResistance;
@@ -195,14 +241,14 @@ public class charaDamage : MonoBehaviour, IDamageable
 
                 case StatusEffect.StatusEffectType.ElectricShock:
 
-                    // Š´“dˆ—
+                    // æ„Ÿé›»å‡¦ç†
                     if (buff.tickTimer >= buff.statuseffectdata.TickTime)
                     {
                         buff.tickTimer = 0;
 
                         audioManager.PlaySE(buff.audioClips[0]);
                         Damage(0.1f, 9, 2, false);
-                        //Š´“d
+                        //æ„Ÿé›»
                     }
                     break;
             }
@@ -233,8 +279,39 @@ public class charaDamage : MonoBehaviour, IDamageable
             ConfusionHP = enemyBase.ConfusionHP;
         }
     }
+    string GetHierarchyPath()
+    {
+        string path = gameObject.name;
+        Transform current = transform.parent;
+        while (current != null)
+        {
+            path = current.name + "/" + path;
+            current = current.parent;
+        }
+        return path;
+    }
+
+    bool loggedMissingEnemyBase;
+
     private void FixedUpdate()
     {
+        if (enemyBase == null)
+        {
+            // ç”Ÿæˆã•ã‚ŒãŸåˆ¤å®šãŒæœ¬ä½“ã®å‚ç…§ã‚’å¤±ã£ãŸå ´åˆã€è¦ªã‹ã‚‰å¾©å…ƒã™ã‚‹ã€‚
+            enemyBase = GetComponentInParent<EnemyBase>();
+            if (enemyBase == null)
+            {
+                // åŒã˜ã‚¨ãƒ©ãƒ¼ã‚’æ¯FixedUpdateã§å‡ºã•ãšã€åŸå› ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å ±å‘Šã™ã‚‹ã€‚
+                if (!loggedMissingEnemyBase)
+                {
+                    Debug.LogError("charaDamage: EnemyBaseã®å‚ç…§ãŒã‚ã‚Šã¾ã›ã‚“ã€‚Object: " +
+                        gameObject.name + " / Hierarchy: " + GetHierarchyPath(), this);
+                    loggedMissingEnemyBase = true;
+                }
+                return;
+            }
+            loggedMissingEnemyBase = false;
+        }
 
         HP_percent = (enemyBase.HP / enemyBase.MAXHP);
 
@@ -305,9 +382,10 @@ public class charaDamage : MonoBehaviour, IDamageable
             {
                 DieCount += Time.fixedDeltaTime;
             }
-            else
+            else if (enemyBase.TryStartDeathCleanup())
             {
-                Instantiate(enemyBase.DieEffect, transform.position, Quaternion.identity);
+                if (enemyBase.DieEffect != null)
+                    Instantiate(enemyBase.DieEffect, enemyBase.transform.position, Quaternion.identity);
                 Destroy(enemyBase.gameObject);
             }
         }
@@ -316,10 +394,10 @@ public class charaDamage : MonoBehaviour, IDamageable
     private bool isDead = false;
     public void Death()
     {
+        if (isDead || !enemyBase.TryStartDeath()) return;
+        isDead = true;
+        isDieCameraShake(enemyBase.charadata);
         enemyBase.status = EnemyBase.Status.Die;
-        //Debug.Log("‚µ‚ñ‚¾");
-        if (isDead) return;   // Šù‚É€–Sˆ—’†‚È‚ç‰½‚à‚µ‚È‚¢
-        isDead = true;        // ‚±‚±‚ÅÅ‰‚ÉƒƒbƒN‚ğ‚©‚¯‚é
 
 
         enemyBase.animator.SetBool("Damage", true);
@@ -333,56 +411,25 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     void isDamageTextPop(float value, int PP, bool Criticul)
     {
-        // ƒv[ƒ‹‚©‚çæ“¾
+        // ãƒ—ãƒ¼ãƒ«ã‹ã‚‰å–å¾—
         GameObject obj = DamageTextPool.instance.Get();
 
-        // ˆÊ’u’²®
+        // ä½ç½®èª¿æ•´
         Vector3 pos = enemyBase.transform.position;
         pos.y += 1;
         obj.transform.position = pos;
 
-        // î•ñƒZƒbƒg
+        // æƒ…å ±ã‚»ãƒƒãƒˆ
         DamageText text = obj.GetComponent<DamageText>();
-        text.isChangeText(value);
-        text.Criticul = Criticul;
+        text.Configure(value, Criticul);
 
     }
     void CoinDrop()
     {
-        int remain = enemyBase.GOLD;
-
-        int[] values = {
-        coinManager.CrystalValue,
-        coinManager.GoaldValue,
-        coinManager.SilverValue,
-        coinManager.CopperValue
-    };
-
-        CoinManager.CoinType[] types = {
-        CoinManager.CoinType.CrystalCoin,
-        CoinManager.CoinType.GoaldCoin,
-        CoinManager.CoinType.SilverCoin,
-        CoinManager.CoinType.CopperCoin
-    };
-
-        for (int i = 0; i < values.Length; i++)
-        {
-            int count = remain / values[i];
-            remain %= values[i];
-
-            for (int j = 0; j < count; j++)
-            {
-                // ¥ Instantiate ‚Ì‘ã‚í‚è‚Éƒv[ƒ‹‚©‚çæ“¾‚·‚é
-                GameObject coinObj = CoinPool.Instance.GetCoin(transform.position);
-
-                CoinManager coin = coinObj.GetComponent<CoinManager>();
-                coin.coinType = types[i];
-
-                // SystemManager ‚Ì coinManagers “o˜^i‚ ‚È‚½‚Ìd—l‚É‡‚í‚¹‚éj
-                enemyBase.ALL_System.systemManager.coinManagers.Add(coin);
-            }
-        }
-
+        // Defer coin creation until all deaths this frame have been collected.
+        // Each request retains the dying enemy's location.
+        if (CoinPool.Instance != null)
+            CoinPool.Instance.RequestDrop(enemyBase.GOLD, enemyBase.transform.position);
     }
 
     float TakeElectricDamage()

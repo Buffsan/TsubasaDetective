@@ -13,27 +13,247 @@ public class EnemyMoveBase : MonoBehaviour
     [HideInInspector] public List<GameObject> Clone_DengerObjects = new List<GameObject>();
 
     public AudioManager AUDIO_manager => AudioManager.instance;
+
+    // 個別AI向けのターゲット参照。PlayerOnlyではこれまでどおりプレイヤー。
+    protected Transform CurrentTarget
+    {
+        get
+        {
+            EnemyContoroller controller = enemyBase as EnemyContoroller;
+            if (controller != null)
+            {
+                if (controller.CurrentTarget != null) return controller.CurrentTarget;
+                if (controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+                    return enemyBase.Player != null ? enemyBase.Player.transform : null;
+                return null;
+            }
+            Boss_Controller boss = enemyBase as Boss_Controller;
+            if (boss != null) return boss.CurrentTarget;
+            return enemyBase != null && enemyBase.Player != null
+                ? enemyBase.Player.transform : null;
+        }
+    }
+
+    protected Vector3 TargetPosition
+    {
+        get
+        {
+            Transform target = CurrentTarget;
+            return target != null ? target.position :
+                (enemyBase != null ? enemyBase.transform.position : Vector3.zero);
+        }
+    }
+
+
+    // PlayerOnlyでは旧AIのPlayerDirection/PlayerDistanceの保存値をそのまま返す。
+    // 既存の PlayerDistance = 1000 による攻撃抑制も維持する。
+    protected bool UsesLegacyPlayerTarget
+    {
+        get
+        {
+            if (enemyBase == null) return true;
+            EnemyContoroller controller = enemyBase as EnemyContoroller;
+            if (controller != null)
+                return controller.TargetMode == EnemyContoroller.TargetType.PlayerOnly;
+            Boss_Controller boss = enemyBase as Boss_Controller;
+            if (boss != null)
+                return boss.TargetMode == EnemyContoroller.TargetType.PlayerOnly;
+            return true;
+        }
+    }
+
+    protected Vector2 TargetDirection
+    {
+        get
+        {
+            if (enemyBase == null) return Vector2.zero;
+            if (UsesLegacyPlayerTarget) return enemyBase.PlayerDirection;
+            return CurrentTarget != null
+                ? (Vector2)TargetPosition - (Vector2)enemyBase.transform.position : Vector2.zero;
+        }
+    }
+
+    protected float TargetDistance
+    {
+        get
+        {
+            if (enemyBase == null) return float.PositiveInfinity;
+            if (UsesLegacyPlayerTarget) return enemyBase.PlayerDistance;
+            return CurrentTarget != null
+                ? Vector2.Distance(TargetPosition, enemyBase.transform.position)
+                : float.PositiveInfinity;
+        }
+    }
+
+    protected void RefreshTargetInfo()
+    {
+        if (enemyBase == null || CurrentTarget == null) return;
+        if (UsesLegacyPlayerTarget)
+        {
+            Vector2 direction = (Vector2)TargetPosition - (Vector2)enemyBase.transform.position;
+            enemyBase.PlayerDirection = direction;
+            enemyBase.PlayerDistance = direction.magnitude;
+        }
+    }
+
+    protected void LookAtCurrentTarget()
+    {
+        if (enemyBase == null || CurrentTarget == null) return;
+        RefreshTargetInfo();
+        enemyBase.isTargetLook(TargetPosition);
+    }
+
+    // warningType: 0=四角 / 1=円 / 2=半円。
+    // 共通リスト未設定なら既存Prefabへフォールバックし、旧敵の表示を維持する。
+    public GameObject SpawnAttackWarning(int warningType, GameObject fallbackPrefab,
+        Vector3 position, Quaternion rotation, float duration, Transform parent = null,
+        float extraLifetime = 0.2f, bool syncAnimation = true,
+        Vector3? localScale = null)
+    {
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null)
+        {
+            // 既存の敵固有Prefabを優先する。共通リスト[0]で上書きすると
+            // 警告の幅・長さ・子階層のスケール等が失われるため。
+            if (fallbackPrefab != null)
+                return controller.SpawnAttackWarningPrefab(fallbackPrefab, position, rotation,
+                    duration, parent, extraLifetime, syncAnimation, localScale);
+
+            if (controller.HasAttackWarningPrefab(warningType))
+                return controller.SpawnAttackWarning(warningType, position, rotation,
+                    duration, parent, extraLifetime, syncAnimation, localScale);
+
+            // 新規のタイプ指定でPrefabが未登録ならControllerが警告を出す。
+            return controller.SpawnAttackWarning(warningType, position, rotation,
+                duration, parent, extraLifetime, syncAnimation, localScale);
+        }
+
+        // ボスからEnemyMoveBase派生AIを使用する場合もBoss_Controller側で一括管理。
+        Boss_Controller boss = enemyBase as Boss_Controller;
+        if (boss != null)
+        {
+            if (fallbackPrefab != null)
+                return boss.SpawnAttackWarningPrefab(fallbackPrefab, position, rotation,
+                    duration, parent, extraLifetime, syncAnimation, localScale);
+            return boss.SpawnAttackWarning(warningType, position, rotation,
+                duration, parent, extraLifetime, syncAnimation, localScale);
+        }
+
+        // EnemyContoroller以外の旧AIも従来どおり生成可能。
+        if (fallbackPrefab == null) return null;
+        GameObject instance = Instantiate(fallbackPrefab, position, rotation, parent);
+        if (localScale.HasValue) instance.transform.localScale = localScale.Value;
+        if (syncAnimation && duration > 0f)
+        {
+            SaveComponent save = instance.GetComponentInChildren<SaveComponent>(true);
+            if (save != null && save.animator != null)
+                save.animator.speed = 1f / duration;
+        }
+        Destroy(instance, Mathf.Max(0.01f, duration + extraLifetime));
+        return instance;
+    }
+
+    // 既存のEnemyMoveBase.DengerAreaSpawn呼び出しを残す。
     public GameObject DengerAreaSpawn(GameObject Effect, Vector2 Pos, float AnimationSpeed)
     {
-
-        GameObject CL_dengerArea = Instantiate(Effect, Pos, Quaternion.identity);
-        Clone_DengerObjects.Add(CL_dengerArea);
-        SaveComponent saveComponent = CL_dengerArea.GetComponent<SaveComponent>();
-        saveComponent.animator.speed = 1.0f / AnimationSpeed;
-        Destroy(CL_dengerArea, AnimationSpeed + 0.2f);
-        return CL_dengerArea;
+        GameObject warning = SpawnAttackWarning(EnemyContoroller.WarningRectangle,
+            Effect, Pos, Quaternion.identity, AnimationSpeed);
+        if (warning != null) Clone_DengerObjects.Add(warning);
+        return warning;
     }
+
+    // 新しい敵はPrefabを指定せず、共通リストの警告タイプだけで呼べる。
+    public GameObject DengerAreaSpawn(int warningType, Vector2 pos, float duration)
+    {
+        GameObject warning = SpawnAttackWarning(warningType, null,
+            pos, Quaternion.identity, duration);
+        if (warning != null) Clone_DengerObjects.Add(warning);
+        return warning;
+    }
+
+    // 生成された攻撃判定には、Prefabの攻撃倍率・派閥設定を維持したまま攻撃者を割り当てる。
+    // 敵本体や演出PrefabなどEnemyAttackを持たないオブジェクトは変更しない。
+    public void ConfigureSummonedAttack(GameObject instance)
+    {
+        ConfigureSpawnedAttack(instance);
+    }
+
+    protected void ConfigureSpawnedAttack(GameObject instance)
+    {
+        if (instance == null || enemyBase == null) return;
+        EnemyAttack[] attacks = instance.GetComponentsInChildren<EnemyAttack>(true);
+        foreach (EnemyAttack attack in attacks)
+        {
+            if (attack != null)
+            {
+                EnemyContoroller controller = enemyBase as EnemyContoroller;
+                if (controller != null)
+                    controller.ConfigureAttackTarget(attack);
+                else
+                    attack.ConfigureAttack(enemyBase, attack.AttackPowerPercent);
+            }
+        }
+    }
+
     public void SpawnObjectNow(GameObject SpawnObject , Vector2 Target , float DestroyTime) 
     { 
         GameObject CL_Object = Instantiate(SpawnObject,Target,Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Object);
         Destroy(CL_Object,DestroyTime);
     }
     public GameObject SpawnObjectNow_Input(GameObject SpawnObject, Vector2 Target, float DestroyTime)
     {
         GameObject CL_Object = Instantiate(SpawnObject, Target, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Object);
         Destroy(CL_Object, DestroyTime);
         return CL_Object;
     }
+    // 敵本体の召喚だけに適用。弾・攻撃判定・演出オブジェクトは変更しない。
+    // NoList召喚は通常戦闘では従来どおり一覧へ追加しない。
+    protected GameObject InitializeSummonedEnemy(GameObject instance, bool registerInAllEnemy)
+    {
+        if (instance == null) return null;
+
+        EnemyBase summoned = instance.GetComponent<EnemyBase>();
+        EnemyContoroller owner = enemyBase as EnemyContoroller;
+        if (owner == null) owner = GetComponentInParent<EnemyContoroller>();
+        if (owner != null && summoned != null)
+            owner.CopyTargetSettingsTo(summoned);
+
+        // SpawnEnemySpawnは従来どおり必ずAllEnemyに登録する。
+        // NoListは通常戦闘で登録せず、敵VS敵だけ探索対象に加える。
+        bool needsRegistration = registerInAllEnemy ||
+            (summoned != null && owner != null &&
+             owner.TargetMode != EnemyContoroller.TargetType.PlayerOnly);
+        if (needsRegistration)
+        {
+            SystemManager manager = SystemManager.Instance;
+            if (manager == null && ALL_SystemManager.Instance != null)
+                manager = ALL_SystemManager.Instance.systemManager;
+            if (manager != null && manager.AllEnemy != null &&
+                !manager.AllEnemy.Contains(instance))
+                manager.AllEnemy.Add(instance);
+        }
+
+        if (summoned == null) return instance;
+        if (owner != null && owner.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+        {
+            EnemyContoroller child = summoned as EnemyContoroller;
+            if (child != null)
+            {
+                foreach (EnemyAttack attack in child.GetComponentsInChildren<EnemyAttack>(true))
+                    child.ConfigureAttackTarget(attack);
+                child.RefreshSummonedTarget();
+            }
+            else
+            {
+                CG_Knght knight = summoned as CG_Knght;
+                if (knight != null) knight.RefreshSummonedTarget();
+            }
+        }
+        return instance;
+    }
+
     public GameObject SpawnEnemySpawn(
     GameObject enemy,
     Vector2 targetPos,
@@ -43,10 +263,10 @@ public class EnemyMoveBase : MonoBehaviour
         Tilemap tilemap =
             ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.StandFloor;
 
-        // ���S�Z��
+        // 中心セル
         Vector3Int centerCell = tilemap.WorldToCell(targetPos);
 
-        // �����_���p�x
+        // ランダム角度
         float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
 
         int dx = Mathf.RoundToInt(Mathf.Cos(angle) * tileDistance);
@@ -55,7 +275,7 @@ public class EnemyMoveBase : MonoBehaviour
         Vector3Int spawnCell =
             centerCell + new Vector3Int(dx, dy, 0);
 
-        // �t�H�[���o�b�N�F���S�Z��
+        // フォールバック：中心セル
         if (!tilemap.HasTile(spawnCell))
         {
             spawnCell = centerCell;
@@ -71,8 +291,7 @@ public class EnemyMoveBase : MonoBehaviour
             ALL_SystemManager.Instance.enemySpawnBASE
                 .Seve_TileMap_C.EnemysObject.transform;
 
-        ALL_SystemManager.Instance.systemManager
-            .AllEnemy.Add(enemyObj);
+        InitializeSummonedEnemy(enemyObj, true);
 
         return enemyObj;
     }
@@ -81,6 +300,7 @@ public class EnemyMoveBase : MonoBehaviour
 
         GameObject CL_enemy = Instantiate(enemy, targetPos, rotate);
         CL_enemy.transform.parent = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.EnemysObject.transform;
+        InitializeSummonedEnemy(CL_enemy, false);
         return CL_enemy;
     }
     public void AttackNext() 
@@ -108,6 +328,21 @@ public class EnemyMoveBase : MonoBehaviour
     {
 
     }
+    // EnemyOnlyで攻撃対象がいなくなった際、1回だけ呼ばれる。
+    public virtual void EnemyFriendlyEnter()
+    {
+    }
+
+    // EnemyOnlyで攻撃対象がいない間、毎FixedUpdate呼ばれる。
+    public virtual void EnemyFriendlyPlay()
+    {
+    }
+
+    // 敵対勢力が現れ、通常戦闘に戻る際、1回だけ呼ばれる。
+    public virtual void EnemyFriendlyExit()
+    {
+    }
+
     public virtual void EnemyConfusionPlay() 
     { 
     

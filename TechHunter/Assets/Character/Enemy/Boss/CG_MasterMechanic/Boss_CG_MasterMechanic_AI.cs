@@ -23,6 +23,12 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
     [SerializeField] GameObject Tank;
     [SerializeField] int SpawnCount = 0;
 
+    [Header("Enemy cannon launch")]
+    [SerializeField] float EnemyThrowDuration = 1.2f;
+    [SerializeField] float EnemyThrowArcHeight = 4f;
+    [SerializeField] float EnemyThrowRotationSpeed = 1440f;
+    int nextEnemyCannon = 0;
+
     int MaxSpawnEnemyCount = 20;
     int SpawnEnemyCount = 0;
 
@@ -60,16 +66,16 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             {
                 flag = true;
                 for (int i = 0; i < 50; i++)
-                    StartCoroutine(LateSpawnEnemy((float)i / 15, StarongKnight, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
+                    StartCoroutine(LateThrowEnemy((float)i / 15, StarongKnight, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
 
                 for (int i = 0; i < 1; i++)
-                    EnemySpawn(Tank, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position);
+                    StartCoroutine(LateThrowEnemy(0f, Tank, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
             }
         }
 
         if (enemyBase.moveType != EnemyBase.MoveType.Attack)
         {
-            enemyBase.rb.velocity = (enemyBase.playerController.transform.position - transform.position).normalized * enemyBase.SPEED;
+            enemyBase.rb.velocity = (TargetPosition - transform.position).normalized * enemyBase.SPEED;
             enemyBase.animator.SetInteger("Anim", 0);
             AttackWaitTime += Time.deltaTime;
 
@@ -92,10 +98,10 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
                         {
                             SpawnEnemyCount++;
                             for (int i = 0; i < 25; i++)
-                                StartCoroutine(LateSpawnEnemy((float)i / 10, StarongKnight, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
+                                StartCoroutine(LateThrowEnemy((float)i / 10, StarongKnight, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
 
                             for (int i = 0; i < 1; i++)
-                                EnemySpawn(StorongSpier, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position);
+                                StartCoroutine(LateThrowEnemy(0f, StorongSpier, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position));
                         }
                     }
                     else 
@@ -277,7 +283,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
         {
             GameObject denger = DengerAreaSpawn(DengerObjects[0], transform.position, 2);
 
-            SaveDirection = enemyBase.playerController.transform.position - transform.position;
+            SaveDirection = TargetPosition - transform.position;
             denger.transform.up = SaveDirection;
             
             NextPhase();
@@ -345,7 +351,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             );
 
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
-        Vector2 direction = (Vector2)enemyBase.playerController.transform.position - shotPos;
+        Vector2 direction = (Vector2)TargetPosition - shotPos;
         CL_Arrow.transform.up = direction;
         CL_Arrow.transform.Rotate(0, 0, 90);
         rb.velocity = direction.normalized * ArrowSpeed;
@@ -364,14 +370,74 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             );
 
         Mortar_Controller mortar = CL_Arrow.GetComponent<Mortar_Controller>();
-        mortar.ChangePos(enemyBase.Player.transform.position + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
+        mortar.ChangePos(TargetPosition + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
         mortar.enemyBase = enemyBase;
         mortar.AttackArea = S_AttackArea;
 
     }
-    IEnumerator LateSpawnEnemy(float WaitTime,GameObject Enemy,Vector2 pos)
+    // 砲台から敵の外見を投擲し、着地時に本物の敵を召喚する。
+    // 飛行中にAIや当たり判定を起動させないため、投擲表示はSpriteRendererのみを使う。
+    IEnumerator LateThrowEnemy(float waitTime, GameObject enemyPrefab, Vector2 landingPos)
     {
-        yield return new WaitForSeconds(WaitTime);
-        EnemySpawn(Enemy,pos);
+        if (waitTime > 0f)
+            yield return new WaitForSeconds(waitTime);
+
+        if (enemyPrefab == null || HoudanShotPoint == null || HoudanShotPoint.Count == 0)
+        {
+            // 砲台未設定時は既存の召喚を維持する。
+            EnemySpawn(enemyPrefab, landingPos);
+            yield break;
+        }
+
+        // 4基を順番に使用。リストの要素数が異なる場合も対応。
+        GameObject cannon = HoudanShotPoint[nextEnemyCannon % HoudanShotPoint.Count];
+        nextEnemyCannon++;
+        if (cannon == null)
+        {
+            EnemySpawn(enemyPrefab, landingPos);
+            yield break;
+        }
+
+        Vector2 launchPos = cannon.transform.position;
+        GameObject thrownVisual = new GameObject(enemyPrefab.name + "_ThrownVisual");
+        thrownVisual.transform.position = launchPos;
+
+        SpriteRenderer source = null;
+        foreach (SpriteRenderer renderer in enemyPrefab.GetComponentsInChildren<SpriteRenderer>(true))
+        {
+            if (renderer.sprite != null)
+            {
+                source = renderer;
+                break;
+            }
+        }
+
+        if (source != null)
+        {
+            SpriteRenderer visual = thrownVisual.AddComponent<SpriteRenderer>();
+            visual.sprite = source.sprite;
+            visual.color = source.color;
+            visual.flipX = landingPos.x < launchPos.x;
+            visual.flipY = source.flipY;
+            visual.sortingLayerID = source.sortingLayerID;
+            visual.sortingOrder = source.sortingOrder;
+            thrownVisual.transform.localScale = source.transform.lossyScale;
+        }
+
+        float duration = Mathf.Max(0.01f, EnemyThrowDuration);
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            Vector2 position = Vector2.Lerp(launchPos, landingPos, t);
+            position.y += Mathf.Sin(t * Mathf.PI) * EnemyThrowArcHeight;
+            thrownVisual.transform.position = position;
+            thrownVisual.transform.Rotate(0f, 0f, EnemyThrowRotationSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        Destroy(thrownVisual);
+        EnemySpawn(enemyPrefab, landingPos);
     }
 }

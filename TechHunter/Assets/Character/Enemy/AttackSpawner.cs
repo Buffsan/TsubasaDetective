@@ -15,7 +15,7 @@ public class AttackSpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// UŒ‚EƒGƒtƒFƒNƒg‚ğ¶¬‚·‚é
+    /// æ”»æ’ƒãƒ»ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆã™ã‚‹
     /// </summary>
     public void Spawn(
      GameObject attackPrefab,
@@ -24,23 +24,24 @@ public class AttackSpawner : MonoBehaviour
      float lifeTime,
      Transform parent = null)
     {
-        // ƒv[ƒ‹‚©‚çæ“¾
-        var obj = ObjectPoolManager.Instance.Get(attackPrefab);
+        // ãƒ—ãƒ¼ãƒ«ã‹ã‚‰å–å¾—
+        var obj = ObjectPoolManager.Instance.Get(attackPrefab, true, false);
         if (obj == null) return;
 
-        // e ¨ ƒ[ƒ‹ƒhÀ•W‚ğˆÛ
+        // è¦ª â†’ ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’ç¶­æŒ
         obj.transform.SetParent(parent, false);
 
-        // ˆÊ’uE‰ñ“]‚ğ”½‰f
+        // ä½ç½®ãƒ»å›è»¢ã‚’åæ˜ 
         obj.transform.SetPositionAndRotation(pos, rot);
 
-        // PoolAutoReturn ‚ª‚È‚¯‚ê‚Î•t‚¯‚é
+        // PoolAutoReturn ãŒãªã‘ã‚Œã°ä»˜ã‘ã‚‹
         if (!obj.TryGetComponent<PoolAutoReturn>(out var autoReturn))
         {
             autoReturn = obj.AddComponent<PoolAutoReturn>();
         }
 
-        // õ–½ŠJn
+        // å¯¿å‘½é–‹å§‹
+        ObjectPoolManager.Instance.Activate(obj);
         autoReturn.StartLife(
             ObjectPoolManager.Instance,
             attackPrefab,

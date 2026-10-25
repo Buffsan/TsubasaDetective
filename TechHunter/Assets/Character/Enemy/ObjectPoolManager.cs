@@ -22,26 +22,33 @@ public class ObjectPoolManager : MonoBehaviour
         Instance = this;
     }
 
-    public GameObject Get(GameObject prefab)
+    // Critical hitboxes must not disappear when the visual pool limit is reached.
+    public GameObject Get(GameObject prefab, bool essential = false, bool activate = true)
     {
         if (!pools.ContainsKey(prefab))
             CreatePool(prefab, initialSize);
 
         if (pools[prefab].Count == 0)
         {
-            if (poolCount[prefab] < maxSize)
-                CreatePool(prefab, expandSize);
+            if (essential)
+                CreatePool(prefab, Mathf.Max(1, expandSize));
+            else if (poolCount[prefab] < maxSize)
+                CreatePool(prefab, Mathf.Min(Mathf.Max(1, expandSize), maxSize - poolCount[prefab]));
             else
-                return null; // ãŒÀ’´‚¦ ¨ ‰‰oÈ—ª
+                return null; // Safe to omit non-essential effects
         }
 
         var obj = pools[prefab].Dequeue();
-        obj.SetActive(true);
-
-        if (obj.TryGetComponent<IPoolable>(out var p))
-            p.OnSpawn();
-
+        if (activate) Activate(obj);
         return obj;
+    }
+
+    public void Activate(GameObject obj)
+    {
+        if (obj == null) return;
+        obj.SetActive(true);
+        if (obj.TryGetComponent<IPoolable>(out var poolable))
+            poolable.OnSpawn();
     }
 
     public void Release(GameObject prefab, GameObject obj)
@@ -57,7 +64,7 @@ public class ObjectPoolManager : MonoBehaviour
 
         obj.SetActive(false);
 
-        // š •K‚¸ PoolManager ‚Ìq‹Ÿ‚É–ß‚·
+        // â˜… å¿…ãš PoolManager ã®å­ä¾›ã«æˆ»ã™
         obj.transform.SetParent(transform, false);
 
         pools[prefab].Enqueue(obj);
@@ -73,7 +80,7 @@ public class ObjectPoolManager : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            // š ‚±‚±‚ªƒ|ƒCƒ“ƒg
+            // â˜… ã“ã“ãŒãƒã‚¤ãƒ³ãƒˆ
             var obj = Instantiate(prefab, transform);
 
             obj.SetActive(false);

@@ -8,9 +8,15 @@ using UnityEngine.Rendering.Universal;
 
 public class EnemyBase : MonoBehaviour
 {
-    [Header("�h���ݒ�")]
+    [Header("”h”´Ý’è")]
     [SerializeField] Faction factions = Faction.None;
     public Faction Factions => factions;
+
+    // 模擬戦でのみ使用する一時的な派閥変更。
+    public void SetDebugFaction(Faction debugFaction)
+    {
+        factions = debugFaction;
+    }
 
     public charadata charadata;
     public CutSceneData CutSceneData;
@@ -114,6 +120,25 @@ public class EnemyBase : MonoBehaviour
         MovieStay
     }
     public Status status = Status.Nomal;
+
+    // 複数の charaDamage が同じ EnemyBase を参照しても、撃破処理は敵ごとに一度だけ。
+    bool deathStarted;
+    bool deathCleanupStarted;
+
+    public bool TryStartDeath()
+    {
+        if (deathStarted) return false;
+        deathStarted = true;
+        return true;
+    }
+
+    public bool TryStartDeathCleanup()
+    {
+        if (deathCleanupStarted) return false;
+        deathCleanupStarted = true;
+        return true;
+    }
+
     public int MoviePhase = 0;
     private void Awake()
     {

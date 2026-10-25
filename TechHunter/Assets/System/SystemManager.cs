@@ -95,7 +95,7 @@ public class SystemManager : MonoBehaviour
 
     private void OnDisable()
     {
-        // ÉCÉxÉìÉgçwì«ÇâèúÅiñYÇÍÇÈÇ∆ÉoÉOÇÃå¥àˆÅj
+        // „Ç§„Éô„É≥„ÉàË≥ºË™≠„ÇíËß£Èô§ÔºàÂøò„Çå„Çã„Å®„Éê„Ç∞„ÅÆÂéüÂõ†Ôºâ
         GlobalEvents.OnPlayerDie -= OnPlayerDie;
     }
     public void OnPlayerDie(float damage)
@@ -113,7 +113,7 @@ public class SystemManager : MonoBehaviour
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
-        // ÉrÉãÉhå„ÇÃé¿çsÉtÉ@ÉCÉãÇèIóπ
+        // „Éì„É´„ÉâÂæå„ÅÆÂÆüË°å„Éï„Ç°„Ç§„É´„ÇíÁµÇ‰∫Ü
         Application.Quit();
 #endif
         }
@@ -126,10 +126,10 @@ public class SystemManager : MonoBehaviour
             }
             else
             {
-                if (AllEnemy.Count == 0)
+                if (AllEnemy.Count == 0 && (enemySpawn == null || enemySpawn.PendingSpawnCount == 0))
                 {
                     WaitEnemyDieCount = 0;
-                    //Debug.Log("ëSàıéÄÇÒÇæÅI");
+                    //Debug.Log("ÂÖ®Âì°Ê≠ª„Çì„Å†ÔºÅ");
                     gameMode = GameMode.Result;
                     mode = ModeType.M1;
                 }
@@ -209,7 +209,7 @@ public class SystemManager : MonoBehaviour
         controller.transform.position = Vector2.zero;
 
         int i = 0;
-        foreach (SkillInfo skill in controller.skillINFO) //í èÌçUåÇà”äOçÌèú
+        foreach (SkillInfo skill in controller.skillINFO) //ÈÄöÂ∏∏ÊîªÊíÉÊÑèÂ§ñÂâäÈô§
         {
             bool RemoveSkill = true;
             foreach (SkillCardData NomalSkill in controller.NomalSkillData) 
@@ -256,11 +256,11 @@ public class SystemManager : MonoBehaviour
 
         }
     }
-    void isStart()//ÉQÅ[ÉÄÇÃäJén
+    void isStart()//„Ç≤„Éº„É†„ÅÆÈñãÂßã
     {
         
         foreach (SkillInfo skill in controller.skillINFO) 
-        {//ÉNÅ[ÉãÉ^ÉCÉÄëSâÒïú
+        {//„ÇØ„Éº„É´„Çø„Ç§„É†ÂÖ®ÂõûÂæ©
             skill.SkillCardManager.isCoolTime_add(skill.SkillCardManager.CoolTime);
             if (skill.SkillCardManager.MaxStack > 0)
             {
@@ -282,7 +282,7 @@ public class SystemManager : MonoBehaviour
                 controller.movetype = PlayerController.MoveType.NoAction;
                 mode = ModeType.M2;
                 StartCount = 0;
-                //Debug.Log("åƒÇ—èoÇ≥ÇÍÇΩ");
+                //Debug.Log("Âëº„Å≥Âá∫„Åï„Çå„Åü");
             }
             if (mode == ModeType.M2)
             {
@@ -319,7 +319,7 @@ public class SystemManager : MonoBehaviour
                 controller.movetype = PlayerController.MoveType.NoAction;
                 mode = ModeType.M2;
                 StartCount = 0;
-                //Debug.Log("åƒÇ—èoÇ≥ÇÍÇΩ");
+                //Debug.Log("Âëº„Å≥Âá∫„Åï„Çå„Åü");
             }
             if (mode == ModeType.M2)
             {
@@ -358,7 +358,7 @@ public class SystemManager : MonoBehaviour
                 controller.movetype = PlayerController.MoveType.NoAction;
                 mode = ModeType.M2;
                 StartCount = 0;
-                //Debug.Log("åƒÇ—èoÇ≥ÇÍÇΩ");
+                //Debug.Log("Âëº„Å≥Âá∫„Åï„Çå„Åü");
             }
             if (mode == ModeType.M2)
             {

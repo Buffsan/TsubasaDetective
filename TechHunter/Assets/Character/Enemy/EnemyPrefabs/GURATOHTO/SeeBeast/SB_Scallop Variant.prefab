@@ -62,6 +62,36 @@ MonoBehaviour:
   Denger_AttackArea: {fileID: 520444690567741310, guid: e50319ecbfbf2a541bf859e37986ddd4, type: 3}
   Denger_Attackarea1: {fileID: 520444690567741310, guid: e50319ecbfbf2a541bf859e37986ddd4, type: 3}
   AttackArea: {fileID: 2146240657863754078, guid: d97d26ae2f815934db888e93c303e94f, type: 3}
+  LandingAttackPrefab: {fileID: 3454106823859442278, guid: 59dbbbc0dbeb99442a6b89dc88c855e1, type: 3}
+  secondPhaseHpRatio: 0.5
+  attacksPerRoar: 6
+  roarShellDuration: 1
+  roarAscentDuration: 0.28
+  roarDescentDuration: 0.3
+  roarJumpHeight: 3
+  roarRecoveryDuration: 0.5
+  roarAttackPrefab: {fileID: 6748436049420721247, guid: 7502b4f462fd7a8419dd9adde6760a86, type: 3}
+  roarWarningPrefab: {fileID: 8256408126352757493, guid: a6084e1cd6b220c4eb40565ddd5166d8, type: 3}
+  roarWarningScale: 1.5
+  roarSludgeParticlePrefab: {fileID: 4934329167185786972, guid: 7dc49af022da06b4cb570a784b76be12, type: 3}
+  roarParticleLifetime: 3
+  roarParticleEmissionMultiplier: 5
+  roarParticleBurstCount: 80
+  sludgePrefab: {fileID: 6811983235509843388, guid: 92cff6ed9b4ece24a8aa2d26170e598d, type: 3}
+  roarSludgeCount: 30
+  normalLandingSludgeCount: 12
+  shortLandingSludgeCount: 18
+  sludgeSpeed: 7
+  sludgeLifetime: 6
+  shortLandingSludgeArc: 115
+  shortLeapTargetDistance: 1
+  shortLeapTriggerDistance: 3
+  shortLeapSelectionChance: 0.65
+  shortLeapWindup: 0.25
+  shortLeapDuration: 0.35
+  shortLeapHeight: 3
+  shortLeapRecovery: 0.4
+  landingTileTolerance: 0.75
 --- !u!1 &3262776185593759204
 GameObject:
   m_ObjectHideFlags: 0
@@ -109,9 +139,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyBase: {fileID: 0}
   charadata: {fileID: 11400000, guid: 5c72b9602abc288438b7c5a2339b1098, type: 2}
-  attackableFactions: 0
+  attackableFactions: 12287
   attackPlayer: 1
   canAttackSelf: 0
+  attackPowerPercent: 100
   dellCondition: 0
 --- !u!58 &1189618527187479779
 CircleCollider2D:
@@ -253,8 +284,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 5c72b9602abc288438b7c5a2339b1098, type: 2}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetFactions
+      value: 12159
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: Choice_MoveToBase
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetAllFactions
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6893297167733884149, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: m_LocalScale.x

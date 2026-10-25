@@ -14,7 +14,6 @@ public class CG_Spear : EnemyMoveBase
         enemyBase.AttackCount += Time.deltaTime;
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {
-
              enemyBase.animator.SetInteger("Anim", 2);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M2;
@@ -28,22 +27,23 @@ public class CG_Spear : EnemyMoveBase
                 enemyBase.animator.SetInteger("Anim", 5);
                 enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M3;
-                PlayerDirSave = enemyBase.PlayerDirection;
+                PlayerDirSave = TargetDirection;
 
             }
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3) 
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > 1) 
             {
                 enemyBase.animator.SetInteger("Anim", 3);
             enemyBase.AttackCount = 0;
                 enemyBase.mode = EnemyBase.ModeType.M4;
-                PlayerDirSave = enemyBase.PlayerDirection;
+                PlayerDirSave = TargetDirection;
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
 
                 GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.gameObject.transform.position, Quaternion.identity);
+                ConfigureSummonedAttack(CL_Attack);
                 CL_Attack.transform.parent = enemyBase.EnemyAnimBody.transform;
                 EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
                 Rigidbody2D rb = CL_Attack.GetComponent <Rigidbody2D>();
@@ -62,10 +62,11 @@ public class CG_Spear : EnemyMoveBase
             {
                 
                 
-                float playerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.transform.position);
-                if (playerDistance < 4)
+                float playerDistance = Vector2.Distance(TargetPosition, enemyBase.transform.position);
+                // main と同じ再突進条件。距離の参照元だけ CurrentTarget に統一。
+                if (playerDistance < 4f)
                 {
-                    Debug.Log("�čs��");
+                    Debug.Log("Äs“®");
                     enemyBase.rb.velocity = enemyBase.rb.velocity * 0.5f;
                     enemyBase.animator.SetInteger("Anim", 5);
                     enemyBase.AttackCount = 0;

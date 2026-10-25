@@ -41,6 +41,8 @@ public class SS_StarMagician_AI : EnemyMoveBase
             {
 
                 GameObject CL_Star = Instantiate(Star, enemyBase.gameObject.transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Star);
+        ConfigureSummonedAttack(CL_Star);
                 EnemyAttack enemyAttack = CL_Star.GetComponent<EnemyAttack>();
 
                 enemyAttack.enemyBase = enemyBase;

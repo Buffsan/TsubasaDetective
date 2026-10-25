@@ -20,14 +20,14 @@ public class CG_HeavySniper_AI : EnemyMoveBase
 
     public override void EnemyMovePlay()
     {
-        enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
+        RefreshTargetInfo();
 
-        enemyBase.isPlayerLookBase();
+        LookAtCurrentTarget();
 
-        if (walkCount > 3 || walkCount > 1 && enemyBase.PlayerDistance < 8)
+        if (walkCount > 3 || walkCount > 1 && TargetDistance < 8)
         {
-            Debug.Log(AttackNumberArrow +"  "+enemyBase.PlayerDistance);
-            if (enemyBase.PlayerDistance < 3 && AttackNumberArrow > 1)
+            Debug.Log(AttackNumberArrow +"  "+TargetDistance);
+            if (TargetDistance < 3 && AttackNumberArrow > 1)
             {
                 //Debug.Log("AAA");
                 enemyBase.moveType = EnemyBase.MoveType.Attack;
@@ -43,7 +43,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
         } 
         else 
         {
-            if (enemyBase.PlayerDistance < 8) 
+            if (TargetDistance < 8) 
             {
                 enemyBase.animator.SetInteger("Anim", 0);
                 enemyBase.rb.velocity = Vector2.zero;
@@ -51,7 +51,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
             else
             {
                 enemyBase.animator.SetInteger("Anim", 1);
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+                enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
                 
             }walkCount += Time.deltaTime;
         }
@@ -66,7 +66,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
         {
             if (enemyBase.mode == EnemyBase.ModeType.M1)
             {
-                SavePos = enemyBase.Player.transform.position;
+                SavePos = TargetPosition;
                 
                 enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
                 enemyBase.mode = EnemyBase.ModeType.M2;
@@ -75,8 +75,8 @@ public class CG_HeavySniper_AI : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M2)
             {
-                enemyBase.isPlayerLookBase();
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -1f;
+                LookAtCurrentTarget();
+                enemyBase.rb.velocity = TargetDirection.normalized * -1f;
                 if (enemyBase.AttackCount > 1)
                 {
                     enemyBase.rb.velocity = Vector2.zero;
@@ -136,7 +136,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
                 {
                      GameObject CL_HeaveySniper_Sniper=Instantiate(CG_Sniper, enemyBase.transform.position, Quaternion.identity);
 
-                    systemManager.AllEnemy.Add(CL_HeaveySniper_Sniper);
+                    InitializeSummonedEnemy(CL_HeaveySniper_Sniper, true);
                     enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
                     enemyBase.animator.SetInteger("Anim", 1);
                     enemyBase.mode = EnemyBase.ModeType.M3;
@@ -175,6 +175,7 @@ public class CG_HeavySniper_AI : EnemyMoveBase
     void shotBullet()
     {
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Arrow);
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
 
         float A_Random = Random.Range(-40, 40) * Mathf.Deg2Rad;
@@ -182,7 +183,12 @@ public class CG_HeavySniper_AI : EnemyMoveBase
         EnemyAttack enemyAttack = CL_Arrow.GetComponent<EnemyAttack>();
         enemyAttack.enemyBase = enemyBase;
 
-        Vector2 PlayerLookDirecton = enemyBase.Player.transform.position - enemyBase.transform.position;
+        // 攻撃開始時のSavePosを使用し、連射中も標的を追尾し直さない。
+        Vector2 PlayerLookDirecton = UsesLegacyPlayerTarget
+            ? (Vector2)TargetPosition - (Vector2)enemyBase.transform.position
+            : SavePos - (Vector2)enemyBase.transform.position;
+        if (PlayerLookDirecton.sqrMagnitude < 0.0001f)
+            PlayerLookDirecton = TargetDirection;
 
         Vector2 RadomDirection = new Vector2(
         Mathf.Cos(A_Random) * PlayerLookDirecton.x - Mathf.Sin(A_Random) * PlayerLookDirecton.y,

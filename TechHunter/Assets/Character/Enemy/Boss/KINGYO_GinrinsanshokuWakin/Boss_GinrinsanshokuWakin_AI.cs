@@ -90,7 +90,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
         
         if (enemyBase.moveType != EnemyBase.MoveType.Attack)
         {
-            enemyBase.rb.velocity = (enemyBase.playerController.transform.position - transform.position).normalized * enemyBase.SPEED;
+            enemyBase.rb.velocity = (TargetPosition - transform.position).normalized * enemyBase.SPEED;
             enemyBase.animator.SetInteger("Anim", 0);
             AttackWaitTime += Time.deltaTime;
 
@@ -302,7 +302,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
     {
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("™ôšK‘Ò‹@", 0, 0);
+            enemyBase.animator.Play("å’†å“®å¾…æ©Ÿ", 0, 0);
             DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, 2);
 
             NextPhase();
@@ -311,7 +311,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
         {
             if (attackcount() > 2)
             {
-                enemyBase.animator.Play("UŒ‚", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒ", 0, 0);
                 SpawnObjectNow(HoukouAttack, transform.position, 0.1f);
                 SpawnObjectNow(Effects[0], transform.position, 3);
                 all_System.camera_Controller.Shake(0.2f, 0.3f);
@@ -337,7 +337,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
                 {
 
                     NextPhase();
-                    enemyBase.animator.Play("‘Ò‹@", 0, 0);
+                    enemyBase.animator.Play("å¾…æ©Ÿ", 0, 0);
                 }
             }
         }
@@ -375,10 +375,10 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
                     waitTime = 0.5f;
                 }
             }
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ", 0, 0);
             GameObject denger = DengerAreaSpawn(Denger_4AttackArea, enemyBase.transform.position, waitTime);
-            denger.transform.up =enemyBase.PlayerDirection.normalized;
+            denger.transform.up =TargetDirection.normalized;
 
             NextPhase();
         }
@@ -396,16 +396,16 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
             if (enemyBase.AttackCount > waitTime)
             {
                 asaltAttackArea.SetActive(true);
-                enemyBase.animator.Play("•às", 0, 0);
+                enemyBase.animator.Play("æ­©è¡Œ", 0, 0);
                 NextPhase();
             }
         }
         if (AttackPhase == 2)
         {
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 8;
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED * 8;
             if (enemyBase.AttackCount > 1)
             {
-                enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ", 0, 0);
                 asaltAttackArea.SetActive(false);
                 NextPhase();
             }
@@ -417,14 +417,14 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
                 {
                     for (int i = 0; i < 10; i++)
                     {
-                        // ‚’¼•ûŒüi¶‰EjƒxƒNƒgƒ‹
-                        Vector2 perp = new Vector2(-enemyBase.PlayerDirection.normalized.y, enemyBase.PlayerDirection.normalized.x);
+                        // å‚ç›´æ–¹å‘ï¼ˆå·¦å³ï¼‰ãƒ™ã‚¯ãƒˆãƒ«
+                        Vector2 perp = new Vector2(-TargetDirection.normalized.y, TargetDirection.normalized.x);
 
-                        // UŒ‚”»’è‚ğ¶‰E‚É¶¬‚·‚éˆÊ’u
+                        // æ”»æ’ƒåˆ¤å®šã‚’å·¦å³ã«ç”Ÿæˆã™ã‚‹ä½ç½®
                         Vector2 leftPos = (Vector2)transform.position + perp * 0.5f * (i + 3);
                         Vector2 rightPos = (Vector2)transform.position - perp * 0.5f * (i + 3);
 
-                        // UŒ‚”»’èƒIƒuƒWƒFƒNƒg‚ğ¶‰E‚É¶¬
+                        // æ”»æ’ƒåˆ¤å®šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å·¦å³ã«ç”Ÿæˆ
                         GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
                         GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
                         Destroy(leftAttack, 5);
@@ -435,14 +435,14 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        // ‚’¼•ûŒüi¶‰EjƒxƒNƒgƒ‹
-                        Vector2 perp = new Vector2(-enemyBase.PlayerDirection.normalized.y, enemyBase.PlayerDirection.normalized.x);
+                        // å‚ç›´æ–¹å‘ï¼ˆå·¦å³ï¼‰ãƒ™ã‚¯ãƒˆãƒ«
+                        Vector2 perp = new Vector2(-TargetDirection.normalized.y, TargetDirection.normalized.x);
 
-                        // UŒ‚”»’è‚ğ¶‰E‚É¶¬‚·‚éˆÊ’u
+                        // æ”»æ’ƒåˆ¤å®šã‚’å·¦å³ã«ç”Ÿæˆã™ã‚‹ä½ç½®
                         Vector2 leftPos = (Vector2)transform.position + perp * 0.5f * (i + 3);
                         Vector2 rightPos = (Vector2)transform.position - perp * 0.5f * (i + 3);
 
-                        // UŒ‚”»’èƒIƒuƒWƒFƒNƒg‚ğ¶‰E‚É¶¬
+                        // æ”»æ’ƒåˆ¤å®šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å·¦å³ã«ç”Ÿæˆ
                         GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
                         GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
                         Destroy(leftAttack, 5);
@@ -505,7 +505,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
         {
 
 
-            enemyBase.animator.Play("UŒ‚‘Ò‹@");
+            enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ");
             NextPhase();
         }
         if (AttackPhase == 1)
@@ -526,7 +526,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
 
                 }
 
-                targetPos = enemyBase.Player.transform.position;
+                targetPos = TargetPosition;
                 enemyBase.DamageBody.SetActive(false);
                 StartCoroutine(MoveInArc(duration, arcHeight));
                 NextPhase();
@@ -541,7 +541,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
                 all_System.camera_Controller.Shake(0.2f, 0.3f);
                 enemyBase.DamageBody.SetActive(true);
                 NextPhase();
-                enemyBase.animator.Play("’…’n");
+                enemyBase.animator.Play("ç€åœ°");
             }
         }
         if (AttackPhase == 3)
@@ -560,16 +560,16 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
             if (attackcount() > 1)
             {
                 bool FindPlayerPos = false;
-                int safeCount = 0; // ˆÀ‘SƒJƒEƒ“ƒ^
+                int safeCount = 0; // å®‰å…¨ã‚«ã‚¦ãƒ³ã‚¿
                 jampAsalt = true;
-                targetPos = enemyBase.Player.transform.position;
+                targetPos = TargetPosition;
                 while (!FindPlayerPos && safeCount < 100)
                 {
                     safeCount++;
 
                     Vector2 TargetFindPlayerPos = new Vector2(
-                        Random.Range(-7f, 7f) + enemyBase.Player.transform.position.x,
-                        Random.Range(-7f, 7f) + enemyBase.Player.transform.position.y
+                        Random.Range(-7f, 7f) + TargetPosition.x,
+                        Random.Range(-7f, 7f) + TargetPosition.y
                     );
 
                     FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
@@ -596,7 +596,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
                 SpawnObjectNow(Effects[0], transform.position, 3);
                 all_System.camera_Controller.Shake(0.2f, 0.3f);
                 enemyBase.DamageBody.SetActive(true);
-                enemyBase.animator.Play("’…’n");
+                enemyBase.animator.Play("ç€åœ°");
                 ChoiseNextPhase(0);
                 enemyBase.moveType = EnemyBase.MoveType.Attack;
                 enemyBase.attackType = EnemyBase.AttackType.A2;
@@ -614,7 +614,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
         {
 
 
-            enemyBase.animator.Play("UŒ‚‘Ò‹@");
+            enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ");
             NextPhase();
         }
         if (AttackPhase == 1)
@@ -634,7 +634,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
                 for (int i = 0; i < 20; i++)
                     EnemySpawn(Tanchou, EnemySpawnPoint[Random.Range(0, EnemySpawnPoint.Count)].transform.position);
 
-                targetPos = enemyBase.Player.transform.position;
+                targetPos = TargetPosition;
                 enemyBase.DamageBody.SetActive(false);
                 all_System.camera_Controller.Shake(0.1f, 0.3f);
                 StartCoroutine(MoveInArc(SeriasDuration, arcHeight*20));
@@ -660,7 +660,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
                 all_System.camera_Controller.Shake(0.2f, 0.3f);
                 enemyBase.DamageBody.SetActive(true);
                 NextPhase();
-                enemyBase.animator.Play("’…’n"); 
+                enemyBase.animator.Play("ç€åœ°"); 
                 Finish();
             }
         }
@@ -687,7 +687,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
             );
 
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
-        Vector2 direction = (Vector2)enemyBase.playerController.transform.position - shotPos;
+        Vector2 direction = (Vector2)TargetPosition - shotPos;
         CL_Arrow.transform.up = direction;
         CL_Arrow.transform.Rotate(0, 0, 90);
         rb.velocity = direction.normalized * ArrowSpeed;
@@ -706,7 +706,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
             );
 
         Mortar_Controller mortar = CL_Arrow.GetComponent<Mortar_Controller>();
-        mortar.ChangePos(enemyBase.Player.transform.position + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
+        mortar.ChangePos(TargetPosition + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
         mortar.enemyBase = enemyBase;
         mortar.AttackArea = S_AttackArea;
 
@@ -720,9 +720,9 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
     {
         yield return new WaitForSeconds(delayTime);
 
-        // ƒvƒŒƒCƒ„[ ¨ ©•ª ‚Ì•ûŒüƒxƒNƒgƒ‹
-        Vector2 direction = (transform.position - enemyBase.Player.transform.position).normalized;
-        // ”½‘Î•ûŒü‚É20mi’PˆÊj—£‚ê‚½À•W‚ğŒvZ
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ â†’ è‡ªåˆ† ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+        Vector2 direction = (transform.position - TargetPosition).normalized;
+        // åå¯¾æ–¹å‘ã«20mï¼ˆå˜ä½ï¼‰é›¢ã‚ŒãŸåº§æ¨™ã‚’è¨ˆç®—
         Vector2 targetPos = (Vector2)transform.position + direction * 10f;
         for (int i = 0; i < SpawnEnemyNumber; i++)
         {
@@ -733,9 +733,9 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
     }
     private IEnumerator NeedleSpawnLing(float delayTime, float Lange, int Plass)
     {
-        //Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ªŠJn‚³‚ê‚Ü‚µ‚½B¡‚©‚ç " + delayTime + " •b‘Ò‚¿‚Ü‚·...");
+        //Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ãŒé–‹å§‹ã•ã‚Œã¾ã—ãŸã€‚ä»Šã‹ã‚‰ " + delayTime + " ç§’å¾…ã¡ã¾ã™...");
 
-        // ‚±‚±‚Åw’è‚µ‚½•b”‚¾‚¯‘Ò‹@‚·‚é
+        // ã“ã“ã§æŒ‡å®šã—ãŸç§’æ•°ã ã‘å¾…æ©Ÿã™ã‚‹
         yield return new WaitForSeconds(delayTime);
         for (int i = 0; i < 10 + Plass; i++)
         {
@@ -746,7 +746,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
             float newX = enemyBase.transform.position.x + 2 * Lange * Mathf.Cos(angleRad);
             float newY = enemyBase.transform.position.y + 2 * Lange * Mathf.Sin(angleRad);
 
-            // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+            // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
             Vector2 newPosition = new Vector2(newX, newY);
 
             NeedleSpawn(newPosition);
@@ -764,10 +764,10 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
     {
 
 
-        enemyBase.animator.Play("ˆÚ“®", 0, 0);
-        // ˆÚ“®ŠJn‘O‚ÌBodyType‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+        enemyBase.animator.Play("ç§»å‹•", 0, 0);
+        // ç§»å‹•é–‹å§‹å‰ã®BodyTypeã‚’ä¿å­˜ã—ã¦ãŠã
         var originalBodyType = enemyBase.rb.bodyType;
-        // ˆÚ“®’†‚ÍKinematic‚É‚µ‚ÄA•¨—‰‰Z‚Ì‰e‹¿‚ğ‚È‚­‚·
+        // ç§»å‹•ä¸­ã¯Kinematicã«ã—ã¦ã€ç‰©ç†æ¼”ç®—ã®å½±éŸ¿ã‚’ãªãã™
         enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
 
         Vector2 startPos = enemyBase.transform.position;
@@ -780,24 +780,24 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
         while (elapsedTime < jampTime)
         {
             elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsedTime / jampTime); // 0‚©‚ç1‚Ì”ÍˆÍ‚Éû‚ß‚é
+            float progress = Mathf.Clamp01(elapsedTime / jampTime); // 0ã‹ã‚‰1ã®ç¯„å›²ã«åã‚ã‚‹
 
-            // X‚ÆY‚Ì’¼ü“I‚ÈˆÚ“®‚ğŒvZ
+            // Xã¨Yã®ç›´ç·šçš„ãªç§»å‹•ã‚’è¨ˆç®—
             Vector2 linearPos = Vector2.Lerp(startPos, endPos, progress);
 
-            // ‚‚³‚ğŒvZ (SinƒJ[ƒu)
+            // é«˜ã•ã‚’è¨ˆç®— (Sinã‚«ãƒ¼ãƒ–)
             float height = Mathf.Sin(progress * Mathf.PI) * jampHeigh;
 
-            // Rigidbody2D‚ğg‚Á‚ÄˆÊ’u‚ğXV‚·‚é
-            // 2D‚È‚Ì‚ÅAYÀ•W‚É‚‚³‚ğ‰Á‚¦‚é
+            // Rigidbody2Dã‚’ä½¿ã£ã¦ä½ç½®ã‚’æ›´æ–°ã™ã‚‹
+            // 2Dãªã®ã§ã€Yåº§æ¨™ã«é«˜ã•ã‚’åŠ ãˆã‚‹
             enemyBase.rb.MovePosition(new Vector2(linearPos.x, linearPos.y + height));
 
-            //yield return new WaitForFixedUpdate(); // •¨—‰‰Z‚ÌXVƒ^ƒCƒ~ƒ“ƒO‚Å‘Ò‚Â
+            //yield return new WaitForFixedUpdate(); // ç‰©ç†æ¼”ç®—ã®æ›´æ–°ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å¾…ã¤
             yield return new WaitForEndOfFrame();
         }
 
 
-        // BodyType‚ğŒ³‚É–ß‚·
+        // BodyTypeã‚’å…ƒã«æˆ»ã™
         enemyBase.rb.bodyType = originalBodyType;
 
 

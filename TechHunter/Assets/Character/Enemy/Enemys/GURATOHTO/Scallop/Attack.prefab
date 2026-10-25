@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2267406876600861200}
   - component: {fileID: 7323600559793868444}
+  - component: {fileID: 7936501423874506123}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -64,7 +65,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 8.12}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -109,3 +110,22 @@ Transform:
   - {fileID: 2267406876600861200}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7936501423874506123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 944974425232506076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cad25789242cd7f4e8faada24b6b4b7a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  enemyBase: {fileID: 0}
+  charadata: {fileID: 11400000, guid: 5c72b9602abc288438b7c5a2339b1098, type: 2}
+  attackableFactions: 12159
+  attackPlayer: 1
+  canAttackSelf: 0
+  attackPowerPercent: 100
+  dellCondition: 0

@@ -12,7 +12,7 @@ public class MO_LastHoliday_AI : EnemyMoveBase
 
     Vector2 targetPos = Vector2.zero;
 
-    private IEnumerator myRunningCoroutine; // Às’†‚ÌƒRƒ‹[ƒ`ƒ“‚ğ•Û‚·‚é‚½‚ß‚Ì•Ï”
+    private IEnumerator myRunningCoroutine; // å®Ÿè¡Œä¸­ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’ä¿æŒã™ã‚‹ãŸã‚ã®å¤‰æ•°
     public float duration = 1;
     public float arcHeight = 30;
     float AttackCount1 = 0;
@@ -48,8 +48,8 @@ public class MO_LastHoliday_AI : EnemyMoveBase
     }
     public override void EnemyMovePlay()
     {
-        enemyBase.isPlayerLookBase();
-        enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+        LookAtCurrentTarget();
+        enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
         AttackCountStay += Time.fixedDeltaTime;
         if (!AutAttack) return;
         if (AttackCountStay > 3) 
@@ -66,18 +66,18 @@ public class MO_LastHoliday_AI : EnemyMoveBase
             enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
             enemyBase.rb.velocity = Vector3.zero;
             A_NextPhase();
-            enemyBase.animator.Play("UŒ‚‘Ò‹@",0,0);
+            enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ",0,0);
         }
         if (A_Phase == 1)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized*enemyBase.SPEED*6;
+            LookAtCurrentTarget();
+            enemyBase.rb.velocity = TargetDirection.normalized*enemyBase.SPEED*6;
             if (enemyBase.AttackCount > 0.5)
             {
                 enemyBase.rb.velocity = Vector2.zero;
-                enemyBase.animator.Play("UŒ‚‘Ò‹@‚Q", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿï¼’", 0, 0);
                 A_NextPhase();
-                SpawnObjectNow(Denger_AttackArea,transform.position, 1);
+                SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea, transform.position, Quaternion.identity, 1f, null, 0f, false);
             }
         }
         if (A_Phase == 2)
@@ -85,7 +85,7 @@ public class MO_LastHoliday_AI : EnemyMoveBase
             
             if (enemyBase.AttackCount > 1)
             {
-                enemyBase.animator.Play("UŒ‚", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒ", 0, 0);
                 SpawnObjectNow(Attack,transform.position, 0.1f);
                 A_NextPhase();
                 AUDIO_manager.PlaySE(audioClips[0]);
@@ -96,7 +96,7 @@ public class MO_LastHoliday_AI : EnemyMoveBase
             if (enemyBase.AttackCount > 2)
             {
                 enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
-                enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ", 0, 0);
                 A_NextPhase();
             }
         }
@@ -104,7 +104,7 @@ public class MO_LastHoliday_AI : EnemyMoveBase
         {
             if (enemyBase.AttackCount > 0.5)
             {
-                enemyBase.animator.Play("UŒ‚‘Ò‹@‚Q", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿï¼’", 0, 0);
                 A_NextPhase();
                 
             }
@@ -114,9 +114,9 @@ public class MO_LastHoliday_AI : EnemyMoveBase
             if (enemyBase.AttackCount > 0.5)
             {
                A_NextPhase();
-                targetPos = enemyBase.Player.transform.position;
+                targetPos = TargetPosition;
                 StartCoroutine(MoveInArc());
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 AUDIO_manager.PlaySE(audioClips[1]);
             }
         }
@@ -126,7 +126,7 @@ public class MO_LastHoliday_AI : EnemyMoveBase
             {
                 SpawnObjectNow(Attack, transform.position, 0.1f);
                 A_NextPhase();
-                enemyBase.animator.Play("UŒ‚",0,0);
+                enemyBase.animator.Play("æ”»æ’ƒ",0,0);
                 AUDIO_manager.PlaySE(audioClips[0]);
             }
         }
@@ -135,7 +135,7 @@ public class MO_LastHoliday_AI : EnemyMoveBase
             if (enemyBase.AttackCount > 1) 
             {
                 A_Finish();
-                enemyBase.animator.Play("•às", 0, 0);
+                enemyBase.animator.Play("æ­©è¡Œ", 0, 0);
             }
         }
         
@@ -143,17 +143,17 @@ public class MO_LastHoliday_AI : EnemyMoveBase
 
     private IEnumerator MoveInArc()
     {
-        enemyBase.animator.Play("’µ–ô", 0, 0);
+        enemyBase.animator.Play("è·³èº", 0, 0);
         myRunningCoroutine = MoveInArc();
-        // ˆÚ“®ŠJn‘O‚ÌBodyType‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+        // ç§»å‹•é–‹å§‹å‰ã®BodyTypeã‚’ä¿å­˜ã—ã¦ãŠã
         var originalBodyType = enemyBase.rb.bodyType;
-        // ˆÚ“®’†‚ÍKinematic‚É‚µ‚ÄA•¨—‰‰Z‚Ì‰e‹¿‚ğ‚È‚­‚·
+        // ç§»å‹•ä¸­ã¯Kinematicã«ã—ã¦ã€ç‰©ç†æ¼”ç®—ã®å½±éŸ¿ã‚’ãªãã™
         enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
 
         Vector2 startPos = enemyBase.transform.position;
         Vector2 endPos = targetPos;
 
-        GameObject CL_AttackPPP = Instantiate(Denger_AttackArea, endPos, Quaternion.identity);
+        GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea, endPos, Quaternion.identity, 1.5f, null, 0f, false);
 
         Destroy(CL_AttackPPP, 1.5f);
         float elapsedTime = 0f;
@@ -161,29 +161,29 @@ public class MO_LastHoliday_AI : EnemyMoveBase
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsedTime / duration); // 0‚©‚ç1‚Ì”ÍˆÍ‚Éû‚ß‚é
+            float progress = Mathf.Clamp01(elapsedTime / duration); // 0ã‹ã‚‰1ã®ç¯„å›²ã«åã‚ã‚‹
 
-            // X‚ÆY‚Ì’¼ü“I‚ÈˆÚ“®‚ğŒvZ
+            // Xã¨Yã®ç›´ç·šçš„ãªç§»å‹•ã‚’è¨ˆç®—
             Vector2 linearPos = Vector2.Lerp(startPos, endPos, progress);
 
-            // ‚‚³‚ğŒvZ (SinƒJ[ƒu)
+            // é«˜ã•ã‚’è¨ˆç®— (Sinã‚«ãƒ¼ãƒ–)
             float height = Mathf.Sin(progress * Mathf.PI) * arcHeight;
 
-            // Rigidbody2D‚ğg‚Á‚ÄˆÊ’u‚ğXV‚·‚é
-            // 2D‚È‚Ì‚ÅAYÀ•W‚É‚‚³‚ğ‰Á‚¦‚é
+            // Rigidbody2Dã‚’ä½¿ã£ã¦ä½ç½®ã‚’æ›´æ–°ã™ã‚‹
+            // 2Dãªã®ã§ã€Yåº§æ¨™ã«é«˜ã•ã‚’åŠ ãˆã‚‹
             enemyBase.rb.MovePosition(new Vector2(linearPos.x, linearPos.y + height));
 
-            //yield return new WaitForFixedUpdate(); // •¨—‰‰Z‚ÌXVƒ^ƒCƒ~ƒ“ƒO‚Å‘Ò‚Â
+            //yield return new WaitForFixedUpdate(); // ç‰©ç†æ¼”ç®—ã®æ›´æ–°ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å¾…ã¤
             yield return new WaitForEndOfFrame();
         }
 
        
-        // BodyType‚ğŒ³‚É–ß‚·
+        // BodyTypeã‚’å…ƒã«æˆ»ã™
         enemyBase.rb.bodyType = originalBodyType;
 
 
         StandOk = true;
         
-        Debug.Log("–Ú“I’n‚É“’…I" + targetPos);
+        Debug.Log("ç›®çš„åœ°ã«åˆ°ç€ï¼" + targetPos);
     }
 }

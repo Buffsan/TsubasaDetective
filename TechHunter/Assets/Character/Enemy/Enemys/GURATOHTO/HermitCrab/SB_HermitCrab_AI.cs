@@ -14,7 +14,7 @@ public class SB_HermitCrab_AI : EnemyMoveBase
     [SerializeField] float WaitTime = 4;
     float WaitCount = 0;
 
-    private IEnumerator myRunningCoroutine; // Às’†‚ÌƒRƒ‹[ƒ`ƒ“‚ğ•Û‚·‚é‚½‚ß‚Ì•Ï”
+    private IEnumerator myRunningCoroutine; // å®Ÿè¡Œä¸­ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’ä¿æŒã™ã‚‹ãŸã‚ã®å¤‰æ•°
     public float duration = 1;
     public float arcHeight = 30;
     bool StandOk = false;
@@ -39,9 +39,9 @@ public class SB_HermitCrab_AI : EnemyMoveBase
     }
     public override void EnemyMovePlay()
     {
-        enemyBase.isPlayerLookBase();
+        LookAtCurrentTarget();
         enemyBase.animator.SetInteger("Anim", 1);
-        enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+        enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
         WalkAttackCount += Time.fixedDeltaTime;
         WaitCount += Time.fixedDeltaTime;
         if (WaitCount > WaitTime) 
@@ -79,7 +79,7 @@ public class SB_HermitCrab_AI : EnemyMoveBase
                 AttackNext();
                 for (int i = 0; i < 30; i++)
                 {
-                    StartCoroutine(NeedleSpawnLing(i / 20, i, (Vector2)enemyBase.Player.transform.position));
+                    StartCoroutine(NeedleSpawnLing(i / 20, i, (Vector2)TargetPosition));
                 }
 
             }
@@ -87,7 +87,7 @@ public class SB_HermitCrab_AI : EnemyMoveBase
             {
                 if (AttackCount > 2)
                 {
-                    enemyBase.isPlayerLookBase();
+                    LookAtCurrentTarget();
                     AttackFinish();
                     enemyBase.animator.SetInteger("Anim", 0);
                 }
@@ -101,9 +101,9 @@ public class SB_HermitCrab_AI : EnemyMoveBase
                 if (AttackCount > 1)
                 {
                     AttackNext();
-                    targetPos = enemyBase.Player.transform.position;
+                    targetPos = TargetPosition;
                     enemyBase.rb.velocity = Vector2.zero;
-                    SpawnObjectNow(Denger_AttackArea,enemyBase.Player.transform.position ,1);
+                    SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea, TargetPosition, Quaternion.identity, 1f, null, 0f, false);
                 }
             }
             if (A_Phase == 1)
@@ -120,7 +120,7 @@ public class SB_HermitCrab_AI : EnemyMoveBase
                 {
 
                     StandOk = false;
-                    enemyBase.isPlayerLookBase();
+                    LookAtCurrentTarget();
                     AttackFinish();
                     enemyBase.animator.SetInteger("Anim", 0);
 
@@ -140,15 +140,17 @@ public class SB_HermitCrab_AI : EnemyMoveBase
     { 
     
         GameObject CL_Attack = Instantiate(BrackAngel,transform.position,Quaternion.identity);
+        ConfigureSummonedAttack(CL_Attack);
+        ConfigureSummonedAttack(CL_Attack);
         BrackAngel_Spier brackAngel_Spier = CL_Attack.GetComponent<BrackAngel_Spier>();
         brackAngel_Spier.TargetPos = pos;
         return CL_Attack;
     }
     private IEnumerator NeedleSpawnLing(float delayTime,int number,Vector2 Pos)
     {
-        //Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ªŠJn‚³‚ê‚Ü‚µ‚½B¡‚©‚ç " + delayTime + " •b‘Ò‚¿‚Ü‚·...");
+        //Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ãŒé–‹å§‹ã•ã‚Œã¾ã—ãŸã€‚ä»Šã‹ã‚‰ " + delayTime + " ç§’å¾…ã¡ã¾ã™...");
 
-        // ‚±‚±‚Åw’è‚µ‚½•b”‚¾‚¯‘Ò‹@‚·‚é
+        // ã“ã“ã§æŒ‡å®šã—ãŸç§’æ•°ã ã‘å¾…æ©Ÿã™ã‚‹
         yield return new WaitForSeconds(delayTime);
         Ougi(number, Pos);
     }
@@ -160,40 +162,40 @@ public class SB_HermitCrab_AI : EnemyMoveBase
 
         float AttackDistance = number / 2.5f;
 
-        // ƒ‰ƒ“ƒ_ƒ€‚ÈŠp“x‚ğ¶¬ (0 ~ 360“x)
+        // ãƒ©ãƒ³ãƒ€ãƒ ãªè§’åº¦ã‚’ç”Ÿæˆ (0 ~ 360åº¦)
         float randomAngle = Random.Range(-40f, 40f);
 
-        // ƒ‰ƒ“ƒ_ƒ€‚ÈŠp“x‚ğƒ‰ƒWƒAƒ“‚É•ÏŠ·
+        // ãƒ©ãƒ³ãƒ€ãƒ ãªè§’åº¦ã‚’ãƒ©ã‚¸ã‚¢ãƒ³ã«å¤‰æ›
         float radians = randomAngle * Mathf.Deg2Rad;
 
-        // ‹ÉÀ•W‚©‚çƒfƒJƒ‹ƒgÀ•W‚Ö•ÏŠ·
+        // æ¥µåº§æ¨™ã‹ã‚‰ãƒ‡ã‚«ãƒ«ãƒˆåº§æ¨™ã¸å¤‰æ›
         float xOffset = AttackDistance * Mathf.Cos(radians);
         float yOffset = AttackDistance * Mathf.Sin(radians);
         Quaternion rotation = Quaternion.AngleAxis(randomAngle, Vector3.forward);
         Vector2 newDirection = (pos - (Vector2)transform.position).normalized;
 
-        // V‚µ‚¢ˆÊ’u‚ğŒvZ
+        // æ–°ã—ã„ä½ç½®ã‚’è¨ˆç®—
         //Vector2 newPosition = (Vector2)transform.position + newDirection*new Vector2(xOffset, yOffset);
 
-        Vector2 rotatedDirection = rotation * newDirection; // SavePos•ûŒü‚ğŠî€‚ÉŠp“x‚ğ‰ñ“]
-        Vector2 newPosition = (Vector2)transform.position + rotatedDirection * AttackDistance; // ‰ñ“]•ûŒü‚ÅV‚µ‚¢ˆÊ’u‚ğŒvZ
+        Vector2 rotatedDirection = rotation * newDirection; // SavePosæ–¹å‘ã‚’åŸºæº–ã«è§’åº¦ã‚’å›è»¢
+        Vector2 newPosition = (Vector2)transform.position + rotatedDirection * AttackDistance; // å›è»¢æ–¹å‘ã§æ–°ã—ã„ä½ç½®ã‚’è¨ˆç®—
 
         BrackAngel_Spawn(newPosition);
     }
 
     private IEnumerator MoveInArc()
     {
-        enemyBase.animator.Play("UŒ‚", 0, 0);
+        enemyBase.animator.Play("æ”»æ’ƒ", 0, 0);
         myRunningCoroutine = MoveInArc();
-        // ˆÚ“®ŠJn‘O‚ÌBodyType‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+        // ç§»å‹•é–‹å§‹å‰ã®BodyTypeã‚’ä¿å­˜ã—ã¦ãŠã
         var originalBodyType = enemyBase.rb.bodyType;
-        // ˆÚ“®’†‚ÍKinematic‚É‚µ‚ÄA•¨—‰‰Z‚Ì‰e‹¿‚ğ‚È‚­‚·
+        // ç§»å‹•ä¸­ã¯Kinematicã«ã—ã¦ã€ç‰©ç†æ¼”ç®—ã®å½±éŸ¿ã‚’ãªãã™
         enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
 
         Vector2 startPos = enemyBase.transform.position;
         Vector2 endPos = targetPos;
 
-        GameObject CL_AttackPPP = Instantiate(Denger_AttackArea, endPos, Quaternion.identity);
+        GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea, endPos, Quaternion.identity, 1.5f, null, 0f, false);
 
         Destroy(CL_AttackPPP, 1.5f);
         float elapsedTime = 0f;
@@ -201,31 +203,31 @@ public class SB_HermitCrab_AI : EnemyMoveBase
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsedTime / duration); // 0‚©‚ç1‚Ì”ÍˆÍ‚Éû‚ß‚é
+            float progress = Mathf.Clamp01(elapsedTime / duration); // 0ã‹ã‚‰1ã®ç¯„å›²ã«åã‚ã‚‹
 
-            // X‚ÆY‚Ì’¼ü“I‚ÈˆÚ“®‚ğŒvZ
+            // Xã¨Yã®ç›´ç·šçš„ãªç§»å‹•ã‚’è¨ˆç®—
             Vector2 linearPos = Vector2.Lerp(startPos, endPos, progress);
 
-            // ‚‚³‚ğŒvZ (SinƒJ[ƒu)
+            // é«˜ã•ã‚’è¨ˆç®— (Sinã‚«ãƒ¼ãƒ–)
             float height = Mathf.Sin(progress * Mathf.PI) * arcHeight;
 
-            // Rigidbody2D‚ğg‚Á‚ÄˆÊ’u‚ğXV‚·‚é
-            // 2D‚È‚Ì‚ÅAYÀ•W‚É‚‚³‚ğ‰Á‚¦‚é
+            // Rigidbody2Dã‚’ä½¿ã£ã¦ä½ç½®ã‚’æ›´æ–°ã™ã‚‹
+            // 2Dãªã®ã§ã€Yåº§æ¨™ã«é«˜ã•ã‚’åŠ ãˆã‚‹
             enemyBase.rb.MovePosition(new Vector2(linearPos.x, linearPos.y + height));
 
-            //yield return new WaitForFixedUpdate(); // •¨—‰‰Z‚ÌXVƒ^ƒCƒ~ƒ“ƒO‚Å‘Ò‚Â
+            //yield return new WaitForFixedUpdate(); // ç‰©ç†æ¼”ç®—ã®æ›´æ–°ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å¾…ã¤
             yield return new WaitForEndOfFrame();
         }
 
-        // ”O‚Ì‚½‚ßAÅI“I‚É‚«‚Á‚¿‚è–Ú•W’n“_‚É‡‚í‚¹‚é
+        // å¿µã®ãŸã‚ã€æœ€çµ‚çš„ã«ãã£ã¡ã‚Šç›®æ¨™åœ°ç‚¹ã«åˆã‚ã›ã‚‹
         transform.position = endPos;
-        // BodyType‚ğŒ³‚É–ß‚·
+        // BodyTypeã‚’å…ƒã«æˆ»ã™
         enemyBase.rb.bodyType = originalBodyType;
 
 
         StandOk = true;
-        // ”O‚Ì‚½‚ßAÅI“I‚É‚«‚Á‚¿‚è–Ú•W’n“_‚É‡‚í‚¹‚é
+        // å¿µã®ãŸã‚ã€æœ€çµ‚çš„ã«ãã£ã¡ã‚Šç›®æ¨™åœ°ç‚¹ã«åˆã‚ã›ã‚‹
         transform.position = targetPos;
-        Debug.Log("–Ú“I’n‚É“’…I" + targetPos);
+        Debug.Log("ç›®çš„åœ°ã«åˆ°ç€ï¼" + targetPos);
     }
 }

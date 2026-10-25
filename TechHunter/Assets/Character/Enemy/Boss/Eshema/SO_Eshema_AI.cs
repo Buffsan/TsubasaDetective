@@ -6,7 +6,7 @@ using UnityEngine;
 public class SO_Eshema_AI : Boss_MoveBase
 {
 
-    private IEnumerator myRunningCoroutine; // Às’†‚ÌƒRƒ‹[ƒ`ƒ“‚ğ•Û‚·‚é‚½‚ß‚Ì•Ï”
+    private IEnumerator myRunningCoroutine; // å®Ÿè¡Œä¸­ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’ä¿æŒã™ã‚‹ãŸã‚ã®å¤‰æ•°
     public float duration = 1;
     public float arcHeight = 30;
     float AttackCount1 =0;
@@ -46,9 +46,9 @@ public class SO_Eshema_AI : Boss_MoveBase
         {
             AttackCount1 = 0;
             asaltAttackArea.SetActive(false);
-            StopCoroutine(myRunningCoroutine); // “Á’è‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~
-            Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ğ’â~‚µ‚Ü‚µ‚½B");
-            myRunningCoroutine = null; // QÆ‚ğƒNƒŠƒA
+            StopCoroutine(myRunningCoroutine); // ç‰¹å®šã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢
+            Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢ã—ã¾ã—ãŸã€‚");
+            myRunningCoroutine = null; // å‚ç…§ã‚’ã‚¯ãƒªã‚¢
         }
     }
     public override void M_Con()
@@ -59,9 +59,9 @@ public class SO_Eshema_AI : Boss_MoveBase
         {
             AttackCount1 = 0;
             asaltAttackArea.SetActive(false);
-            StopCoroutine(myRunningCoroutine); // “Á’è‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~
-            Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ğ’â~‚µ‚Ü‚µ‚½B");
-            myRunningCoroutine = null; // QÆ‚ğƒNƒŠƒA
+            StopCoroutine(myRunningCoroutine); // ç‰¹å®šã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢
+            Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢ã—ã¾ã—ãŸã€‚");
+            myRunningCoroutine = null; // å‚ç…§ã‚’ã‚¯ãƒªã‚¢
         }
     }
     public override void M_AI()
@@ -247,7 +247,7 @@ public class SO_Eshema_AI : Boss_MoveBase
         enemyBase.moveType = EnemyBase.MoveType.Move;
         ARM.SetActive (false);
     }
-    //’ÇÕ‚ÆaŒ‚ 
+    //è¿½è·¡ã¨æ–¬æ’ƒ 
     void A1() 
     {
         if (AttackPhase == 0) 
@@ -255,7 +255,7 @@ public class SO_Eshema_AI : Boss_MoveBase
             bool FindPlayerPos = false;
             while (!FindPlayerPos) 
             { 
-                Vector2 TargetFindPlayerPos = new Vector2 (Random.Range(-2f,2f) + enemyBase.Player.transform.position.x, Random.Range(-2f, 2f) + enemyBase.Player.transform.position.y);
+                Vector2 TargetFindPlayerPos = new Vector2 (Random.Range(-2f,2f) + TargetPosition.x, Random.Range(-2f, 2f) + TargetPosition.y);
                 FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos,"Stage_NotFloor");
                     if (FindPlayerPos) 
                     { 
@@ -264,7 +264,7 @@ public class SO_Eshema_AI : Boss_MoveBase
                     enemyBase.isTargetLook(targetPos);
                 }
             }
-            enemyBase.animator.Play("•às",0,0);
+            enemyBase.animator.Play("æ­©è¡Œ",0,0);
             
             NextPhase();
         }
@@ -281,9 +281,9 @@ public class SO_Eshema_AI : Boss_MoveBase
             {
                 AttackCount1 = 0;
                 NextPhase();
-                enemyBase.animator.Play("UŒ‚‘Ò‹@",0,0);
+                enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ",0,0);
                 audioManager.PlaySE(audioclips[2]);
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
             }
         }
         if (AttackPhase == 2) 
@@ -293,9 +293,9 @@ public class SO_Eshema_AI : Boss_MoveBase
             {
                 asaltAttackArea.SetActive(true);
                 NextPhase();
-                targetPos = enemyBase.Player.transform.position;
+                targetPos = TargetPosition;
                 targetDirection =  targetPos -(Vector2)transform.position;
-                enemyBase.animator.Play("UŒ‚", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒ", 0, 0);
                 audioManager.PlaySE(audioclips[3]);
             }
         }
@@ -325,7 +325,7 @@ public class SO_Eshema_AI : Boss_MoveBase
                 else
                 {
                     Finish();
-                    enemyBase.animator.Play("‘Ò‹@", 0, 0);
+                    enemyBase.animator.Play("å¾…æ©Ÿ", 0, 0);
                 }
             }
             else 
@@ -334,26 +334,25 @@ public class SO_Eshema_AI : Boss_MoveBase
             }
         }
     }
-    //aŒ‚”ò‚Î‚µ
+    //æ–¬æ’ƒé£›ã°ã—
     void A2() 
     {
         if (AttackPhase == 0)
         {
             
             NextPhase();
-             enemyBase.isPlayerLookBase();
+             LookAtCurrentTarget();
             if (AttackNumber == 0)
             {
-                enemyBase.animator.Play("UŒ‚‘Ò‹@", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒå¾…æ©Ÿ", 0, 0);
             }
 
             for (int i = 0; i < 5; i++)
             {
-                GameObject CL_AttackPPP = Instantiate(Denger_AttackArea_Slash, enemyBase.transform.position, Quaternion.identity);
-                CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
-                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -80 + 40 * i) * enemyBase.PlayerDirection.normalized;
+                GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea_Slash, enemyBase.transform.position, Quaternion.identity, 1f, null, 0f, false);
+                CL_AttackPPP.transform.up = TargetDirection.normalized;
+                Vector2 NewLookDirection = Quaternion.Euler(0, 0, -80 + 40 * i) * TargetDirection.normalized;
                 CL_AttackPPP.transform.up = NewLookDirection.normalized;
-                Destroy(CL_AttackPPP, 1);
             }
         }
         if (AttackPhase == 1) 
@@ -368,13 +367,13 @@ public class SO_Eshema_AI : Boss_MoveBase
         {
             if (enemyBase.AttackCount > 0.15)
             {
-                enemyBase.animator.Play("UŒ‚", 0, 0);
+                enemyBase.animator.Play("æ”»æ’ƒ", 0, 0);
                 audioManager.PlaySE(audioclips[2]);
                 for (int i = 0; i < 5; i++)
                 {
                     GameObject CL_Slash = Instantiate(slashAttack, enemyBase.transform.position, Quaternion.identity);
-                    Vector2 NewLookDirection = Quaternion.Euler(0, 0, -80 + 40 * i) * enemyBase.PlayerDirection.normalized;
-                    if (enemyBase.PlayerDirection.x > 0)
+                    Vector2 NewLookDirection = Quaternion.Euler(0, 0, -80 + 40 * i) * TargetDirection.normalized;
+                    if (TargetDirection.x > 0)
                     {
                         CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
                     }else{
@@ -403,20 +402,20 @@ public class SO_Eshema_AI : Boss_MoveBase
         
         }
     }
-    //ËŒ‚
+    //å°„æ’ƒ
     void A3() 
     {
         if (AttackPhase == 0) 
         {
-            enemyBase.animator.Play("e\‚¦",0,0);
+            enemyBase.animator.Play("éŠƒæ§‹ãˆ",0,0);
             NextPhase();
         }
         if (AttackPhase == 1) 
         {
             if (enemyBase.AttackCount > 0.2)
             {
-                enemyBase.isPlayerLookBase();
-                if (enemyBase.PlayerDistance > 2)
+                LookAtCurrentTarget();
+                if (TargetDistance > 2)
                 {
                     NextPhase();
                 }
@@ -432,10 +431,10 @@ public class SO_Eshema_AI : Boss_MoveBase
                 }
             }
         }
-        if (AttackPhase == 2) //singleƒVƒ‡ƒbƒg
+        if (AttackPhase == 2) //singleã‚·ãƒ§ãƒƒãƒˆ
         {
-            enemyBase.animator.Play("eUŒ‚‘Ò‹@", 0, 0);
-            ARManim.Play("˜r‘Ò‹@", 0, 0);
+            enemyBase.animator.Play("éŠƒæ”»æ’ƒå¾…æ©Ÿ", 0, 0);
+            ARManim.Play("è…•å¾…æ©Ÿ", 0, 0);
             ARM.SetActive(true);
             GunLaser[0].SetActive(true);
             GunLaser[1].SetActive(false);
@@ -443,8 +442,8 @@ public class SO_Eshema_AI : Boss_MoveBase
         }
         if (AttackPhase==3) 
         {
-            enemyBase.isPlayerLookBase();
-            Vector2 ARMdirection = enemyBase.Player.transform.position - ArmAttackPoint.transform.position;
+            LookAtCurrentTarget();
+            Vector2 ARMdirection = TargetPosition - ArmAttackPoint.transform.position;
             ARM.transform.up = ARMdirection;
             ARM.transform.Rotate(0,0,90);
             if (enemyBase.AttackCount > 0.4)
@@ -453,10 +452,10 @@ public class SO_Eshema_AI : Boss_MoveBase
                 ChoiseNextPhase(6);
             }
         }
-        if (AttackPhase == 4)//doubleƒVƒ‡ƒbƒg
+        if (AttackPhase == 4)//doubleã‚·ãƒ§ãƒƒãƒˆ
         {
-            enemyBase.animator.Play("eUŒ‚‘Ò‹@", 0, 0);
-            ARManim.Play("˜rƒŠƒ[ƒh", 0,0);
+            enemyBase.animator.Play("éŠƒæ”»æ’ƒå¾…æ©Ÿ", 0, 0);
+            ARManim.Play("è…•ãƒªãƒ­ãƒ¼ãƒ‰", 0,0);
             ARM.SetActive(true);
             GunLaser[0].SetActive(false);
             GunLaser[1].SetActive(true);
@@ -465,13 +464,13 @@ public class SO_Eshema_AI : Boss_MoveBase
         }
         if (AttackPhase == 5)
         {
-            enemyBase.isPlayerLookBase();
-            Vector2 ARMdirection = enemyBase.Player.transform.position - ArmAttackPoint.transform.position;
+            LookAtCurrentTarget();
+            Vector2 ARMdirection = TargetPosition - ArmAttackPoint.transform.position;
             ARM.transform.up = ARMdirection;
             ARM.transform.Rotate(0, 0, 90);
             if (enemyBase.AttackCount > 0.5)
             {
-                //ARManim.Play("˜r‘Ò‹@", 0, 0);
+                //ARManim.Play("è…•å¾…æ©Ÿ", 0, 0);
                 DoubleBulletShot();
                 ChoiseNextPhase(6);
             }
@@ -495,8 +494,8 @@ public class SO_Eshema_AI : Boss_MoveBase
             }
             else 
             {
-                enemyBase.isPlayerLookBase();
-                if (enemyBase.PlayerDistance > 3)
+                LookAtCurrentTarget();
+                if (TargetDistance > 3)
                 {
                     AttackNumber++;
                     int randomnumber = Random.Range(0,2);
@@ -525,19 +524,19 @@ public class SO_Eshema_AI : Boss_MoveBase
         }
     }
     void A4() 
-    {//’µ–ô
+    {//è·³èº
         if (AttackPhase == 0)
         {
-            enemyBase.animator.Play("ƒWƒƒƒ“ƒv‘Ò‹@", 0, 0);
+            enemyBase.animator.Play("ã‚¸ãƒ£ãƒ³ãƒ—å¾…æ©Ÿ", 0, 0);
             NextPhase();
         }
         if (AttackPhase == 1)
         {
             if (enemyBase.AttackCount > 0.3)
             {
-                targetPos = (Vector2)enemyBase.Player.transform.position;
+                targetPos = (Vector2)TargetPosition;
                 StartCoroutine(MoveInArc());
-                enemyBase.animator.Play("ƒWƒƒƒ“ƒv", 0, 0);
+                enemyBase.animator.Play("ã‚¸ãƒ£ãƒ³ãƒ—", 0, 0);
                 
                 NextPhase();
             }
@@ -546,7 +545,7 @@ public class SO_Eshema_AI : Boss_MoveBase
         {
             if (StandOk) 
             {
-                enemyBase.animator.Play("ƒWƒƒƒ“ƒv’…’n",0,0);
+                enemyBase.animator.Play("ã‚¸ãƒ£ãƒ³ãƒ—ç€åœ°",0,0);
                 StandOk = false;
                 NextPhase();
             }
@@ -577,12 +576,12 @@ public class SO_Eshema_AI : Boss_MoveBase
     {
         if (AttackPhase == 0) 
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.animator.Play("ƒWƒƒƒ“ƒv‘Ò‹@",0,0);
+            LookAtCurrentTarget();
+            enemyBase.animator.Play("ã‚¸ãƒ£ãƒ³ãƒ—å¾…æ©Ÿ",0,0);
 
-            GameObject CL_AttackPPP = Instantiate(Denger_AttackArea_Slash, enemyBase.transform.position, Quaternion.identity);
-            CL_AttackPPP.transform.up = enemyBase.PlayerDirection.normalized;
-            Destroy(CL_AttackPPP, 1);
+            GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea_Slash, enemyBase.transform.position, Quaternion.identity, 1f, null, 0f, false);
+            CL_AttackPPP.transform.up = TargetDirection.normalized;
+            
 
             NextPhase() ;
         }
@@ -591,16 +590,16 @@ public class SO_Eshema_AI : Boss_MoveBase
             if (enemyBase.AttackCount > 0.8) 
             {
                 asaltAttackArea.SetActive(true);
-                enemyBase.animator.Play("•às",0,0);
+                enemyBase.animator.Play("æ­©è¡Œ",0,0);
                 NextPhase();
             }
         }
         if (AttackPhase == 2) 
         {  
-            enemyBase.rb.velocity =enemyBase.PlayerDirection.normalized * enemyBase.SPEED * 3;
+            enemyBase.rb.velocity =TargetDirection.normalized * enemyBase.SPEED * 3;
             if (enemyBase.AttackCount > 0.7 * (1  + AttackNumber * 0.5)) 
             {
-                enemyBase.animator.Play("ƒWƒƒƒ“ƒv‘Ò‹@", 0, 0);
+                enemyBase.animator.Play("ã‚¸ãƒ£ãƒ³ãƒ—å¾…æ©Ÿ", 0, 0);
                 asaltAttackArea.SetActive(false);
                 NextPhase();
             }
@@ -610,14 +609,14 @@ public class SO_Eshema_AI : Boss_MoveBase
                 AttackCount1 = 0;
             for (int i = 0; i < 9; i++) 
             {
-                // ‚’¼•ûŒüi¶‰EjƒxƒNƒgƒ‹
-                Vector2 perp = new Vector2(-enemyBase.PlayerDirection.normalized.y, enemyBase.PlayerDirection.normalized.x);
+                // å‚ç›´æ–¹å‘ï¼ˆå·¦å³ï¼‰ãƒ™ã‚¯ãƒˆãƒ«
+                Vector2 perp = new Vector2(-TargetDirection.normalized.y, TargetDirection.normalized.x);
 
-                // UŒ‚”»’è‚ğ¶‰E‚É¶¬‚·‚éˆÊ’u
+                // æ”»æ’ƒåˆ¤å®šã‚’å·¦å³ã«ç”Ÿæˆã™ã‚‹ä½ç½®
                 Vector2 leftPos = (Vector2)transform.position + perp * 0.5f*(i+3);
                 Vector2 rightPos = (Vector2)transform.position - perp * 0.5f*(i+3);
 
-                // UŒ‚”»’èƒIƒuƒWƒFƒNƒg‚ğ¶‰E‚É¶¬
+                // æ”»æ’ƒåˆ¤å®šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å·¦å³ã«ç”Ÿæˆ
                 GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
                 GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
                     Destroy(leftAttack,5);
@@ -660,54 +659,54 @@ public class SO_Eshema_AI : Boss_MoveBase
     private IEnumerator MoveInArc()
     {
         myRunningCoroutine = MoveInArc();
-        // ˆÚ“®ŠJn‘O‚ÌBodyType‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+        // ç§»å‹•é–‹å§‹å‰ã®BodyTypeã‚’ä¿å­˜ã—ã¦ãŠã
         var originalBodyType = enemyBase.rb.bodyType;
-        // ˆÚ“®’†‚ÍKinematic‚É‚µ‚ÄA•¨—‰‰Z‚Ì‰e‹¿‚ğ‚È‚­‚·
+        // ç§»å‹•ä¸­ã¯Kinematicã«ã—ã¦ã€ç‰©ç†æ¼”ç®—ã®å½±éŸ¿ã‚’ãªãã™
         enemyBase.rb.bodyType = RigidbodyType2D.Kinematic;
 
         Vector2 startPos = enemyBase.transform.position;
         Vector2 endPos = targetPos;
 
-        GameObject CL_AttackPPP = Instantiate(Denger_AttackArea_Stand, endPos, Quaternion.identity);
+        GameObject CL_AttackPPP = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_AttackArea_Stand, endPos, Quaternion.identity, 1.5f, null, 0f, false);
 
-        Destroy(CL_AttackPPP, 1.5f);
+        
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsedTime / duration); // 0‚©‚ç1‚Ì”ÍˆÍ‚Éû‚ß‚é
+            float progress = Mathf.Clamp01(elapsedTime / duration); // 0ã‹ã‚‰1ã®ç¯„å›²ã«åã‚ã‚‹
 
-            // X‚ÆY‚Ì’¼ü“I‚ÈˆÚ“®‚ğŒvZ
+            // Xã¨Yã®ç›´ç·šçš„ãªç§»å‹•ã‚’è¨ˆç®—
             Vector2 linearPos = Vector2.Lerp(startPos, endPos, progress);
 
-            // ‚‚³‚ğŒvZ (SinƒJ[ƒu)
+            // é«˜ã•ã‚’è¨ˆç®— (Sinã‚«ãƒ¼ãƒ–)
             float height = Mathf.Sin(progress * Mathf.PI) * arcHeight;
 
-            // Rigidbody2D‚ğg‚Á‚ÄˆÊ’u‚ğXV‚·‚é
-            // 2D‚È‚Ì‚ÅAYÀ•W‚É‚‚³‚ğ‰Á‚¦‚é
+            // Rigidbody2Dã‚’ä½¿ã£ã¦ä½ç½®ã‚’æ›´æ–°ã™ã‚‹
+            // 2Dãªã®ã§ã€Yåº§æ¨™ã«é«˜ã•ã‚’åŠ ãˆã‚‹
             enemyBase.rb.MovePosition(new Vector2(linearPos.x, linearPos.y + height));
 
-            //yield return new WaitForFixedUpdate(); // •¨—‰‰Z‚ÌXVƒ^ƒCƒ~ƒ“ƒO‚Å‘Ò‚Â
+            //yield return new WaitForFixedUpdate(); // ç‰©ç†æ¼”ç®—ã®æ›´æ–°ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å¾…ã¤
             yield return new WaitForEndOfFrame();
         }
 
-        // ”O‚Ì‚½‚ßAÅI“I‚É‚«‚Á‚¿‚è–Ú•W’n“_‚É‡‚í‚¹‚é
+        // å¿µã®ãŸã‚ã€æœ€çµ‚çš„ã«ãã£ã¡ã‚Šç›®æ¨™åœ°ç‚¹ã«åˆã‚ã›ã‚‹
         transform.position = endPos;
-        // BodyType‚ğŒ³‚É–ß‚·
+        // BodyTypeã‚’å…ƒã«æˆ»ã™
         enemyBase.rb.bodyType = originalBodyType;
 
 
         StandOk = true;
-        // ”O‚Ì‚½‚ßAÅI“I‚É‚«‚Á‚¿‚è–Ú•W’n“_‚É‡‚í‚¹‚é
+        // å¿µã®ãŸã‚ã€æœ€çµ‚çš„ã«ãã£ã¡ã‚Šç›®æ¨™åœ°ç‚¹ã«åˆã‚ã›ã‚‹
         transform.position = targetPos;
-        Debug.Log("–Ú“I’n‚É“’…I" + targetPos);
+        Debug.Log("ç›®çš„åœ°ã«åˆ°ç€ï¼" + targetPos);
     }
 
     void BulletShot() 
     {
         audioManager.PlaySE(audioclips[0]);
-        Vector2 ARMdirection = enemyBase.Player.transform.position - ArmAttackPoint.transform.position;
+        Vector2 ARMdirection = TargetPosition - ArmAttackPoint.transform.position;
         GameObject CL_Bullet = Instantiate(Bullet, ArmAttackPoint.transform.position, Quaternion.identity);
         CL_Bullet.transform.up = ARMdirection.normalized;
 
@@ -719,14 +718,14 @@ public class SO_Eshema_AI : Boss_MoveBase
     void DoubleBulletShot()
     {
         audioManager.PlaySE(audioclips[0]);
-        Vector2 ARMdirection = enemyBase.Player.transform.position - ArmAttackPoint.transform.position;
+        Vector2 ARMdirection = TargetPosition - ArmAttackPoint.transform.position;
         for (int i = 0; i < 2; i++)
         {
             GameObject CL_Slash = Instantiate(HalfBullet, ArmAttackPoint.transform.position, Quaternion.identity);
             Vector2 NewLookDirection = Quaternion.Euler(0, 0, -6 + 12 * i) * ARMdirection.normalized;
             CL_Slash.transform.up = NewLookDirection.normalized;
             
-            if (enemyBase.PlayerDirection.x > 0)
+            if (TargetDirection.x > 0)
             {
                 CL_Slash.transform.localScale = new Vector2(CL_Slash.transform.localScale.x, CL_Slash.transform.localScale.y);
             }
@@ -742,9 +741,9 @@ public class SO_Eshema_AI : Boss_MoveBase
     }
     private IEnumerator NeedleSpawnLing(float delayTime, float Lange, int Plass)
     {
-        //Debug.Log("ƒRƒ‹[ƒ`ƒ“‚ªŠJn‚³‚ê‚Ü‚µ‚½B¡‚©‚ç " + delayTime + " •b‘Ò‚¿‚Ü‚·...");
+        //Debug.Log("ã‚³ãƒ«ãƒ¼ãƒãƒ³ãŒé–‹å§‹ã•ã‚Œã¾ã—ãŸã€‚ä»Šã‹ã‚‰ " + delayTime + " ç§’å¾…ã¡ã¾ã™...");
 
-        // ‚±‚±‚Åw’è‚µ‚½•b”‚¾‚¯‘Ò‹@‚·‚é
+        // ã“ã“ã§æŒ‡å®šã—ãŸç§’æ•°ã ã‘å¾…æ©Ÿã™ã‚‹
         yield return new WaitForSeconds(delayTime);
         for (int i = 0; i < 10 + Plass; i++)
         {
@@ -755,7 +754,7 @@ public class SO_Eshema_AI : Boss_MoveBase
             float newX = enemyBase.transform.position.x + 2 * Lange * Mathf.Cos(angleRad);
             float newY = enemyBase.transform.position.y + 2 * Lange * Mathf.Sin(angleRad);
 
-            // V‚µ‚¢ˆÊ’u‚ÉƒNƒ[ƒ“‚ğì¬
+            // æ–°ã—ã„ä½ç½®ã«ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’ä½œæˆ
             Vector2 newPosition = new Vector2(newX, newY);
 
             NeedleSpawn(newPosition);

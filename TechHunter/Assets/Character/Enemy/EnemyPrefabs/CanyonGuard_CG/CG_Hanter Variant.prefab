@@ -89,8 +89,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: c814752a23e0e5345a54e5b52efa0f92, type: 2}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetFactions
+      value: 14342
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: Choice_MoveToBase
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetAllFactions
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: LookPlayerDistance

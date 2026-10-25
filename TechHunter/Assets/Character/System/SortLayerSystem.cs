@@ -25,19 +25,21 @@ public class SortLayerSystem : MonoBehaviour
     private void FixedUpdate()
     {
         
-        // ÀÛ‚Ìƒ[ƒ‹ƒhÀ•W‚ğƒNƒ‰ƒ“ƒv
+        // å®Ÿéš›ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’ã‚¯ãƒ©ãƒ³ãƒ—
         float clampedPositionY = Mathf.Clamp(transform.position.y, -worldRange, worldRange);
 
-        // ƒNƒ‰ƒ“ƒv‚µ‚½À•W‚ğŠî‚ÉƒŒƒCƒ„[‚ğİ’è
+        // ã‚¯ãƒ©ãƒ³ãƒ—ã—ãŸåº§æ¨™ã‚’åŸºã«ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’è¨­å®š
         int sortingOrder = baseLayer + Mathf.RoundToInt(clampedPositionY / worldRange * layerLange);
         
         if (spriteRenderer != null) 
         { 
-        spriteRenderer.sortingOrder = sortingOrder*-1 + PlusLayer * -1;
+        int nextOrder = sortingOrder * -1 + PlusLayer * -1;
+        if (spriteRenderer.sortingOrder != nextOrder) spriteRenderer.sortingOrder = nextOrder;
         }
         if (renderer != null) 
         {
-            renderer.sortingOrder = sortingOrder + PlusLayer * -1;
+            int nextOrder = sortingOrder + PlusLayer * -1;
+            if (renderer.sortingOrder != nextOrder) renderer.sortingOrder = nextOrder;
         }
     }
 }

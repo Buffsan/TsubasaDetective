@@ -20,6 +20,9 @@ public class CG_Hanter_AI : EnemyMoveBase
     Vector2 SaveAngle = Vector2.zero;
     Vector2 SavePosPhase = Vector2.zero;
 
+    // Frozen at the end of the windup to preserve legacy non-homing dashes.
+    Vector2 lockedRushDirection;
+
     public override void EnemyMovePlay()
     {
         if (PlayerDistanceAutCount > 1)
@@ -40,17 +43,17 @@ public class CG_Hanter_AI : EnemyMoveBase
                 AttackType = 2;
             }
         }
-        enemyBase.PlayerDistance = Vector2.Distance(enemyBase.Player.transform.position, enemyBase.gameObject.transform.position);
-        if (enemyBase.PlayerDistance > 4) 
+        RefreshTargetInfo();
+        if (TargetDistance > 4) 
         {
             PlayerDistanceAutCount += Time.deltaTime;
             
         }
-        if (enemyBase.PlayerDistance < 5)
-        {//enemyBase.isPlayerLookBase();
-            enemyBase.isPlayerLookBase();
+        if (TargetDistance < 5)
+        {//LookAtCurrentTarget();
+            LookAtCurrentTarget();
 
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
             enemyBase.animator.SetInteger("Anim", 1);
         }
         else
@@ -102,7 +105,7 @@ public class CG_Hanter_AI : EnemyMoveBase
                     if (SaveDistance < 0.5)
                     {
                         enemyBase.rb.velocity = Vector2.zero;
-                        //Debug.Log("移動経路再検索" + SaveDistance);
+                        //Debug.Log("遘ｻ蜍慕ｵ瑚ｷｯ蜀肴､懃ｴ｢" + SaveDistance);
                         PhaseCount = 1;
                         Phase = 0;
                         Vector2 SavePosPhase = new Vector2(999, 999);
@@ -133,17 +136,18 @@ public class CG_Hanter_AI : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M2)
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 if (enemyBase.AttackCount > 0.2)
                 {
+                    lockedRushDirection = TargetDirection.normalized;
                     enemyBase.mode = EnemyBase.ModeType.M3;
                     enemyBase.AttackCount = 0;
                 }
             }
             if (enemyBase.mode == EnemyBase.ModeType.M3)
             {
-                //enemyBase.isPlayerLookBase();
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 6f;
+                //LookAtCurrentTarget();
+                enemyBase.rb.velocity = lockedRushDirection * 6f;
                 if (enemyBase.AttackCount > 0.2f)
                 {
                     enemyBase.mode = EnemyBase.ModeType.M4;
@@ -169,6 +173,7 @@ public class CG_Hanter_AI : EnemyMoveBase
             if (enemyBase.mode == EnemyBase.ModeType.M5)
             {
                 GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Attack);
                 EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
                 enemyAttack.enemyBase = enemyBase;
                 Destroy(CL_Attack, 0.01f);
@@ -202,17 +207,18 @@ public class CG_Hanter_AI : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M2)
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 if (enemyBase.AttackCount > 0.2)
                 {
+                    lockedRushDirection = TargetDirection.normalized;
                     enemyBase.mode = EnemyBase.ModeType.M3;
                     enemyBase.AttackCount = 0;
                 }
             }
             if (enemyBase.mode == EnemyBase.ModeType.M3)
             {
-                //enemyBase.isPlayerLookBase();
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 0.5f;
+                //LookAtCurrentTarget();
+                enemyBase.rb.velocity = lockedRushDirection * 0.5f;
                 if (enemyBase.AttackCount > 0.5f)
                 {
                     enemyBase.mode = EnemyBase.ModeType.M4;
@@ -231,14 +237,15 @@ public class CG_Hanter_AI : EnemyMoveBase
             if (enemyBase.mode == EnemyBase.ModeType.M5)
             {
                 GameObject CL_Attack = Instantiate(Slash, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Attack);
                 EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
                 enemyAttack.enemyBase = enemyBase;
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
 
 
                 Rigidbody2D CL_rb = CL_Attack.GetComponent<Rigidbody2D>();
-                CL_rb.velocity = enemyBase.PlayerDirection.normalized * 5;
-                CL_Attack.transform.up = enemyBase.PlayerDirection.normalized;
+                CL_rb.velocity = TargetDirection.normalized * 5;
+                CL_Attack.transform.up = TargetDirection.normalized;
                 CL_Attack.transform.Rotate(0, 0, 90);
 
 
@@ -274,17 +281,18 @@ public class CG_Hanter_AI : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M2)
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 if (enemyBase.AttackCount > 0.2)
                 {
+                    lockedRushDirection = TargetDirection.normalized;
                     enemyBase.mode = EnemyBase.ModeType.M3;
                     enemyBase.AttackCount = 0;
                 }
             }
             if (enemyBase.mode == EnemyBase.ModeType.M3)
             {
-                //enemyBase.isPlayerLookBase();
-                //enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 5f;
+                //LookAtCurrentTarget();
+                //enemyBase.rb.velocity = TargetDirection.normalized * 5f;
                     enemyBase.mode = EnemyBase.ModeType.M4;
                     enemyBase.AttackCount = 0;
             }
@@ -300,6 +308,7 @@ public class CG_Hanter_AI : EnemyMoveBase
             if (enemyBase.mode == EnemyBase.ModeType.M5)
             {
                 //GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(enemyBase.AttackArea);
                 // EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
                 //enemyAttack.enemyBase = enemyBase;
                 //Destroy(CL_Attack, 0.01f);
@@ -317,10 +326,11 @@ public class CG_Hanter_AI : EnemyMoveBase
                             float newX = enemyBase.transform.position.x + f * Mathf.Cos(angleRad);
                             float newY = enemyBase.transform.position.y + f * Mathf.Sin(angleRad);
 
-                            // 新しい位置にクローンを作成
+                            // 譁ｰ縺励＞菴咲ｽｮ縺ｫ繧ｯ繝ｭ繝ｼ繝ｳ繧剃ｽ懈��
                             Vector2 newPosition = new Vector2(newX, newY );
 
                             GameObject CL_Needle = Instantiate(Arrow, newPosition, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Needle);
                             CG_Puppeteer_Needle puppeteer_Needle = CL_Needle.GetComponent<CG_Puppeteer_Needle>();
                             puppeteer_Needle.enemyAttack.enemyBase = enemyBase;
 
@@ -350,10 +360,11 @@ public class CG_Hanter_AI : EnemyMoveBase
                             float newX = enemyBase.transform.position.x + (f + 3) * Mathf.Cos(angleRad);
                             float newY = enemyBase.transform.position.y + (f + 3) * Mathf.Sin(angleRad);
 
-                            // 新しい位置にクローンを作成
+                            // 譁ｰ縺励＞菴咲ｽｮ縺ｫ繧ｯ繝ｭ繝ｼ繝ｳ繧剃ｽ懈��
                             Vector2 newPosition = new Vector2(newX, newY);
 
                             GameObject CL_Needle = Instantiate(Arrow, newPosition, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Needle);
                             CG_Puppeteer_Needle puppeteer_Needle = CL_Needle.GetComponent<CG_Puppeteer_Needle>();
                             puppeteer_Needle.enemyAttack.enemyBase = enemyBase;
 

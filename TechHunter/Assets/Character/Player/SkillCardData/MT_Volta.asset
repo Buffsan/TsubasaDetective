@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillImage: {fileID: 21300000, guid: 733786cb6f3e6c441bde306ac41bd007, type: 3}
   SkillName: "\u30F4\u30A9\u30EB\u30BF"
-  SkillMessage: "1.5秒詠唱\nカーソルの方向に<color=#CC4400>狭く長い雷を発射する。</color>攻撃が的中した敵は、８秒間電撃による高いスタン攻撃力のある持続ダメージを受ける。"
+  SkillMessage: "詠唱1.5秒\n<color=#CC4400>カーソル方向に、幅が狭く射程の長い雷を放つ。</color>\n命中した敵に8秒間、高いスタン攻撃力を持つ電撃の持続ダメージを与える。"
   CoolTime: 22
   SkillData: {fileID: 6963618676915210145, guid: fdc41a34573a369448da902665c0a510, type: 3}
   SkillDataList: []

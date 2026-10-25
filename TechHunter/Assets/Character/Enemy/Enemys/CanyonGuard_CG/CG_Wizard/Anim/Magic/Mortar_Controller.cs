@@ -75,8 +75,7 @@ public class Mortar_Controller : MonoBehaviour
             {
                 GameObject CL_AttackBullet = Instantiate(BulletAttack, Bullet.transform.position, Quaternion.identity);
 
-                EnemyAttack enemyAttack = CL_AttackBullet.GetComponent<EnemyAttack>();
-                enemyAttack.enemyBase = enemyBase;
+                ConfigureMortarAttack(CL_AttackBullet);
 
 
                 GameObject CL_Spase = Instantiate(NewSpase, Bullet.transform.position, Quaternion.identity);
@@ -92,8 +91,7 @@ public class Mortar_Controller : MonoBehaviour
             
             GameObject CL_AttackArea = Instantiate(AttackArea, Bullet.transform.position, Quaternion.identity);
             CircleCollider2D circle = CL_AttackArea.GetComponent<CircleCollider2D>();
-            EnemyAttack enemyAttack = CL_AttackArea.GetComponent<EnemyAttack>();
-            if(enemyAttack)enemyAttack.enemyBase = enemyBase;
+            ConfigureMortarAttack(CL_AttackArea);
             if(circle) circle.radius = RagiSize;
             Destroy(CL_AttackArea,0.05f);
 
@@ -105,6 +103,28 @@ public class Mortar_Controller : MonoBehaviour
         }
 
     }
+    // Mortarが生成した攻撃判定にも、発射元の敵対設定を引き継ぐ。
+    // PlayerOnlyではPrefab側の攻撃先・倍率を変更せず、従来どおり攻撃者だけ設定。
+    void ConfigureMortarAttack(GameObject attackObject)
+    {
+        if (attackObject == null) return;
+
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        Boss_Controller boss = enemyBase as Boss_Controller;
+
+        foreach (EnemyAttack attack in attackObject.GetComponentsInChildren<EnemyAttack>(true))
+        {
+            attack.enemyBase = enemyBase;
+
+            if (controller != null &&
+                controller.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+                controller.ConfigureAttackTarget(attack);
+            else if (boss != null &&
+                     boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+                boss.ConfigureAttackTarget(attack);
+        }
+    }
+
     public void ChangePos(Vector3 value) 
     { 
     TargetPoint.gameObject.transform.position = value;

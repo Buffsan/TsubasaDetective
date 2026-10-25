@@ -15,7 +15,7 @@ public class TF_FishHanter_Shoygun_AI : EnemyMoveBase
         enemyBase.AttackCount += Time.deltaTime;
         if (enemyBase.mode == EnemyBase.ModeType.M1)
         {   
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             enemyBase.rb.velocity = Vector2.zero;
             enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
             enemyBase.mode = EnemyBase.ModeType.M2;
@@ -32,7 +32,7 @@ public class TF_FishHanter_Shoygun_AI : EnemyMoveBase
                 enemyBase.animator.SetInteger("Anim", 3);
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * -10f;
+                enemyBase.rb.velocity = TargetDirection.normalized * -10f;
                 shotBullet(Arrow,0.1f);shotBullet(Effect, 1);
             }
         }
@@ -76,11 +76,12 @@ public class TF_FishHanter_Shoygun_AI : EnemyMoveBase
 
     void shotBullet(GameObject Ar,float dell)
     {
-        //Vector2 ShotPos = enemyBase.Player.transform.position - enemyBase.AttackSpawnPoint.transform.position;
+        //Vector2 ShotPos = TargetPosition - enemyBase.AttackSpawnPoint.transform.position;
 
         GameObject CL_Arrow = Instantiate(Ar, enemyBase.transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Arrow);
 
-        CL_Arrow.transform.up = enemyBase.PlayerDirection;
+        CL_Arrow.transform.up = TargetDirection;
         CL_Arrow.transform.Rotate(0, 0, 180);
 
         Destroy(CL_Arrow, dell);

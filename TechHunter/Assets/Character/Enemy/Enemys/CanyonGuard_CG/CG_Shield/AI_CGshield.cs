@@ -22,7 +22,7 @@ public class AI_CGshield : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M2)
         {
-            enemyBase.isPlayerLookBase();
+            LookAtCurrentTarget();
             if (enemyBase.AttackCount > AttackWaitTime1)
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
@@ -31,8 +31,8 @@ public class AI_CGshield : EnemyMoveBase
         }
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
-            enemyBase.isPlayerLookBase();
-            enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+            LookAtCurrentTarget();
+            enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
             if (enemyBase.AttackCount > AttackWaitTime2)
             {
                 enemyBase.mode = EnemyBase.ModeType.M4;

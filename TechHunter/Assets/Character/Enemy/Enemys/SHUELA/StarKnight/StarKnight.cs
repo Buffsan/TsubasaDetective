@@ -22,10 +22,13 @@ public class StarKnight : EnemyMoveBase
     Vector2 SaveAngle = Vector2.zero;
     Vector2 SavePosPhase = Vector2.zero;
 
+    // Frozen at the end of the windup to preserve legacy non-homing dashes.
+    Vector2 lockedRushDirection;
+
     public override void EnemyMovePlay()
     {
-        enemyBase.isPlayerLookBase();
-        enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * enemyBase.SPEED;
+        LookAtCurrentTarget();
+        enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
         enemyBase.animator.SetInteger("Anim",1);
         PhaseCount += Time.deltaTime;
         if (PhaseCount > 1)
@@ -54,17 +57,18 @@ public class StarKnight : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M2)
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 if (enemyBase.AttackCount > 0.2)
                 {
+                    lockedRushDirection = TargetDirection.normalized;
                     enemyBase.mode = EnemyBase.ModeType.M3;
                     enemyBase.AttackCount = 0;
                 }
             }
             if (enemyBase.mode == EnemyBase.ModeType.M3)
             {
-                //enemyBase.isPlayerLookBase();
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 6f;
+                //LookAtCurrentTarget();
+                enemyBase.rb.velocity = lockedRushDirection * 6f;
                 if (enemyBase.AttackCount > 0.2f)
                 {
                     enemyBase.mode = EnemyBase.ModeType.M4;
@@ -116,17 +120,18 @@ public class StarKnight : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M2)
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 if (enemyBase.AttackCount > 0.2)
                 {
+                    lockedRushDirection = TargetDirection.normalized;
                     enemyBase.mode = EnemyBase.ModeType.M3;
                     enemyBase.AttackCount = 0;
                 }
             }
             if (enemyBase.mode == EnemyBase.ModeType.M3)
             {
-                //enemyBase.isPlayerLookBase();
-                enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 0.5f;
+                //LookAtCurrentTarget();
+                enemyBase.rb.velocity = lockedRushDirection * 0.5f;
                 if (enemyBase.AttackCount > 0.5f)
                 {
                     enemyBase.mode = EnemyBase.ModeType.M4;
@@ -150,7 +155,7 @@ public class StarKnight : EnemyMoveBase
                 GameObject CL_Moter = Instantiate(Slash, enemyBase.transform.position, Quaternion.identity);
                 Mortar_Controller mortar_ = CL_Moter.GetComponent<Mortar_Controller>();
                 mortar_.enemyBase = enemyBase;
-                mortar_.ChangePos(enemyBase.Player.transform.position);
+                mortar_.ChangePos(TargetPosition);
                 Destroy(CL_Moter, 10);
 
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
@@ -183,17 +188,18 @@ public class StarKnight : EnemyMoveBase
             }
             if (enemyBase.mode == EnemyBase.ModeType.M2)
             {
-                enemyBase.isPlayerLookBase();
+                LookAtCurrentTarget();
                 if (enemyBase.AttackCount > 0.2)
                 {
+                    lockedRushDirection = TargetDirection.normalized;
                     enemyBase.mode = EnemyBase.ModeType.M3;
                     enemyBase.AttackCount = 0;
                 }
             }
             if (enemyBase.mode == EnemyBase.ModeType.M3)
             {
-                //enemyBase.isPlayerLookBase();
-                //enemyBase.rb.velocity = enemyBase.PlayerDirection.normalized * 5f;
+                //LookAtCurrentTarget();
+                //enemyBase.rb.velocity = TargetDirection.normalized * 5f;
                 enemyBase.mode = EnemyBase.ModeType.M4;
                 enemyBase.AttackCount = 0;
             }
@@ -226,7 +232,7 @@ public class StarKnight : EnemyMoveBase
                             float newX = enemyBase.transform.position.x + f * Mathf.Cos(angleRad);
                             float newY = enemyBase.transform.position.y + f * Mathf.Sin(angleRad);
 
-                            // �V�����ʒu�ɃN���[�����쐬
+                            // 新しい位置にクローンを作成
                             Vector2 newPosition = new Vector2(newX, newY);
 
                             GameObject CL_Needle = Instantiate(Arrow, newPosition, Quaternion.identity);
@@ -259,7 +265,7 @@ public class StarKnight : EnemyMoveBase
                             float newX = enemyBase.transform.position.x + (f + 3) * Mathf.Cos(angleRad);
                             float newY = enemyBase.transform.position.y + (f + 3) * Mathf.Sin(angleRad);
 
-                            // �V�����ʒu�ɃN���[�����쐬
+                            // 新しい位置にクローンを作成
                             Vector2 newPosition = new Vector2(newX, newY);
 
                             GameObject CL_Needle = Instantiate(Arrow, newPosition, Quaternion.identity);

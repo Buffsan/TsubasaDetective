@@ -31,3 +31,12 @@
 - `Tools > TechHunter > Dialogue > Create and Place Dialogue UI` はプレビューや単体シーン向け。**通常ゲームでは手動配置不要**です。
 
 Unity上でのコンパイル/Play Mode検証は未実施です。
+
+## ALL_SystemManagerからの共通会話参照
+
+- 共通の `-----GameSysem-----.prefab` に常設する `DialogueSystem` GameObjectが `DialogueRuntimeBootstrap` を持ちます。ショップ内には会話システム本体を置きません。
+- `ALL_SystemManager` に `dialogueRuntimeBootstrap`、`dialogueUIController`、`dialogueCharacterDatabase` を登録できる欄を追加しました。
+- 現状はコンポーネントの `Start()` 時に自動登録します。Unity Editorの非再生時の欄は空でも動作します。
+- 会話の呼び出し例：`ALL_SystemManager.Instance.dialogueUIController.Play(dialogueData)`
+- `ALL_SystemManager.Instance.dialogueUIController.IsPlaying` で会話中の判定が可能です。
+- 立ち絵登録用の `SharedCharacters.asset` を各会話で使い回します。

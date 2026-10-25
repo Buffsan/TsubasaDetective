@@ -17,6 +17,9 @@ public class DialogueRuntimeBootstrap : MonoBehaviour
     GameObject createdCanvas;
     GameObject createdEventSystem;
 
+    public DialogueUIController DialogueController { get; private set; }
+    public DialogueCharacterDatabase CharacterDatabase { get { return characterDatabase; } }
+
     void Awake()
     {
         if (!createCanvasAutomatically) return;
@@ -25,13 +28,27 @@ public class DialogueRuntimeBootstrap : MonoBehaviour
         if (existing != null)
         {
             if (characterDatabase != null) existing.SetDatabase(characterDatabase);
+            DialogueController = existing;
             return;
         }
+
         createdCanvas = CreateDialogueCanvas();
+        if (createdCanvas != null)
+            DialogueController = createdCanvas.GetComponent<DialogueUIController>();
+    }
+
+    void Start()
+    {
+        // ALL_SystemManager is initialized by now, regardless of Awake order.
+        if (ALL_SystemManager.Instance != null)
+            ALL_SystemManager.Instance.RegisterDialogueSystem(
+                this, DialogueController, characterDatabase);
     }
 
     void OnDestroy()
     {
+        if (ALL_SystemManager.Instance != null)
+            ALL_SystemManager.Instance.UnregisterDialogueSystem(this);
         if (createdCanvas != null) Destroy(createdCanvas);
         if (createdEventSystem != null) Destroy(createdEventSystem);
     }

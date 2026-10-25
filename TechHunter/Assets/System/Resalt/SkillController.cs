@@ -77,6 +77,36 @@ public class SkillController : MonoBehaviour
         systemManager = GetComponent<SystemManager>();
     }
 
+    // Select without rejection loops: always terminates, even with fewer than three options.
+    // When the eligible set is exhausted, duplicates are permitted rather than freezing.
+    static bool TryPickPage<T>(List<T> candidates, List<T> selected, out T choice)
+    {
+        choice = default(T);
+        if (candidates.Count == 0) return false;
+
+        int unused = 0;
+        foreach (T item in candidates)
+            if (!selected.Contains(item)) unused++;
+
+        if (unused == 0)
+        {
+            choice = candidates[Random.Range(0, candidates.Count)];
+            return true;
+        }
+
+        int pick = Random.Range(0, unused);
+        foreach (T item in candidates)
+        {
+            if (selected.Contains(item)) continue;
+            if (pick-- == 0)
+            {
+                choice = item;
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -291,7 +321,6 @@ public class SkillController : MonoBehaviour
 
         for (int i = 0; i < 3; i++)
         {
-            bool Set = false;
 
             List<Skill> SaveStatusUps_R1 = new List<Skill>();
             foreach (Skill s in SkillList)
@@ -306,23 +335,10 @@ public class SkillController : MonoBehaviour
 
 
 
-            while (!Set)
+            if (!TryPickPage(SaveStatusUps_R1, NowSkill, out SaveSkill))
             {
-                SaveSkill = SaveStatusUps_R1[Random.Range(0, SaveStatusUps_R1.Count)];
-
-                int j = 0;
-                foreach (var a in NowSkill)
-                {
-                    if (a == SaveSkill)
-                    {
-                        j++;
-                    }
-                }
-                if (j == 0)
-                {
-                    Set = true;
-                }
-
+                Debug.LogError("No eligible SaveSkill reward candidates; please check reward configuration.", this);
+                break;
             }
             NowSkill.Add(SaveSkill);
             isSkillPage(SaveSkill, i);
@@ -354,11 +370,11 @@ public class SkillController : MonoBehaviour
         }
         SavePage.Clear();
         SaveStatus.Clear();
+        AllRunSkillPages();
 
         List<StatusUP> NowPage = new List<StatusUP>();
         for (int i = 0; i < 3; i++)
         {
-            bool Set = false;
 
             List<StatusUP> SaveStatusUps_R1 = new List<StatusUP>();
             foreach (StatusUP s in StatusUPs)
@@ -395,28 +411,15 @@ public class SkillController : MonoBehaviour
                 }
             }
 
-            while (!Set)
+            if (!TryPickPage(SaveStatusUps_R1, NowPage, out SaveStatusUP))
             {
-                SaveStatusUP = SaveStatusUps_R1[Random.Range(0, SaveStatusUps_R1.Count)];
-
-                int j = 0;
-                foreach (var a in NowPage)
-                {
-                    if (a == SaveStatusUP)
-                    {
-                        j++;
-                    }
-
-                }
-                if (j == 0)
-                {
-                    Set = true;
-                }
+                Debug.LogError("No eligible SaveStatusUP reward candidates; please check reward configuration.", this);
+                break;
             }
             NowPage.Add(SaveStatusUP);
             isStatusPage(SaveStatusUP, i);
-            SpawnAllPages();
         }
+        SpawnAllPages();
     }
 
     public void isStartStagePageChoice()
@@ -437,14 +440,13 @@ public class SkillController : MonoBehaviour
             Destroy(save.gameObject, 5);
 
         }
-        SavePage.Clear();
-        SaveStatus.Clear();
+        SaveStageManager.Clear();
+        SaveStagePages.Clear();
 
         List<StagePageData> NowPage = new List<StagePageData>();
         //三枚を条件に遇うように選出
         for (int i = 0; i < 3; i++)
         {
-            bool Set = false;
 
             List<StagePageData> SaveStages_Choise = new List<StagePageData>();
             foreach (var s in Stages)
@@ -452,23 +454,10 @@ public class SkillController : MonoBehaviour
                 if (s.stageNumber == systemManager.stageNumber + 1) SaveStages_Choise.Add(s);
             }
 
-            while (!Set)
+            if (!TryPickPage(SaveStages_Choise, NowPage, out SaveStage))
             {
-                SaveStage = SaveStages_Choise[Random.Range(0, SaveStages_Choise.Count)];
-
-                int j = 0;
-                foreach (var a in NowPage)
-                {
-                    if (a == SaveStage)
-                    {
-                        j++;
-                    }
-
-                }
-                if (j == 0)
-                {
-                    Set = true;
-                }
+                Debug.LogError("No eligible SaveStage reward candidates; please check reward configuration.", this);
+                break;
             }
             NowPage.Add(SaveStage);
             isStagePage(SaveStage, i);
@@ -502,7 +491,6 @@ public class SkillController : MonoBehaviour
         List<Relic> NowPage = new List<Relic>();
         for (int i = 0; i < 3; i++)
         {
-            bool Set = false;
 
             List<Relic> SaveLocal_RelicPage = new List<Relic>();
             foreach (Relic s in Relics)
@@ -511,23 +499,10 @@ public class SkillController : MonoBehaviour
                 
             }
 
-            while (!Set)
+            if (!TryPickPage(SaveLocal_RelicPage, NowPage, out SaveRelic))
             {
-                SaveRelic = SaveLocal_RelicPage[Random.Range(0, SaveLocal_RelicPage.Count)];
-
-                int j = 0;
-                foreach (var a in NowPage)
-                {
-                    if (a == SaveRelic)
-                    {
-                        j++;
-                    }
-
-                }
-                if (j == 0)
-                {
-                    Set = true;
-                }
+                Debug.LogError("No eligible SaveRelic reward candidates; please check reward configuration.", this);
+                break;
             }
             NowPage.Add(SaveRelic);
             isSet_Relic(SaveRelic, i);
@@ -582,15 +557,15 @@ public class SkillController : MonoBehaviour
             }
             index++;
             Destroy(save.gameObject, 5);
-            if (ALL_System.system_GameModeManager.gameMode == system_GameModeManager.AdventureGameMode.BossBattleSpot) 
-            {
-                All_StartRelicPageSpawn();
-            }
-            if (gameModeManager.BattlePhase == 2)
-            {
-                //isStartSkillPageChoice();
-                isAll_StartSkillPageChoice(2);
-            }
+        }
+        // Transition only once per choice, not once for each of the three cards.
+        if (ALL_System.system_GameModeManager.gameMode == system_GameModeManager.AdventureGameMode.BossBattleSpot)
+        {
+            All_StartRelicPageSpawn();
+        }
+        if (gameModeManager.BattlePhase == 2)
+        {
+            isAll_StartSkillPageChoice(2);
         }
         SavePage.Clear();
         SaveStatus.Clear();

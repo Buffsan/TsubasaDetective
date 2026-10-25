@@ -42,39 +42,57 @@ public class CoinManager : MonoBehaviour
     }
     public MoveType moveType = MoveType.Fly;
 
-    // Start is called before the first frame update
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        spriterenderer = GetComponent<SpriteRenderer>();
+    }
+
     void Start()
     {
-        Player = GameObject.FindGameObjectWithTag("Player");
-        playercontroller = Player.GetComponent<PlayerController>();
-        rb = GetComponent<Rigidbody2D>();
+        // Also support coins placed directly in a scene, outside the pool.
+        if (!initialized) InitializeCoin(coinType);
+    }
 
-        spriterenderer = GetComponent<SpriteRenderer>();
+    bool initialized;
+    public void InitializeCoin(CoinType type)
+    {
+        coinType = type;
+        initialized = true;
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+        if (spriterenderer == null) spriterenderer = GetComponent<SpriteRenderer>();
+        if (Player == null) Player = GameObject.FindGameObjectWithTag("Player");
+        if (Player != null && playercontroller == null)
+            playercontroller = Player.GetComponent<PlayerController>();
 
-        Vector2 radom = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-        //rb.velocity = radom.normalized *Random.Range(1f,2f);
-        rb.AddForce(radom.normalized * Random.Range(80f, 150f));
+        FlyCount = 0f;
+        moveType = MoveType.Fly;
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
 
-        if (coinType == CoinType.CopperCoin)
+        if (type == CoinType.CopperCoin)
         {
             NowValue = CopperValue;
-            spriterenderer.sprite =CopperCoin;
+            spriterenderer.sprite = CopperCoin;
         }
-        else if (coinType == CoinType.SilverCoin)
+        else if (type == CoinType.SilverCoin)
         {
             NowValue = SilverValue;
             spriterenderer.sprite = SilverCoin;
         }
-        else if (coinType == CoinType.GoaldCoin) 
+        else if (type == CoinType.GoaldCoin)
         {
             NowValue = GoaldValue;
             spriterenderer.sprite = GoaldCoin;
         }
-        else if (coinType == CoinType.CrystalCoin)
+        else
         {
             NowValue = CrystalValue;
             spriterenderer.sprite = CrystalCoin;
         }
+
+        Vector2 random = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+        rb.AddForce(random.normalized * Random.Range(80f, 150f));
     }
 
     // Update is called once per frame
@@ -109,10 +127,12 @@ public class CoinManager : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("PlayerArea")) 
+        if (other.CompareTag("PlayerArea") && playercontroller != null) 
         {
             playercontroller.AllCoins += NowValue;
             audiomanager.PlaySE(CoinGet);
+            if (SystemManager.Instance != null)
+                SystemManager.Instance.coinManagers.Remove(this);
             CoinPool.Instance.Release(this.gameObject);
             //Destroy(gameObject);
         }

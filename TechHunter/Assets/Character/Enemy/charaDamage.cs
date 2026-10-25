@@ -410,8 +410,7 @@ public class charaDamage : MonoBehaviour, IDamageable
 
         // 情報セット
         DamageText text = obj.GetComponent<DamageText>();
-        text.isChangeText(value);
-        text.Criticul = Criticul;
+        text.Configure(value, Criticul);
 
     }
     void CoinDrop()
@@ -443,7 +442,7 @@ public class charaDamage : MonoBehaviour, IDamageable
                 GameObject coinObj = CoinPool.Instance.GetCoin(transform.position);
 
                 CoinManager coin = coinObj.GetComponent<CoinManager>();
-                coin.coinType = types[i];
+                coin.InitializeCoin(types[i]);
 
                 // SystemManager の coinManagers 登録（あなたの仕様に合わせる）
                 enemyBase.ALL_System.systemManager.coinManagers.Add(coin);

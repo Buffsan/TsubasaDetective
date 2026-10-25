@@ -14,7 +14,7 @@ public class CoinPool : MonoBehaviour
     {
         Instance = this;
 
-        // –‘O‚É¶¬‚µ‚Äƒv[ƒ‹‚É“Š“üi’´d—vj
+        // äº‹å‰ã«ç”Ÿæˆã—ã¦ãƒ—ãƒ¼ãƒ«ã«æŠ•å…¥ï¼ˆè¶…é‡è¦ï¼‰
         for (int i = 0; i < initialCount; i++)
         {
             GameObject obj = Instantiate(coinPrefab);
@@ -25,7 +25,7 @@ public class CoinPool : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒRƒCƒ“‚ğƒv[ƒ‹‚©‚çæ“¾
+    /// ã‚³ã‚¤ãƒ³ã‚’ãƒ—ãƒ¼ãƒ«ã‹ã‚‰å–å¾—
     /// </summary>
     public GameObject GetCoin(Vector3 pos)
     {
@@ -34,21 +34,21 @@ public class CoinPool : MonoBehaviour
         if (pool.Count > 0)
         {
             obj = pool.Dequeue();
-            obj.SetActive(true);
         }
         else
         {
-            // —\”õ‚ª–³‚¯‚ê‚Î‘’z
-            obj = Instantiate(coinPrefab);
-            obj.transform.SetParent(transform);
+            // äºˆå‚™ãŒç„¡ã‘ã‚Œã°å¢—ç¯‰
+            obj = Instantiate(coinPrefab, transform);
+            obj.SetActive(false);
         }
 
         obj.transform.position = pos;
+        obj.SetActive(true);
         return obj;
     }
 
     /// <summary>
-    /// ƒRƒCƒ“‚ğƒv[ƒ‹‚É–ß‚·
+    /// ã‚³ã‚¤ãƒ³ã‚’ãƒ—ãƒ¼ãƒ«ã«æˆ»ã™
     /// </summary>
     public void Release(GameObject obj)
     {

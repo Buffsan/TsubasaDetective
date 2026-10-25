@@ -5,7 +5,7 @@ public class AttackPool : MonoBehaviour
 {
     public static AttackPool Instance;
 
-    [SerializeField] GameObject pooledAttackPrefab; // ”Ä—p‚ÌUŒ‚”»’èƒCƒ“ƒXƒ^ƒ“ƒXiCircle/Box—¼•û‚Á‚Ä‚Ä‚à—Ç‚¢j
+    [SerializeField] GameObject pooledAttackPrefab; // æ±ç”¨ã®æ”»æ’ƒåˆ¤å®šã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ï¼ˆCircle/Boxä¸¡æ–¹æŒã£ã¦ã¦ã‚‚è‰¯ã„ï¼‰
     [SerializeField] int initialCount = 20;
 
     Queue<GameObject> pool = new Queue<GameObject>();
@@ -27,7 +27,7 @@ public class AttackPool : MonoBehaviour
     {
         Quaternion rot;
 
-        // --------- Œ^”»’è‚µ‚ÄØ‚è‘Ö‚¦ ---------
+        // --------- å‹åˆ¤å®šã—ã¦åˆ‡ã‚Šæ›¿ãˆ ---------
         if (rotOrDir is Quaternion q)
         {
             rot = q;
@@ -42,7 +42,7 @@ public class AttackPool : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Get: rotOrDir ‚Í Quaternion ‚© Vector2/Vector3 ‚Å“n‚µ‚Ä‚­‚¾‚³‚¢");
+            Debug.LogWarning("Get: rotOrDir ã¯ Quaternion ã‹ Vector2/Vector3 ã§æ¸¡ã—ã¦ãã ã•ã„");
             rot = Quaternion.identity;
         }
         GameObject instance = (pool.Count > 0) ? pool.Dequeue() : Instantiate(pooledAttackPrefab, transform);
@@ -50,10 +50,10 @@ public class AttackPool : MonoBehaviour
         instance.transform.SetParent(transform);
         instance.transform.SetPositionAndRotation(pos, rot);
 
-        // ƒRƒ‰ƒCƒ_[ƒRƒs[
+        // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‚³ãƒ”ãƒ¼
         CopyCollider2D(templatePrefab, instance);
 
-        // ƒpƒ‰ƒ[ƒ^ƒRƒs[
+        // ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚³ãƒ”ãƒ¼
         var tAttack = templatePrefab.GetComponent<PlayerAttack>();
         var iAttack = instance.GetComponent<PlayerAttack>();
         if (tAttack != null )
@@ -61,14 +61,15 @@ public class AttackPool : MonoBehaviour
             iAttack.skillcarddata = tAttack.skillcarddata;
             iAttack.weapondata = tAttack.weapondata;
             iAttack.isCriticulUse = tAttack.isCriticulUse;
+            iAttack.AgeinAttack = tAttack.AgeinAttack;
         }
         
         instance.SetActive(true);
 
-        // ©“®Á–Å—pƒXƒNƒŠƒvƒg‚ğƒZƒbƒg
+        // è‡ªå‹•æ¶ˆæ»…ç”¨ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’ã‚»ãƒƒãƒˆ
         var despawn = instance.GetComponent<AttackDespawn>();
         if (despawn == null) despawn = instance.AddComponent<AttackDespawn>();
-        despawn.Init(lifetime, this); // ƒv[ƒ‹‚É–ß‚·
+        despawn.Init(lifetime, this); // ãƒ—ãƒ¼ãƒ«ã«æˆ»ã™
 
         return instance;
     }
@@ -79,26 +80,26 @@ public class AttackPool : MonoBehaviour
         pool.Enqueue(instance);
     }
 
-    // ---------- ƒRƒs[ˆ—i2Dj ----------
+    // ---------- ã‚³ãƒ”ãƒ¼å‡¦ç†ï¼ˆ2Dï¼‰ ----------
     void CopyCollider2D(GameObject sourcePrefab, GameObject targetInstance)
     {
-        // CircleCollider2D ‚ğ—Dæ‚µ‚ÄƒRƒs[
+        // CircleCollider2D ã‚’å„ªå…ˆã—ã¦ã‚³ãƒ”ãƒ¼
         var srcCircle = sourcePrefab.GetComponent<CircleCollider2D>();
         var srcBox = sourcePrefab.GetComponent<BoxCollider2D>();
 
-        // ƒ^[ƒQƒbƒg‚É Circle / Box ‚ª‚ ‚é‚©ƒ`ƒFƒbƒN
+        // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã« Circle / Box ãŒã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
         var tgtCircle = targetInstance.GetComponent<CircleCollider2D>();
         var tgtBox = targetInstance.GetComponent<BoxCollider2D>();
 
         targetInstance.transform.localScale = sourcePrefab.transform.localScale;
 
-        // ‚Ü‚¸—¼•û disable ‚É‚µ‚Ä‚¨‚­i—]Œv‚È“–‚½‚è‚ğ–h‚®j
+        // ã¾ãšä¸¡æ–¹ disable ã«ã—ã¦ãŠãï¼ˆä½™è¨ˆãªå½“ãŸã‚Šã‚’é˜²ãï¼‰
         if (tgtCircle != null) tgtCircle.enabled = false;
         if (tgtBox != null) tgtBox.enabled = false;
 
         if (srcCircle != null && tgtCircle != null)
         {
-            // Circle -> Circle ƒRƒs[
+            // Circle -> Circle ã‚³ãƒ”ãƒ¼
             tgtCircle.radius = srcCircle.radius;
             tgtCircle.offset = srcCircle.offset;
             tgtCircle.isTrigger = srcCircle.isTrigger;
@@ -109,7 +110,7 @@ public class AttackPool : MonoBehaviour
 
         if (srcBox != null && tgtBox != null)
         {
-            // Box -> Box ƒRƒs[
+            // Box -> Box ã‚³ãƒ”ãƒ¼
             tgtBox.size = srcBox.size;
             tgtBox.offset = srcBox.offset;
             tgtBox.isTrigger = srcBox.isTrigger;
@@ -118,6 +119,6 @@ public class AttackPool : MonoBehaviour
             return;
         }
 
-        // ‚à‚µƒeƒ“ƒvƒŒ‚É•Ê‚Ì Collider2D ‚ª•t‚¢‚Ä‚¢‚½‚çŒÂ•Ê‚Éˆ—’Ç‰Á
+        // ã‚‚ã—ãƒ†ãƒ³ãƒ—ãƒ¬ã«åˆ¥ã® Collider2D ãŒä»˜ã„ã¦ã„ãŸã‚‰å€‹åˆ¥ã«å‡¦ç†è¿½åŠ 
     }
 }

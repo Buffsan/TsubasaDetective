@@ -333,7 +333,7 @@ public class PlayerController : PlayerStatus
     {
         if (HitEffect == null) return;
 
-        // ワールド固定の親。プレイヤー移動中も既に出したヒット演出は移動させない。
+        // Keep effects stationary in world space while the player moves.
         hitEffectPoolRoot = new GameObject("PlayerHitEffectPool").transform;
         for (int i = 0; i < hitEffectPoolSize; i++)
         {
@@ -742,12 +742,12 @@ public class PlayerController : PlayerStatus
     }
     public void HitEffectSpawn(Vector2 Pos)
     {
-        // 同時命中数が上限を超えたら演出だけを省略し、ダメージ処理は省略しない。
+        // If the pool is full, skip the visual only (damage is unaffected).
         if (hitEffectPool.Count == 0) return;
 
         GameObject effect = hitEffectPool.Dequeue();
         effect.transform.SetPositionAndRotation(Pos, Quaternion.identity);
-        effect.SetActive(true); // Animator の状態を再初期化して再生
+        effect.SetActive(true);
         activeHitEffects.Add(new HitEffectLifetime { effect = effect, endTime = Time.time + 1f });
     }
     public void isStartPointMove(GameObject StartPoint)

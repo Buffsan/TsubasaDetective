@@ -94,34 +94,47 @@ public class charaDamage : MonoBehaviour, IDamageable
         buffs.Add(activeBuff);
     }
 
+    // Each damage chain has a unique token: cycles cannot recurse indefinitely.
+    static uint damageTraversalSerial;
+    uint lastDamageTraversal;
+    bool reportedDamageCycle;
+
     public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical)
     {
-        if (isDead || (enemyBase != null && enemyBase.status == EnemyBase.Status.Die)) return;
+        uint token = ++damageTraversalSerial;
+        if (token == 0) token = ++damageTraversalSerial;
+        ForwardDamage(Attackvalue, Stanvalue, ConfusionPower, Critical, token);
+    }
 
-        if (DamageType != 0 && passDamageAreas.Count == 0)
+    void ForwardDamage(float attack, float stagger, float confusion, bool critical, uint token)
+    {
+        if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die) return;
+        if (lastDamageTraversal == token)
         {
-            Debug.Log("ダメージを押し付ける処理なのに押しつけ先がいない　ひどいよのなか");
+            if (!reportedDamageCycle)
+            {
+                Debug.LogWarning("Damage forwarding cycle or duplicate path on " + name, this);
+                reportedDamageCycle = true;
+            }
             return;
         }
+        lastDamageTraversal = token;
+
         switch (DamageType)
         {
-
             case 0:
-                receiveDamage(Attackvalue, Stanvalue, ConfusionPower, Critical);
+                receiveDamage(attack, stagger, confusion, critical);
                 break;
             case 1:
-                passDamageAreas[0].Damage(Attackvalue, Stanvalue, ConfusionPower, Critical);
+                if (passDamageAreas.Count > 0 && passDamageAreas[0] != null)
+                    passDamageAreas[0].ForwardDamage(attack, stagger, confusion, critical, token);
                 break;
             case 2:
-                foreach (var d in passDamageAreas)
-                {
-                    d.Damage(Attackvalue, Stanvalue, ConfusionPower, Critical);
-                }
+                foreach (charaDamage receiver in passDamageAreas)
+                    if (receiver != null)
+                        receiver.ForwardDamage(attack, stagger, confusion, critical, token);
                 break;
         }
-
-
-
     }
 
     void isDieCameraShake(charadata data) 

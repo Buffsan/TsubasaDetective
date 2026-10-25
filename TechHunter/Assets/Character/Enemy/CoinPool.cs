@@ -318,7 +318,10 @@ public class CoinPool : MonoBehaviour
 
     public void Release(GameObject obj)
     {
-        if (!activeCoins.Remove(obj)) return;
+        if (obj == null || !obj.activeSelf) return;
+
+        // Also accept scene-placed coins, as the previous pool implementation did.
+        activeCoins.Remove(obj);
         obj.SetActive(false);
         obj.transform.SetParent(transform, false);
         pool.Enqueue(obj);

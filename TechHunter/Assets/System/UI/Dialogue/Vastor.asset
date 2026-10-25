@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f818c6df9824b20b22b8c0c78b73bac, type: 3}
+  m_Name: Vastor
+  m_EditorClassIdentifier:
+  id: 10
+  displayName: Vastor
+  flipHorizontally: 0
+  scale: 1
+  normal: {fileID: 0}
+  happy: {fileID: 0}
+  angry: {fileID: 0}
+  crying: {fileID: 0}
+  fear: {fileID: 0}
+  confused: {fileID: 0}
+  laughing: {fileID: 0}
+  surprised: {fileID: 0}
+  sad: {fileID: 0}
+  embarrassed: {fileID: 0}
+  thinking: {fileID: 0}
+  others: []

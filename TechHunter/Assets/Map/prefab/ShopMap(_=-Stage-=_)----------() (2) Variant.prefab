@@ -5263,6 +5263,7 @@ GameObject:
   m_Component:
   - component: {fileID: 690921939315072577}
   - component: {fileID: 3326175099842069588}
+  - component: {fileID: 6368745100884072002}
   m_Layer: 0
   m_Name: ShopManager
   m_TagString: Untagged
@@ -74957,3 +74958,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3664666186379655610, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
   m_PrefabInstance: {fileID: 6580073243589452142}
   m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &6368745100884072002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6630802386780548469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a71d464b99f4c949e2a0b595306824d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  characterDatabase: {fileID: 11400000, guid: c0458e2931eb443296dcfd760a1696b0, type: 2}
+  japaneseFont: {fileID: 11400000, guid: b0f3628979ca4fe4dbdd80bd5e694e9b, type: 2}
+  createCanvasAutomatically: 1

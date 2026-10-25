@@ -124,7 +124,8 @@ public class SkillTermTooltip : MonoBehaviour
         if (canvasRect == null) return;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Input.mousePosition, cam, out Vector2 pos);
         pos += cursorOffset;
-        tooltipRoot.SetParent(canvasRect, false);
+        if (tooltipRoot.parent != canvasRect)
+            tooltipRoot.SetParent(canvasRect, false);
         tooltipRoot.pivot = new Vector2(0f, 1f);
         Vector2 size = tooltipRoot.rect.size;
         Rect bounds = canvasRect.rect;

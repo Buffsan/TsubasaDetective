@@ -83,31 +83,35 @@ public class EnemySpawnBase : MonoBehaviour
             }
         }
 
-        if (gameModeManager.AllGameLevel >= 2)
+        if (Save_Stages == null)
         {
-            foreach (GameObject mapprefab in Save_Stages.BigMap)
+            Debug.LogError("No stage configuration found for " + manager.stage, this);
+            return;
+        }
+        List<GameObject> eligibleMaps = gameModeManager.AllGameLevel >= 2
+            ? Save_Stages.BigMap : Save_Stages.Map;
+
+        foreach (GameObject mapPrefab in eligibleMaps)
+        {
+            if (mapPrefab == null) continue;
+            TileMap_Controller map = mapPrefab.GetComponent<TileMap_Controller>();
+            if (map != null && map.stage.ToString() == manager.stage.ToString())
+                map_sp.Add(map);
+        }
+        // Allow older maps that still use the default Ferust stage tag.
+        if (map_sp.Count == 0)
+        {
+            foreach (GameObject mapPrefab in eligibleMaps)
             {
-
-                TileMap_Controller tilemap_C = mapprefab.GetComponent<TileMap_Controller>();
-                if (tilemap_C.stage == TileMap_Controller.Stage.Ferust)
-                {
-                    map_sp.Add(tilemap_C);
-                }
-
+                if (mapPrefab == null) continue;
+                TileMap_Controller map = mapPrefab.GetComponent<TileMap_Controller>();
+                if (map != null) map_sp.Add(map);
             }
         }
-        else
+        if (map_sp.Count == 0)
         {
-            foreach (GameObject mapprefab in Save_Stages.Map)
-            {
-
-                TileMap_Controller tilemap_C = mapprefab.GetComponent<TileMap_Controller>();
-                if (tilemap_C.stage == TileMap_Controller.Stage.Ferust)
-                {
-                    map_sp.Add(tilemap_C);
-                }
-
-            }
+            Debug.LogError("No usable map prefabs for current stage.", this);
+            return;
         }
 
         TileMap_Controller randomTileMap_C = map_sp[Random.Range(0, map_sp.Count)];
@@ -225,6 +229,11 @@ public class EnemySpawnBase : MonoBehaviour
             }
         }
 
+        if (level1Spawns.Count == 0)
+        {
+            Debug.LogError("No enemy spawn waves configured for level " + gameModeManager.AllGameLevel, this);
+            return;
+        }
         EnemySpawnData randomSpawn = level1Spawns[Random.Range(0, level1Spawns.Count)];
         SpawnEnemy(randomSpawn);
 

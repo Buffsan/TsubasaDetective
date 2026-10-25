@@ -36,7 +36,8 @@ Unity上でのコンパイル/Play Mode検証は未実施です。
 
 - 共通の `-----GameSysem-----.prefab` に常設する `DialogueSystem` GameObjectが `DialogueRuntimeBootstrap` を持ちます。ショップ内には会話システム本体を置きません。
 - `ALL_SystemManager` に `dialogueRuntimeBootstrap`、`dialogueUIController`、`dialogueCharacterDatabase` を登録できる欄を追加しました。
-- `DialogueSceneReferenceBinder` がUnity Editorでシーンを開いたとき／スクリプトを再読み込みしたときに、同じ `-----GameSysem-----` 内の `DialogueSystem` とキャラクターデータベースを `ALL_SystemManager` に割り当てます。変更があればシーンが未保存状態になるため、**SampleSceneを保存（Ctrl+S）**してください。
+- `DialogueSceneReferenceBinder` がUnity Editorでシーンを開いたとき／スクリプトの再読み込み後に、共通プレハブに `DialogueSystem` が存在するか確認し、なければ子オブジェクトとして作成します。
+- `SampleScene` の `ALL_SystemManager` に、同じ `-----GameSysem-----` 配下の `DialogueRuntimeBootstrap` と `SharedCharacters.asset` を割り当てます。**シーンが事前に未保存状態でなければ参照の変更を自動保存**します。別件の未保存変更がある場合は上書きせず、シーンを手動保存してください。
 - `Tools > TechHunter > Dialogue > Bind GameSystem References` でも再登録できます。
 - `dialogueUIController` はPlay開始時に生成されるため、非再生時は空欄のままで正常です。Play開始時に `DialogueRuntimeBootstrap` が登録します。
 - 会話の呼び出し例：`ALL_SystemManager.Instance.dialogueUIController.Play(dialogueData)`

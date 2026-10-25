@@ -28,6 +28,7 @@ public class EnemySpawnBase : MonoBehaviour
     PlayerController playerController = PlayerController.Instance;
 
     float StartCount = 0;
+    public int PendingSpawnCount { get; private set; }
 
     public TileMap_Controller Seve_TileMap_C;
 
@@ -197,7 +198,7 @@ public class EnemySpawnBase : MonoBehaviour
         if (enemyIdMap.TryGetValue(type, out int id))
             return id;
         else
-            return -1; // –¢’è‹`
+            return -1; // â€“Â¢â€™Ã¨â€¹`
     }
     public void isStartClone() 
     {
@@ -231,7 +232,8 @@ public class EnemySpawnBase : MonoBehaviour
         GameObject[] Enemys = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in Enemys) 
         {
-            manager.AllEnemy.Add(enemy);
+            if (!manager.AllEnemy.Contains(enemy))
+                manager.AllEnemy.Add(enemy);
         }
 
     }
@@ -252,7 +254,8 @@ public class EnemySpawnBase : MonoBehaviour
                     //Debug.Log(enemy.Name);
 
                     //WaitSpawnEnemy(enemy.Enemy,waittime);
-                    StartCoroutine(WaitSpawnEnemy(enemy.Enemy, waittime));
+                    PendingSpawnCount++;
+                     StartCoroutine(WaitSpawnEnemy(enemy.Enemy, waittime));
                     
                     waittime += 0.4f;
 
@@ -268,6 +271,7 @@ public class EnemySpawnBase : MonoBehaviour
     {
         //Debug.Log("Wait");
         yield return new WaitForSeconds(WaitTime);
+        PendingSpawnCount = Mathf.Max(0, PendingSpawnCount - 1);
         manager.WaitEnemyDieCount = 0;
         if (tilePosition.Count > 0)
         {

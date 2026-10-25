@@ -13,48 +13,55 @@ public class AudioManager : MonoBehaviour
     public List<AudioPlay> audioPlays = new List<AudioPlay>();
 
     public Dictionary<AudioClip, float> lastPlayTimes = new Dictionary<AudioClip, float>();
-    public float minInterval = 0.1f; // Œø‰Ê‰¹‚ğÄ¶‚·‚éŠÔŠui•bj
+    public float minInterval = 0.1f; // åŠ¹æœéŸ³ã‚’å†ç”Ÿã™ã‚‹é–“éš”ï¼ˆç§’ï¼‰
+
+    void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        BgmSource = GetComponent<AudioSource>();
+    }
 
     void Start()
     {
-        BgmSource = GetComponent<AudioSource>();
+        if (instance != this) return;
         if (BGM != null)
         {
             BgmSource.clip = BGM;
             BgmSource.Play();
         }
+    }
 
-        if (instance != null)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            instance = this;
-        }
+    void OnDestroy()
+    {
+        if (instance == this) instance = null;
     }
     public void PlaySE(AudioClip Clip)
     {
         if (Clip)
         {
-            // Ä¶ŠÔŠuƒ`ƒFƒbƒN
+            // å†ç”Ÿé–“éš”ãƒã‚§ãƒƒã‚¯
             if (lastPlayTimes.ContainsKey(Clip))
             {
                 if (Time.time - lastPlayTimes[Clip] < minInterval) return;
             }
-            // Pool ‚©‚ç AudioSource ‚ğæ“¾‚µ‚ÄÄ¶
+            // Pool ã‹ã‚‰ AudioSource ã‚’å–å¾—ã—ã¦å†ç”Ÿ
             AudioSource src = AudioPool.Instance.GetSource();
             src.GetComponent<AudioPlay>().Play(Clip);
             lastPlayTimes[Clip] = Time.time;
         }
         else 
         {
-            Debug.Log("SE‚ª–¢İ’è");
+            Debug.Log("SEãŒæœªè¨­å®š");
         }
     }
     public void StopAllAudio()
     {
-        // ‚·‚×‚Ä‚ÌÄ¶’†‚Ì‰¹‚ğ’â~‚·‚é
+        // ã™ã¹ã¦ã®å†ç”Ÿä¸­ã®éŸ³ã‚’åœæ­¢ã™ã‚‹
         foreach (var audio in audioPlays)
         {
             audio.Stop();

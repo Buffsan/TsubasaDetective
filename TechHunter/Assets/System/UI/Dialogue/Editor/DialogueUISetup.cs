@@ -24,6 +24,7 @@ public static class DialogueUISetup
             AssetDatabase.CreateAsset(database, DatabasePath);
             AssetDatabase.SaveAssets();
         }
+        EnsureVastorProfile(database);
 
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
         if (prefab == null)
@@ -60,6 +61,27 @@ public static class DialogueUISetup
         }
 
         Debug.Log("Dialogue UI is ready. Create a DialogueData asset and call DialogueEventTrigger.StartDialogue.");
+    }
+
+    static void EnsureVastorProfile(DialogueCharacterDatabase database)
+    {
+        const string profilePath = "Assets/System/UI/Dialogue/Vastor.asset";
+        DialogueCharacterProfile profile = AssetDatabase.LoadAssetAtPath<DialogueCharacterProfile>(profilePath);
+        if (profile == null)
+        {
+            profile = ScriptableObject.CreateInstance<DialogueCharacterProfile>();
+            profile.id = DialogueCharacterId.Vastor;
+            profile.displayName = "Vastor";
+            AssetDatabase.CreateAsset(profile, profilePath);
+        }
+
+        if (database.Find(DialogueCharacterId.Vastor) == null)
+        {
+            Undo.RecordObject(database, "Register Vastor dialogue profile");
+            database.profiles.Add(profile);
+            EditorUtility.SetDirty(database);
+        }
+        AssetDatabase.SaveAssets();
     }
 
     static GameObject BuildCanvas()

@@ -35,3 +35,24 @@ ChoiceのSelected Shop Itemに商品をセットして、選択肢決定時に�
 - 会話選択ボタンはランタイムで生成するため、旧プレハブの見た目はそのまま保持します。
 
 ※ Unity Editorによるコンパイル・Play Mode検証は未実施です。
+
+
+## 既存ショッププレハブとの連携（Vastor）
+
+`Assets/Map/prefab/ShopMap(_=-Stage-=_)----------() (2) Variant.prefab` にある
+`ShopManager`、`ShopController`、`VastorShop_AI` を調査し、そのまま流用するブリッジを追加。
+
+- `ShopManager.ShopItems`（元の5商品情報、ItemImage、Explanation、value）を正規データとして利用。
+- 価格計算は `ShopController.ChangeUIs()` の既存倍率（購入回数/ステージ）を利用。
+- `PlayerArea` が商品に接触したら商品を選択し、商品名・価格・説明を更新。
+- `ShopManager` の `Use Dialogue For Purchases` が有効かつ `DialogueUIController` がシーンにある場合、決定ボタンで購入前の会話を起動。
+- 「購入する」「やめる」の選択肢から別Nodeへ進み、共通の台詞へ合流。購入承認がある場合だけ、会話終了後に元の `BuyItem()` と `ItemChoiceBuy()` を呼ぶ。
+- 会話UIがないシーンは従来どおり即時購入。商人の首・頭・アニメーションなどの `VastorShop_AI` は変更しない。
+- 既存の商品説明や値段はPrefabのInspector設定を優先し、重複したScriptableObjectを作らない。
+- 商品名は `ShopItemDatas.ItemName`（任意）に入力でき、空欄なら従来の `ItemData` から日本語の商品種名を表示。
+- 既存Prefabを破壊的に更新しないため、ShopManager内の新設定 `Use Dialogue For Purchases` の初期値はtrue。DialogueUIがない場合は従来どおり。
+- ショップ名・値段・説明の固定表示UIは必要に応じてShopManagerの3つのTextMeshProUGUI参照へ割り当て可能（未設定でも商品近接時に会話本文へ反映）。
+- 初期キャラVastorは `Tools > TechHunter > Dialogue > Create and Place Dialogue UI` を再実行すると台帳へ自動登録されます。立ち絵画像はVastor.assetのNormal欄に手動割り当てしてください。
+
+**注意:** ショップの購入コストは表示値と一致するよう四捨五入して整数化、所持金がちょうど同額でも購入可能に変更。
+実購入処理のカード選択処理を維持し、既存のショップ用パーティクル・アニメーション・首移動処理には触れていません。

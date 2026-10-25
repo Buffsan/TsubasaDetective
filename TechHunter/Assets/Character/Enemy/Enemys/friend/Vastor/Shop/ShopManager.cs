@@ -26,6 +26,8 @@ public class ShopManager : MonoBehaviour
     [Header("Optional dialogue-based shopping")]
     [Tooltip("Uses the existing ShopItems and shop price formula. Without a DialogueCanvas, the old instant-buy input still works.")]
     [SerializeField] bool useDialogueForPurchases = true;
+    public bool IsDialogueShopActive =>
+        useDialogueForPurchases && DialogueUIController.Instance != null;
     [SerializeField] DialogueCharacterId shopkeeperId = DialogueCharacterId.Vastor;
     [SerializeField] TextMeshProUGUI focusedShopNameText;
     [SerializeField] TextMeshProUGUI focusedShopPriceText;

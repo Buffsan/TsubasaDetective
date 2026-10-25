@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f818c6df9824b20b22b8c0c78b73bac, type: 3}
-  m_Name: Vastor
+  m_Name: ShopVastorCharacter
   m_EditorClassIdentifier:
   id: 10
   displayName: Vastor

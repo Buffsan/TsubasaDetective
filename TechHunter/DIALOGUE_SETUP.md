@@ -56,3 +56,13 @@ ChoiceのSelected Shop Itemに商品をセットして、選択肢決定時に�
 
 **注意:** ショップの購入コストは表示値と一致するよう四捨五入して整数化、所持金がちょうど同額でも購入可能に変更。
 実購入処理のカード選択処理を維持し、既存のショップ用パーティクル・アニメーション・首移動処理には触れていません。
+
+## ShopMapプレハブ実装（自動UI起動）
+- `ShopMap(_=-Stage-=_)----------() (2) Variant.prefab` の `ShopManager` GameObjectに `ShopDialogueBootstrap` を追加済み。
+- マップ生成時に新会話Canvasが無ければ自動生成します（有れば既存Canvasを再利用）。**シーンへの手動配置は不要**。
+- 元の `VastorShop_AI` が実行していた `テスト動作出現` と `テスト動作` は新会話UIがあるとき無効化し、古い試作ショップウィンドウを非表示にします。商人の本体・頭・首のアニメーションは継続します。
+- プロジェクト内で最初に共有する商人は `ShopVastorCharacter.asset`、台帳は `ShopVastorDatabase.asset` に登録済み。**ShopVastorCharacterのNormalに会話用の立ち絵を割り当ててください**。
+- これらはUnityメニューのUI生成で作る個人作業中の未追跡アセット（DialogueCharacterDatabase.assetやVastor.asset）と衝突しないよう別ファイル名にしました。
+- 既存Canvasを先に手配置したシーンでは、そちらの登録台帳が優先されます。
+- Prefab内部の元のショップUI/ShopManagerの価格や商品画像/処理は保持しています。
+- UI背景・文字のレイアウトは `ShopDialogueBootstrap.CreateDialogueCanvas` が生成するベーシックUIです。開発中の暫定レイアウトなので必要に応じて変更可能です。

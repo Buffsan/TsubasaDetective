@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ccb70d3a02146c7931615975929425d, type: 3}
-  m_Name: DialogueCharacterDatabase
+  m_Name: ShopVastorDatabase
   m_EditorClassIdentifier:
   profiles:
   - {fileID: 11400000, guid: 6320baa82d5e4eb196768387730510f4, type: 2}

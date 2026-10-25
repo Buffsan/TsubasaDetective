@@ -128,12 +128,37 @@ public class PlayerController : PlayerStatus
 
 
 
+    public bool IsDialogueInputBlocked { get; private set; }
+
+    // Only manual Input System callbacks are blocked. Scripts can still set MoveInput,
+    // movetype or rb.velocity to control the character during a cutscene.
+    public void SetDialogueInputBlocked(bool blocked)
+    {
+        IsDialogueInputBlocked = blocked;
+        if (blocked)
+        {
+            MoveInput = Vector2.zero;
+            MoveInputSave = Vector2.zero;
+            Dash = false;
+        }
+    }
+
     public void OnDecide(InputAction.CallbackContext context)
     {
+        if (!context.performed) return;
+
+        DialogueUIController dialogue = DialogueUIController.Instance;
+        if (dialogue != null && dialogue.IsPlaying)
+        {
+            dialogue.Advance();
+            return;
+        }
+
         GlobalEvents.InvokeOnDecide(0);
     }
     public void OnMove(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         //Debug.Log("移動した");
         MoveInput = context.ReadValue<Vector2>();
 
@@ -157,6 +182,7 @@ public class PlayerController : PlayerStatus
     }
     void useSkill(int skillNumber)
     {
+        if (IsDialogueInputBlocked) return;
 
         if (ALL_System.systemManager.gameMode == SystemManager.GameMode.Movie) return;//ムービー中は手動でスキルを使えない
         // 3フレーム以内に再度呼ばれたら無視
@@ -203,6 +229,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnNomalAttack(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         //Debug.Log("攻撃した");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -220,6 +247,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill1(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             //Debug.Log("スキル1");
@@ -231,6 +259,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill2(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             //Debug.Log("スキル2");
@@ -242,6 +271,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill3(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         //Debug.Log("スキル3");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -252,7 +282,8 @@ public class PlayerController : PlayerStatus
         }
     }
     public void OnSkill4(InputAction.CallbackContext context)
-    {//Debug.Log("スキル４");
+    {
+        if (IsDialogueInputBlocked) return;//Debug.Log("スキル４");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             if (skillINFO[3].SkillCardManager.mode == SkillCardManager.Mode.Standby)
@@ -264,6 +295,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill5(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         //Debug.Log("スキル４");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -276,6 +308,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill6(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         //Debug.Log("スキル6");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -298,6 +331,7 @@ public class PlayerController : PlayerStatus
 
     public void OnDodge(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         if (context.phase == InputActionPhase.Performed &&
             (movetype != MoveType.Dodge || FlameDanceActive) &&
             movetype != MoveType.NoAction &&

@@ -12,24 +12,51 @@ public static class DialogueUISetup
 {
     const string PrefabPath = "Assets/System/UI/Dialogue/DialogueCanvas.prefab";
     const string JapaneseFontPath = "Assets/Font/Honoka-Shin-Antique-Maru_R SDF.asset";
+    const string DatabasePath = "Assets/System/UI/Dialogue/DialogueCharacterDatabase.asset";
 
     [MenuItem("Tools/TechHunter/Dialogue/Create and Place Dialogue UI")]
     static void CreateAndPlace()
     {
+        DialogueCharacterDatabase database = AssetDatabase.LoadAssetAtPath<DialogueCharacterDatabase>(DatabasePath);
+        if (database == null)
+        {
+            database = ScriptableObject.CreateInstance<DialogueCharacterDatabase>();
+            AssetDatabase.CreateAsset(database, DatabasePath);
+            AssetDatabase.SaveAssets();
+        }
+
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
         if (prefab == null)
         {
             GameObject canvas = BuildCanvas();
+            canvas.GetComponent<DialogueUIController>().SetDatabase(database);
             prefab = PrefabUtility.SaveAsPrefabAsset(canvas, PrefabPath);
             Object.DestroyImmediate(canvas);
         }
+        else
+        {
+            GameObject editing = PrefabUtility.LoadPrefabContents(PrefabPath);
+            DialogueUIController ui = editing.GetComponent<DialogueUIController>();
+            if (ui != null) ui.SetDatabase(database);
+            PrefabUtility.SaveAsPrefabAsset(editing, PrefabPath);
+            PrefabUtility.UnloadPrefabContents(editing);
+        }
 
-        if (Object.FindObjectOfType<DialogueUIController>() == null)
+        DialogueUIController existing = Object.FindObjectOfType<DialogueUIController>();
+        if (existing == null)
         {
             GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
             Undo.RegisterCreatedObjectUndo(instance, "Add DialogueCanvas");
             EditorSceneManager.MarkSceneDirty(instance.scene);
             Selection.activeGameObject = instance;
+        }
+        else
+        {
+            Undo.RecordObject(existing, "Assign Dialogue Character Database");
+            existing.SetDatabase(database);
+            EditorUtility.SetDirty(existing);
+            EditorSceneManager.MarkSceneDirty(existing.gameObject.scene);
+            Selection.activeGameObject = existing.gameObject;
         }
 
         Debug.Log("Dialogue UI is ready. Create a DialogueData asset and call DialogueEventTrigger.StartDialogue.");

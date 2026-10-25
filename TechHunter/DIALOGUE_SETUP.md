@@ -1,35 +1,37 @@
-# 会話システム / Dialogue UI
+# Dialogue V2 / キャラ共通管理・会話分岐・ショップ連携
 
-対象ブランチ: `20261025_会話機能追加`
+## Unityでの更新
+Unityを開いたら **Tools > TechHunter > Dialogue > Create and Place Dialogue UI** を再実行してください。
+- 会話UIが存在する場合、そのUI階層は維持し、共通台帳だけ差し込みます。
+- 自動作成される `Assets/System/UI/Dialogue/DialogueCharacterDatabase.asset` を開きます。
+- Project > Create > TechHunter > Dialogue > Character でキャラクターごとにScriptableObjectを作り、ID / Display Name / Normalほかの表情画像を設定。
+- 台帳の Profiles に作成したキャラクターデータを登録します。
+- 新しいキャラIDは `DialogueCharacterId.cs` のenumに追加します。番号は既存の会話資産が使用しているので再割当てしないでください。
 
-## 最初のセットアップ（Unity Editor）
-1. Unityでプロジェクトを開き、コンパイルが完了するのを確認。
-2. メニューの **Tools > TechHunter > Dialogue > Create and Place Dialogue UI** を一度実行。
-   - `Assets/System/UI/Dialogue/DialogueCanvas.prefab` を生成し、現在のシーンに配置。
-   - プレハブがすでにあれば再生成・上書きしない。
-3. シーンを保存。ほかのシーンで使う場合も同じプレハブを配置。
+## Conversation（会話ファイル）
+Create > TechHunter > Dialogue > Conversation
+- Participants: 表示するキャラIDを左から順に入力。キャラ画像や名前の再登録は不要。
+- Nodes: Node IDは重複不可。Speaker ID、Expression、Textを行ごとに設定。
+- Entry Node ID = -1で最初のNodeから開始。
+- Node Type = Line: 会話文。一文字ずつ表示。Next Node ID=-1ならリストの次行、数字なら指定Nodeへジャンプ。
+- Node Type = Choice: Text=質問、ChoicesにLabelとTarget Node IDを登録。マウスまたは上下キー・十字キーで選び、Enter/Space/ゲームパッドAで確定。
+- 例: ID 0(セリフ) → ID 10(選択: 20 / 30) → ID 20(Aルート、Next=40)、ID 30(Bルート、Next=40) → ID 40(合流セリフ) → 終了。
+- その他表情: Expression=Other、Other Expression KeyにCharacterProfileのOthers内のKeyを指定。未設定画像はNormal画像を表示。
+- 昔のDialogueDataのLines/Charactersは旧形式再生対応のため残しています（Inspectorでは非表示）。
 
-## 会話の作成と呼び出し
-1. Projectウィンドウで **Create > TechHunter > Dialogue > Conversation** を選び、DialogueDataを作成。
-2. `Characters` に表示名と立ち絵Spriteを左から順に登録（Scale・Flip Horizontallyも設定可能）。
-3. `Lines` に `Speaker Index`、`Show Speaker Name`、`Text` を登録。
-   - `Speaker Index = 0` は最初の立ち絵、`1` は2人目、`-1` は地の文（全員暗いまま）。
-   - 文章が枠に入り切らない場合は1つのLineを分割する。
-4. イベント用のGameObjectに `DialogueEventTrigger` を追加し、DialogueDataをセット。
-   - `StartDialogue()` をUnityEventやほかのスクリプトから呼べる。
-   - 任意でPlay On Start、Collider2Dでプレイヤーが侵入したときの起動が可能。
-   - `On Dialogue Finished` で次のイベントに接続可能。
+## Shop（表示連携）
+Create > TechHunter > Dialogue > Shop Item で商品データ(名前・値段・説明・画像)を作成。
+ショップUIのGameObjectにDialogueShopSelectionを追加し、Itemsに商品を登録。既存のショップUIからSelectByIndex(index)かSetSelectedItem(data)で選択商品を変更。
+Item Name Text、Price Text、Description Text、Icon Imageを設定すると表示を差し替えます。
+会話本文または選択肢で `{itemName}` `{itemPrice}` `{itemDescription}` を使うと選択商品に置換されます。
+ChoiceのSelected Shop Itemに商品をセットして、選択肢決定時に会話の商品情報を変更することもできます。
+購入、在庫処理、所持金の加減算は既存ショップ側で行ってください（今回の実装は表示と選択データ連携のみ）。
 
-コードからは `DialogueUIController.Instance.Play(dialogueData, callback);` で直接起動できる。
+## コード連携
+- DialogueUIController.Instance.Play(dialogueAsset, onFinished, onChoiceSelected);
+- DialogueUIController.Instance.SetSelectedShopItem(itemAsset);
+- DialogueEventTriggerのOn Choice Selectedには選択肢番号（0開始）が渡されます。
+- 会話中のプレイヤー手動操作は禁止、システムからの移動は従来どおり可能。
+- 会話選択ボタンはランタイムで生成するため、旧プレハブの見た目はそのまま保持します。
 
-## 操作と挙動
-- 決定ボタン: 文章表示中は全文表示、全文表示後は次のセリフへ。
-- 会話中の移動・攻撃・スキル・回避入力はPlayerController内で遮断。
-- `MoveInput` をイベント側から設定するなどのシステム移動は維持（movetypeとgameModeを変更しない）。
-- `DialogueUIController` の `Pause World While Talking` は初期値false。戦闘を止めたい会話だけtrueに変更する。true時はTime.timeScaleを一時的に0にするため、通常の物理移動は停止するが文字送りは継続する。
-- TMP文字送りは `maxVisibleCharacters` を使用。日本語用フォントは既存の `Honoka-Shin-Antique-Maru_R SDF.asset` を優先。
-
-## UIの調整
-- プレハブ内の `DialogueBorder`、`MessageBackground`、`SpeakerNamePanel` に画像を設定すると参考画像のような装飾へ変更可能。
-- 立ち絵は `Portraits` のHorizontalLayoutGroupで横並び。会話によって登録人数が変わっても対応。
-- ポートレートの暗さと文字送り速度は `DialogueUIController` のInspectorから変更。
+※ Unity Editorによるコンパイル・Play Mode検証は未実施です。

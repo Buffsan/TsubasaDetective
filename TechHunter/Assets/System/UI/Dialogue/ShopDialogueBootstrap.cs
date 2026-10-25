@@ -19,7 +19,8 @@ public class ShopDialogueBootstrap : MonoBehaviour
 
     void Awake()
     {
-        if (!createCanvasAutomatically || DialogueUIController.Instance != null)
+        if (!createCanvasAutomatically || DialogueUIController.Instance != null ||
+            FindObjectOfType<DialogueUIController>() != null)
             return;
 
         createdCanvas = CreateDialogueCanvas();

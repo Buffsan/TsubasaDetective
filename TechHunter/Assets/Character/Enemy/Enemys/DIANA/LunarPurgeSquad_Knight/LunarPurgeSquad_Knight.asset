@@ -11,14 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
   m_Name: LunarPurgeSquad_Knight
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   NAME: "\u6708\u306E\u7C9B\u6E05\u968A\u5263\u58EB"
-  MAXHP: 1800
+  MAXHP: 811
   enemyStrength: 3
   Regen: 0
   MAXMP: 0
   SPEED: 4
-  ATK: 5
+  ATK: 7
   ATKDF: 3
   GOLD: 65
   XP: 0

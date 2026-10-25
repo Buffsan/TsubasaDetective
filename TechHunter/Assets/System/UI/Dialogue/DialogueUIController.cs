@@ -134,6 +134,10 @@ public class DialogueUIController : MonoBehaviour
     public void Advance()
     {
         if (!IsPlaying || lastInputFrame == Time.frameCount) return;
+        // The Player input action maps Decide to left mouse. Let Button.onClick
+        // resolve the exact clicked option instead of selecting the focused one.
+        if (inChoice && Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            return;
         if (inChoice) { Choose(focusedChoice); return; }
         lastInputFrame = Time.frameCount;
         if (visible < total)
@@ -382,6 +386,7 @@ public class DialogueUIController : MonoBehaviour
     public void Choose(int index)
     {
         if (!IsPlaying || !inChoice || lastInputFrame == Time.frameCount) return;
+        DialogueData conversation = data;
         DialogueData.Node node = data.nodes[current];
         if (index < 0 || index >= node.choices.Count) return;
         DialogueData.Choice option = node.choices[index];
@@ -395,7 +400,7 @@ public class DialogueUIController : MonoBehaviour
         HideChoices();
         if (option.selectedShopItem != null) SetSelectedShopItem(option.selectedShopItem);
         picked?.Invoke(node.nodeId, index);
-        if (!IsPlaying || data == null) return;
+        if (!IsPlaying || data != conversation) return;
         Jump(option.targetNodeId, current + 1);
     }
 

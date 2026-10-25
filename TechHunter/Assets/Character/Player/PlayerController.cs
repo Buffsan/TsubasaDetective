@@ -45,6 +45,16 @@ public class PlayerController : PlayerStatus
     public GameObject RelicControllerObject;
     public GameObject RelicManagerObject;
     [SerializeField] GameObject HitEffect;
+    [SerializeField, Min(1)] int hitEffectPoolSize = 64;
+    readonly Queue<GameObject> hitEffectPool = new Queue<GameObject>();
+    readonly List<HitEffectLifetime> activeHitEffects = new List<HitEffectLifetime>();
+    Transform hitEffectPoolRoot;
+
+    struct HitEffectLifetime
+    {
+        public GameObject effect;
+        public float endTime;
+    }
     public GameObject AnimatorBody;
     public GameObject MainAnimBody;
     public AudioManager audioManager => AudioManager.instance;
@@ -121,7 +131,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnMove(InputAction.CallbackContext context)
     {
-        //Debug.Log("ˆÚ“®‚µ‚½");
+        //Debug.Log("ç§»å‹•ã—ãŸ");
         MoveInput = context.ReadValue<Vector2>();
 
 
@@ -145,8 +155,8 @@ public class PlayerController : PlayerStatus
     void useSkill(int skillNumber)
     {
 
-        if (ALL_System.systemManager.gameMode == SystemManager.GameMode.Movie) return;//ƒ€[ƒr[’†‚Íè“®‚ÅƒXƒLƒ‹‚ğg‚¦‚È‚¢
-        // 3ƒtƒŒ[ƒ€ˆÈ“à‚ÉÄ“xŒÄ‚Î‚ê‚½‚ç–³‹
+        if (ALL_System.systemManager.gameMode == SystemManager.GameMode.Movie) return;//ãƒ ãƒ¼ãƒ“ãƒ¼ä¸­ã¯æ‰‹å‹•ã§ã‚¹ã‚­ãƒ«ã‚’ä½¿ãˆãªã„
+        // 3ãƒ•ãƒ¬ãƒ¼ãƒ ä»¥å†…ã«å†åº¦å‘¼ã°ã‚ŒãŸã‚‰ç„¡è¦–
         if (Time.frameCount - lastUseSkillFrame <= 1)
         {
             return;
@@ -190,10 +200,10 @@ public class PlayerController : PlayerStatus
     }
     public void OnNomalAttack(InputAction.CallbackContext context)
     {
-        //Debug.Log("UŒ‚‚µ‚½");
+        //Debug.Log("æ”»æ’ƒã—ãŸ");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
-            //Debug.Log("ƒXƒLƒ‹5");
+            //Debug.Log("ã‚¹ã‚­ãƒ«5");
             if (skillINFO[4].SkillCardManager.mode == SkillCardManager.Mode.Standby)
             {
                 useSkill(4);
@@ -209,7 +219,7 @@ public class PlayerController : PlayerStatus
     {
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
-            //Debug.Log("ƒXƒLƒ‹1");
+            //Debug.Log("ã‚¹ã‚­ãƒ«1");
             if (skillINFO[0].SkillCardManager.mode == SkillCardManager.Mode.Standby)
             {
                 useSkill(0);
@@ -220,7 +230,7 @@ public class PlayerController : PlayerStatus
     {
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
-            //Debug.Log("ƒXƒLƒ‹2");
+            //Debug.Log("ã‚¹ã‚­ãƒ«2");
             if (skillINFO[1].SkillCardManager.mode == SkillCardManager.Mode.Standby)
             {
                 useSkill(1);
@@ -229,7 +239,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill3(InputAction.CallbackContext context)
     {
-        //Debug.Log("ƒXƒLƒ‹3");
+        //Debug.Log("ã‚¹ã‚­ãƒ«3");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             if (skillINFO[2].SkillCardManager.mode == SkillCardManager.Mode.Standby)
@@ -239,7 +249,7 @@ public class PlayerController : PlayerStatus
         }
     }
     public void OnSkill4(InputAction.CallbackContext context)
-    {//Debug.Log("ƒXƒLƒ‹‚S");
+    {//Debug.Log("ã‚¹ã‚­ãƒ«ï¼”");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             if (skillINFO[3].SkillCardManager.mode == SkillCardManager.Mode.Standby)
@@ -251,7 +261,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill5(InputAction.CallbackContext context)
     {
-        //Debug.Log("ƒXƒLƒ‹‚S");
+        //Debug.Log("ã‚¹ã‚­ãƒ«ï¼”");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             if (skillINFO[4].SkillCardManager.mode == SkillCardManager.Mode.Standby)
@@ -263,7 +273,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill6(InputAction.CallbackContext context)
     {
-        //Debug.Log("ƒXƒLƒ‹6");
+        //Debug.Log("ã‚¹ã‚­ãƒ«6");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             if (skillINFO[6].SkillCardManager.mode == SkillCardManager.Mode.Standby)
@@ -290,7 +300,7 @@ public class PlayerController : PlayerStatus
             movetype != MoveType.NoAction &&
             movetype != MoveType.Wait)
         {
-            // ‰Š•‘’†‚ÌÄ‰ñ”ğ‚Å‚ÍA‰ñ”ğƒ^ƒCƒ}[‚ğÅ‰‚©‚çŠJn‚·‚éB
+            // ç‚èˆä¸­ã®å†å›é¿ã§ã¯ã€å›é¿ã‚¿ã‚¤ãƒãƒ¼ã‚’æœ€åˆã‹ã‚‰é–‹å§‹ã™ã‚‹ã€‚
             DodgeCount = 0f;
             FlameDanceDodgeSerial++;
             movetype = MoveType.Dodge;
@@ -315,7 +325,44 @@ public class PlayerController : PlayerStatus
         else
         {
             Instance = this;
+            InitializeHitEffectPool();
         }
+    }
+
+    void InitializeHitEffectPool()
+    {
+        if (HitEffect == null) return;
+
+        // ãƒ¯ãƒ¼ãƒ«ãƒ‰å›ºå®šã®è¦ªã€‚ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç§»å‹•ä¸­ã‚‚æ—¢ã«å‡ºã—ãŸãƒ’ãƒƒãƒˆæ¼”å‡ºã¯ç§»å‹•ã•ã›ãªã„ã€‚
+        hitEffectPoolRoot = new GameObject("PlayerHitEffectPool").transform;
+        for (int i = 0; i < hitEffectPoolSize; i++)
+        {
+            GameObject effect = Instantiate(HitEffect, hitEffectPoolRoot);
+            effect.SetActive(false);
+            hitEffectPool.Enqueue(effect);
+        }
+    }
+
+    void LateUpdate()
+    {
+        for (int i = activeHitEffects.Count - 1; i >= 0; i--)
+        {
+            if (Time.time < activeHitEffects[i].endTime) continue;
+
+            GameObject effect = activeHitEffects[i].effect;
+            if (effect != null)
+            {
+                effect.SetActive(false);
+                hitEffectPool.Enqueue(effect);
+            }
+            activeHitEffects.RemoveAt(i);
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+        if (hitEffectPoolRoot != null) Destroy(hitEffectPoolRoot.gameObject);
     }
 
     // Update is called once per frame
@@ -326,7 +373,7 @@ public class PlayerController : PlayerStatus
 
     private void FixedUpdate()
     {
-        // •s‹ï‡’²¸—p
+        // ä¸å…·åˆèª¿æŸ»ç”¨
         if (MoveInput != Vector2.zero)
         {
             bool w = Keyboard.current?.wKey.isPressed ?? false;
@@ -336,7 +383,7 @@ public class PlayerController : PlayerStatus
 
             if (!w && !a && !s && !d)
             {
-                Debug.LogWarning("WASD‚ğ‰Ÿ‚µ‚Ä‚¢‚È‚¢‚Ì‚ÉMoveInput‚ªc‚Á‚Ä‚¢‚Ü‚·");
+                Debug.LogWarning("WASDã‚’æŠ¼ã—ã¦ã„ãªã„ã®ã«MoveInputãŒæ®‹ã£ã¦ã„ã¾ã™");
             }
         }
 
@@ -455,12 +502,12 @@ public class PlayerController : PlayerStatus
             if (animator.GetInteger("Attack") == 1)
             {
                 animator.SetInteger("Attack", 2);
-                animator.Play("UŒ‚‚Q", 0, 0);
+                animator.Play("æ”»æ’ƒï¼’", 0, 0);
             }
             else
             {
                 animator.SetInteger("Attack", 1);
-                animator.Play("UŒ‚‚P", 0, 0);
+                animator.Play("æ”»æ’ƒï¼‘", 0, 0);
             }
 
             if (skilltype == SkillYype.Skill1)
@@ -536,12 +583,12 @@ public class PlayerController : PlayerStatus
         if (mode == ModeType.M1)
         {
             animator.SetInteger("Attack", 1);
-            //animator.Play("UŒ‚‚P", 0, 0);
+            //animator.Play("æ”»æ’ƒï¼‘", 0, 0);
         }
         else if (mode == ModeType.M2)
         {
             animator.SetInteger("Attack", 2);
-            //animator.Play("UŒ‚‚Q", 0, 0);
+            //animator.Play("æ”»æ’ƒï¼’", 0, 0);
         }
 
         if (AttackMoveCount > 0.2)
@@ -603,7 +650,7 @@ public class PlayerController : PlayerStatus
 
         if (skillInfos.Count == 0)
         {
-            //Debug.LogWarning("ƒŒƒxƒ‹ƒAƒbƒv‰Â”\‚ÈƒXƒLƒ‹‚ª‚ ‚è‚Ü‚¹‚ñB");
+            //Debug.LogWarning("ãƒ¬ãƒ™ãƒ«ã‚¢ãƒƒãƒ—å¯èƒ½ãªã‚¹ã‚­ãƒ«ãŒã‚ã‚Šã¾ã›ã‚“ã€‚");
             return;
         }
 
@@ -695,8 +742,13 @@ public class PlayerController : PlayerStatus
     }
     public void HitEffectSpawn(Vector2 Pos)
     {
-        GameObject CL_Effect = Instantiate(HitEffect, Pos, Quaternion.identity);
-        Destroy(CL_Effect, 1f);
+        // åŒæ™‚å‘½ä¸­æ•°ãŒä¸Šé™ã‚’è¶…ãˆãŸã‚‰æ¼”å‡ºã ã‘ã‚’çœç•¥ã—ã€ãƒ€ãƒ¡ãƒ¼ã‚¸å‡¦ç†ã¯çœç•¥ã—ãªã„ã€‚
+        if (hitEffectPool.Count == 0) return;
+
+        GameObject effect = hitEffectPool.Dequeue();
+        effect.transform.SetPositionAndRotation(Pos, Quaternion.identity);
+        effect.SetActive(true); // Animator ã®çŠ¶æ…‹ã‚’å†åˆæœŸåŒ–ã—ã¦å†ç”Ÿ
+        activeHitEffects.Add(new HitEffectLifetime { effect = effect, endTime = Time.time + 1f });
     }
     public void isStartPointMove(GameObject StartPoint)
     {

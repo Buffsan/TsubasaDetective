@@ -20,8 +20,16 @@ public class PlayerAttack : MonoBehaviour
 
     public bool AgeinAttack = false;
 
-    List<GameObject> EnemyData = new List<GameObject>();
- 
+    // 攻撃判定1回につき敵本体単位で重複命中を防ぐ。
+    // AgeinAttack が true の攻撃は、従来どおり再入場で再ヒット可能。
+    readonly HashSet<GameObject> EnemyData = new HashSet<GameObject>();
+
+    private void OnEnable()
+    {
+        // AttackPool の再利用時に前の攻撃の命中履歴を引き継がない。
+        EnemyData.Clear();
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("EnemyArea")) 
@@ -29,36 +37,31 @@ public class PlayerAttack : MonoBehaviour
         IDamageable damageable = other.GetComponent<IDamageable>();
             if (damageable != null && controller != null) 
             {
-                bool Attack = true;
-                foreach (GameObject againenemy in EnemyData) 
+                if (!AgeinAttack)
                 {
-                    if (againenemy == other.gameObject) 
-                    { 
-                    Attack = false;
-                    }
+                    // 敵が複数の EnemyArea を持つ場合も同じ本体への1ヒットとして扱う。
+                    charaDamage area = damageable as charaDamage;
+                    GameObject target = area != null && area.OwnerEnemyBase != null
+                        ? area.OwnerEnemyBase.gameObject : other.gameObject;
+                    if (!EnemyData.Add(target)) return;
                 }
 
-                if (Attack || AgeinAttack)
+                if(weapondata.HitAudio) audioManager.PlaySE(weapondata.HitAudio);
+                float criticalRandom = Random.Range(0f, 100f);
+                float attackValue = AttackMathf(); // 同一命中では1回だけ計算
+                if (controller.AddCritical + controller.Critical <= criticalRandom || !isCriticulUse)
                 {
-                    if (AgeinAttack) { EnemyData.Add(other.gameObject); }
-                    
-                    if(weapondata.HitAudio) audioManager.PlaySE(weapondata.HitAudio);
-                    float CriticalRandom = Random.Range(0f, 100f);
-                    if (controller.AddCritical+controller.Critical <= CriticalRandom || !isCriticulUse)
-                    {
-                        GlobalEvents.InvokePlayerAttack(other.gameObject, AttackMathf(), 1, false);
-                        SpawnStatusEffect(damageable);
-                        damageable.Damage(AttackMathf(), weapondata.StaggerPower, weapondata.ConfusionPower,false);
-                    }
-                    else 
-                    {
-                        GlobalEvents.InvokePlayerAttack(other.gameObject, AttackMathf(), 3f,true);
-                        //Debug.Log("Critical�I�I");
-                        SpawnStatusEffect(damageable);
-                        damageable.Damage((AttackMathf()*3)+5, weapondata.StaggerPower, weapondata.ConfusionPower,true);
-                    }
-                        controller.HitEffectSpawn(other.transform.position);
+                    GlobalEvents.InvokePlayerAttack(other.gameObject, attackValue, 1, false);
+                    SpawnStatusEffect(damageable);
+                    damageable.Damage(attackValue, weapondata.StaggerPower, weapondata.ConfusionPower, false);
                 }
+                else
+                {
+                    GlobalEvents.InvokePlayerAttack(other.gameObject, attackValue, 3f, true);
+                    SpawnStatusEffect(damageable);
+                    damageable.Damage((attackValue * 3) + 5, weapondata.StaggerPower, weapondata.ConfusionPower, true);
+                }
+                controller.HitEffectSpawn(other.transform.position);
             }
         }
     }

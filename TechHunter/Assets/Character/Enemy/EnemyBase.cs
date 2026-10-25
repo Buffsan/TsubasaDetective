@@ -120,6 +120,25 @@ public class EnemyBase : MonoBehaviour
         MovieStay
     }
     public Status status = Status.Nomal;
+
+    // 複数の charaDamage が同じ EnemyBase を参照しても、撃破処理は敵ごとに一度だけ。
+    bool deathStarted;
+    bool deathCleanupStarted;
+
+    public bool TryStartDeath()
+    {
+        if (deathStarted) return false;
+        deathStarted = true;
+        return true;
+    }
+
+    public bool TryStartDeathCleanup()
+    {
+        if (deathCleanupStarted) return false;
+        deathCleanupStarted = true;
+        return true;
+    }
+
     public int MoviePhase = 0;
     private void Awake()
     {

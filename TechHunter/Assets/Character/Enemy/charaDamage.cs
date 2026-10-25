@@ -96,8 +96,8 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical)
     {
-        if (isDead) return;
-        
+        if (isDead || (enemyBase != null && enemyBase.status == EnemyBase.Status.Die)) return;
+
         if (DamageType != 0 && passDamageAreas.Count == 0)
         {
             Debug.Log("ダメージを押し付ける処理なのに押しつけ先がいない　ひどいよのなか");
@@ -371,9 +371,10 @@ public class charaDamage : MonoBehaviour, IDamageable
             {
                 DieCount += Time.fixedDeltaTime;
             }
-            else
+            else if (enemyBase.TryStartDeathCleanup())
             {
-                Instantiate(enemyBase.DieEffect, transform.position, Quaternion.identity);
+                if (enemyBase.DieEffect != null)
+                    Instantiate(enemyBase.DieEffect, enemyBase.transform.position, Quaternion.identity);
                 Destroy(enemyBase.gameObject);
             }
         }
@@ -382,11 +383,10 @@ public class charaDamage : MonoBehaviour, IDamageable
     private bool isDead = false;
     public void Death()
     {
+        if (isDead || !enemyBase.TryStartDeath()) return;
+        isDead = true;
         isDieCameraShake(enemyBase.charadata);
         enemyBase.status = EnemyBase.Status.Die;
-        //Debug.Log("しんだ");
-        if (isDead) return;   // 既に死亡処理中なら何もしない
-        isDead = true;        // ここで最初にロックをかける
 
 
         enemyBase.animator.SetBool("Damage", true);

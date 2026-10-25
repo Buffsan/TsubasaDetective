@@ -35,8 +35,15 @@ public class PlayerAttack : MonoBehaviour
         if (other.gameObject.CompareTag("EnemyArea")) 
         { 
         IDamageable damageable = other.GetComponent<IDamageable>();
-            if (damageable != null && controller != null) 
+            if (damageable != null && controller != null)
             {
+                charaDamage damageArea = damageable as charaDamage;
+                if (damageArea != null &&
+                    (damageArea.OwnerEnemyBase == null ||
+                     damageArea.OwnerEnemyBase.status == EnemyBase.Status.Die ||
+                     damageArea.OwnerEnemyBase.HP <= 0f))
+                    return;
+
                 if (!AgeinAttack)
                 {
                     // 敵が複数の EnemyArea を持つ場合も同じ本体への1ヒットとして扱う。

@@ -138,6 +138,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: c734d222979a2c746bd7dc8677cffe17, type: 2}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetFactions
+      value: 12159
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: LookPlayerDistance
       value: 0.5
       objectReference: {fileID: 0}

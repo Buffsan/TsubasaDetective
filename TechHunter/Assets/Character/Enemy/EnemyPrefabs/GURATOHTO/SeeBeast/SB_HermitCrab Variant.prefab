@@ -155,6 +155,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 95fb0f5ed73681848ad8780ad3c52e4f, type: 2}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: targetFactions
+      value: 12159
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: Choice_MoveToBase
       value: 1
       objectReference: {fileID: 0}

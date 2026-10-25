@@ -10,8 +10,11 @@ public class Camera_Controller : MonoBehaviour
     Vector3 NowPos;
     public Vector3 AddRange = Vector2.zero;
 
-    private Coroutine shakeCoroutine; // Œ»İÄ¶’†‚ÌƒRƒ‹[ƒ`ƒ“‚ğ•Û
-    private Vector3 initialPosition;  // Œ³‚ÌˆÊ’u‚ğ•Û
+    private int lastShakeRequestFrame = -1;
+    private float lastFrameDuration;
+    private float lastFrameStrength;
+    private Coroutine shakeCoroutine; // ç¾åœ¨å†ç”Ÿä¸­ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’ä¿æŒ
+    private Vector3 initialPosition;  // å…ƒã®ä½ç½®ã‚’ä¿æŒ
 
     // Start is called before the first frame update
     void Start()
@@ -44,14 +47,31 @@ public class Camera_Controller : MonoBehaviour
 
     public void Shake(float duration, float strength)
     {
-        // Šù‚É—h‚ê’†‚È‚ç’â~‚µ‚ÄƒŠƒZƒbƒg
+        // Coalesce simultaneous identical shakes.
+        if (Time.frameCount == lastShakeRequestFrame &&
+            duration <= lastFrameDuration && strength <= lastFrameStrength)
+            return;
+        if (Time.frameCount != lastShakeRequestFrame)
+        {
+            lastFrameDuration = duration;
+            lastFrameStrength = strength;
+            lastShakeRequestFrame = Time.frameCount;
+        }
+        else
+        {
+            lastFrameDuration = Mathf.Max(lastFrameDuration, duration);
+            lastFrameStrength = Mathf.Max(lastFrameStrength, strength);
+            duration = lastFrameDuration;
+            strength = lastFrameStrength;
+        }
+        // æ—¢ã«æºã‚Œä¸­ãªã‚‰åœæ­¢ã—ã¦ãƒªã‚»ãƒƒãƒˆ
         if (shakeCoroutine != null)
         {
             StopCoroutine(shakeCoroutine);
             NowPos = Vector3.zero;
         }
 
-        // V‚µ‚¢—h‚êŠJn
+        // æ–°ã—ã„æºã‚Œé–‹å§‹
         shakeCoroutine = StartCoroutine(ShakeCoroutine(duration, strength));
     }
 
@@ -61,7 +81,7 @@ public class Camera_Controller : MonoBehaviour
 
         while (elapsed < duration)
         {
-            // ƒ‰ƒ“ƒ_ƒ€‚ÉƒJƒƒ‰ˆÊ’u‚ğ‚¸‚ç‚·
+            // ãƒ©ãƒ³ãƒ€ãƒ ã«ã‚«ãƒ¡ãƒ©ä½ç½®ã‚’ãšã‚‰ã™
             AddRange = (Vector3)Random.insideUnitCircle * strength;
 
  
@@ -70,7 +90,7 @@ public class Camera_Controller : MonoBehaviour
             yield return null;
         }
 
-        // Œ³‚ÌˆÊ’u‚É–ß‚·
+        // å…ƒã®ä½ç½®ã«æˆ»ã™
         AddRange = Vector2.zero;
         shakeCoroutine = null;
     }

@@ -65,6 +65,9 @@ public class PlayerController : PlayerStatus
     public Rigidbody2D rb;
     public Animator animator;
     public int AllCoins = 0;
+    int lastUiCoins = int.MinValue;
+    int lastUiHpTenth = int.MinValue;
+    int lastUiMaxHpTenth = int.MinValue;
     float AttackWaitCount = 0;
     float DodgeCount = 0;
 
@@ -374,24 +377,21 @@ public class PlayerController : PlayerStatus
     private void FixedUpdate()
     {
         // 不具合調査用
-        if (MoveInput != Vector2.zero)
-        {
-            bool w = Keyboard.current?.wKey.isPressed ?? false;
-            bool a = Keyboard.current?.aKey.isPressed ?? false;
-            bool s = Keyboard.current?.sKey.isPressed ?? false;
-            bool d = Keyboard.current?.dKey.isPressed ?? false;
-
-            if (!w && !a && !s && !d)
-            {
-                Debug.LogWarning("WASDを押していないのにMoveInputが残っています");
-            }
-        }
-
-
         isChangeAnim();
         AttackWaitCount += Time.deltaTime;
-        CoinText.text = "x" + AllCoins.ToString();
-        HP_Text.text = HP.ToString("F1") + "/" + MaxHP.ToString("F1");
+        if (AllCoins != lastUiCoins)
+        {
+            lastUiCoins = AllCoins;
+            CoinText.text = "x" + AllCoins.ToString();
+        }
+        int hpTenth = Mathf.RoundToInt(HP * 10f);
+        int maxHpTenth = Mathf.RoundToInt(MaxHP * 10f);
+        if (hpTenth != lastUiHpTenth || maxHpTenth != lastUiMaxHpTenth)
+        {
+            lastUiHpTenth = hpTenth;
+            lastUiMaxHpTenth = maxHpTenth;
+            HP_Text.text = HP.ToString("F1") + "/" + MaxHP.ToString("F1");
+        }
         switch (movetype)
         {
 

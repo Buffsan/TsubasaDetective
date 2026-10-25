@@ -9,17 +9,19 @@ public class Relic_DcorpSupportTerminal_AI : RelicBase_AI
     [SerializeField] BuffData buffdata;
     [SerializeField] Animator RelicObject;
     float BuffCount = 0;
+    int lastVisualState = -1;
     PlayerController playerController => PlayerController.Instance;
 
     private void OnEnable()
     {
-        // ÉNÉäÉeÉBÉJÉãÉCÉxÉìÉgÇçwì«
+        // „ÇØ„É™„ÉÜ„Ç£„Ç´„É´„Ç§„Éô„É≥„Éà„ÇíË≥ºË™≠
         GlobalEvents.OnPlayerAttack += OnCritical;
+        lastVisualState = -1;
     }
 
     private void OnDisable()
     {
-        // ÉCÉxÉìÉgçwì«ÇâèúÅiñYÇÍÇÈÇ∆ÉoÉOÇÃå¥àˆÅj
+        // „Ç§„Éô„É≥„ÉàË≥ºË™≠„ÇíËß£Èô§ÔºàÂøò„Çå„Çã„Å®„Éê„Ç∞„ÅÆÂéüÂõ†Ôºâ
         GlobalEvents.OnPlayerAttack -= OnCritical;
     }
     private void OnCritical(GameObject target, float damage, float criticalRate, bool c) 
@@ -31,7 +33,11 @@ public class Relic_DcorpSupportTerminal_AI : RelicBase_AI
         BuffCount += Time.fixedDeltaTime;
         if (BuffCount > BuffStartTime)
         {
-            RelicObject.Play("èoåª");
+            if (lastVisualState != 1)
+            {
+                RelicObject.Play("Âá∫Áèæ");
+                lastVisualState = 1;
+            }
             if (BuffCount > BuffStartTime + BuffTime)
             {
                 playerController.playerBuff.SpawnBuff(buffdata);
@@ -40,7 +46,11 @@ public class Relic_DcorpSupportTerminal_AI : RelicBase_AI
         }
         else 
         {
-            RelicObject.Play("è¡Ç¶ÇÈ");
+            if (lastVisualState != 0)
+            {
+                RelicObject.Play("Ê∂à„Åà„Çã");
+                lastVisualState = 0;
+            }
         }
     }
 }

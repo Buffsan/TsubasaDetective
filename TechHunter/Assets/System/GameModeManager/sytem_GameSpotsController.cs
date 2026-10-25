@@ -178,13 +178,13 @@ public class sytem_GameSpotsController : MonoBehaviour
                             }
                             if (NowSpot.Down && next.SpotPos.y == NowSpot.SpotPos.y - 1)
                             {
-                                //Debug.Log("Œ»İ’nd");
+                                //Debug.Log("ç¾åœ¨åœ°d");
                                 NextInputSpot.Add(next);
                                 continue;
                             }
                             if (NowSpot.Mast && next.SpotPos.y == NowSpot.SpotPos.y)
                             {
-                                //Debug.Log("Œ»İ’nm");
+                                //Debug.Log("ç¾åœ¨åœ°m");
                                 NextInputSpot.Add(next);
                                 continue;
                             }
@@ -242,14 +242,14 @@ public class sytem_GameSpotsController : MonoBehaviour
 
             if (y2 == 2)
             {
-                GameSpot_SpotInfo clonedInfo = SpotInfos[2].Clone(); // DeepCloneƒƒ\ƒbƒh‚ğ‰¼’è
+                GameSpot_SpotInfo clonedInfo = SpotInfos[2].Clone(); // DeepCloneãƒ¡ã‚½ãƒƒãƒ‰ã‚’ä»®å®š
                 clonedInfo.Mast = true;
-                InputSpot.Add(clonedInfo); // ƒNƒ[ƒ“‚ğ’Ç‰Á
+                InputSpot.Add(clonedInfo); // ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’è¿½åŠ 
             }
             else 
             {
-                GameSpot_SpotInfo clonedInfo = SpotInfos[6].Clone(); // DeepCloneƒƒ\ƒbƒh‚ğ‰¼’è
-                InputSpot.Add(clonedInfo); // ƒNƒ[ƒ“‚ğ’Ç‰Á
+                GameSpot_SpotInfo clonedInfo = SpotInfos[6].Clone(); // DeepCloneãƒ¡ã‚½ãƒƒãƒ‰ã‚’ä»®å®š
+                InputSpot.Add(clonedInfo); // ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’è¿½åŠ 
             }
         }
     }
@@ -306,7 +306,6 @@ public class sytem_GameSpotsController : MonoBehaviour
                     //Debug.Log(NextSpawRate + "<=" + RandomRate + " && " + adddd + ">"+ RandomRate);
                     //Debug.Log("Skip :" + RandomRate);
                     
-                    NextSpawRate += spInfo.SpawNumber;
                     continue;
                 }
                 else
@@ -314,17 +313,17 @@ public class sytem_GameSpotsController : MonoBehaviour
 
                     if (x2 == 3 && y2 == shopSpot)
                     {
-                        GameSpot_SpotInfo clonedInfo = SpotInfos[3].Clone(); ; // DeepCloneƒƒ\ƒbƒh‚ğ‰¼’è
+                        GameSpot_SpotInfo clonedInfo = SpotInfos[3].Clone(); ; // DeepCloneãƒ¡ã‚½ãƒƒãƒ‰ã‚’ä»®å®š
                         clonedInfo.Mast = true;
-                        InputSpot.Add(clonedInfo); // ƒNƒ[ƒ“‚ğ’Ç‰Á
+                        InputSpot.Add(clonedInfo); // ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’è¿½åŠ 
 
                         break;
                     } 
                     else if (x2 == 3 && y2 == motalSpot) 
                     {
-                        GameSpot_SpotInfo clonedInfo = SpotInfos[2].Clone(); ; // DeepCloneƒƒ\ƒbƒh‚ğ‰¼’è
+                        GameSpot_SpotInfo clonedInfo = SpotInfos[2].Clone(); ; // DeepCloneãƒ¡ã‚½ãƒƒãƒ‰ã‚’ä»®å®š
                         clonedInfo.Mast = true;
-                        InputSpot.Add(clonedInfo); // ƒNƒ[ƒ“‚ğ’Ç‰Á
+                        InputSpot.Add(clonedInfo); // ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’è¿½åŠ 
                         break;
                     }
                     else
@@ -337,9 +336,9 @@ public class sytem_GameSpotsController : MonoBehaviour
                             //Debug.Log(NextSpawRate + "<=" + RandomRate + " && " + adddd + ">" + RandomRate);
 
 
-                            GameSpot_SpotInfo clonedInfo = spInfo.Clone(); // DeepCloneƒƒ\ƒbƒh‚ğ‰¼’è
+                            GameSpot_SpotInfo clonedInfo = spInfo.Clone(); // DeepCloneãƒ¡ã‚½ãƒƒãƒ‰ã‚’ä»®å®š
                             clonedInfo.Mast = true;
-                            InputSpot.Add(clonedInfo); // ƒNƒ[ƒ“‚ğ’Ç‰Á
+                            InputSpot.Add(clonedInfo); // ã‚¯ãƒ­ãƒ¼ãƒ³ã‚’è¿½åŠ 
                                                        //InputSpot.Add(spInfo);
                             break;
                         }
@@ -354,6 +353,18 @@ public class sytem_GameSpotsController : MonoBehaviour
             
 
         }
+        if (InputSpot.Count < 16)
+        {
+            if (SpotInfos.Count == 0)
+            {
+                Debug.LogError("SpotInfos is empty; cannot fill map.", this);
+                return;
+            }
+            Debug.LogWarning("Map selection produced fewer than 16 entries; filling fallback spots.", this);
+            while (InputSpot.Count < 16)
+                InputSpot.Add(SpotInfos[SpotInfos.Count > 6 ? 6 : 0].Clone());
+        }
+
         int y = 0;
         int x = 0;
        
@@ -577,16 +588,16 @@ public class GameSpot_SpotInfo
         {
             SpawNumber = this.SpawNumber,
             Skip = this.Skip,
-            Name = this.Name,                // V‚µ‚¢€–Ú: Name
-            SpotImage = this.SpotImage,      // V‚µ‚¢€–Ú: SpotImage
-            SpotPos = this.SpotPos,          // V‚µ‚¢€–Ú: SpotPos
-            Up = this.Up,                    // V‚µ‚¢€–Ú: Up
-            Down = this.Down,                // V‚µ‚¢€–Ú: Down
-            Mast = this.Mast,                // V‚µ‚¢€–Ú: Mast
-            SpotPrefab = this.SpotPrefab,    // V‚µ‚¢€–Ú: SpotPrefab
-            LastSpot = this.LastSpot,        // V‚µ‚¢€–Ú: LastSpot
-            StartSpot = this.StartSpot,      // V‚µ‚¢€–Ú: StartSpot
-            gameMode = this.gameMode,         // V‚µ‚¢€–Ú: gameMode (enum)
+            Name = this.Name,                // æ–°ã—ã„é …ç›®: Name
+            SpotImage = this.SpotImage,      // æ–°ã—ã„é …ç›®: SpotImage
+            SpotPos = this.SpotPos,          // æ–°ã—ã„é …ç›®: SpotPos
+            Up = this.Up,                    // æ–°ã—ã„é …ç›®: Up
+            Down = this.Down,                // æ–°ã—ã„é …ç›®: Down
+            Mast = this.Mast,                // æ–°ã—ã„é …ç›®: Mast
+            SpotPrefab = this.SpotPrefab,    // æ–°ã—ã„é …ç›®: SpotPrefab
+            LastSpot = this.LastSpot,        // æ–°ã—ã„é …ç›®: LastSpot
+            StartSpot = this.StartSpot,      // æ–°ã—ã„é …ç›®: StartSpot
+            gameMode = this.gameMode,         // æ–°ã—ã„é …ç›®: gameMode (enum)
             PageRarity = this.PageRarity,
             Denger = this.Denger,
             Explain = this.Explain,

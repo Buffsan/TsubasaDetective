@@ -9,6 +9,8 @@ public class EffectPool : MonoBehaviour
     [SerializeField] int initialCount = 20;
 
     Queue<GameObject> pool = new Queue<GameObject>();
+    readonly Dictionary<GameObject, ParticleSystem[]> templateSystems = new Dictionary<GameObject, ParticleSystem[]>();
+    readonly Dictionary<GameObject, ParticleSystem[]> instanceSystems = new Dictionary<GameObject, ParticleSystem[]>();
 
     private void Awake()
     {
@@ -105,8 +107,16 @@ public class EffectPool : MonoBehaviour
     // === ParticleSystem の完全コピー ===
     void CopyParticleSystems(GameObject template, GameObject instance)
     {
-        var srcSystems = template.GetComponentsInChildren<ParticleSystem>(true);
-        var dstSystems = instance.GetComponentsInChildren<ParticleSystem>(true);
+        if (!templateSystems.TryGetValue(template, out ParticleSystem[] srcSystems))
+        {
+            srcSystems = template.GetComponentsInChildren<ParticleSystem>(true);
+            templateSystems[template] = srcSystems;
+        }
+        if (!instanceSystems.TryGetValue(instance, out ParticleSystem[] dstSystems))
+        {
+            dstSystems = instance.GetComponentsInChildren<ParticleSystem>(true);
+            instanceSystems[instance] = dstSystems;
+        }
 
         for (int i = 0; i < Mathf.Min(srcSystems.Length, dstSystems.Length); i++)
         {
@@ -143,9 +153,12 @@ public class EffectPool : MonoBehaviour
         // Bursts
         dst.emission.SetBursts(System.Array.Empty<ParticleSystem.Burst>());
 
-        ParticleSystem.Burst[] bursts = new ParticleSystem.Burst[se.burstCount];
-        se.GetBursts(bursts);
-        de.SetBursts(bursts);
+        if (se.burstCount > 0)
+        {
+            ParticleSystem.Burst[] bursts = new ParticleSystem.Burst[se.burstCount];
+            se.GetBursts(bursts);
+            de.SetBursts(bursts);
+        }
 
 
         // --- Shape ---

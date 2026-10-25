@@ -25,6 +25,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 3db9cfe2bc31aec47bc02a7f61450665, type: 2}
     - target: {fileID: 2694927100310490297, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
+      propertyPath: targetFactions
+      value: 12159
+      objectReference: {fileID: 0}
+    - target: {fileID: 2694927100310490297, guid: 531f7c0ea06c5514cb4eb5512f70e307, type: 3}
       propertyPath: LookPlayerDistance
       value: 1
       objectReference: {fileID: 0}

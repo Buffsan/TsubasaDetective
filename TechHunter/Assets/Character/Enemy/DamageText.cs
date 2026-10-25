@@ -47,6 +47,14 @@ public float lifeTime = 0.5f;
     {
         DamageCountText.text = value.ToString("F1");
     }
+
+    public void Configure(float value, bool critical)
+    {
+        Criticul = critical;
+        DamageCountText.text = value.ToString("F1");
+        DamageCountText.color = critical ? CriticulColor : NomalColor;
+        transform.localScale = critical ? new Vector3(1.5f, 1.5f, 1f) : Vector3.one;
+    }
     void ReturnToPool()
     {
         DamageTextPool.instance.Return(gameObject);

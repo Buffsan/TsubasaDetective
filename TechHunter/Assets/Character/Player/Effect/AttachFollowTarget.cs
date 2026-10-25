@@ -6,7 +6,7 @@ public class AttachFollowTarget : MonoBehaviour
     Vector3 offset;
     EffectPool pool => EffectPool.Instance;
 
-    bool followEnabled = false; // © ’Ç]‚·‚é‚©‚Ç‚¤‚©
+    bool followEnabled = false; // â† è¿½å¾“ã™ã‚‹ã‹ã©ã†ã‹
 
     public void Init(Transform followTarget)
     {
@@ -19,18 +19,26 @@ public class AttachFollowTarget : MonoBehaviour
         }
         else
         {
-            followEnabled = false; // © ’Ç]‚µ‚È‚¢ƒ‚[ƒh
+            followEnabled = false; // â† è¿½å¾“ã—ãªã„ãƒ¢ãƒ¼ãƒ‰
         }
+    }
+
+    void OnDisable()
+    {
+        // The next pooled use may be a non-following effect.
+        followEnabled = false;
+        target = null;
+        offset = Vector3.zero;
     }
 
     void LateUpdate()
     {
         if (!followEnabled)
-            return; // followTarget ‚ª null ‚Ìê‡‚ÍˆêØ’Ç]‚µ‚È‚¢
+            return; // followTarget ãŒ null ã®å ´åˆã¯ä¸€åˆ‡è¿½å¾“ã—ãªã„
 
         if (target == null)
         {
-            pool.Release(gameObject); // ’Ç]‘ÎÛ‚ª€‚ñ‚¾ê‡‚Ì‚İÁ‚·
+            pool.Release(gameObject); // è¿½å¾“å¯¾è±¡ãŒæ­»ã‚“ã å ´åˆã®ã¿æ¶ˆã™
             return;
         }
 

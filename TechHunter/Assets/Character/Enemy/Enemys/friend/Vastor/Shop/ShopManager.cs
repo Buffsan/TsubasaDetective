@@ -229,7 +229,7 @@ public class ShopManager : MonoBehaviour
         dialogue.nodes.Add(new DialogueData.Node
         {
             nodeId = 0, speakerId = shopkeeperId, expression = DialogueExpression.Normal,
-            text = "{itemName}ですね。価格は{itemPrice}コインです。\\n{itemDescription}"
+            text = "{itemName}ですね。価格は{itemPrice}コインです。\n{itemDescription}"
         });
         var choice = new DialogueData.Node
         {

@@ -686,6 +686,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5717163667134632590}
+  - component: {fileID: 7283421461129012750}
   m_Layer: 0
   m_Name: -----GameSysem-----
   m_TagString: Untagged
@@ -1852,3 +1853,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+
+--- !u!114 &7283421461129012750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4087297920904022142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a71d464b99f4c949e2a0b595306824d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  characterDatabase: {fileID: 11400000, guid: c0458e2931eb443296dcfd760a1696b0, type: 2}
+  japaneseFont: {fileID: 11400000, guid: b0f3628979ca4fe4dbdd80bd5e694e9b, type: 2}
+  createCanvasAutomatically: 1

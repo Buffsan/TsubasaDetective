@@ -35,7 +35,9 @@ public class ShopManager : MonoBehaviour
 
     ShopController focusedShop;
     DialogueShopItemData previewItem;
-    DialogueData shopConversation;
+    [SerializeField] DialogueData shopConversationData;
+    [SerializeField] int purchaseChoiceNodeId = 10;
+    [SerializeField] int purchaseOptionIndex = 0;
     bool shopConversationActive;
     public enum ItemData 
     { 
@@ -115,7 +117,7 @@ public class ShopManager : MonoBehaviour
 
     void OnDestroy()
     {
-        if (shopConversation != null) Destroy(shopConversation);
+        // ScriptableObject conversation asset is shared content: never Destroy it.
         if (previewItem != null) Destroy(previewItem);
     }
     public void OnDecide(float damage)
@@ -137,12 +139,17 @@ public class ShopManager : MonoBehaviour
         }
         if (selected == null) return;
 
-        if (useDialogueForPurchases && DialogueUIController.Instance != null)
+        if (useDialogueForPurchases)
         {
+            if (DialogueUIController.Instance == null)
+            {
+                Debug.LogError("ShopManager: common DialogueUIController is missing from GameSystem.", this);
+                return;
+            }
             StartShopConversation(selected);
             return;
         }
-        // Preserves the old instant-purchase behaviour in scenes without dialogue UI.
+        // Only explicit opt-out restores the previous instant-buy behaviour.
         BuyItem(selected);
     }
 
@@ -216,74 +223,44 @@ public class ShopManager : MonoBehaviour
 
     void StartShopConversation(ShopController shop)
     {
-        DialogueUIController dialogueUI = DialogueUIController.Instance;
-        if (dialogueUI == null || dialogueUI.IsPlaying || shopConversationActive) return;
+        DialogueUIController ui = DialogueUIController.Instance;
+        if (ui == null || ui.IsPlaying || shopConversationActive) return;
+        if (shopConversationData == null)
+        {
+            Debug.LogError("ShopManager: Shop Conversation Data asset is missing.", this);
+            return;
+        }
         if (playerController == null || playerController.movetype == PlayerController.MoveType.Wait ||
             notBuyCount < notBuyTime) return;
 
         focusedShop = shop;
         RefreshShopPreview(shop);
         bool canAfford = playerController.AllCoins >= Mathf.RoundToInt(shop.AllValue);
-        DialogueData dialogue = ScriptableObject.CreateInstance<DialogueData>();
-        dialogue.hideFlags = HideFlags.DontSave;
-        dialogue.participants.Add(shopkeeperId);
-
-        dialogue.nodes.Add(new DialogueData.Node
-        {
-            nodeId = 0, speakerId = shopkeeperId, expression = DialogueExpression.Normal,
-            text = "{itemName}ですね。価格は{itemPrice}コインです。\n{itemDescription}"
-        });
-        var choice = new DialogueData.Node
-        {
-            nodeId = 10, type = DialogueData.NodeType.Choice,
-            speakerId = shopkeeperId, text = "いかがなさいますか？"
-        };
-        choice.choices.Add(new DialogueData.Choice { label = "購入する", targetNodeId = 20 });
-        choice.choices.Add(new DialogueData.Choice { label = "やめる", targetNodeId = 30 });
-        dialogue.nodes.Add(choice);
-        dialogue.nodes.Add(new DialogueData.Node
-        {
-            nodeId = 20, speakerId = shopkeeperId, expression = DialogueExpression.Happy,
-            text = canAfford ? "ありがとうございます。お品物をご用意します。" :
-                "申し訳ありません。コインが足りないようです。",
-            nextNodeId = 40
-        });
-        dialogue.nodes.Add(new DialogueData.Node
-        {
-            nodeId = 30, speakerId = shopkeeperId, text = "かしこまりました。",
-            nextNodeId = 40
-        });
-        dialogue.nodes.Add(new DialogueData.Node
-        {
-            nodeId = 40, speakerId = shopkeeperId, text = "ほかにもぜひご覧ください。"
-        });
+        ui.SetSelectedShopItem(previewItem);
+        ui.SetTextVariable("purchaseResult", canAfford ?
+            "ありがとうございます。お品物をご用意いたします。" :
+            "申し訳ありません。コインが足りないようです。");
 
         bool wantsPurchase = false;
-        shopConversation = dialogue;
-        dialogueUI.SetSelectedShopItem(previewItem);
         shopConversationActive = true;
-        bool started = dialogueUI.Play(dialogue,
+        bool started = ui.Play(shopConversationData,
             () =>
             {
-                // Dialogue closes and unlocks controls before the purchased card UI opens.
                 shopConversationActive = false;
-                if (shopConversation == dialogue) shopConversation = null;
-                Destroy(dialogue);
-                if (this != null && isActiveAndEnabled && wantsPurchase &&
-                    shop != null && shop.PlayerFind)
+                if (this != null && isActiveAndEnabled &&
+                    wantsPurchase && canAfford && shop != null && shop.PlayerFind)
                     BuyItem(shop);
             },
             (nodeId, optionIndex) =>
             {
-                if (nodeId == 10)
-                    wantsPurchase = optionIndex == 0 && canAfford;
+                if (nodeId == purchaseChoiceNodeId)
+                    wantsPurchase = optionIndex == purchaseOptionIndex;
             });
 
         if (!started)
         {
             shopConversationActive = false;
-            shopConversation = null;
-            Destroy(dialogue);
+            ui.ClearTextVariables();
         }
     }
     public void BuyItem(ShopController shopControllers) 

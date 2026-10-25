@@ -28,6 +28,7 @@ public class DialogueUIController : MonoBehaviour
     readonly List<Image> portraits = new List<Image>();
     readonly List<DialogueCharacterId> portraitIds = new List<DialogueCharacterId>();
     readonly Dictionary<int, int> nodeMap = new Dictionary<int, int>();
+    readonly Dictionary<string, string> textVariables = new Dictionary<string, string>();
     readonly Dictionary<DialogueCharacterId, DialogueExpression> expressions =
         new Dictionary<DialogueCharacterId, DialogueExpression>();
     readonly Dictionary<DialogueCharacterId, string> extraKeys = new Dictionary<DialogueCharacterId, string>();
@@ -229,13 +230,36 @@ public class DialogueUIController : MonoBehaviour
         if (continueIndicator != null) continueIndicator.SetActive(!inChoice && visible >= total);
     }
 
+    public void SetTextVariable(string key, string value)
+    {
+        if (string.IsNullOrWhiteSpace(key)) return;
+        textVariables[key] = value ?? "";
+        RefreshVisibleText();
+    }
+
+    public void ClearTextVariables()
+    {
+        textVariables.Clear();
+    }
+
+    void RefreshVisibleText()
+    {
+        if (!IsPlaying || data == null) return;
+        SetSelectedShopItem(SelectedShopItem);
+    }
+
     string ReplaceTokens(string raw)
     {
         if (string.IsNullOrEmpty(raw)) return "";
-        if (SelectedShopItem == null) return raw;
-        return raw.Replace("{itemName}", SelectedShopItem.itemName ?? "")
-            .Replace("{itemPrice}", SelectedShopItem.price.ToString("N0"))
-            .Replace("{itemDescription}", SelectedShopItem.description ?? "");
+        if (SelectedShopItem != null)
+        {
+            raw = raw.Replace("{itemName}", SelectedShopItem.itemName ?? "")
+                .Replace("{itemPrice}", SelectedShopItem.price.ToString("N0"))
+                .Replace("{itemDescription}", SelectedShopItem.description ?? "");
+        }
+        foreach (KeyValuePair<string, string> pair in textVariables)
+            raw = raw.Replace("{" + pair.Key + "}", pair.Value);
+        return raw;
     }
 
     void BuildPortraits()
@@ -416,6 +440,7 @@ public class DialogueUIController : MonoBehaviour
         player = null;
         if (pauseApplied) { Time.timeScale = savedTimeScale; pauseApplied = false; }
         data = null;
+        ClearTextVariables();
         Action callback = finished;
         finished = null; picked = null;
         callback?.Invoke();

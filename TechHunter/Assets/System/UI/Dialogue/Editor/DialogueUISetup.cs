@@ -12,7 +12,7 @@ public static class DialogueUISetup
 {
     const string PrefabPath = "Assets/System/UI/Dialogue/DialogueCanvas.prefab";
     const string JapaneseFontPath = "Assets/Font/Honoka-Shin-Antique-Maru_R SDF.asset";
-    const string DatabasePath = "Assets/System/UI/Dialogue/DialogueCharacterDatabase.asset";
+    const string DatabasePath = "Assets/System/UI/Dialogue/SharedCharacters.asset";
 
     [MenuItem("Tools/TechHunter/Dialogue/Create and Place Dialogue UI")]
     static void CreateAndPlace()
@@ -65,7 +65,8 @@ public static class DialogueUISetup
 
     static void EnsureVastorProfile(DialogueCharacterDatabase database)
     {
-        const string profilePath = "Assets/System/UI/Dialogue/Vastor.asset";
+        if (database.Find(DialogueCharacterId.Vastor) != null) return;
+        const string profilePath = "Assets/System/UI/Dialogue/ShopVastorCharacter.asset";
         DialogueCharacterProfile profile = AssetDatabase.LoadAssetAtPath<DialogueCharacterProfile>(profilePath);
         if (profile == null)
         {

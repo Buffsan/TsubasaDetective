@@ -5,10 +5,10 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 /// <summary>
-/// Attached to ShopMap's ShopManager. Creates its dialogue canvas automatically
-/// when the shop map is instantiated. Does not alter gameplay UI or character AI.
+/// Shared game-system bootstrap. Creates one dialogue UI for NPCs, events and shops.
+/// The source of the conversation does not own its rendering or character registry.
 /// </summary>
-public class ShopDialogueBootstrap : MonoBehaviour
+public class DialogueRuntimeBootstrap : MonoBehaviour
 {
     [SerializeField] DialogueCharacterDatabase characterDatabase;
     [SerializeField] TMP_FontAsset japaneseFont;
@@ -19,10 +19,14 @@ public class ShopDialogueBootstrap : MonoBehaviour
 
     void Awake()
     {
-        if (!createCanvasAutomatically || DialogueUIController.Instance != null ||
-            FindObjectOfType<DialogueUIController>() != null)
+        if (!createCanvasAutomatically) return;
+        DialogueUIController existing = DialogueUIController.Instance;
+        if (existing == null) existing = FindObjectOfType<DialogueUIController>();
+        if (existing != null)
+        {
+            if (characterDatabase != null) existing.SetDatabase(characterDatabase);
             return;
-
+        }
         createdCanvas = CreateDialogueCanvas();
     }
 
@@ -34,7 +38,7 @@ public class ShopDialogueBootstrap : MonoBehaviour
 
     GameObject CreateDialogueCanvas()
     {
-        GameObject canvasObject = new GameObject("Shop DialogueCanvas (runtime)",
+        GameObject canvasObject = new GameObject("DialogueCanvas (runtime)",
             typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler),
             typeof(GraphicRaycaster));
         Canvas canvas = canvasObject.GetComponent<Canvas>();

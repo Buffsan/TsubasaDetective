@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d92a1d0cfb34e11ad6cab211cfe1051, type: 3}
+  m_Name: VastorPurchaseConversation
+  m_EditorClassIdentifier:
+  participants:
+  - 10
+  entryNodeId: 0
+  nodes:
+  - nodeId: 0
+    type: 0
+    speakerId: 10
+    expression: 0
+    otherExpressionKey:
+    showSpeakerName: 1
+    text: "{itemName}ですね。価格は{itemPrice}コインです。\n{itemDescription}"
+    nextNodeId: -1
+    choices: []
+  - nodeId: 10
+    type: 1
+    speakerId: 10
+    expression: 0
+    otherExpressionKey:
+    showSpeakerName: 1
+    text: "いかがなさいますか？"
+    nextNodeId: -1
+    choices:
+    - label: "購入する"
+      targetNodeId: 20
+      selectedShopItem: {fileID: 0}
+    - label: "やめる"
+      targetNodeId: 30
+      selectedShopItem: {fileID: 0}
+  - nodeId: 20
+    type: 0
+    speakerId: 10
+    expression: 1
+    otherExpressionKey:
+    showSpeakerName: 1
+    text: "{purchaseResult}"
+    nextNodeId: 40
+    choices: []
+  - nodeId: 30
+    type: 0
+    speakerId: 10
+    expression: 0
+    otherExpressionKey:
+    showSpeakerName: 1
+    text: "かしこまりました。"
+    nextNodeId: 40
+    choices: []
+  - nodeId: 40
+    type: 0
+    speakerId: 10
+    expression: 0
+    otherExpressionKey:
+    showSpeakerName: 1
+    text: "ほかにもぜひご覧ください。"
+    nextNodeId: -1
+    choices: []
+  characters: []
+  lines: []

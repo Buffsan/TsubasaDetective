@@ -225,11 +225,11 @@ public class CoinPool : MonoBehaviour
             remaining %= values[i];
             normalCount += count[i];
         }
-        if (remaining > 0)
+        if (remaining > 0 && normalCount == 0)
         {
-            // Any unusual coin denominations still preserve the exact remaining value.
-            count[3]++;
-            normalCount++;
+            // No denomination could represent this amount at all.
+            SpawnCoin(CoinManager.CoinType.CopperCoin, (int)remaining, position);
+            return;
         }
 
         int desired = (int)System.Math.Min(normalCount, budget);

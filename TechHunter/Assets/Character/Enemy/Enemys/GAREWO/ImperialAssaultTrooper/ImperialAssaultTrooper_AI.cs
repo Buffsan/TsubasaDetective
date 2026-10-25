@@ -206,7 +206,11 @@ public class ImperialAssaultTrooper_AI : EnemyMoveBase
         reloadTimer = reloadSeconds;
         enemyBase.moveType = EnemyBase.MoveType.Attack;
         Stop(false);
-        if (enemyBase.animator != null) enemyBase.animator.SetInteger("Anim", 2);
+        if (enemyBase.animator != null)
+        {
+            enemyBase.animator.SetInteger("Anim", 0);
+            enemyBase.animator.Play("待機", 0, 0f);
+        }
     }
     void TickReload()
     {

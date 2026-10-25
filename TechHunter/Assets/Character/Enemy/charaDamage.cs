@@ -8,7 +8,6 @@ public class charaDamage : MonoBehaviour, IDamageable
     public EnemyBase OwnerEnemyBase => enemyBase;
     public Faction MyFactions => enemyBase != null ? enemyBase.Factions : Faction.None;
     [SerializeField] GameObject Coin;
-    CoinManager coinManager;
 
     public List<charaDamage> passDamageAreas = new List<charaDamage>();
     public int DamageType = 0;
@@ -48,7 +47,6 @@ public class charaDamage : MonoBehaviour, IDamageable
         Stan = enemyBase.StanHP;
         ConfusionHP = enemyBase.ConfusionHP;
 
-        coinManager = Coin.GetComponent<CoinManager>();
         enemyBase.DefaltColor = enemyBase.spriteRenderer.color;
     }
 
@@ -428,40 +426,10 @@ public class charaDamage : MonoBehaviour, IDamageable
     }
     void CoinDrop()
     {
-        int remain = enemyBase.GOLD;
-
-        int[] values = {
-        coinManager.CrystalValue,
-        coinManager.GoaldValue,
-        coinManager.SilverValue,
-        coinManager.CopperValue
-    };
-
-        CoinManager.CoinType[] types = {
-        CoinManager.CoinType.CrystalCoin,
-        CoinManager.CoinType.GoaldCoin,
-        CoinManager.CoinType.SilverCoin,
-        CoinManager.CoinType.CopperCoin
-    };
-
-        for (int i = 0; i < values.Length; i++)
-        {
-            int count = remain / values[i];
-            remain %= values[i];
-
-            for (int j = 0; j < count; j++)
-            {
-                // ▼ Instantiate の代わりにプールから取得する
-                GameObject coinObj = CoinPool.Instance.GetCoin(transform.position);
-
-                CoinManager coin = coinObj.GetComponent<CoinManager>();
-                coin.InitializeCoin(types[i]);
-
-                // SystemManager の coinManagers 登録（あなたの仕様に合わせる）
-                enemyBase.ALL_System.systemManager.coinManagers.Add(coin);
-            }
-        }
-
+        // Defer coin creation until all deaths this frame have been collected.
+        // Each request retains the dying enemy's location.
+        if (CoinPool.Instance != null)
+            CoinPool.Instance.RequestDrop(enemyBase.GOLD, enemyBase.transform.position);
     }
 
     float TakeElectricDamage()

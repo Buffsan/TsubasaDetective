@@ -1,7 +1,7 @@
 # 汎用会話システム / Dialogue System
 
 ## 構造
-- `-----GameSysem-----.prefab` のルートに `DialogueRuntimeBootstrap` を設定。通常ゲームシステムが存在するあらゆるステージで共通の会話UIを起動します。
+- `-----GameSysem-----.prefab` の子オブジェクト `DialogueSystem` に `DialogueRuntimeBootstrap` を設定。通常ゲームシステムが存在するあらゆるステージで共通の会話UIを起動します。
 - `SharedCharacters.asset` は共通のキャラクター登録台帳で、Vastor（`ShopVastorCharacter.asset`）を最初から登録しています。
 - 会話内容は `DialogueData` ScriptableObjectで保存し、イベント/NPC/ショップなど任意の呼び出し元から `DialogueUIController.Instance.Play(dialogueData)` を呼び出せます。
 - `DialogueEventTrigger` はシーン上のイベントObjectに貼り、任意の `DialogueData` を指定できます。
@@ -36,7 +36,9 @@ Unity上でのコンパイル/Play Mode検証は未実施です。
 
 - 共通の `-----GameSysem-----.prefab` に常設する `DialogueSystem` GameObjectが `DialogueRuntimeBootstrap` を持ちます。ショップ内には会話システム本体を置きません。
 - `ALL_SystemManager` に `dialogueRuntimeBootstrap`、`dialogueUIController`、`dialogueCharacterDatabase` を登録できる欄を追加しました。
-- 現状はコンポーネントの `Start()` 時に自動登録します。Unity Editorの非再生時の欄は空でも動作します。
+- `DialogueSceneReferenceBinder` がUnity Editorでシーンを開いたとき／スクリプトを再読み込みしたときに、同じ `-----GameSysem-----` 内の `DialogueSystem` とキャラクターデータベースを `ALL_SystemManager` に割り当てます。変更があればシーンが未保存状態になるため、**SampleSceneを保存（Ctrl+S）**してください。
+- `Tools > TechHunter > Dialogue > Bind GameSystem References` でも再登録できます。
+- `dialogueUIController` はPlay開始時に生成されるため、非再生時は空欄のままで正常です。Play開始時に `DialogueRuntimeBootstrap` が登録します。
 - 会話の呼び出し例：`ALL_SystemManager.Instance.dialogueUIController.Play(dialogueData)`
 - `ALL_SystemManager.Instance.dialogueUIController.IsPlaying` で会話中の判定が可能です。
 - 立ち絵登録用の `SharedCharacters.asset` を各会話で使い回します。

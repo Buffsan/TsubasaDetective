@@ -25,7 +25,7 @@ public class AttackSpawner : MonoBehaviour
      Transform parent = null)
     {
         // プールから取得
-        var obj = ObjectPoolManager.Instance.Get(attackPrefab, true);
+        var obj = ObjectPoolManager.Instance.Get(attackPrefab, true, false);
         if (obj == null) return;
 
         // 親 → ワールド座標を維持
@@ -41,6 +41,7 @@ public class AttackSpawner : MonoBehaviour
         }
 
         // 寿命開始
+        ObjectPoolManager.Instance.Activate(obj);
         autoReturn.StartLife(
             ObjectPoolManager.Instance,
             attackPrefab,

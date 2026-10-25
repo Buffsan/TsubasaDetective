@@ -23,7 +23,7 @@ public class ObjectPoolManager : MonoBehaviour
     }
 
     // Critical hitboxes must not disappear when the visual pool limit is reached.
-    public GameObject Get(GameObject prefab, bool essential = false)
+    public GameObject Get(GameObject prefab, bool essential = false, bool activate = true)
     {
         if (!pools.ContainsKey(prefab))
             CreatePool(prefab, initialSize);
@@ -39,12 +39,16 @@ public class ObjectPoolManager : MonoBehaviour
         }
 
         var obj = pools[prefab].Dequeue();
-        obj.SetActive(true);
-
-        if (obj.TryGetComponent<IPoolable>(out var p))
-            p.OnSpawn();
-
+        if (activate) Activate(obj);
         return obj;
+    }
+
+    public void Activate(GameObject obj)
+    {
+        if (obj == null) return;
+        obj.SetActive(true);
+        if (obj.TryGetComponent<IPoolable>(out var poolable))
+            poolable.OnSpawn();
     }
 
     public void Release(GameObject prefab, GameObject obj)

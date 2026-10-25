@@ -10,7 +10,7 @@ public class RelicController : RelicBase
     {
         if (relicBase == null) 
         {
-            if (relicData == null) { Debug.Log("データがないね"); return; }
+            if (relicData == null) { Debug.Log("繝�繝ｼ繧ｿ縺後↑縺�縺ｭ"); return; }
 
             GameObject Relic = Instantiate(relicData.RelicDataObject,transform.position,Quaternion.identity);
             Relic.transform.parent = transform;
@@ -19,7 +19,9 @@ public class RelicController : RelicBase
     }
     private void FixedUpdate()
     {
-        if(playerController.movetype != PlayerController.MoveType.NoAction && playerController.movetype != PlayerController.MoveType.Wait)
-        relicBase.BaseAction();//行動の別途挿入
+        if (relicBase == null || playerController == null) return;
+        if (playerController.movetype != PlayerController.MoveType.NoAction &&
+            playerController.movetype != PlayerController.MoveType.Wait)
+            relicBase.BaseAction();//陦悟虚縺ｮ蛻･騾疲諺蜈･
     }
 }

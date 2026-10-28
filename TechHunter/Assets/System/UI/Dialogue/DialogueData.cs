@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Dialogue", menuName = "TechHunter/Dialogue/Conversation")]
 public class DialogueData : ScriptableObject
 {
+    [Tooltip("Stable unique ID used to start this conversation from game events.")]
+    public string conversationId;
+
     public enum NodeType { Line, Choice }
 
     [Serializable] public class Choice
@@ -23,7 +26,12 @@ public class DialogueData : ScriptableObject
         public DialogueExpression expression;
         public string otherExpressionKey;
         public bool showSpeakerName = true;
+        [Tooltip("Optional text ScriptableObject. Overrides the inline text.")]
+        public DialogueTextAsset textAsset;
         [TextArea(2, 8)] public string text;
+        [Tooltip("End this conversation when the player advances after reading this node.")]
+        public bool endDialogue;
+        public string GetText() { return textAsset != null ? textAsset.text : text; }
         [Tooltip("-1 = next entry in Nodes array, otherwise jump to this node ID.")]
         public int nextNodeId = -1;
         public List<Choice> choices = new List<Choice>();

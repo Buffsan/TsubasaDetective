@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d92a1d0cfb34e11ad6cab211cfe1051, type: 3}
   m_Name: VastorPurchaseConversation
   m_EditorClassIdentifier:
+  conversationId: shop.vastor.purchase
   participants:
   - 10
   entryNodeId: 0
@@ -22,7 +23,9 @@ MonoBehaviour:
     expression: 0
     otherExpressionKey:
     showSpeakerName: 1
-    text: "{itemName}ですね。価格は{itemPrice}コインです。\n{itemDescription}"
+    textAsset: {fileID: 11400000, guid: 8a64dcb2b97045c6a0f3238e5bb0a011, type: 2}
+    text: ""
+    endDialogue: 0
     nextNodeId: -1
     choices: []
   - nodeId: 10
@@ -31,7 +34,9 @@ MonoBehaviour:
     expression: 0
     otherExpressionKey:
     showSpeakerName: 1
-    text: "いかがなさいますか？"
+    textAsset: {fileID: 11400000, guid: 8a64dcb2b97045c6a0f3238e5bb0a012, type: 2}
+    text: ""
+    endDialogue: 0
     nextNodeId: -1
     choices:
     - label: "購入する"
@@ -46,7 +51,9 @@ MonoBehaviour:
     expression: 1
     otherExpressionKey:
     showSpeakerName: 1
-    text: "{purchaseResult}"
+    textAsset: {fileID: 11400000, guid: 8a64dcb2b97045c6a0f3238e5bb0a013, type: 2}
+    text: ""
+    endDialogue: 0
     nextNodeId: 40
     choices: []
   - nodeId: 30
@@ -55,7 +62,9 @@ MonoBehaviour:
     expression: 0
     otherExpressionKey:
     showSpeakerName: 1
-    text: "かしこまりました。"
+    textAsset: {fileID: 11400000, guid: 8a64dcb2b97045c6a0f3238e5bb0a014, type: 2}
+    text: ""
+    endDialogue: 0
     nextNodeId: 40
     choices: []
   - nodeId: 40
@@ -64,7 +73,9 @@ MonoBehaviour:
     expression: 0
     otherExpressionKey:
     showSpeakerName: 1
-    text: "ほかにもぜひご覧ください。"
+    textAsset: {fileID: 11400000, guid: 8a64dcb2b97045c6a0f3238e5bb0a015, type: 2}
+    text: ""
+    endDialogue: 1
     nextNodeId: -1
     choices: []
   characters: []

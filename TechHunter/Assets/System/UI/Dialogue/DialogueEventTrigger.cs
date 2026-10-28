@@ -4,6 +4,8 @@ using UnityEngine.Events;
 public class DialogueEventTrigger : MonoBehaviour
 {
     [SerializeField] DialogueData dialogue;
+    [Tooltip("When set, look up the conversation by ID; otherwise use the direct asset.")]
+    [SerializeField] string dialogueId;
     [SerializeField] bool playOnStart;
     [SerializeField] bool playWhenPlayerEntersTrigger;
     [SerializeField] bool onlyOnce = true;
@@ -23,9 +25,12 @@ public class DialogueEventTrigger : MonoBehaviour
             Debug.LogWarning("DialogueCanvas is missing from the scene.", this);
             return;
         }
-        if (controller.Play(dialogue, () => onDialogueFinished?.Invoke(),
-            (nodeId, optionIndex) => onChoiceSelected?.Invoke(optionIndex)))
-            hasPlayed = true;
+        System.Action finished = () => onDialogueFinished?.Invoke();
+        System.Action<int,int> picked = (nodeId, optionIndex) => onChoiceSelected?.Invoke(optionIndex);
+        bool started = !string.IsNullOrWhiteSpace(dialogueId)
+            ? controller.PlayById(dialogueId, finished, picked)
+            : controller.Play(dialogue, finished, picked);
+        if (started) hasPlayed = true;
     }
 
     void OnTriggerEnter2D(Collider2D other)

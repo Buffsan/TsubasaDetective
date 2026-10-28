@@ -15,6 +15,7 @@ public static class DialogueSceneReferenceBinder
 {
     const string GameSystemPrefabPath = "Assets/System/-----GameSysem-----.prefab";
     const string SharedCharactersPath = "Assets/System/UI/Dialogue/SharedCharacters.asset";
+    const string ConversationDatabasePath = "Assets/System/UI/Dialogue/SharedConversations.asset";
     const string JapaneseFontPath = "Assets/Font/Honoka-Shin-Antique-Maru_R SDF.asset";
     const string SampleScenePath = "Assets/Scenes/SampleScene.unity";
 
@@ -129,6 +130,8 @@ public static class DialogueSceneReferenceBinder
             SerializedObject serialized = new SerializedObject(bootstrap);
             serialized.FindProperty("characterDatabase").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<DialogueCharacterDatabase>(SharedCharactersPath);
+            serialized.FindProperty("conversationDatabase").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<DialogueDatabase>(ConversationDatabasePath);
             serialized.FindProperty("japaneseFont").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(JapaneseFontPath);
             serialized.FindProperty("createCanvasAutomatically").boolValue = true;

@@ -11,6 +11,7 @@ using UnityEngine.UI;
 public class DialogueRuntimeBootstrap : MonoBehaviour
 {
     [SerializeField] DialogueCharacterDatabase characterDatabase;
+    [SerializeField] DialogueDatabase conversationDatabase;
     [SerializeField] TMP_FontAsset japaneseFont;
     [SerializeField] bool createCanvasAutomatically = true;
 
@@ -19,6 +20,7 @@ public class DialogueRuntimeBootstrap : MonoBehaviour
 
     public DialogueUIController DialogueController { get; private set; }
     public DialogueCharacterDatabase CharacterDatabase { get { return characterDatabase; } }
+    public DialogueDatabase ConversationDatabase { get { return conversationDatabase; } }
 
     void Awake()
     {
@@ -28,6 +30,7 @@ public class DialogueRuntimeBootstrap : MonoBehaviour
         if (existing != null)
         {
             if (characterDatabase != null) existing.SetDatabase(characterDatabase);
+            if (conversationDatabase != null) existing.SetConversationDatabase(conversationDatabase);
             DialogueController = existing;
             return;
         }
@@ -124,6 +127,7 @@ public class DialogueRuntimeBootstrap : MonoBehaviour
         DialogueUIController ui = canvasObject.AddComponent<DialogueUIController>();
         ui.AssignUI(group, portraits, portraitImage, nameBorder.gameObject, name, body, next.gameObject);
         ui.SetDatabase(characterDatabase);
+        ui.SetConversationDatabase(conversationDatabase);
         root.gameObject.SetActive(false);
 
         // The existing EventSystem is reused; only create one when missing.

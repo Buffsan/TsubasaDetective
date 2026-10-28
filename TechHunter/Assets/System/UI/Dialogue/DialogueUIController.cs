@@ -13,6 +13,7 @@ public class DialogueUIController : MonoBehaviour
 
     [Header("Shared registry")]
     [SerializeField] DialogueCharacterDatabase characterDatabase;
+    [SerializeField] DialogueDatabase conversationDatabase;
     [Header("UI")]
     [SerializeField] CanvasGroup dialogueRoot;
     [SerializeField] RectTransform portraitContainer;
@@ -44,6 +45,23 @@ public class DialogueUIController : MonoBehaviour
     bool pauseApplied, usingLegacy, inChoice;
 
     public void SetDatabase(DialogueCharacterDatabase db) { characterDatabase = db; }
+    public void SetConversationDatabase(DialogueDatabase db) { conversationDatabase = db; }
+
+    public bool PlayById(string conversationId, Action onFinished = null, Action<int,int> onPicked = null)
+    {
+        if (conversationDatabase == null)
+        {
+            Debug.LogError("Dialogue: conversation database is not assigned.", this);
+            return false;
+        }
+        DialogueData conversation = conversationDatabase.Find(conversationId);
+        if (conversation == null)
+        {
+            Debug.LogError("Dialogue: unknown conversation ID '" + conversationId + "'.", this);
+            return false;
+        }
+        return Play(conversation, onFinished, onPicked);
+    }
 
     void Awake()
     {
@@ -150,6 +168,7 @@ public class DialogueUIController : MonoBehaviour
         }
         if (usingLegacy) { current++; Show(); return; }
         DialogueData.Node node = data.nodes[current];
+        if (node.endDialogue) { Finish(); return; }
         Jump(node.nextNodeId, current + 1);
     }
 
@@ -193,14 +212,14 @@ public class DialogueUIController : MonoBehaviour
         UpdatePortraits(node.speakerId, node.expression, node.otherExpressionKey);
         if (node.type == DialogueData.NodeType.Choice)
         {
-            messageText.text = ReplaceTokens(node.text);
+            messageText.text = ReplaceTokens(node.GetText());
             messageText.maxVisibleCharacters = int.MaxValue;
             messageText.ForceMeshUpdate();
             total = visible = messageText.textInfo.characterCount;
             if (continueIndicator != null) continueIndicator.SetActive(false);
             ShowChoices(node);
         }
-        else BeginText(node.text);
+        else BeginText(node.GetText());
     }
 
     void BeginText(string raw)
@@ -218,7 +237,7 @@ public class DialogueUIController : MonoBehaviour
     {
         SelectedShopItem = item;
         if (!IsPlaying || data == null) return;
-        string raw = usingLegacy ? data.lines[current].text : data.nodes[current].text;
+        string raw = usingLegacy ? data.lines[current].text : data.nodes[current].GetText();
         int previous = visible;
         bool complete = visible >= total;
         messageText.text = ReplaceTokens(raw);

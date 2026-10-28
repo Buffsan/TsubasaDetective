@@ -36,6 +36,8 @@ public class ShopManager : MonoBehaviour
     ShopController focusedShop;
     DialogueShopItemData previewItem;
     [SerializeField] DialogueData shopConversationData;
+    [Tooltip("Optional conversation ID. Empty keeps the old direct asset reference.")]
+    [SerializeField] string shopConversationId;
     [SerializeField] int purchaseChoiceNodeId = 10;
     [SerializeField] int purchaseOptionIndex = 0;
     bool shopConversationActive;
@@ -225,9 +227,9 @@ public class ShopManager : MonoBehaviour
     {
         DialogueUIController ui = DialogueUIController.Instance;
         if (ui == null || ui.IsPlaying || shopConversationActive) return;
-        if (shopConversationData == null)
+        if (shopConversationData == null && string.IsNullOrWhiteSpace(shopConversationId))
         {
-            Debug.LogError("ShopManager: Shop Conversation Data asset is missing.", this);
+            Debug.LogError("ShopManager: conversation asset or ID is missing.", this);
             return;
         }
         if (playerController == null || playerController.movetype == PlayerController.MoveType.Wait ||
@@ -243,19 +245,21 @@ public class ShopManager : MonoBehaviour
 
         bool wantsPurchase = false;
         shopConversationActive = true;
-        bool started = ui.Play(shopConversationData,
-            () =>
+        Action onFinished = () =>
             {
                 shopConversationActive = false;
                 if (this != null && isActiveAndEnabled &&
                     wantsPurchase && canAfford && shop != null && shop.PlayerFind)
                     BuyItem(shop);
-            },
-            (nodeId, optionIndex) =>
+            };
+        Action<int,int> onPicked = (nodeId, optionIndex) =>
             {
                 if (nodeId == purchaseChoiceNodeId)
                     wantsPurchase = optionIndex == purchaseOptionIndex;
-            });
+            };
+        bool started = !string.IsNullOrWhiteSpace(shopConversationId)
+            ? ui.PlayById(shopConversationId, onFinished, onPicked)
+            : ui.Play(shopConversationData, onFinished, onPicked);
 
         if (!started)
         {

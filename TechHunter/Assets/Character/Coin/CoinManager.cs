@@ -168,8 +168,8 @@ public class CoinManager : MonoBehaviour
 
         // Cheap broad-phase check before the precise shape query.
         Bounds bounds = area.bounds;
-        float dx = Mathf.Max(bounds.min.x - coinPosition.x, coinPosition.x - bounds.max.x, 0f);
-        float dy = Mathf.Max(bounds.min.y - coinPosition.y, coinPosition.y - bounds.max.y, 0f);
+        float dx = Mathf.Max(0f, Mathf.Max(bounds.min.x - coinPosition.x, coinPosition.x - bounds.max.x));
+        float dy = Mathf.Max(0f, Mathf.Max(bounds.min.y - coinPosition.y, coinPosition.y - bounds.max.y));
         if (dx * dx + dy * dy > radiusSquared) return;
 
         // Same effective overlap as the former radius-0.1, scale-2.5 trigger circle.

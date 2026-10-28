@@ -39,6 +39,8 @@ MonoBehaviour:
     choices:
     - label: "購入する"
       targetNodeId: 20
+      conditionKey: canAfford
+      falseTargetNodeId: 25
       selectedShopItem: {fileID: 0}
     - label: "やめる"
       targetNodeId: 30
@@ -49,7 +51,17 @@ MonoBehaviour:
     expression: 1
     otherExpressionKey:
     showSpeakerName: 1
-    text: "{purchaseResult}"
+    text: "ありがとうございます。お品物をご用意いたします。"
+    endDialogue: 0
+    nextNodeId: 40
+    choices: []
+  - nodeId: 25
+    type: 0
+    speakerId: 10
+    expression: 0
+    otherExpressionKey:
+    showSpeakerName: 1
+    text: "申し訳ありません。コインが足りないようです。"
     endDialogue: 0
     nextNodeId: 40
     choices: []

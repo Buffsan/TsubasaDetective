@@ -15,6 +15,10 @@ public class DialogueData : ScriptableObject
         public string label;
         [Tooltip("Destination node ID. Can target the same final node from different branches.")]
         public int targetNodeId;
+        [Tooltip("Optional bool variable. If false, use falseTargetNodeId instead of targetNodeId.")]
+        public string conditionKey;
+        [Tooltip("Destination node ID when conditionKey is false.")]
+        public int falseTargetNodeId;
         public DialogueShopItemData selectedShopItem;
     }
 

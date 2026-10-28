@@ -30,6 +30,7 @@ public class DialogueUIController : MonoBehaviour
     readonly List<DialogueCharacterId> portraitIds = new List<DialogueCharacterId>();
     readonly Dictionary<int, int> nodeMap = new Dictionary<int, int>();
     readonly Dictionary<string, string> textVariables = new Dictionary<string, string>();
+    readonly Dictionary<string, bool> boolVariables = new Dictionary<string, bool>();
     readonly Dictionary<DialogueCharacterId, DialogueExpression> expressions =
         new Dictionary<DialogueCharacterId, DialogueExpression>();
     readonly Dictionary<DialogueCharacterId, string> extraKeys = new Dictionary<DialogueCharacterId, string>();
@@ -256,9 +257,16 @@ public class DialogueUIController : MonoBehaviour
         RefreshVisibleText();
     }
 
+    public void SetBoolVariable(string key, bool value)
+    {
+        if (string.IsNullOrWhiteSpace(key)) return;
+        boolVariables[key] = value;
+    }
+
     public void ClearTextVariables()
     {
         textVariables.Clear();
+        boolVariables.Clear();
     }
 
     void RefreshVisibleText()
@@ -433,9 +441,20 @@ public class DialogueUIController : MonoBehaviour
         DialogueData.Node node = data.nodes[current];
         if (index < 0 || index >= node.choices.Count) return;
         DialogueData.Choice option = node.choices[index];
-        if (!nodeMap.ContainsKey(option.targetNodeId))
+        int destination = option.targetNodeId;
+        if (!string.IsNullOrWhiteSpace(option.conditionKey))
         {
-            Debug.LogError("Dialogue: unknown target node " + option.targetNodeId, data);
+            bool condition;
+            if (!boolVariables.TryGetValue(option.conditionKey, out condition))
+            {
+                Debug.LogError("Dialogue: missing bool variable '" + option.conditionKey + "'.", data);
+                return;
+            }
+            if (!condition) destination = option.falseTargetNodeId;
+        }
+        if (!nodeMap.ContainsKey(destination))
+        {
+            Debug.LogError("Dialogue: unknown target node " + destination, data);
             return;
         }
         lastInputFrame = Time.frameCount;
@@ -445,7 +464,7 @@ public class DialogueUIController : MonoBehaviour
         picked?.Invoke(node.nodeId, index);
         if (!IsPlaying || data != conversation) return;
         if (node.endDialogue) { Finish(); return; }
-        Jump(option.targetNodeId, current + 1);
+        Jump(destination, current + 1);
     }
 
     void HideChoices() { if (choicesPanel != null) choicesPanel.gameObject.SetActive(false); }

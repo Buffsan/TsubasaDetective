@@ -239,9 +239,8 @@ public class ShopManager : MonoBehaviour
         RefreshShopPreview(shop);
         bool canAfford = playerController.AllCoins >= Mathf.RoundToInt(shop.AllValue);
         ui.SetSelectedShopItem(previewItem);
-        ui.SetTextVariable("purchaseResult", canAfford ?
-            "ありがとうございます。お品物をご用意いたします。" :
-            "申し訳ありません。コインが足りないようです。");
+        // The conversation asset owns both response texts and branch destinations.
+        ui.SetBoolVariable("canAfford", canAfford);
 
         bool wantsPurchase = false;
         shopConversationActive = true;

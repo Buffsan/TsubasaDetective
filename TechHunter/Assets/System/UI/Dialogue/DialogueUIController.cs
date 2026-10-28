@@ -444,6 +444,7 @@ public class DialogueUIController : MonoBehaviour
         if (option.selectedShopItem != null) SetSelectedShopItem(option.selectedShopItem);
         picked?.Invoke(node.nodeId, index);
         if (!IsPlaying || data != conversation) return;
+        if (node.endDialogue) { Finish(); return; }
         Jump(option.targetNodeId, current + 1);
     }
 

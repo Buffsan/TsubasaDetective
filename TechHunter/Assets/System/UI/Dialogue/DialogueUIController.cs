@@ -212,14 +212,14 @@ public class DialogueUIController : MonoBehaviour
         UpdatePortraits(node.speakerId, node.expression, node.otherExpressionKey);
         if (node.type == DialogueData.NodeType.Choice)
         {
-            messageText.text = ReplaceTokens(node.GetText());
+            messageText.text = ReplaceTokens(node.text);
             messageText.maxVisibleCharacters = int.MaxValue;
             messageText.ForceMeshUpdate();
             total = visible = messageText.textInfo.characterCount;
             if (continueIndicator != null) continueIndicator.SetActive(false);
             ShowChoices(node);
         }
-        else BeginText(node.GetText());
+        else BeginText(node.text);
     }
 
     void BeginText(string raw)
@@ -237,7 +237,7 @@ public class DialogueUIController : MonoBehaviour
     {
         SelectedShopItem = item;
         if (!IsPlaying || data == null) return;
-        string raw = usingLegacy ? data.lines[current].text : data.nodes[current].GetText();
+        string raw = usingLegacy ? data.lines[current].text : data.nodes[current].text;
         int previous = visible;
         bool complete = visible >= total;
         messageText.text = ReplaceTokens(raw);

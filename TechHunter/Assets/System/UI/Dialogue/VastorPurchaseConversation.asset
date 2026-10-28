@@ -23,8 +23,7 @@ MonoBehaviour:
     expression: 0
     otherExpressionKey:
     showSpeakerName: 1
-    textAsset: {fileID: 11400000, guid: 8a64dcb2b97045c6a0f3238e5bb0a011, type: 2}
-    text: ""
+    text: "{itemName}ですね。価格は{itemPrice}コインです。\n{itemDescription}"
     endDialogue: 0
     nextNodeId: -1
     choices: []
@@ -34,8 +33,7 @@ MonoBehaviour:
     expression: 0
     otherExpressionKey:
     showSpeakerName: 1
-    textAsset: {fileID: 11400000, guid: 8a64dcb2b97045c6a0f3238e5bb0a012, type: 2}
-    text: ""
+    text: "いかがなさいますか？"
     endDialogue: 0
     nextNodeId: -1
     choices:
@@ -51,8 +49,7 @@ MonoBehaviour:
     expression: 1
     otherExpressionKey:
     showSpeakerName: 1
-    textAsset: {fileID: 11400000, guid: 8a64dcb2b97045c6a0f3238e5bb0a013, type: 2}
-    text: ""
+    text: "{purchaseResult}"
     endDialogue: 0
     nextNodeId: 40
     choices: []
@@ -62,8 +59,7 @@ MonoBehaviour:
     expression: 0
     otherExpressionKey:
     showSpeakerName: 1
-    textAsset: {fileID: 11400000, guid: 8a64dcb2b97045c6a0f3238e5bb0a014, type: 2}
-    text: ""
+    text: "かしこまりました。"
     endDialogue: 0
     nextNodeId: 40
     choices: []
@@ -73,8 +69,7 @@ MonoBehaviour:
     expression: 0
     otherExpressionKey:
     showSpeakerName: 1
-    textAsset: {fileID: 11400000, guid: 8a64dcb2b97045c6a0f3238e5bb0a015, type: 2}
-    text: ""
+    text: "ほかにもぜひご覧ください。"
     endDialogue: 1
     nextNodeId: -1
     choices: []

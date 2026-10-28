@@ -62,8 +62,8 @@ MonoBehaviour:
     otherExpressionKey:
     showSpeakerName: 1
     text: "申し訳ありません。コインが足りないようです。"
-    endDialogue: 0
-    nextNodeId: 40
+    endDialogue: 1
+    nextNodeId: -1
     choices: []
   - nodeId: 30
     type: 0

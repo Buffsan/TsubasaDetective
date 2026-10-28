@@ -33,7 +33,7 @@ public class DialogueData : ScriptableObject
         [TextArea(2, 8)] public string text;
         [Tooltip("End this conversation when the player advances after reading this node.")]
         public bool endDialogue;
-        [Tooltip("-1 = next entry in Nodes array, otherwise jump to this node ID.")]
+        [Tooltip("-1 = next node in the array (NOT conversation end). To finish here, check End Dialogue; Next Node ID is ignored when End Dialogue is checked.")]
         public int nextNodeId = -1;
         public List<Choice> choices = new List<Choice>();
     }

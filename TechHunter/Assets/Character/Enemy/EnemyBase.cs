@@ -12,15 +12,22 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] Faction factions = Faction.None;
     public Faction Factions => factions;
     public bool IsCharmed { get; private set; }
-    public float CharmValue { get; private set; }
-
-    // 魅了値は累積し、敵の現在HPを上回った時に永続的に味方へ転向する。
-    public void AccumulateCharm(float amount)
+    // 蓄積値の本体はcharaDamage.buffs (ActiveBuff) に一元化する。
+    public float CharmValue
     {
-        if (IsCharmed || status == Status.Die || HP <= 0f || amount <= 0f) return;
-        CharmValue += amount;
-        if (CharmValue <= HP) return;
+        get
+        {
+            charaDamage receiver = CharaDamage != null ? CharaDamage : charaDamage;
+            return receiver != null
+                ? receiver.GetAccumulatedStatusValue(StatusEffect.StatusEffectType.Charm)
+                : 0f;
+        }
+    }
 
+    // 蓄積値と現在HPの比較はcharaDamageの状態異常処理で行う。
+    public void BecomeCharmedAlly()
+    {
+        if (IsCharmed || status == Status.Die || HP <= 0f) return;
         IsCharmed = true;
         factions = Faction.Charmed;
         EnemyContoroller normalEnemy = this as EnemyContoroller;

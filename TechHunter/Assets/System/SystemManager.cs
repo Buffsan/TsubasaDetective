@@ -21,6 +21,22 @@ public class SystemManager : MonoBehaviour
  
 
     public List<GameObject> AllEnemy = new List<GameObject>();
+    readonly List<EnemyBase> charmedAllies = new List<EnemyBase>();
+
+    public void RegisterCharmedAlly(EnemyBase ally)
+    {
+        if (ally == null) return;
+        AllEnemy.RemoveAll(enemy => enemy == null || enemy == ally.gameObject);
+        if (!charmedAllies.Contains(ally)) charmedAllies.Add(ally);
+    }
+
+    // 魅了された個体はスポット移動時に消える。
+    public void ClearCharmedAllies()
+    {
+        foreach (EnemyBase ally in charmedAllies)
+            if (ally != null) Destroy(ally.gameObject);
+        charmedAllies.Clear();
+    }
     PlayerController controller => PlayerController.Instance;
     public int Level = 0;
     public float WaitEnemyDieCount =0;
@@ -183,6 +199,7 @@ public class SystemManager : MonoBehaviour
     }
     public void NextStageReset() 
     {
+        ClearCharmedAllies();
         sytem_GameSpotsController.PlayerSystemPos = new Vector2(-1, 0);
 
         controller.transform.position = Vector2.zero;
@@ -193,6 +210,7 @@ public class SystemManager : MonoBehaviour
     }
     public void ReStart() 
     {
+        ClearCharmedAllies();
         controller.AddATK = 0;
         controller.AddAtkDF = 0;
         controller.AddCritical = 0;
@@ -390,6 +408,7 @@ public class SystemManager : MonoBehaviour
     }
     public void isGameStart() 
     {
+        ClearCharmedAllies();
         skillController.ReRollCount = 0;
         controller.animator.SetBool("Dodge", false);
        
@@ -439,6 +458,7 @@ public class SystemManager : MonoBehaviour
     }
     void nextPhase() 
     {
+        ClearCharmedAllies();
         gameModeManager.GameLevel++;
         gameModeManager.BattlePhase = 0;
         AllEnemy.Clear();

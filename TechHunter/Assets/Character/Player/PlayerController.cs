@@ -40,6 +40,13 @@ public class PlayerController : PlayerStatus
     public GameObject SpecialBuff;
     public List<SkillInfo> skillINFO = new List<SkillInfo>();
     public List<RelicData> relicDatas = new List<RelicData>();
+    int handInHandRelicCount;
+    public bool HandInHandRelicActive => handInHandRelicCount > 0;
+    public void RegisterHandInHandRelic() { handInHandRelicCount++; }
+    public void UnregisterHandInHandRelic()
+    {
+        handInHandRelicCount = Mathf.Max(0, handInHandRelicCount - 1);
+    }
     public List<SkillCardData> NomalSkillData = new List<SkillCardData>();
     public RelicData NoneRelic;
     public GameObject RelicControllerObject;

@@ -25,6 +25,7 @@ public static class StatusCardEffects
         player.Add_AdditiveATK += card.AdditiveATK;
         player.AddHP = CalculateMaxHpBonus(player, card);
         player.AddRegen += card.Regen;
+        player.AddHealingPercent += card.HealingPercent;
         player.isRecoveryHP(card.RecoveryHP);
         player.AddCritical += card.Critical;
         player.AddRange += card.Range;
@@ -32,7 +33,6 @@ public static class StatusCardEffects
         player.AddConfusionTime += card.ConfusionTime;
         player.AddCoinGainPercent += card.CoinGainPercent;
         player.AddConfusionDamagePercent += card.ConfusionDamagePercent;
-        player.AddHealingPercent += card.HealingPercent;
         player.AddLuckyDamagePercent += card.LuckyDamagePercent;
         player.AllCoins = CalculateCoins(player.AllCoins, card.Coin);
 

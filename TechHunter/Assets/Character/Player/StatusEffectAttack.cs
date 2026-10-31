@@ -5,9 +5,12 @@ public class StatusEffectAttack : StatusEffect
 {
 
 
-    public float Duration = 1;//Œø‰ÊŠÔ
+    public float Duration = 1;//åŠ¹æœæ™‚é–“
 
-    public float number = 1;//Œø‰Ê’l@ƒfƒoƒt‚É‚æ‚Á‚Ä’l‚Ìg‚¢•û‚ª•Ï‰»
+    // åŠ¹æœæ™‚é–“ãŒçµŒéã—ã¦ã‚‚æ¶ˆãˆãªã„çŠ¶æ…‹ç•°å¸¸ï¼ˆé­…äº†ãªã©ï¼‰
+    public bool IsPermanent = false;
+
+    public float number = 1;//åŠ¹æœå€¤ã€€ãƒ‡ãƒãƒ•ã«ã‚ˆã£ã¦å€¤ã®ä½¿ã„æ–¹ãŒå¤‰åŒ–
 
     public float TickTime = 1;
 
@@ -15,7 +18,7 @@ public class StatusEffectAttack : StatusEffect
 
     public List<AudioClip> audioClips = new List<AudioClip>();
 
-    //ƒXƒe[ƒ^ƒXˆÙíBƒoƒt‚É‚à‚Åƒoƒt‚É‚à‚È‚é‚æ‚¤‚ÉİŒv
+    //ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ç•°å¸¸ã€‚ãƒãƒ•ã«ã‚‚ã§ãƒãƒ•ã«ã‚‚ãªã‚‹ã‚ˆã†ã«è¨­è¨ˆ
     public float AttackBuff = 0;
     public float MultiplyAttackBuff  = 0;
 

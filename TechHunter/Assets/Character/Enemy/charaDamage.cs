@@ -66,6 +66,18 @@ public class charaDamage : MonoBehaviour, IDamageable
     {
         if (buffData == null) return;
         bool isCharm = buffData.effecttype == StatusEffect.StatusEffectType.Charm;
+        if (isCharm && enemyBase != null)
+        {
+            // 敵が複数のEnemyAreaを持っていても魅了値は本体の受け口へ一元化する。
+            charaDamage primary = enemyBase.CharaDamage != null
+                ? enemyBase.CharaDamage : enemyBase.charaDamage;
+            if (primary != null && primary != this)
+            {
+                if (primary.enemyBase == null) primary.enemyBase = enemyBase;
+                primary.ApplyStatusEffect(buffData, amount);
+                return;
+            }
+        }
         if (isCharm && (enemyBase == null || enemyBase.IsCharmed ||
                         enemyBase.status == EnemyBase.Status.Die || enemyBase.HP <= 0f))
             return;
@@ -336,7 +348,8 @@ public class charaDamage : MonoBehaviour, IDamageable
                     break;
 
                 case StatusEffect.StatusEffectType.Charm:
-                    // 蓄積はヒット時のみ。時間経過による回復・解除はしない。
+                    // 魅了値は回復・解除されない。別の攻撃でHPが下がった場合も判定。
+                    TryCompleteCharm(buff);
                     break;
             }
 

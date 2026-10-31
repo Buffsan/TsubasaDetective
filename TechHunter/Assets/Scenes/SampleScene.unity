@@ -21951,6 +21951,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: 8df5bccd6a03fa843a34124181523f95, type: 3}
     PageName: "\u4F53\u529B\u5897\u5F37\u8853\u5F0F\u57FA\u790E"
     UpExplanation: "\u6700\u5927\u4F53\u529B+5"
@@ -21968,6 +21972,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: 1a9c1cdc9fa80a041a641d094077eb10, type: 3}
     PageName: "\u85AC\u8349\u63A1\u53D6"
     UpExplanation: "\u4F53\u529B\u309220\u56DE\u5FA9 \u653B\u6483\u529B+3%"
@@ -21985,6 +21993,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: e5c1d12f523603944a1d35446b5a4501, type: 3}
     PageName: "\u30B5\u30D0\u30A4\u30D0\u30EB\u5B9F\u7FD2"
     UpExplanation: "\u81EA\u7136\u56DE\u5FA9+1 \u4F53\u529B3\u56DE\u5FA9"
@@ -22002,6 +22014,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: 067544d606f1e6b4590dcdd9ea7960b2, type: 3}
     PageName: "\u30A8\u30CD\u30EB\u30AE\u30FC\u30B7\u30FC\u30EB\u30C9\u5C55\u958B"
     UpExplanation: "\u9632\u5FA1+\uFF11 \u81EA\u7136\u56DE\u5FA9-1 \u6700\u5927\u4F53\u529B-5"
@@ -22019,6 +22035,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: 68ccb82b12687ac4b9aead252f833062, type: 3}
     PageName: "\u7ADC\u306E\u546A\u3044\u523B\u5370"
     UpExplanation: "\u653B\u6483\u529B+12\uFF05\u3000\u9632\u5FA1\u529B-0.2 \u4F53\u529B\u56DE\u5FA9+5"
@@ -22036,6 +22056,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: cf6e898bf7dfd434ea01b4e06eec20b8, type: 3}
     PageName: "\u30AF\u30ED\u30FC\u30D0\u30FC\u96C6\u3081"
     UpExplanation: "\u904B+\uFF11 \u653B\u6483\u529B+1%"
@@ -22053,6 +22077,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: 43a95e617e189394b941bc126b78f482, type: 3}
     PageName: "\u6B66\u5668\u8ABF\u6574"
     UpExplanation: "\u30B9\u30AD\u30EB\u306E\u7D4C\u904E\u901F\u5EA6+6%"
@@ -22070,6 +22098,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: 163038eb67209cd40a765fc3481c8c55, type: 3}
     PageName: "\u661F\u306E\u5100\u5F0F"
     UpExplanation: "\u6700\u5927\u4F53\u529B+10"
@@ -22087,6 +22119,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: 0ce953321b19c6646be2ddfcc844ee27, type: 3}
     PageName: "\u4E0A\u4F4D\u8005\u306E\u52A0\u8B77"
     UpExplanation: "\u904B+2\u3000\u653B\u6483\u529B+3\uFF05\u3000\u6700\u5927\u4F53\u529B-8"
@@ -22104,6 +22140,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: 683028454f5c70a4c908e9b984d9e2b4, type: 3}
     PageName: "\u518D\u751F\u7089\u8D77\u52D5"
     UpExplanation: "\u4F53\u529B20\u56DE\u5FA9\u3000\u81EA\u7136\u56DE\u5FA9+1\u3000\u6700\u5927\u4F53\u529B+2"
@@ -22121,6 +22161,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: a1eb9f2cf99b6eb42aae43745c5ac533, type: 3}
     PageName: "\u82B8\u8853\u7684\u306A\u6A21\u5023"
     UpExplanation: "\u30B9\u30AD\u30EB\u306E\u7D4C\u904E\u901F\u5EA6+15% \u653B\u6483\u529B-8\uFF05"
@@ -22138,6 +22182,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: ad766aa23a1aa0446aee7aa57d4b05ba, type: 3}
     PageName: "\u6B63\u7FA9\u306E\u5C0E\u304D"
     UpExplanation: "\u79FB\u52D5\u901F\u5EA6+10%\u653B\u6483\u529B+3%"
@@ -22155,6 +22203,10 @@ MonoBehaviour:
     Speed: 10
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: 85f0c4ddccb82d746be2bcca346f1598, type: 3}
     PageName: "\u4EA4\u6E09\u306E\u6642\u9593"
     UpExplanation: "\u30E9\u30F3\u30C0\u30E0\u306A\u30B9\u30AD\u30EB\u30EC\u30D9\u30EB+1
@@ -22173,6 +22225,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 1
     Coin: -20
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: ae332b784b394af448d15cdaa6d565e2, type: 3}
     PageName: "\u9727\u306E\u8972\u6483\u8005"
     UpExplanation: "\u8FFD\u52A0\u653B\u6483\u529B+1"
@@ -22190,6 +22246,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: bd72836a01d09ce4d87db491f17cb2a2, type: 3}
     PageName: "\u904E\u53BB\u306E\u8A18\u61B6"
     UpExplanation: "\u6DF7\u4E71\u6642\u9593+1\u79D2"
@@ -22207,6 +22267,10 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: 0f1dc44a6d66814448d3196da4eb77fd, type: 3}
     PageName: "\u7FA9\u4F53\u5316\u65BD\u8853"
     UpExplanation: "\u30CE\u30FC\u30DE\u30EB\u30DA\u30FC\u30B8\u5168\u7372\u5F97,\u9632\u5FA1+1,80\u30C0\u30E1\u30FC\u30B8\u3092\u53D7\u3051\u308B"
@@ -22224,23 +22288,56 @@ MonoBehaviour:
     Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
   - MainImage: {fileID: 21300000, guid: eee1493f62a9fe547b750d17fb30b1c3, type: 3}
     PageName: "\u8EAB\u4F53\u65BD\u8853"
-    UpExplanation: "\u4F53\u529B\u5168\u56DE\u5FA9\u3001\u81EA\u7136\u56DE\u5FA9+2\u3001\u79FB\u52D5\u901F\u5EA6+5%\u3001\u4F53\u529B-5"
-    Explanation: "\u4F53\u529B\u3092\u5168\u56DE\u5FA9\u3055\u305B\u3002\u8EAB\u4F53\u80FD\u529B\u3092\u5411\u4E0A\u3055\u305B\u308B\u3002\u81EA\u5206\u306E\u4F53\u304C\u81EA\u5206\u306E\u7269\u3058\u3083\u306A\u3044\u307F\u305F\u3044\u306B\u52D5\u304F\u3093\u3060\u3051\u3069\u2026\u6C17\u6301\u3061\u60AA\u3044..."
+    UpExplanation: "\u56DE\u5FA9\u52B9\u7387+50\u3001\u81EA\u7136\u56DE\u5FA9+1"
+    Explanation: "\u56DE\u5FA9\u305D\u306E\u3082\u306E\u304C\u5F37\u5316\u3055\u308C\u308B\u3002\n\u81EA\u5206\u306E\u4F53\u304C\u81EA\u5206\u306E\u7269\u3058\u3083\u306A\u3044\u307F\u305F\u3044\u306B\u52D5\u3044\u3066\u3081\u3061\u3083\u6C17\u6301\u3061\u60AA\u3044\uFF01\uFF01"
     Rarity: 3
     Attack: 0
     AdditiveATK: 0
     ConfusionTime: 0
     Defense: 0
-    HP: -5
-    Regen: 3
-    RecoveryHP: 99999
+    HP: 0
+    Regen: 1
+    RecoveryHP: 0
     Critical: 0
     Range: 0
-    Speed: 5
+    Speed: 0
     RandomLevelUp: 0
     Coin: 0
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 50
+    LuckyDamagePercent: 0
+  - MainImage: {fileID: 21300000, guid: d9ad77815835f8b40a7e400f6deb1923, type: 3}
+    PageName: "\u5148\u884C\u6295\u8CC7"
+    UpExplanation: "\u30D4\u30A2\u7372\u5F97\u91CF+30"
+    Explanation: "\u3082\u3089\u3048\u308B\u304A\u91D1\u306E\u91CF\u304C\u5897\u3048\u308B\u3002\u30D4\u30A2\u3063\u3066\u4EA4\u6613\u56FD\u5BB6\u3067\u4F7F\u308F\u308C\u308B\u901A\u8CA8\u306A\u3093\u3060\u3051\u3069\u4F7F\u3044\u52DD\u624B\u826F\u3059\u304E\u3066\u307B\u304B\u306E\u56FD\u3067\u3082\u666E\u901A\u306E\u901A\u8CA8\u3068\u3057\u3066\u4F7F\u308F\u308C\u3066\u308B\u306E\u51B7\u9759\u306B\u8003\u3048\u3066\u3084\u3070\u3044\u3088\u306D\u3002"
+    Rarity: 3
+    Attack: 0
+    AdditiveATK: 0
+    ConfusionTime: 0
+    Defense: 0
+    HP: 0
+    Regen: 0
+    RecoveryHP: 0
+    Critical: 0
+    Range: 0
+    Speed: 0
+    RandomLevelUp: 0
+    Coin: 30
+    CoinGainPercent: 0
+    ConfusionDamagePercent: 0
+    HealingPercent: 0
+    LuckyDamagePercent: 0
+  CoinGainCardPercent: 20
+  ConfusionDamageCardPercent: 20
+  HealingCardPercent: 20
+  LuckyDamageCardPercent: 20
   Relics:
   - Name: "\u8840\u306B\u6109\u60A6\u3059\u308B\u69CD"
     data: {fileID: 11400000, guid: 8a3e9f84b2f78464ab7a1695ae9fd8cc, type: 2}

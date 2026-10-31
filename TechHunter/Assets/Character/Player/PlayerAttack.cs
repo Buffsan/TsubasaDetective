@@ -7,6 +7,7 @@ public class PlayerAttack : MonoBehaviour
     public weapondata weapondata;
     public SkillCardData skillcarddata;
     public int AttackLevel = 0;
+    [System.NonSerialized] public int SourceSkillSlotIndex = -1;
 
     
 
@@ -59,8 +60,10 @@ public class PlayerAttack : MonoBehaviour
                 float attackValue = AttackMathf(); // 同一命中では1回だけ計算
                 // Qスロット(index 2)にセットしたカードからの攻撃を魅了攻撃に変える。
                 bool applyCharm = controller.HandInHandRelicActive &&
-                    skillcarddata != null && controller.skillINFO.Count > 2 &&
-                    controller.skillINFO[2].skillDATA == skillcarddata;
+                    (SourceSkillSlotIndex == 2 ||
+                     (SourceSkillSlotIndex < 0 &&
+                      skillcarddata != null && controller.skillINFO.Count > 2 &&
+                      controller.skillINFO[2].skillDATA == skillcarddata));
                 if (controller.AddCritical + controller.Critical <= criticalRandom || !isCriticulUse)
                 {
                     GlobalEvents.InvokePlayerAttack(other.gameObject, attackValue, 1, false);

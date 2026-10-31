@@ -176,7 +176,7 @@ public class CoinManager : MonoBehaviour
         Vector2 closestPoint = area.ClosestPoint(coinPosition);
         if ((closestPoint - coinPosition).sqrMagnitude > radiusSquared) return;
 
-        playercontroller.AllCoins += NowValue;
+        playercontroller.AllCoins += playercontroller.CalculateCollectedCoins(NowValue);
         if (audiomanager != null) audiomanager.PlaySE(CoinGet);
         if (SystemManager.Instance != null)
             SystemManager.Instance.coinManagers.Remove(this);

@@ -792,6 +792,9 @@ public class PlayerController : PlayerStatus
     }
     public void isRecoveryHP(float HPvalue)
     {
+        // Healing amplification affects positive healing only, not HP costs.
+        if (HPvalue > 0f)
+            HPvalue *= Mathf.Max(0f, 1f + AddHealingPercent / 100f);
         HP += HPvalue;
         if (HP > MaxHP)
         {

@@ -94,6 +94,23 @@ public class Boss_Controller : EnemyBase
         activeAttackWarnings.Clear();
     }
 
+    public void EnableCharmedAllyTargeting()
+    {
+        if (IsCharmed || targetType == EnemyContoroller.TargetType.EnemyOnly) return;
+        if (targetType == EnemyContoroller.TargetType.PlayerOnly)
+        {
+            targetType = EnemyContoroller.TargetType.PlayerAndEnemy;
+            targetPriority = EnemyContoroller.TargetPriority.Nearest;
+            targetAllFactions = false;
+            targetFactions = Faction.Charmed;
+        }
+        else if (!targetAllFactions)
+            targetFactions |= Faction.Charmed;
+
+        excludedTargetFactions &= ~Faction.Charmed;
+        ChooseTargetNow();
+    }
+
     public void BecomeCharmedAlly()
     {
         targetType = EnemyContoroller.TargetType.EnemyOnly;
@@ -262,6 +279,23 @@ public class Boss_Controller : EnemyBase
             }
         }
 
+        // 味方化した敵はAllEnemyに含まれないため、敵側からは別リストも探索する。
+        if (!IsCharmed && manager != null)
+        {
+            foreach (EnemyBase other in manager.CharmedAllies)
+            {
+                if (other == null || other.status == Status.Die || other.HP <= 0f) continue;
+                if ((other.Factions & excludedTargetFactions) != Faction.None) continue;
+                if (!targetAllFactions && (other.Factions & targetFactions) == Faction.None) continue;
+                float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
+                if (sqr < nearestSqr)
+                {
+                    nearestSqr = sqr;
+                    nearestEnemy = other.transform;
+                }
+            }
+        }
+
         if (targetType == EnemyContoroller.TargetType.EnemyOnly)
             CurrentTarget = nearestEnemy;
         else if (nearestEnemy == null)
@@ -310,7 +344,8 @@ public class Boss_Controller : EnemyBase
         moveBase.enemyBase = this;
         CurrentTarget = Player != null ? Player.transform : null;
         if (targetType != EnemyContoroller.TargetType.PlayerOnly) ChooseTargetNow();
-
+        if (SystemManager.Instance != null && SystemManager.Instance.CharmedAllies.Count > 0)
+            EnableCharmedAllyTargeting();
 
         if (status == Status.MovieStay) return;
         // デバッグ登録済みの場合でもAllEnemyに二重追加しない。

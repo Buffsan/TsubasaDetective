@@ -41,11 +41,28 @@ public class PlayerController : PlayerStatus
     public List<SkillInfo> skillINFO = new List<SkillInfo>();
     public List<RelicData> relicDatas = new List<RelicData>();
     int handInHandRelicCount;
-    public bool HandInHandRelicActive => handInHandRelicCount > 0;
-    public void RegisterHandInHandRelic() { handInHandRelicCount++; }
+    public StatusEffectAttack HandInHandCharmEffect { get; private set; }
+    public bool HandInHandRelicActive =>
+        handInHandRelicCount > 0 && HandInHandCharmEffect != null &&
+        HandInHandCharmEffect.effecttype == StatusEffect.StatusEffectType.Charm;
+
+    public bool RegisterHandInHandRelic(StatusEffectAttack charmEffect)
+    {
+        if (charmEffect == null ||
+            charmEffect.effecttype != StatusEffect.StatusEffectType.Charm)
+        {
+            Debug.LogError("名画「手と手を取り合って死ね」の魅了状態異常SOが未設定です。", this);
+            return false;
+        }
+        HandInHandCharmEffect = charmEffect;
+        handInHandRelicCount++;
+        return true;
+    }
+
     public void UnregisterHandInHandRelic()
     {
         handInHandRelicCount = Mathf.Max(0, handInHandRelicCount - 1);
+        if (handInHandRelicCount == 0) HandInHandCharmEffect = null;
     }
     public List<SkillCardData> NomalSkillData = new List<SkillCardData>();
     public RelicData NoneRelic;

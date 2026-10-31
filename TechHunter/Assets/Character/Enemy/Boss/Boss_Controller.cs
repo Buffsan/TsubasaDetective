@@ -94,6 +94,17 @@ public class Boss_Controller : EnemyBase
         activeAttackWarnings.Clear();
     }
 
+    public void BecomeCharmedAlly()
+    {
+        targetType = EnemyContoroller.TargetType.EnemyOnly;
+        targetPriority = EnemyContoroller.TargetPriority.Nearest;
+        targetAllFactions = true;
+        targetFactions = Faction.None;
+        excludedTargetFactions = Faction.Charmed;
+        ClearForcedTarget();
+        ChooseTargetNow();
+    }
+
     public EnemyContoroller.TargetType TargetMode => targetType;
 
     // デバッグ専用。通常のボス戦のターゲット設定には影響しない。

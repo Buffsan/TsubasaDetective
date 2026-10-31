@@ -24,11 +24,16 @@ public class ActiveBuff
     }
     public void Tick(float deltaTime)
     {
-        if (statuseffectdata != null && statuseffectdata.IsPermanent) return;
+        if (statuseffectdata != null &&
+            (statuseffectdata.IsPermanent ||
+             statuseffectdata.effecttype == StatusEffect.StatusEffectType.Charm)) return;
         remainTime -= deltaTime;
     }
     public bool IsExpired()
     {
-        return (statuseffectdata == null || !statuseffectdata.IsPermanent) && remainTime <= 0;
+        return (statuseffectdata == null ||
+                (!statuseffectdata.IsPermanent &&
+                 statuseffectdata.effecttype != StatusEffect.StatusEffectType.Charm)) &&
+               remainTime <= 0;
     }
 }

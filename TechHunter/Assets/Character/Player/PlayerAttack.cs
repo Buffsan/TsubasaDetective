@@ -60,17 +60,28 @@ public class PlayerAttack : MonoBehaviour
                 {
                     GlobalEvents.InvokePlayerAttack(other.gameObject, attackValue, 1, false);
                     SpawnStatusEffect(damageable);
-                    damageable.Damage(attackValue, weapondata.StaggerPower, weapondata.ConfusionPower, false);
+                    DealDamage(damageable, attackValue, false);
                 }
                 else
                 {
                     GlobalEvents.InvokePlayerAttack(other.gameObject, attackValue, 3f, true);
                     SpawnStatusEffect(damageable);
-                    damageable.Damage((attackValue * 3) + 5, weapondata.StaggerPower, weapondata.ConfusionPower, true);
+                    float luckyMultiplier = Mathf.Max(0f, 1f + controller.AddLuckyDamagePercent / 100f);
+                    // Apply luck after both the 3x attack scaling and +5 flat damage.
+                    DealDamage(damageable, ((attackValue * 3f) + 5f) * luckyMultiplier, true);
                 }
                 controller.HitEffectSpawn(other.transform.position);
             }
         }
+    }
+
+    void DealDamage(IDamageable damageable, float damage, bool critical)
+    {
+        if (damageable is charaDamage enemy)
+            enemy.DamageFromPlayer(damage, weapondata.StaggerPower, weapondata.ConfusionPower,
+                critical, controller.AddConfusionDamagePercent);
+        else
+            damageable.Damage(damage, weapondata.StaggerPower, weapondata.ConfusionPower, critical);
     }
 
     void SpawnStatusEffect(IDamageable damageable) 

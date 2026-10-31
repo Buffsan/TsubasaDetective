@@ -615,6 +615,7 @@ public class PlayerController : PlayerStatus
         }
 
         CL_playerSkill.SkillLevel = SkillLevel;
+        CL_playerSkill.SkillSlotIndex = Level;
     }
     void isAttack()
     {

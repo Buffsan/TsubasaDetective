@@ -45,3 +45,4 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   AttackObject: {fileID: 0}
+  charmEffect: {fileID: 11400000, guid: 811bb938a4294db9af8769d8c5f63ae0, type: 2}

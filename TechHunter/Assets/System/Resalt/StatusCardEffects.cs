@@ -30,6 +30,10 @@ public static class StatusCardEffects
         player.AddRange += card.Range;
         player.AddSpeed += card.Speed;
         player.AddConfusionTime += card.ConfusionTime;
+        player.AddCoinGainPercent += card.CoinGainPercent;
+        player.AddConfusionDamagePercent += card.ConfusionDamagePercent;
+        player.AddHealingPercent += card.HealingPercent;
+        player.AddLuckyDamagePercent += card.LuckyDamagePercent;
         player.AllCoins = CalculateCoins(player.AllCoins, card.Coin);
 
         if (card.RandomLevelUp > 0)
@@ -53,12 +57,18 @@ public static class StatusCardEffects
         float confusion = player.ConfusionTime;
         float speedBonus = player.AddSpeed;
         float speed = player.SPEED;
+        float coinGain = player.AddCoinGainPercent;
+        float confusionDamage = player.AddConfusionDamagePercent;
+        float healing = player.AddHealingPercent;
+        float luckyDamage = player.AddLuckyDamagePercent;
 
         if (card != null)
         {
             maxHp = player.charadata.MAXHP + CalculateMaxHpBonus(player, card);
             // Apply() と同じく回復は最大HP変更前の上限で計算する。
-            hp = Mathf.Clamp(hp + card.RecoveryHP, 0f, player.MaxHP);
+            hp = Mathf.Clamp(hp + (card.RecoveryHP > 0f
+                ? card.RecoveryHP * Mathf.Max(0f, 1f + (healing + card.HealingPercent) / 100f)
+                : card.RecoveryHP), 1f, player.MaxHP);
             attackMultiplier += card.Attack;
             attackBonus += card.AdditiveATK;
             regen += card.Regen;
@@ -68,12 +78,17 @@ public static class StatusCardEffects
             confusion += card.ConfusionTime;
             speedBonus += card.Speed;
             speed = player.charadata.SPEED * ((100f + speedBonus) / 100f);
+            coinGain += card.CoinGainPercent;
+            confusionDamage += card.ConfusionDamagePercent;
+            healing += card.HealingPercent;
+            luckyDamage += card.LuckyDamagePercent;
         }
 
         return new float[]
         {
             hp, attackMultiplier, attackBonus, regen, 0f, defense,
-            cooldown, luck, confusion, 0f, speedBonus, speed, maxHp
+            cooldown, luck, confusion, 0f, speedBonus, speed, maxHp,
+            coinGain, confusionDamage, healing, luckyDamage
         };
     }
 }

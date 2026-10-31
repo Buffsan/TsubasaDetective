@@ -125,6 +125,17 @@ public class EnemyContoroller : EnemyBase
         ChooseTargetNow();
     }
 
+    public void BecomeCharmedAlly()
+    {
+        targetType = TargetType.EnemyOnly;
+        targetPriority = TargetPriority.Nearest;
+        targetAllFactions = true;
+        targetFactions = Faction.None;
+        excludedTargetFactions = Faction.Charmed;
+        ClearForcedTarget();
+        ChooseTargetNow();
+    }
+
     public TargetType TargetMode => targetType;
     public Transform CurrentTarget { get; private set; }
 

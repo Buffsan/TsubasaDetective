@@ -41,7 +41,8 @@ public class PlayerAttack : MonoBehaviour
                 if (damageArea != null &&
                     (damageArea.OwnerEnemyBase == null ||
                      damageArea.OwnerEnemyBase.status == EnemyBase.Status.Die ||
-                     damageArea.OwnerEnemyBase.HP <= 0f))
+                     damageArea.OwnerEnemyBase.HP <= 0f ||
+                     damageArea.OwnerEnemyBase.IsCharmed))
                     return;
 
                 if (!AgeinAttack)
@@ -56,11 +57,15 @@ public class PlayerAttack : MonoBehaviour
                 if(weapondata.HitAudio) audioManager.PlaySE(weapondata.HitAudio);
                 float criticalRandom = Random.Range(0f, 100f);
                 float attackValue = AttackMathf(); // 同一命中では1回だけ計算
+                // Qスロット(index 2)にセットしたカードからの攻撃を魅了攻撃に変える。
+                bool applyCharm = controller.HandInHandRelicActive &&
+                    skillcarddata != null && controller.skillINFO.Count > 2 &&
+                    controller.skillINFO[2].skillDATA == skillcarddata;
                 if (controller.AddCritical + controller.Critical <= criticalRandom || !isCriticulUse)
                 {
                     GlobalEvents.InvokePlayerAttack(other.gameObject, attackValue, 1, false);
                     SpawnStatusEffect(damageable);
-                    DealDamage(damageable, attackValue, false);
+                    DealDamage(damageable, attackValue, false, applyCharm);
                 }
                 else
                 {
@@ -68,19 +73,25 @@ public class PlayerAttack : MonoBehaviour
                     SpawnStatusEffect(damageable);
                     float luckyMultiplier = Mathf.Max(0f, 1f + controller.AddLuckyDamagePercent / 100f);
                     // Apply luck after both the 3x attack scaling and +5 flat damage.
-                    DealDamage(damageable, ((attackValue * 3f) + 5f) * luckyMultiplier, true);
+                    DealDamage(damageable, ((attackValue * 3f) + 5f) * luckyMultiplier, true, applyCharm);
                 }
                 controller.HitEffectSpawn(other.transform.position);
             }
         }
     }
 
-    void DealDamage(IDamageable damageable, float damage, bool critical)
+    void DealDamage(IDamageable damageable, float damage, bool critical, bool applyCharm)
     {
         if (damageable is charaDamage enemy)
-            enemy.DamageFromPlayer(damage, weapondata.StaggerPower, weapondata.ConfusionPower,
-                critical, controller.AddConfusionDamagePercent);
-        else
+        {
+            if (applyCharm)
+                enemy.DamageFromPlayerAsCharm(damage, weapondata.StaggerPower, weapondata.ConfusionPower,
+                    critical, controller.AddConfusionDamagePercent);
+            else
+                enemy.DamageFromPlayer(damage, weapondata.StaggerPower, weapondata.ConfusionPower,
+                    critical, controller.AddConfusionDamagePercent);
+        }
+        else if (!applyCharm)
             damageable.Damage(damage, weapondata.StaggerPower, weapondata.ConfusionPower, critical);
     }
 

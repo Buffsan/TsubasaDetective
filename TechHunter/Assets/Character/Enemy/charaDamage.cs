@@ -99,12 +99,23 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical)
     {
-        uint token = ++damageTraversalSerial;
-        if (token == 0) token = ++damageTraversalSerial;
-        ForwardDamage(Attackvalue, Stanvalue, ConfusionPower, Critical, token);
+        DamageWithModifier(Attackvalue, Stanvalue, ConfusionPower, Critical, 0f);
     }
 
-    void ForwardDamage(float attack, float stagger, float confusion, bool critical, uint token)
+    // Only player-owned hits provide this modifier; enemy-vs-enemy damage is unchanged.
+    public void DamageFromPlayer(float attack, float stagger, float confusion, bool critical, float confusionDamagePercent)
+    {
+        DamageWithModifier(attack, stagger, confusion, critical, confusionDamagePercent);
+    }
+
+    void DamageWithModifier(float attack, float stagger, float confusion, bool critical, float confusionDamagePercent)
+    {
+        uint token = ++damageTraversalSerial;
+        if (token == 0) token = ++damageTraversalSerial;
+        ForwardDamage(attack, stagger, confusion, critical, token, confusionDamagePercent);
+    }
+
+    void ForwardDamage(float attack, float stagger, float confusion, bool critical, uint token, float confusionDamagePercent)
     {
         if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die) return;
         if (lastDamageTraversal == token)
@@ -121,16 +132,16 @@ public class charaDamage : MonoBehaviour, IDamageable
         switch (DamageType)
         {
             case 0:
-                receiveDamage(attack, stagger, confusion, critical);
+                receiveDamage(attack, stagger, confusion, critical, confusionDamagePercent);
                 break;
             case 1:
                 if (passDamageAreas.Count > 0 && passDamageAreas[0] != null)
-                    passDamageAreas[0].ForwardDamage(attack, stagger, confusion, critical, token);
+                    passDamageAreas[0].ForwardDamage(attack, stagger, confusion, critical, token, confusionDamagePercent);
                 break;
             case 2:
                 foreach (charaDamage receiver in passDamageAreas)
                     if (receiver != null)
-                        receiver.ForwardDamage(attack, stagger, confusion, critical, token);
+                        receiver.ForwardDamage(attack, stagger, confusion, critical, token, confusionDamagePercent);
                 break;
         }
     }
@@ -164,7 +175,7 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     }
 
-    void receiveDamage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical)
+    void receiveDamage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical, float confusionDamagePercent)
     {
         float AddDamage = Attackvalue - DF;
         if (AddDamage < 1)
@@ -174,8 +185,12 @@ public class charaDamage : MonoBehaviour, IDamageable
 
         if (enemyBase.status == EnemyBase.Status.ConfusionResistance)
         {
-            TakeDamage(-AddDamage * 2);
-            isDamageTextPop(AddDamage * 2, 2, Critical);
+            // Keep the existing 2x confused-state multiplier, then apply the
+            // player's bonus after defense (not to the confusion buildup).
+            float confusedDamage = AddDamage * 2f
+                * Mathf.Max(0f, 1f + confusionDamagePercent / 100f);
+            TakeDamage(-confusedDamage);
+            isDamageTextPop(confusedDamage, 2, Critical);
         }
         else
         {

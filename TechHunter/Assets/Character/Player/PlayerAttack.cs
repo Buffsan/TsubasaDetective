@@ -89,7 +89,7 @@ public class PlayerAttack : MonoBehaviour
         {
             if (applyCharm)
                 enemy.DamageFromPlayerAsCharm(damage, weapondata.StaggerPower, weapondata.ConfusionPower,
-                    critical, controller.AddConfusionDamagePercent);
+                    critical, controller.AddConfusionDamagePercent, controller.HandInHandCharmEffect);
             else
                 enemy.DamageFromPlayer(damage, weapondata.StaggerPower, weapondata.ConfusionPower,
                     critical, controller.AddConfusionDamagePercent);

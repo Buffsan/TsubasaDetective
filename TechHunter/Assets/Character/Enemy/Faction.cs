@@ -26,4 +26,5 @@ public enum Faction
     // 敵同士の模擬戦専用
     DebugA   = 1 << 14,
     DebugB   = 1 << 15,
+    Charmed  = 1 << 16,
 }

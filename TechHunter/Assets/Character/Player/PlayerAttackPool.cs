@@ -62,8 +62,14 @@ public class AttackPool : MonoBehaviour
             iAttack.weapondata = tAttack.weapondata;
             iAttack.isCriticulUse = tAttack.isCriticulUse;
             iAttack.AgeinAttack = tAttack.AgeinAttack;
+            // プールを使い回す度に前のQスロット情報を破棄する。
+            iAttack.SourceSkillSlotIndex = tAttack.SourceSkillSlotIndex;
         }
-        
+        else if (iAttack != null)
+        {
+            iAttack.SourceSkillSlotIndex = -1;
+        }
+
         instance.SetActive(true);
 
         // 自動消滅用スクリプトをセット

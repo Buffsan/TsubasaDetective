@@ -11,6 +11,33 @@ public class EnemyBase : MonoBehaviour
     [Header("”h”´Ý’è")]
     [SerializeField] Faction factions = Faction.None;
     public Faction Factions => factions;
+    public bool IsCharmed { get; private set; }
+    public float CharmValue { get; private set; }
+
+    // 魅了値は累積し、敵の現在HPを上回った時に永続的に味方へ転向する。
+    public void AccumulateCharm(float amount)
+    {
+        if (IsCharmed || status == Status.Die || HP <= 0f || amount <= 0f) return;
+        CharmValue += amount;
+        if (CharmValue <= HP) return;
+
+        IsCharmed = true;
+        factions = Faction.Charmed;
+        EnemyContoroller normalEnemy = this as EnemyContoroller;
+        if (normalEnemy != null) normalEnemy.BecomeCharmedAlly();
+        Boss_Controller boss = this as Boss_Controller;
+        if (boss != null) boss.BecomeCharmedAlly();
+        CG_Knght knight = this as CG_Knght;
+        if (knight != null)
+        {
+            knight.CopyTargetSettings(EnemyContoroller.TargetType.EnemyOnly,
+                EnemyContoroller.TargetPriority.Nearest, true, Faction.None,
+                Faction.Charmed, 0f, 0.25f);
+            knight.RefreshSummonedTarget();
+        }
+        if (SystemManager.Instance != null)
+            SystemManager.Instance.RegisterCharmedAlly(this);
+    }
 
     // 模擬戦でのみ使用する一時的な派閥変更。
     public void SetDebugFaction(Faction debugFaction)
@@ -176,6 +203,9 @@ public class EnemyBase : MonoBehaviour
         myAttack = CL_AttackArea.GetComponent<EnemyAttack>();
         Destroy(CL_AttackArea, AttackDellTimer);
         myAttack.enemyBase = Ebase;
+        if (IsCharmed)
+            myAttack.ConfigureAttack(this, myAttack.AttackPowerPercent,
+                (Faction)(~(int)Faction.Charmed), false);
     }
     public void isTargetLook(Vector2 target)
     {

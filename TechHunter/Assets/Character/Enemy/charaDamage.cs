@@ -99,23 +99,33 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical)
     {
-        DamageWithModifier(Attackvalue, Stanvalue, ConfusionPower, Critical, 0f);
+        DamageWithModifier(Attackvalue, Stanvalue, ConfusionPower, Critical, 0f, false);
     }
 
     // Only player-owned hits provide this modifier; enemy-vs-enemy damage is unchanged.
     public void DamageFromPlayer(float attack, float stagger, float confusion, bool critical, float confusionDamagePercent)
     {
-        DamageWithModifier(attack, stagger, confusion, critical, confusionDamagePercent);
+        DamageWithModifier(attack, stagger, confusion, critical, confusionDamagePercent, false);
     }
 
-    void DamageWithModifier(float attack, float stagger, float confusion, bool critical, float confusionDamagePercent)
+    // 通常のHPダメージを魅了値に変換。混乱中ダメージは既存どおり発生する。
+    public void DamageFromPlayerAsCharm(float attack, float stagger, float confusion,
+        bool critical, float confusionDamagePercent)
+    {
+        DamageWithModifier(attack, stagger, confusion, critical, confusionDamagePercent, true);
+    }
+
+    void DamageWithModifier(float attack, float stagger, float confusion, bool critical,
+        float confusionDamagePercent, bool charmInsteadOfDamage)
     {
         uint token = ++damageTraversalSerial;
         if (token == 0) token = ++damageTraversalSerial;
-        ForwardDamage(attack, stagger, confusion, critical, token, confusionDamagePercent);
+        ForwardDamage(attack, stagger, confusion, critical, token,
+            confusionDamagePercent, charmInsteadOfDamage);
     }
 
-    void ForwardDamage(float attack, float stagger, float confusion, bool critical, uint token, float confusionDamagePercent)
+    void ForwardDamage(float attack, float stagger, float confusion, bool critical,
+        uint token, float confusionDamagePercent, bool charmInsteadOfDamage)
     {
         if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die) return;
         if (lastDamageTraversal == token)
@@ -132,16 +142,16 @@ public class charaDamage : MonoBehaviour, IDamageable
         switch (DamageType)
         {
             case 0:
-                receiveDamage(attack, stagger, confusion, critical, confusionDamagePercent);
+                receiveDamage(attack, stagger, confusion, critical, confusionDamagePercent, charmInsteadOfDamage);
                 break;
             case 1:
                 if (passDamageAreas.Count > 0 && passDamageAreas[0] != null)
-                    passDamageAreas[0].ForwardDamage(attack, stagger, confusion, critical, token, confusionDamagePercent);
+                    passDamageAreas[0].ForwardDamage(attack, stagger, confusion, critical, token, confusionDamagePercent, charmInsteadOfDamage);
                 break;
             case 2:
                 foreach (charaDamage receiver in passDamageAreas)
                     if (receiver != null)
-                        receiver.ForwardDamage(attack, stagger, confusion, critical, token, confusionDamagePercent);
+                        receiver.ForwardDamage(attack, stagger, confusion, critical, token, confusionDamagePercent, charmInsteadOfDamage);
                 break;
         }
     }
@@ -175,7 +185,8 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     }
 
-    void receiveDamage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical, float confusionDamagePercent)
+    void receiveDamage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical,
+        float confusionDamagePercent, bool charmInsteadOfDamage)
     {
         float AddDamage = Attackvalue - DF;
         if (AddDamage < 1)
@@ -192,7 +203,7 @@ public class charaDamage : MonoBehaviour, IDamageable
             TakeDamage(-confusedDamage);
             isDamageTextPop(confusedDamage, 2, Critical);
         }
-        else
+        else if (!charmInsteadOfDamage)
         {
             TakeDamage(-AddDamage);
             isDamageTextPop(AddDamage, 1, Critical);
@@ -218,6 +229,9 @@ public class charaDamage : MonoBehaviour, IDamageable
             StanCount = 0;
             SavePos = enemyBase.gameObject.transform.position;
         }
+
+        if (charmInsteadOfDamage && enemyBase.HP > 0f)
+            enemyBase.AccumulateCharm(AddDamage);
 
         if (enemyBase.HP <= 0 && enemyBase.status != EnemyBase.Status.Die)
         {

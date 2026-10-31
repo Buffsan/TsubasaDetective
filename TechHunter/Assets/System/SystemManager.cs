@@ -22,12 +22,23 @@ public class SystemManager : MonoBehaviour
 
     public List<GameObject> AllEnemy = new List<GameObject>();
     readonly List<EnemyBase> charmedAllies = new List<EnemyBase>();
+    public IReadOnlyList<EnemyBase> CharmedAllies => charmedAllies;
 
     public void RegisterCharmedAlly(EnemyBase ally)
     {
         if (ally == null) return;
         AllEnemy.RemoveAll(enemy => enemy == null || enemy == ally.gameObject);
         if (!charmedAllies.Contains(ally)) charmedAllies.Add(ally);
+
+        // 敵側の標準ターゲット制御にも、新たな味方を攻撃可能として知らせる。
+        foreach (GameObject enemy in AllEnemy)
+        {
+            if (enemy == null) continue;
+            EnemyContoroller normalEnemy = enemy.GetComponent<EnemyContoroller>();
+            if (normalEnemy != null) normalEnemy.EnableCharmedAllyTargeting();
+            Boss_Controller boss = enemy.GetComponent<Boss_Controller>();
+            if (boss != null) boss.EnableCharmedAllyTargeting();
+        }
     }
 
     // 魅了された個体はスポット移動時に消える。

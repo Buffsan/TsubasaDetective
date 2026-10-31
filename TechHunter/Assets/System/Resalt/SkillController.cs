@@ -76,6 +76,10 @@ public class SkillController : MonoBehaviour
     void Start()
     {
         systemManager = GetComponent<SystemManager>();
+        // 新規遺物を既存の遺物カード抽選リストに追加する。
+        RelicData masterpiece = Resources.Load<RelicData>("Relics/HandInHandAndDie");
+        if (masterpiece != null && !Relics.Exists(relic => relic != null && relic.data == masterpiece))
+            Relics.Add(new Relic { Name = masterpiece.RelicName, data = masterpiece });
     }
 
     // Select without rejection loops: always terminates, even with fewer than three options.

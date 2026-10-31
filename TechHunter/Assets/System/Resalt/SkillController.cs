@@ -26,12 +26,6 @@ public class SkillController : MonoBehaviour
     public List<Skill> SkillList = new List<Skill>();
     public List<StatusUP> StatusUPs = new List<StatusUP>();
 
-    // Default increments for the four new card types. Adjust in Inspector.
-    [Header("追加割合強化カード (%)")]
-    [SerializeField, Min(0f)] float CoinGainCardPercent = 20f;
-    [SerializeField, Min(0f)] float ConfusionDamageCardPercent = 20f;
-    [SerializeField, Min(0f)] float HealingCardPercent = 20f;
-    [SerializeField, Min(0f)] float LuckyDamageCardPercent = 20f;
     public List<Relic> Relics = new List<Relic>();
     public List<StagePageData> Stages = new List<StagePageData>();
 
@@ -82,59 +76,6 @@ public class SkillController : MonoBehaviour
     void Start()
     {
         systemManager = GetComponent<SystemManager>();
-        EnsurePercentageStatusCards();
-    }
-
-    // Registered at runtime so existing scenes and their serialized StatusUPs
-    // remain compatible. Never duplicate a card already configured in Inspector.
-    void EnsurePercentageStatusCards()
-    {
-        if (StatusUPs == null) StatusUPs = new List<StatusUP>();
-        RegisterPercentageCard("獲得資金増加", CoinGainCardPercent, 1, 0,
-            "コイン獲得時に得られる資金が増加する。");
-        RegisterPercentageCard("混乱時ダメージ", ConfusionDamageCardPercent, 1, 1,
-            "混乱状態の敵に与えるダメージが増加する。");
-        RegisterPercentageCard("回復量増加", HealingCardPercent, 1, 2,
-            "受けるHP回復量が増加する。");
-        RegisterPercentageCard("幸運ダメージ", LuckyDamageCardPercent, 2, 3,
-            "クリティカルダメージの倍率部分と固定加算部分を共に強化する。");
-    }
-
-    void RegisterPercentageCard(string name, float percent, int rarity, int type, string description)
-    {
-        foreach (StatusUP existing in StatusUPs)
-            if (existing != null && existing.PageName == name) return;
-
-        Sprite image = null;
-        foreach (StatusUP existing in StatusUPs)
-        {
-            if (existing != null && existing.MainImage != null)
-            {
-                if (image == null) image = existing.MainImage;
-                if (existing.Rarity == rarity)
-                {
-                    image = existing.MainImage;
-                    break;
-                }
-            }
-        }
-
-        StatusUP card = new StatusUP
-        {
-            PageName = name,
-            Explanation = description,
-            UpExplanation = "+" + percent.ToString("0.#") + "%",
-            MainImage = image,
-            Rarity = rarity
-        };
-        switch (type)
-        {
-            case 0: card.CoinGainPercent = percent; break;
-            case 1: card.ConfusionDamagePercent = percent; break;
-            case 2: card.HealingPercent = percent; break;
-            case 3: card.LuckyDamagePercent = percent; break;
-        }
-        StatusUPs.Add(card);
     }
 
     // Select without rejection loops: always terminates, even with fewer than three options.
@@ -406,7 +347,6 @@ public class SkillController : MonoBehaviour
     }
     public void isStartPageChoice()
     {
-        EnsurePercentageStatusCards();
         if (gameModeManager.gameMode != system_GameModeManager.AdventureGameMode.StartSpot)
         {
             PlayAnims(true);

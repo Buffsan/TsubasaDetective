@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5350f31428789b94589b208b814222cc, type: 3}
+  m_Name: HandInHandAndDie
+  m_EditorClassIdentifier:
+  RelicName: 名画「手と手を取り合って死ね」
+  RelicDataObject: {fileID: 7709000000000000001, guid: 44bd391efbc84adc9c92b6149b89a208, type: 3}
+  RelicImage: {fileID: 0}
+  Explanation: "スキル3の通常ダメージが0になり、代わりに魅了を蓄積する。魅了値が敵の現在HPを超えると味方化し、敵を攻撃する。混乱時ダメージは維持。味方はマップ移動時に消える。"
+  stage: 0

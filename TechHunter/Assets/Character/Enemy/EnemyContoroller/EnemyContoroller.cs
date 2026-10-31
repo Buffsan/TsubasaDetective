@@ -125,6 +125,23 @@ public class EnemyContoroller : EnemyBase
         ChooseTargetNow();
     }
 
+    public void EnableCharmedAllyTargeting()
+    {
+        if (IsCharmed || targetType == TargetType.EnemyOnly) return;
+        if (targetType == TargetType.PlayerOnly)
+        {
+            targetType = TargetType.PlayerAndEnemy;
+            targetPriority = TargetPriority.Nearest;
+            targetAllFactions = false;
+            targetFactions = Faction.Charmed;
+        }
+        else if (!targetAllFactions)
+            targetFactions |= Faction.Charmed;
+
+        excludedTargetFactions &= ~Faction.Charmed;
+        ChooseTargetNow();
+    }
+
     public void BecomeCharmedAlly()
     {
         targetType = TargetType.EnemyOnly;
@@ -326,6 +343,23 @@ public class EnemyContoroller : EnemyBase
                 nearest = other.transform;
             }
         }
+        // 魅了済みの敵はAllEnemyから外れているため、敵側だけ追加検索する。
+        if (!IsCharmed)
+        {
+            foreach (EnemyBase other in manager.CharmedAllies)
+            {
+                if (other == null || other.status == Status.Die || other.HP <= 0f) continue;
+                Faction faction = other.Factions;
+                if ((faction & excludedTargetFactions) != Faction.None) continue;
+                if (!targetAllFactions && (faction & targetFactions) == Faction.None) continue;
+                float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
+                if (sqr < minDistanceSqr)
+                {
+                    minDistanceSqr = sqr;
+                    nearest = other.transform;
+                }
+            }
+        }
         return nearest;
     }
 
@@ -415,6 +449,8 @@ public class EnemyContoroller : EnemyBase
         moveBase.enemyBase = this;
         CurrentTarget = Player != null ? Player.transform : null;
         if (targetType != TargetType.PlayerOnly) ChooseTargetNow();
+        if (SystemManager.Instance != null && SystemManager.Instance.CharmedAllies.Count > 0)
+            EnableCharmedAllyTargeting();
     }
     private void FixedUpdate()
     {

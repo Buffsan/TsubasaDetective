@@ -16,6 +16,7 @@ MonoBehaviour:
   PoisonEffectPrefab: {fileID: 0}
   Duration: 0
   IsPermanent: 1
+  CharmedDamageMultiplier: 0.5
   number: 1
   TickTime: 1
   EffectObject: {fileID: 0}

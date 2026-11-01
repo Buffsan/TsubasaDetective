@@ -6,14 +6,12 @@ public class CG_Wizard : EnemyMoveBase
 {
     [SerializeField] GameObject Arrow;
     public GameObject S_AttackArea;
-    Vector3 lockedMortarPosition;
     public override void EnemyAttackPlay()
     {
         enemyBase.AttackCount += Time.deltaTime;
         if (enemyBase.mode == EnemyBase.ModeType.M1) 
         {
             enemyBase.rb.velocity = Vector3.zero;
-            lockedMortarPosition = TargetPosition;
             LookAtCurrentTarget();
             enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
             enemyBase.animator.SetInteger("Anim", 2);
@@ -31,7 +29,8 @@ public class CG_Wizard : EnemyMoveBase
                 enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);
                 GameObject CL_Arrow = Instantiate(Arrow, enemyBase.gameObject.transform.position, Quaternion.identity);
                 Mortar_Controller mortar = CL_Arrow.GetComponent<Mortar_Controller>();
-                mortar.ChangePos(UsesLegacyPlayerTarget ? TargetPosition : lockedMortarPosition);
+                // プレイヤー戦と同様、発射時点の標的位置を指定する。
+                mortar.ChangePos(TargetPosition);
                 mortar.enemyBase = enemyBase;
                 mortar.AttackArea = S_AttackArea;
             }

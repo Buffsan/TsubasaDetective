@@ -12,12 +12,30 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] Faction factions = Faction.None;
     public Faction Factions => factions;
     public bool IsCharmed { get; private set; }
-    // 蓄積値の本体はcharaDamage.buffs (ActiveBuff) に一元化する。
+    // 魅了値はcharaDamage.buffsに集約する。古いPrefabでCharaDamage参照が
+    // 未設定でも、最初に魅了を受けた判定から実行時に受け口を確定できる。
+    [System.NonSerialized] charaDamage charmStatusReceiver;
+
+    public charaDamage CharmStatusReceiver
+    {
+        get
+        {
+            if (charmStatusReceiver != null) return charmStatusReceiver;
+            if (CharaDamage != null) return CharaDamage;
+            return charaDamage;
+        }
+    }
+
+    public void RegisterCharmStatusReceiver(charaDamage receiver)
+    {
+        if (receiver != null) charmStatusReceiver = receiver;
+    }
+
     public float CharmValue
     {
         get
         {
-            charaDamage receiver = CharaDamage != null ? CharaDamage : charaDamage;
+            charaDamage receiver = CharmStatusReceiver;
             return receiver != null
                 ? receiver.GetAccumulatedStatusValue(StatusEffect.StatusEffectType.Charm)
                 : 0f;

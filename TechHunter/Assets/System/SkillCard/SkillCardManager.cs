@@ -68,23 +68,23 @@ public class SkillCardManager : MonoBehaviour
         }
         else 
         {
-            Debug.Log("ƒXƒLƒ‹ƒf[ƒ^‚È‚µ");
+            Debug.Log("ã‚¹ã‚­ãƒ«ãƒ‡ãƒ¼ã‚¿ãªã—");
         }*/
     }
 
     // Update is called once per frame
     private void FixedUpdate()
     {
-        // ƒRƒ“ƒgƒ[ƒ‰[‚ªÚ‘±‚³‚ê‚Ä‚¢‚é‚©Šm”F
-        var gamepads = Gamepad.all; // ‚·‚×‚Ä‚ÌÚ‘±‚³‚ê‚Ä‚¢‚éGamepad‚ÌƒŠƒXƒg
+        // ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ãŒæ¥ç¶šã•ã‚Œã¦ã„ã‚‹ã‹ç¢ºèª
+        var gamepads = Gamepad.all; // ã™ã¹ã¦ã®æ¥ç¶šã•ã‚Œã¦ã„ã‚‹Gamepadã®ãƒªã‚¹ãƒˆ
         if (gamepads.Count > 0)
         {
-            //Debug.Log("ƒRƒ“ƒgƒ[ƒ‰[‚ªÚ‘±‚³‚ê‚Ä‚¢‚Ü‚·");
+            //Debug.Log("ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ãŒæ¥ç¶šã•ã‚Œã¦ã„ã¾ã™");
             InputButtonText.text = playerController.skillINFO[ID].Xbox_ControllText;
         }
         else
         {
-            //Debug.Log("ƒRƒ“ƒgƒ[ƒ‰[‚ªÚ‘±‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
+            //Debug.Log("ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ãŒæ¥ç¶šã•ã‚Œã¦ã„ã¾ã›ã‚“");
             InputButtonText.text = playerController.skillINFO[ID].PC_ControllText;
         }
 
@@ -186,6 +186,14 @@ public class SkillCardManager : MonoBehaviour
     public void isCoolTime() 
     {
         CoolCount += Time.deltaTime * (1 + playerController.playerBuff.Multiply_CoolTimeBuff +( (playerController.AddRange)/100));
+    }
+    // Immediately ready the skill used on the 12th candle activation.
+    public void RefreshCooldownImmediately()
+    {
+        CoolCount = 0f;
+        mode = Mode.Standby;
+        if (CoolCountText != null) CoolCountText.enabled = false;
+        if (cardImage != null) cardImage.color = defaltColor;
     }
     public void isCoolTime_add(float value) 
     {

@@ -310,6 +310,8 @@ public class charaDamage : MonoBehaviour, IDamageable
                 * Mathf.Max(0f, 1f + confusionDamagePercent / 100f);
             TakeDamage(-confusedDamage);
             isDamageTextPop(confusedDamage, 2, Critical);
+            if (enemyBase.HP > 0f)
+                GlobalEvents.InvokeEnemyDamagedWhileConfused(this, confusedDamage);
         }
         else if (charmEffect == null)
         {
@@ -345,6 +347,17 @@ public class charaDamage : MonoBehaviour, IDamageable
         {
             Death();
         }
+    }
+
+    // Apply exactly this many HP damage points, without defense or status buildup.
+    public void DamageFixed(float value)
+    {
+        if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die ||
+            enemyBase.HP <= 0f || value <= 0f) return;
+        TakeDamage(-value);
+        enemyBase.TakeDamageColor();
+        isDamageTextPop(value, 1, false);
+        if (enemyBase.HP <= 0f) Death();
     }
 
     void TakeDamage(float addDamage)

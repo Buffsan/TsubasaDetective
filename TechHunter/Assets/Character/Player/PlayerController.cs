@@ -250,6 +250,7 @@ public class PlayerController : PlayerStatus
 
         GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[skillNumber].skillDATA);
         skillINFO[skillNumber].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
+        GlobalEvents.InvokeSkillCooldownStarted(skillNumber);
     }
     public void OnNomalAttack(InputAction.CallbackContext context)
     {
@@ -336,7 +337,7 @@ public class PlayerController : PlayerStatus
         //Debug.Log("スキル6");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
-            if (skillINFO[6].SkillCardManager.mode == SkillCardManager.Mode.Standby)
+            if (skillINFO.Count > 5 && skillINFO[5].SkillCardManager.mode == SkillCardManager.Mode.Standby)
             {
                 mode = ModeType.M1;
                 movetype = MoveType.Skill;
@@ -346,6 +347,7 @@ public class PlayerController : PlayerStatus
                 PlayerSkillBase playerSkillBase = Skill6.GetComponent<PlayerSkillBase>();
                 GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[5].skillDATA);
                 skillINFO[5].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
+                GlobalEvents.InvokeSkillCooldownStarted(5);
             }
 
         }

@@ -33,6 +33,19 @@ public class PlayerAttack : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // Relic targets absorb actual player attack damage, without triggering enemy-hit events.
+        Relic_ReturnlessHarpoon harpoon = other.GetComponent<Relic_ReturnlessHarpoon>();
+        if (harpoon != null)
+        {
+            if (controller == null || weapondata == null || !harpoon.CanCharge) return;
+            if (!AgeinAttack && !EnemyData.Add(harpoon.gameObject)) return;
+            float damage = AttackMathf();
+            if (isCriticulUse && controller.AddCritical + controller.Critical > Random.Range(0f, 100f))
+                damage = (damage * 3f + 5f) * Mathf.Max(0f, 1f + controller.AddLuckyDamagePercent / 100f);
+            harpoon.ChargeFromPlayer(damage);
+            controller.HitEffectSpawn(other.transform.position);
+            return;
+        }
         if (other.gameObject.CompareTag("EnemyArea")) 
         { 
         IDamageable damageable = other.GetComponent<IDamageable>();

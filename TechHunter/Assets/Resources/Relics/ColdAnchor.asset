@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5350f31428789b94589b208b814222cc, type: 3}
+  m_Name: ColdAnchor
+  m_EditorClassIdentifier:
+  RelicName: "冷たい錨"
+  RelicDataObject: {fileID: 7709000000000000001, guid: a1b20000d5a64c26b000000000001202, type: 3}
+  RelicImage: {fileID: 0}
+  Explanation: "混乱中の敵がダメージを受けると頭上に錨が出現する。混乱中の被ダメージを蓄積し、混乱解除時に落下して同量のHPダメージを与える。混乱ダメージ0、スタン0。"
+  stage: 0

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5350f31428789b94589b208b814222cc, type: 3}
+  m_Name: TwelfthCandle
+  m_EditorClassIdentifier:
+  RelicName: "機械仕掛けの12本目の蝋燭"
+  RelicDataObject: {fileID: 7709000000000000001, guid: a1b20000d5a64c26b000000000001302, type: 3}
+  RelicImage: {fileID: 0}
+  Explanation: "12回目に使用するスキルのクールタイムが即座に回復する。使用回数は表示されない。"
+  stage: 0

@@ -8,10 +8,12 @@ static class GlobalEvents
     public static event Action<int> OnNextSpot;
     public static event Action<float,bool> OnPlayerDamage;
     public static event Action<PlayerSkillBase,SkillCardData> OnSkillUse;
+    public static event Action<int> OnSkillCooldownStarted;
+    public static event Action<charaDamage, float> OnEnemyDamagedWhileConfused;
     public static event Action<float> OnPlayerDie;
     public static event Action<float> OnDecide;
-    // Critical”­¶‚ÌƒCƒxƒ“ƒg
-    // ˆø”FUŒ‚‘ÎÛ, ƒ_ƒ[ƒW—Ê, ƒNƒŠƒeƒBƒJƒ‹”{—¦‚È‚Ç
+    // Criticalç™ºç”Ÿæ™‚ã®ã‚¤ãƒ™ãƒ³ãƒˆ
+    // å¼•æ•°ï¼šæ”»æ’ƒå¯¾è±¡, ãƒ€ãƒ¡ãƒ¼ã‚¸é‡, ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«å€ç‡ãªã©
     public static event Action<GameObject, float, float,bool> OnPlayerAttack;
 
     public static void InvokePlayerDie(float damage) 
@@ -26,11 +28,19 @@ static class GlobalEvents
     { 
         OnPlayerDamage?.Invoke(damage, Invincible);
     }
+    public static void InvokeSkillCooldownStarted(int slot)
+    {
+        OnSkillCooldownStarted?.Invoke(slot);
+    }
+    public static void InvokeEnemyDamagedWhileConfused(charaDamage receiver, float damage)
+    {
+        OnEnemyDamagedWhileConfused?.Invoke(receiver, damage);
+    }
     public static void InvokeSkillUse(PlayerSkillBase skill , SkillCardData Skill_AI)
     {
      OnSkillUse?.Invoke(skill,Skill_AI);
     }
-    // ŒÄ‚Ño‚µ—p
+    // å‘¼ã³å‡ºã—ç”¨
     public static void InvokePlayerAttack(GameObject target, float damage, float multiplier,bool critical)
     {
         OnPlayerAttack?.Invoke(target, damage, multiplier, critical);

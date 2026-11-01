@@ -80,6 +80,11 @@ public class SkillController : MonoBehaviour
         RelicData masterpiece = Resources.Load<RelicData>("Relics/HandInHandAndDie");
         if (masterpiece != null && !Relics.Exists(relic => relic != null && relic.data == masterpiece))
             Relics.Add(new Relic { Name = masterpiece.RelicName, data = masterpiece });
+
+        // Register new relic ScriptableObjects while preserving existing inspector entries.
+        foreach (RelicData entry in Resources.LoadAll<RelicData>("Relics"))
+            if (entry != null && !Relics.Exists(relic => relic != null && relic.data == entry))
+                Relics.Add(new Relic { Name = entry.RelicName, data = entry });
     }
 
     // Select without rejection loops: always terminates, even with fewer than three options.

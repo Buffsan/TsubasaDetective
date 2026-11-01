@@ -235,6 +235,7 @@ public class Enemy_KINGYO_ZIKIN : EnemyMoveBase
     private void ShootBullet(Vector2 dir)
     {
         GameObject bullet = Instantiate(Arrow, transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(bullet);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         rb.velocity = dir * 1;
         Destroy(bullet, 20);

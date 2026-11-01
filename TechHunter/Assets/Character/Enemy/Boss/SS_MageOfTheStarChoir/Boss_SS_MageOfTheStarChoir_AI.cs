@@ -336,10 +336,18 @@ public class Boss_SS_MageOfTheStarChoir_AI : Boss_MoveBase
             
             for (int i = 0; i < StaffSpawnPoint.Count; i++) 
             {
-                GameObject CL_Staff = Instantiate(Staffs[i], StaffSpawnPoint[i].transform.position, Quaternion.identity);
+                // 敵VS敵では杖も召喚元の派閥・狙いを引き継ぎ、
+                // 通常のプレイヤー戦ではこれまでどおりの生成経路を使う。
+                Boss_Controller boss = enemyBase as Boss_Controller;
+                bool useEnemyTargeting = boss != null &&
+                    boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly;
+                GameObject CL_Staff = useEnemyTargeting
+                    ? EnemySpawn(Staffs[i], StaffSpawnPoint[i].transform.position)
+                    : Instantiate(Staffs[i], StaffSpawnPoint[i].transform.position, Quaternion.identity);
                 NowStaffs.Add(CL_Staff);
 
-                AllEnemy.Add(CL_Staff);
+                // EnemySpawnはボスのAllEnemyへ登録済み。
+                if (!useEnemyTargeting) AllEnemy.Add(CL_Staff);
 
                 GameObject CL_Effect = Instantiate(chainEffect, CL_Staff.transform.position, Quaternion.identity);
                 Vector2 DistanceChain = transform.position - CL_Staff.transform.position;

@@ -426,7 +426,9 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
 
                         // 攻撃判定オブジェクトを左右に生成
                         GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(leftAttack);
                         GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(rightAttack);
                         Destroy(leftAttack, 5);
                         Destroy(rightAttack, 5);
                     }
@@ -444,7 +446,9 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
 
                         // 攻撃判定オブジェクトを左右に生成
                         GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(leftAttack);
                         GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(rightAttack);
                         Destroy(leftAttack, 5);
                         Destroy(rightAttack, 5);
                     }
@@ -685,6 +689,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
             , shotPos
             , Quaternion.identity
             );
+        ConfigureSpawnedAttack(CL_Arrow);
 
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
         Vector2 direction = (Vector2)TargetPosition - shotPos;
@@ -704,6 +709,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
             , shotPos
             , Quaternion.identity
             );
+        ConfigureSpawnedAttack(CL_Arrow);
 
         Mortar_Controller mortar = CL_Arrow.GetComponent<Mortar_Controller>();
         mortar.ChangePos(TargetPosition + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
@@ -756,6 +762,7 @@ public class Boss_GinrinsanshokuWakin_AI : Boss_MoveBase
     void NeedleSpawn(Vector2 Ptransform)
     {
         GameObject CL_Needle = Instantiate(RockNeedle, Ptransform, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Needle);
 
         Destroy(CL_Needle, 5);
     }

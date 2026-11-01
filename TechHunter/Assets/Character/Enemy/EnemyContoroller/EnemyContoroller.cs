@@ -218,12 +218,14 @@ public class EnemyContoroller : EnemyBase
             return;
         }
 
-        if (moveType != MoveType.Attack)
+        // 攻撃中の再照準は控えるが、死亡・派閥変更した標的は即時に切り替える。
+        // 敵戦だけ無効な標的を狙い続ける差異を防ぐ。
+        bool invalidTarget = CurrentTarget == null || !IsValidTarget(CurrentTarget);
+        if (moveType != MoveType.Attack || invalidTarget)
         {
             targetSearchTimer += Time.fixedDeltaTime;
-            // ターゲット不在時は指定間隔で探索し、毎FixedUpdateの全敵走査を防ぐ。
-            if (targetSearchTimer >= Mathf.Max(0.05f, targetSearchInterval) ||
-                (CurrentTarget != null && !IsValidTarget(CurrentTarget)))
+            if (invalidTarget ||
+                targetSearchTimer >= Mathf.Max(0.05f, targetSearchInterval))
             {
                 ChooseTargetNow();
                 targetSearchTimer = 0f;
@@ -522,8 +524,6 @@ public class EnemyContoroller : EnemyBase
             moveBase.EnemyFriendlyExit();
         }
 
-        // 攻撃終了フレームでTargetDistanceにより即時再攻撃しないようにする。
-        bool wasAttacking = moveType == MoveType.Attack;
         switch (moveType)
         {
             case MoveType.Move:
@@ -533,12 +533,9 @@ public class EnemyContoroller : EnemyBase
                 AttackAction();
                 break;
         }
-        // PlayerOnlyは従来のPlayerDistance、それ以外は選択対象とのTargetDistanceで判定。
-        if (targetType != TargetType.PlayerOnly && wasAttacking &&
-            moveType != MoveType.Attack)
-            return;
-
-        if ((targetType == TargetType.PlayerOnly ? PlayerDistance : TargetDistance) < LookPlayerDistance)
+        // 個別AIが攻撃後にPlayerDistance=1000で再攻撃を抑制する処理を
+        // 敵VS敵でも同じように扱う。距離の更新はPlayerLook/RefreshTargetInfo側。
+        if (PlayerDistance < LookPlayerDistance)
             moveType = MoveType.Attack;
     }
     // EnemyOnlyで攻撃対象がいない間、FixedUpdateから継続的に呼ぶ。
@@ -572,6 +569,8 @@ public class EnemyContoroller : EnemyBase
             else if (CurrentTarget != null)
             {
                 UpdateTargetDistance();
+                PlayerDirection = TargetDirection;
+                PlayerDistance = TargetDistance;
                 isTargetLook(CurrentTarget.position);
                 rb.velocity = TargetDirection.normalized * SPEED;
             }

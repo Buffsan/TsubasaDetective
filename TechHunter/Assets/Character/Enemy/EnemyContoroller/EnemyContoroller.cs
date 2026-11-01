@@ -220,7 +220,8 @@ public class EnemyContoroller : EnemyBase
 
         // 攻撃中の再照準は控えるが、死亡・派閥変更した標的は即時に切り替える。
         // 敵戦だけ無効な標的を狙い続ける差異を防ぐ。
-        bool invalidTarget = CurrentTarget == null || !IsValidTarget(CurrentTarget);
+        // 標的不在時の探索は従来の間隔制御を維持する（毎FixedUpdate探索しない）。
+        bool invalidTarget = CurrentTarget != null && !IsValidTarget(CurrentTarget);
         if (moveType != MoveType.Attack || invalidTarget)
         {
             targetSearchTimer += Time.fixedDeltaTime;

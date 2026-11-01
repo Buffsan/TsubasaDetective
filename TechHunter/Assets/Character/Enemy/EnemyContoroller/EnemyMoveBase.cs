@@ -87,13 +87,19 @@ public class EnemyMoveBase : MonoBehaviour
 
     protected void RefreshTargetInfo()
     {
-        if (enemyBase == null || CurrentTarget == null) return;
-        if (UsesLegacyPlayerTarget)
+        if (enemyBase == null) return;
+        Transform target = CurrentTarget;
+        if (target == null)
         {
-            Vector2 direction = (Vector2)TargetPosition - (Vector2)enemyBase.transform.position;
-            enemyBase.PlayerDirection = direction;
-            enemyBase.PlayerDistance = direction.magnitude;
+            enemyBase.PlayerDirection = Vector2.zero;
+            enemyBase.PlayerDistance = float.PositiveInfinity;
+            return;
         }
+
+        // 旧AIにも現在の標的の方向と距離を渡す。PlayerOnlyの計算は従来と同じ。
+        Vector2 direction = (Vector2)target.position - (Vector2)enemyBase.transform.position;
+        enemyBase.PlayerDirection = direction;
+        enemyBase.PlayerDistance = direction.magnitude;
     }
 
     protected void LookAtCurrentTarget()

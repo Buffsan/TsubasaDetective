@@ -139,13 +139,21 @@ public class Boss_Controller : EnemyBase
     // ボスの既存・新規攻撃判定にも同じ敵対派閥を設定する。
     public void ConfigureAttackTarget(EnemyAttack attack)
     {
+        ConfigureAttackTarget(attack, this);
+    }
+
+    // 分身・召喚体は本体のターゲット派閥を使用しつつ、
+    // ダメージの発生元は分身自身のステータスとして保持できる。
+    public void ConfigureAttackTarget(EnemyAttack attack, EnemyBase attackOwner)
+    {
         if (attack == null) return;
         Faction factions = Faction.None;
         if (targetType != EnemyContoroller.TargetType.PlayerOnly)
             factions = (targetAllFactions ? (Faction)(~0) : targetFactions)
                 & ~excludedTargetFactions;
         bool hitPlayer = targetType != EnemyContoroller.TargetType.EnemyOnly;
-        attack.ConfigureAttack(this, attack.AttackPowerPercent, factions, hitPlayer);
+        attack.ConfigureAttack(attackOwner != null ? attackOwner : this,
+            attack.AttackPowerPercent, factions, hitPlayer);
     }
 
     // ボスの敵対設定を召喚した雑魚敵へ渡す。PlayerOnlyの従来召喚は変更しない。

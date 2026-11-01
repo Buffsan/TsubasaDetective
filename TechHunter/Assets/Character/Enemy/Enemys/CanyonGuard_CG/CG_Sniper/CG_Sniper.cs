@@ -6,6 +6,7 @@ public class CG_Sniper : EnemyMoveBase
 {
     [SerializeField] GameObject Arrow;
     [SerializeField] float BulletSpeed = 1.8f;
+    Vector2 lockedShotDirection;
     public override void EnemyAttackPlay()
     {
         enemyBase.AttackCount += Time.deltaTime;
@@ -13,6 +14,8 @@ public class CG_Sniper : EnemyMoveBase
         {
             enemyBase.rb.velocity = Vector2.zero;
             LookAtCurrentTarget();
+            // プレイヤー戦と同じタイミングで照準を保存する。
+            lockedShotDirection = TargetDirection;
             enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
             enemyBase.mode = EnemyBase.ModeType.M2;
             enemyBase.animator.SetInteger("Anim",2);
@@ -56,8 +59,9 @@ public class CG_Sniper : EnemyMoveBase
 
     void shotBullet() 
     {
-        // プレイヤー狙いと同様に発射時点のターゲット方向を計算する。
-        Vector2 shotDirection = TargetDirection;
+        // 従来は構え時に更新されたPlayerDirectionを発射時にも使用していた。
+        // 敵相手にも同じ構え時点の方向を使う（発射直前の再照準はしない）。
+        Vector2 shotDirection = lockedShotDirection;
         if (shotDirection.sqrMagnitude < 0.0001f) shotDirection = TargetDirection;
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);

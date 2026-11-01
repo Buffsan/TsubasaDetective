@@ -227,10 +227,20 @@ public class Boss_Controller : EnemyBase
         {
             TargetDirection = Vector2.zero;
             TargetDistance = float.PositiveInfinity;
-            return;
         }
-        TargetDirection = (Vector2)CurrentTarget.position - (Vector2)transform.position;
-        TargetDistance = TargetDirection.magnitude;
+        else
+        {
+            TargetDirection = (Vector2)CurrentTarget.position - (Vector2)transform.position;
+            TargetDistance = TargetDirection.magnitude;
+        }
+
+        // 通常移動中だけ、個別Boss_MoveBaseが参照する保存値も更新する。
+        // 攻撃中は構え・再照準時の更新タイミングを維持し、PlayerOnlyには触らない。
+        if (targetType != EnemyContoroller.TargetType.PlayerOnly && moveType != MoveType.Attack)
+        {
+            PlayerDirection = TargetDirection;
+            PlayerDistance = TargetDistance;
+        }
     }
 
     bool IsTargetValid(Transform target)

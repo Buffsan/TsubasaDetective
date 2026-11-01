@@ -68,15 +68,20 @@ public class charaDamage : MonoBehaviour, IDamageable
         bool isCharm = buffData.effecttype == StatusEffect.StatusEffectType.Charm;
         if (isCharm && enemyBase != null)
         {
-            // 敵が複数のEnemyAreaを持っていても魅了値は本体の受け口へ一元化する。
-            charaDamage primary = enemyBase.CharaDamage != null
-                ? enemyBase.CharaDamage : enemyBase.charaDamage;
-            if (primary != null && primary != this)
+            // 複数のEnemyAreaから受けた魅了を、敵本体につき1つのActiveBuffへ集約。
+            // 初期の敵PrefabはEnemyBase.CharaDamage/charaDamageが両方未設定の
+            // 場合があるため、実際に受けたcharaDamageを実行時に登録する。
+            charaDamage primary = enemyBase.CharmStatusReceiver;
+            if (primary != null && primary != this &&
+                (primary.enemyBase == null || primary.enemyBase == enemyBase))
             {
                 if (primary.enemyBase == null) primary.enemyBase = enemyBase;
                 primary.ApplyStatusEffect(buffData, amount);
                 return;
             }
+
+            // 参照がない場合も魅了値の読み取り先を確定し、HPバーへ通知できる。
+            enemyBase.RegisterCharmStatusReceiver(this);
         }
         if (isCharm && (enemyBase == null || enemyBase.IsCharmed ||
                         enemyBase.status == EnemyBase.Status.Die || enemyBase.HP <= 0f))

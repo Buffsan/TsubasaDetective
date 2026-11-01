@@ -467,7 +467,9 @@ public class SB_Whale_AI : Boss_MoveBase
 
                         // 攻撃判定オブジェクトを左右に生成
                         GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(leftAttack);
                         GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(rightAttack);
                         Destroy(leftAttack, 5);
                         Destroy(rightAttack, 5);
                     }
@@ -485,7 +487,9 @@ public class SB_Whale_AI : Boss_MoveBase
 
                         // 攻撃判定オブジェクトを左右に生成
                         GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(leftAttack);
                         GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(rightAttack);
                         Destroy(leftAttack, 5);
                         Destroy(rightAttack, 5);
                     }
@@ -932,6 +936,7 @@ public class SB_Whale_AI : Boss_MoveBase
         audioManager.PlaySE(audioclips[0]);
         Vector2 ARMdirection = TargetPosition - ArmAttackPoint.transform.position;
         GameObject CL_Bullet = Instantiate(Bullet, ArmAttackPoint.transform.position, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Bullet);
         CL_Bullet.transform.up = ARMdirection.normalized;
 
         Rigidbody2D CL_rb = CL_Bullet.GetComponent<Rigidbody2D>();
@@ -946,6 +951,7 @@ public class SB_Whale_AI : Boss_MoveBase
         for (int i = 0; i < 2; i++)
         {
             GameObject CL_Slash = Instantiate(HalfBullet, ArmAttackPoint.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Slash);
             Vector2 NewLookDirection = Quaternion.Euler(0, 0, -6 + 12 * i) * ARMdirection.normalized;
             CL_Slash.transform.up = NewLookDirection.normalized;
 
@@ -988,6 +994,7 @@ public class SB_Whale_AI : Boss_MoveBase
     void NeedleSpawn(Vector2 Ptransform)
     {
         GameObject CL_Needle = Instantiate(RockNeedle, Ptransform, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Needle);
 
         Destroy(CL_Needle, 5);
     }

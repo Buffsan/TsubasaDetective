@@ -50,14 +50,16 @@ public class Boss_MoveBase : MonoBehaviour
         }
     }
 
+    // 攻撃中に再計算するかどうかもプレイヤー戦の旧AIに合わせる。
+    // LookAtCurrentTarget/RefreshTargetInfoが更新した時点の値を、
+    // プレイヤーと敵のどちらを狙うときも同じように使用する。
     protected Vector2 TargetDirection
     {
         get
         {
-            if (enemyBase == null) return Vector2.zero;
-            if (UsesLegacyPlayerTarget) return enemyBase.PlayerDirection;
-            return CurrentTarget != null
-                ? (Vector2)TargetPosition - (Vector2)enemyBase.transform.position : Vector2.zero;
+            if (enemyBase == null || (!UsesLegacyPlayerTarget && CurrentTarget == null))
+                return Vector2.zero;
+            return enemyBase.PlayerDirection;
         }
     }
 
@@ -65,11 +67,9 @@ public class Boss_MoveBase : MonoBehaviour
     {
         get
         {
-            if (enemyBase == null) return float.PositiveInfinity;
-            if (UsesLegacyPlayerTarget) return enemyBase.PlayerDistance;
-            return CurrentTarget != null
-                ? Vector2.Distance(TargetPosition, enemyBase.transform.position)
-                : float.PositiveInfinity;
+            if (enemyBase == null || (!UsesLegacyPlayerTarget && CurrentTarget == null))
+                return float.PositiveInfinity;
+            return enemyBase.PlayerDistance;
         }
     }
 

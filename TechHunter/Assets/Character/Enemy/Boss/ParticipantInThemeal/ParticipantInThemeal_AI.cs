@@ -269,6 +269,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2) 
         {
             GameObject CL_Attack = Instantiate(AttackAreas[0], enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Attack);
             AttackSpawnBase(CL_Attack);
             Destroy(CL_Attack,0.2f);
             enemyBase.animator.Play("待機");
@@ -305,6 +306,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 {
 
                     GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
+                    ConfigureSpawnedAttack(CL_AttackPPP);
                     CL_AttackPPP.transform.up = TargetDirection.normalized;
 
                     Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30 * i) * TargetDirection.normalized;
@@ -316,6 +318,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             else
             {
                 GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_AttackPPP);
                 CL_AttackPPP.transform.up = TargetDirection.normalized;
                 //Animator animator = CL_AttackPPP.GetComponent<Animator>();
                 //animator.speed = 1.2f;
@@ -340,6 +343,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 {
 
                     GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -365,6 +369,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             else
             {
                 GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -428,6 +433,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 6)
         {
             GameObject CL_Attack = Instantiate(AttackAreas[0], enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Attack);
             AttackSpawnBase(CL_Attack);
             Destroy(CL_Attack, 0.2f);
             enemyBase.animator.Play("待機");
@@ -471,6 +477,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -511,6 +518,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             enemyBase.animator.Play("攻撃待機", 0, 0);
 
             GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_AttackPPP);
             CL_AttackPPP.transform.up = TargetDirection.normalized;
             //Animator animator = CL_AttackPPP.GetComponent<Animator>();
             //animator.speed = 1.2f;
@@ -529,6 +537,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -591,6 +600,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 6)
         {
             GameObject CL_Attack = Instantiate(AttackAreas[0], enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Attack);
             AttackSpawnBase(CL_Attack);
             Destroy(CL_Attack, 0.2f);
             enemyBase.animator.Play("待機");
@@ -625,6 +635,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             enemyBase.animator.Play("攻撃待機横", 0, 0);
             NEXT();
             GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_AttackPPP);
 
             CL_AttackPPP.transform.up = TargetDirection.normalized;
             CL_AttackPPP.transform.localScale = new Vector2(4, 2);
@@ -642,6 +653,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -691,6 +703,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             enemyBase.animator.Play("攻撃待機横", 0, 0);
             NEXT();
             GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_AttackPPP);
 
             CL_AttackPPP.transform.up = TargetDirection.normalized;
             CL_AttackPPP.transform.localScale = new Vector2(4, 20);
@@ -709,6 +722,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2)
         {
             GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -740,6 +754,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_AttackPPP);
                  CL_AttackPPP.transform.up = TargetDirection.normalized;
 
                 Vector2 NewLookDirection = Quaternion.Euler(0, 0, -30 + 30*i) * TargetDirection.normalized;
@@ -764,6 +779,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -839,6 +855,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2)
         {
             GameObject CL_Attack = Instantiate(AttackAreas[0], enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Attack);
             AttackSpawnBase(CL_Attack);
             Destroy(CL_Attack, 0.2f);
             enemyBase.animator.Play("待機");
@@ -882,6 +899,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_AttackPPP);
                 CL_AttackPPP.transform.up = TargetDirection.normalized;
                 CL_AttackPPP.transform.localScale = new Vector2(4, 20);
                 Vector2 NewLookDirection = Quaternion.Euler(0, 0, -40 + 20 * i) * TargetDirection.normalized;
@@ -906,6 +924,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -924,6 +943,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             {
 
                 GameObject CL_Slash = Instantiate(BigCarseSlash, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -969,6 +989,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         if (AttackPhase == 2)
         {
             GameObject CL_Attack = Instantiate(AttackAreas[0], enemyBase.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Attack);
             AttackSpawnBase(CL_Attack);
             Destroy(CL_Attack, 0.2f);
             enemyBase.animator.Play("待機");
@@ -1001,6 +1022,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 {
 
                     GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
+                    ConfigureSpawnedAttack(CL_AttackPPP);
                     CL_AttackPPP.transform.up = TargetDirection.normalized;
 
                     float angle = 360 / 10;
@@ -1013,6 +1035,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             else
             {
                 GameObject CL_AttackPPP = Instantiate(PPPAttack, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_AttackPPP);
                 CL_AttackPPP.transform.up = TargetDirection.normalized;
                 //Animator animator = CL_AttackPPP.GetComponent<Animator>();
                 //animator.speed = 1.2f;
@@ -1037,6 +1060,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
                 {
 
                     GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                    ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -1056,6 +1080,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
             else
             {
                 GameObject CL_Slash = Instantiate(CarseSlash, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Slash);
                     foreach (ParticipantInThemeal_CarseFire homing in
                              CL_Slash.GetComponentsInChildren<ParticipantInThemeal_CarseFire>(true))
                         homing.SetOwner(enemyBase);
@@ -1127,6 +1152,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         Vector2 endPos = targetPos.position;
 
         GameObject CL_AttackPPP = Instantiate(PPPAttack1, endPos, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_AttackPPP);
         
         Destroy(CL_AttackPPP,1.5f);
         float elapsedTime = 0f;
@@ -1174,6 +1200,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
         Vector2 endPos = Target;
 
         GameObject CL_AttackPPP = Instantiate(PPPAttack1, endPos, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_AttackPPP);
 
         Destroy(CL_AttackPPP, 1.5f);
         float elapsedTime = 0f;
@@ -1207,6 +1234,7 @@ public class ParticipantInThemeal_AI : Boss_MoveBase
 
 
         GameObject CL_Needle = Instantiate(RockNeedle, Ptransform, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Needle);
         CG_Puppeteer_Needle puppeteer_Needle = CL_Needle.GetComponent<CG_Puppeteer_Needle>();
         puppeteer_Needle.enemyAttack.enemyBase = enemyBase;
 

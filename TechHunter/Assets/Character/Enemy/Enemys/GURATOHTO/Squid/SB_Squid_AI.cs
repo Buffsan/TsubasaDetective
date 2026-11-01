@@ -69,7 +69,9 @@ public class SB_Squid_AI : EnemyMoveBase
             GameObject CL_Effect = SpawnObjectNow_Input(AttackChargeEffect, transform.position, 4);
             GameObject CL_DengerArea = SpawnAttackWarning(EnemyContoroller.WarningRectangle, Denger_area, transform.position, Quaternion.identity, 4f, null, 0f, false);
             if (CL_DengerArea != null) CL_DengerArea.transform.up = lockedAttackDirection;
-            SaveComponent warningSave = CL_DengerArea.GetComponentInChildren<SaveComponent>(true);
+            SaveComponent warningSave = CL_DengerArea != null
+                ? CL_DengerArea.GetComponentInChildren<SaveComponent>(true)
+                : null;
             if (warningSave != null && warningSave.animator != null)
                 warningSave.animator.speed = 0.33f;
             enemyBase.animator.Play("攻撃待機", 0, 0);

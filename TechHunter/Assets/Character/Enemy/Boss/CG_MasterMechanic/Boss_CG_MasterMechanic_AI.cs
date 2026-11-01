@@ -349,6 +349,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             , shotPos
             , Quaternion.identity
             );
+        ConfigureSpawnedAttack(CL_Arrow);
 
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
         Vector2 direction = (Vector2)TargetPosition - shotPos;
@@ -368,6 +369,7 @@ public class Boss_CG_MasterMechanic_AI : Boss_MoveBase
             , shotPos
             , Quaternion.identity
             );
+        ConfigureSpawnedAttack(CL_Arrow);
 
         Mortar_Controller mortar = CL_Arrow.GetComponent<Mortar_Controller>();
         mortar.ChangePos(TargetPosition + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));

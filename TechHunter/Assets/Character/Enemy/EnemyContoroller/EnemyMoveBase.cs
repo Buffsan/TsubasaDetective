@@ -195,6 +195,9 @@ public class EnemyMoveBase : MonoBehaviour
                 EnemyContoroller controller = enemyBase as EnemyContoroller;
                 if (controller != null)
                     controller.ConfigureAttackTarget(attack);
+                else if (enemyBase is Boss_Controller boss &&
+                         boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+                    boss.ConfigureAttackTarget(attack);
                 else
                     attack.ConfigureAttack(enemyBase, attack.AttackPowerPercent);
             }

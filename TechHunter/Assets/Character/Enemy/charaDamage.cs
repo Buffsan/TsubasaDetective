@@ -119,8 +119,10 @@ public class charaDamage : MonoBehaviour, IDamageable
                     effectPrefab = buffData.PoisonEffectPrefab;
                     break;
                 case StatusEffect.StatusEffectType.ElectricShock:
-                case StatusEffect.StatusEffectType.Charm:
                     effectPrefab = buffData.EffectObject;
+                    break;
+                case StatusEffect.StatusEffectType.Charm:
+                    // 魅了の蓄積中は発生させず、味方化が成立してから生成する。
                     break;
             }
             if (effectPrefab != null)
@@ -169,7 +171,23 @@ public class charaDamage : MonoBehaviour, IDamageable
         {
             charm.tickTimer = 0f;
             enemyBase.BecomeCharmedAlly();
+            SpawnCompletedCharmEffect(charm);
         }
+    }
+
+    void SpawnCompletedCharmEffect(ActiveBuff charm)
+    {
+        if (enemyBase == null || !enemyBase.IsCharmed ||
+            charm == null || charm.effectObject != null ||
+            charm.statuseffectdata == null || charm.statuseffectdata.EffectObject == null)
+            return;
+
+        // 毒・感電と同じActiveBuff.effectObjectで管理。魅了後は敵本体へ追従。
+        charm.effectObject = Instantiate(
+            charm.statuseffectdata.EffectObject,
+            enemyBase.transform.position,
+            Quaternion.identity,
+            enemyBase.transform);
     }
 
     // Each damage chain has a unique token: cycles cannot recurse indefinitely.

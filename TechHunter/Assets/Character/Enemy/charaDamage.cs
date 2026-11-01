@@ -582,10 +582,10 @@ public class charaDamage : MonoBehaviour, IDamageable
     }
     void CoinDrop()
     {
-        // Defer coin creation until all deaths this frame have been collected.
-        // Each request retains the dying enemy's location.
-        if (CoinPool.Instance != null)
-            CoinPool.Instance.RequestDrop(enemyBase.GOLD, enemyBase.transform.position);
+        // コインは敵本体（EnemyBase）側で一度だけドロップ。
+        // 魅了成立時に既に出していれば、後から死亡しても二重に出さない。
+        if (enemyBase != null)
+            enemyBase.DropCoinsOnce();
     }
 
     float TakeElectricDamage()

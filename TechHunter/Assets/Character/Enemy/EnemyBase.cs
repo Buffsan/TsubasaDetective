@@ -43,11 +43,27 @@ public class EnemyBase : MonoBehaviour
     }
 
     // 蓄積値と現在HPの比較はcharaDamageの状態異常処理で行う。
+    // 敵1体につき、魅了成立時または通常死亡時のどちらかで一度だけ報酬を出す。
+    // 同じ敵に複数のcharaDamageが存在しても二重ドロップしない。
+    bool coinsDropped;
+
+    public void DropCoinsOnce()
+    {
+        if (coinsDropped || GOLD <= 0 || CoinPool.Instance == null) return;
+
+        coinsDropped = true;
+        CoinPool.Instance.RequestDrop(GOLD, transform.position);
+    }
+
     public void BecomeCharmedAlly()
     {
         if (IsCharmed || status == Status.Die || HP <= 0f) return;
         IsCharmed = true;
         factions = Faction.Charmed;
+
+        // 魅了成立を撃破報酬の獲得タイミングとして扱う。
+        // 後から衰弱などで死亡しても、死亡処理では再ドロップしない。
+        DropCoinsOnce();
         EnemyContoroller normalEnemy = this as EnemyContoroller;
         if (normalEnemy != null) normalEnemy.BecomeCharmedAlly();
         Boss_Controller boss = this as Boss_Controller;

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public sealed class CharmHPBarVisual : MonoBehaviour
 {
-    static readonly Color32 CharmPink = new Color32(255, 112, 179, 255);
+    static readonly Color32 CharmPink = new Color32(192, 68, 136, 255);
 
     Slider slider;
     EnemyBase enemy;

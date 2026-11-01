@@ -183,10 +183,9 @@ public class CG_HeavySniper_AI : EnemyMoveBase
         EnemyAttack enemyAttack = CL_Arrow.GetComponent<EnemyAttack>();
         enemyAttack.enemyBase = enemyBase;
 
-        // 攻撃開始時のSavePosを使用し、連射中も標的を追尾し直さない。
-        Vector2 PlayerLookDirecton = UsesLegacyPlayerTarget
-            ? (Vector2)TargetPosition - (Vector2)enemyBase.transform.position
-            : SavePos - (Vector2)enemyBase.transform.position;
+        // プレイヤー戦と同じく、連射中も発射時点の標的へ向ける。
+        Vector2 PlayerLookDirecton =
+            (Vector2)TargetPosition - (Vector2)enemyBase.transform.position;
         if (PlayerLookDirecton.sqrMagnitude < 0.0001f)
             PlayerLookDirecton = TargetDirection;
 

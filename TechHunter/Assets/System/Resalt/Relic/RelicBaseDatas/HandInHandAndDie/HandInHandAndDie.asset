@@ -11,9 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5350f31428789b94589b208b814222cc, type: 3}
   m_Name: HandInHandAndDie
-  m_EditorClassIdentifier:
-  RelicName: 名画「手と手を取り合って死ね」
+  m_EditorClassIdentifier: 
+  RelicName: "\u540D\u753B\u300C\u624B\u3068\u624B\u3092\u53D6\u308A\u5408\u3063\u3066\u6B7B\u306D\u300D"
   RelicDataObject: {fileID: 7709000000000000001, guid: 44bd391efbc84adc9c92b6149b89a208, type: 3}
-  RelicImage: {fileID: 0}
-  Explanation: "スキル3の通常ダメージが0になり、代わりに魅了を蓄積する。魅了値が敵の現在HPを超えると味方化し、敵を攻撃する。混乱時ダメージは維持。味方はマップ移動時に消える。"
+  RelicImage: {fileID: 21300000, guid: 21d41e3bc4374bf42b503bf0c0f1f3d5, type: 3}
+  Explanation: "\u30B9\u30AD\u30EB3\u306E\u901A\u5E38\u30C0\u30E1\u30FC\u30B8\u304C0\u306B\u306A\u308A\u3001\u4EE3\u308F\u308A\u306B\u9B45\u4E86\u3092\u84C4\u7A4D\u3059\u308B\u3002\u9B45\u4E86\u5024\u304C\u6575\u306E\u73FE\u5728HP\u3092\u8D85\u3048\u308B\u3068\u5473\u65B9\u5316\u3057\u3001\u6575\u3092\u653B\u6483\u3059\u308B\u3002\u6DF7\u4E71\u6642\u30C0\u30E1\u30FC\u30B8\u306F\u7DAD\u6301\u3002\u5473\u65B9\u306F\u30DE\u30C3\u30D7\u79FB\u52D5\u6642\u306B\u6D88\u3048\u308B\u3002"
   stage: 0

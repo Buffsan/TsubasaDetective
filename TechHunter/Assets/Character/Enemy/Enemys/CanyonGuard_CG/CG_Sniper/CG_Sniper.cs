@@ -6,14 +6,12 @@ public class CG_Sniper : EnemyMoveBase
 {
     [SerializeField] GameObject Arrow;
     [SerializeField] float BulletSpeed = 1.8f;
-    Vector2 lockedShotPosition;
     public override void EnemyAttackPlay()
     {
         enemyBase.AttackCount += Time.deltaTime;
         if (enemyBase.mode == EnemyBase.ModeType.M1) 
         {
             enemyBase.rb.velocity = Vector2.zero;
-            lockedShotPosition = TargetPosition;
             LookAtCurrentTarget();
             enemyBase.audioManager.PlaySE(enemyBase.AttackStayAudio);
             enemyBase.mode = EnemyBase.ModeType.M2;
@@ -58,10 +56,8 @@ public class CG_Sniper : EnemyMoveBase
 
     void shotBullet() 
     {
-        // 攻撃開始時に決めた照準を維持し、発射直前には追尾しない。
-        Vector2 shotDirection = UsesLegacyPlayerTarget
-            ? TargetDirection
-            : lockedShotPosition - (Vector2)enemyBase.transform.position;
+        // プレイヤー狙いと同様に発射時点のターゲット方向を計算する。
+        Vector2 shotDirection = TargetDirection;
         if (shotDirection.sqrMagnitude < 0.0001f) shotDirection = TargetDirection;
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);

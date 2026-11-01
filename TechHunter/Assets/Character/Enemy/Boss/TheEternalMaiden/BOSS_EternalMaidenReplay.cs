@@ -417,8 +417,16 @@ public class BOSS_EternalMaidenReplay : MonoBehaviour
             save.animator.speed = e.effectAnimatorSpeed;
 
         EnemyAttack[] attacks = obj.GetComponentsInChildren<EnemyAttack>(true);
+        EnemyBase actualOwner = attackOwner != null ? attackOwner : source;
+        Boss_Controller mainBoss = source as Boss_Controller;
         for (int i = 0; i < attacks.Length; i++)
-            attacks[i].enemyBase = attackOwner != null ? attackOwner : source;
+        {
+            if (mainBoss != null &&
+                mainBoss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+                mainBoss.ConfigureAttackTarget(attacks[i], actualOwner);
+            else
+                attacks[i].enemyBase = actualOwner;
+        }
 
         if (e.lifetime > 0f) Destroy(obj, e.lifetime);
     }

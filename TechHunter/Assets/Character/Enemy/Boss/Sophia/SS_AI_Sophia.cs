@@ -294,6 +294,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                 enemyBase.mode = EnemyBase.ModeType.M4;
 
                 GameObject CL_Laser = Instantiate(Laser, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Laser);
                 LookAtCurrentTarget();
                 CL_Laser.transform.parent = enemyBase.EnemyAnimBody.transform;
                 SophiaLaser sophiaLaser = CL_Laser.GetComponent<SophiaLaser>();
@@ -366,6 +367,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                 enemyBase.mode = EnemyBase.ModeType.M2;
 
                 GameObject CL_Laser = Instantiate(Laser, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Laser);
                 LookAtCurrentTarget();
 
                 SophiaLaser sophiaLaser = CL_Laser.GetComponent<SophiaLaser>();
@@ -508,6 +510,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                 Vector2 TargetPoint = new Vector2(Random.Range(-10f, 10f), Random.Range(-2f, 9f));
 
                 GameObject CL_Moter = Instantiate(Motar, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Moter);
                 Mortar_Controller mortar_ = CL_Moter.GetComponent<Mortar_Controller>();
                 mortar_.enemyBase = enemyBase;
                 mortar_.ChangePos(TargetPoint);
@@ -542,6 +545,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                 for (int i = 0; i < 4; i++) 
                 {
                     GameObject CL_Laser = Instantiate(Laser, enemyBase.transform.position, Quaternion.identity);
+                    ConfigureSpawnedAttack(CL_Laser);
                     LookAtCurrentTarget();
 
                     SophiaLaser sophiaLaser = CL_Laser.GetComponent<SophiaLaser>();
@@ -691,6 +695,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                 enemyBase.mode = EnemyBase.ModeType.M2;
 
                 GameObject CL_Laser = Instantiate(Laser, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Laser);
                 LookAtCurrentTarget();
 
                 SophiaLaser sophiaLaser = CL_Laser.GetComponent<SophiaLaser>();
@@ -779,6 +784,7 @@ public class SS_AI_Sophia : Boss_MoveBase
 
 
                 GameObject CL_Sword = Instantiate(Slash, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Sword);
 
                 SophiaSword sword = CL_Sword.GetComponent<SophiaSword>();
 
@@ -827,6 +833,7 @@ public class SS_AI_Sophia : Boss_MoveBase
         for (int i = 0; i < value; i++)
         {
             GameObject CL_Star = Instantiate(Star, enemyBase.gameObject.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Star);
             Rigidbody2D CL_rb = CL_Star.GetComponent<Rigidbody2D>();
             EnemyAttack CL_EnemyAttack= CL_Star.GetComponent<EnemyAttack>();
             
@@ -846,6 +853,7 @@ public class SS_AI_Sophia : Boss_MoveBase
         LookAtCurrentTarget();
 
             GameObject CL_Star = Instantiate(Star, enemyBase.gameObject.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Star);
             Rigidbody2D CL_rb = CL_Star.GetComponent<Rigidbody2D>();
             EnemyAttack CL_EnemyAttack = CL_Star.GetComponent<EnemyAttack>();
 
@@ -961,6 +969,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                 enemyBase.mode = EnemyBase.ModeType.M2;
 
                 GameObject CL_Laser = Instantiate(Laser, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Laser);
                 LookAtCurrentTarget();
 
                 SophiaLaser sophiaLaser = CL_Laser.GetComponent<SophiaLaser>();
@@ -1004,6 +1013,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                 Vector2 TargetPoint = new Vector2(Random.Range(-10f,10f), Random.Range(-2f, 9f));
             
                 GameObject CL_Moter = Instantiate(Motar,enemyBase.transform.position,Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Moter);
                 Mortar_Controller mortar_ = CL_Moter.GetComponent<Mortar_Controller>();
                 mortar_.enemyBase = enemyBase;
                 mortar_.ChangePos(TargetPoint);

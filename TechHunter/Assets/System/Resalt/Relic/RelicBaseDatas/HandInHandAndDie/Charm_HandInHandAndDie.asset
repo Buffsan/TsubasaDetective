@@ -19,7 +19,7 @@ MonoBehaviour:
   CharmedDamageMultiplier: 0.5
   number: 1
   TickTime: 1
-  EffectObject: {fileID: 0}
+  EffectObject: {fileID: 6111644391743638336, guid: 48a626cb524d8b34c99f8d92acd025bd, type: 3}
   audioClips: []
   AttackBuff: 0
   MultiplyAttackBuff: 0

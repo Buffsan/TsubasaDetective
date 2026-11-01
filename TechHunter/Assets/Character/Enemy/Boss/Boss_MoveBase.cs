@@ -190,14 +190,28 @@ public class Boss_MoveBase : MonoBehaviour
         }
         return CL_Enemy;
     }
+    // ボスが生成した攻撃の所有者と敵対対象を共通ターゲット設定に同期する。
+    // 通常のPlayerOnlyでは元Prefabの設定を変えない。
+    protected void ConfigureSpawnedAttack(GameObject instance)
+    {
+        Boss_Controller boss = enemyBase as Boss_Controller;
+        if (instance == null || boss == null ||
+            boss.TargetMode == EnemyContoroller.TargetType.PlayerOnly) return;
+
+        foreach (EnemyAttack attack in instance.GetComponentsInChildren<EnemyAttack>(true))
+            if (attack != null) boss.ConfigureAttackTarget(attack);
+    }
+
     public void SpawnObjectNow(GameObject SpawnObject, Vector2 Target, float DestroyTime)
     {
         GameObject CL_Object = Instantiate(SpawnObject, Target, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Object);
         Destroy(CL_Object, DestroyTime);
     }
     public GameObject SpawnObjectNow_Input(GameObject SpawnObject, Vector2 Target, float DestroyTime)
     {
         GameObject CL_Object = Instantiate(SpawnObject, Target, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Object);
         Destroy(CL_Object, DestroyTime);
         return CL_Object;
     }

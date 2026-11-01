@@ -82,6 +82,8 @@ public class charaDamage : MonoBehaviour, IDamageable
                         enemyBase.status == EnemyBase.Status.Die || enemyBase.HP <= 0f))
             return;
 
+        if (isCharm) EnsureCharmHPVisual();
+
         foreach (ActiveBuff active in buffs)
         {
             if (active.statuseffectdata == null ||
@@ -140,12 +142,29 @@ public class charaDamage : MonoBehaviour, IDamageable
         return 0f;
     }
 
+    // 敵Prefabへのシリアライズ参照は不要。初回付与時に既存HPバーを拡張。
+    void EnsureCharmHPVisual()
+    {
+        if (enemyBase == null || enemyBase.HP_Slider == null) return;
+
+        var slider = enemyBase.HP_Slider;
+        CharmHPBarVisual visual = slider.GetComponent<CharmHPBarVisual>();
+        if (visual == null)
+            visual = slider.gameObject.AddComponent<CharmHPBarVisual>();
+        visual.Initialize(slider, enemyBase);
+    }
+
     void TryCompleteCharm(ActiveBuff charm)
     {
         if (enemyBase == null || enemyBase.IsCharmed || enemyBase.HP <= 0f)
             return;
-        if (charm.accumulatedValue > enemyBase.HP)
+
+        // 黄色HPがちょうどピンクに覆われた瞬間にも魅了が成立する。
+        if (charm.accumulatedValue >= enemyBase.HP)
+        {
+            charm.tickTimer = 0f;
             enemyBase.BecomeCharmedAlly();
+        }
     }
 
     // Each damage chain has a unique token: cycles cannot recurse indefinitely.
@@ -348,8 +367,40 @@ public class charaDamage : MonoBehaviour, IDamageable
                     break;
 
                 case StatusEffect.StatusEffectType.Charm:
-                    // 魅了値は回復・解除されない。別の攻撃でHPが下がった場合も判定。
-                    TryCompleteCharm(buff);
+                    // 魅了前は蓄積した魅了値を保持。HPの減少でも成立を判定する。
+                    if (!enemyBase.IsCharmed)
+                        TryCompleteCharm(buff);
+
+                    if (enemyBase.IsCharmed && enemyBase.status != EnemyBase.Status.Die)
+                    {
+                        // 魅了成立後は死亡まで毒の実効ダメージを基準に衰弱する。
+                        float interval = Mathf.Max(0.05f, buff.statuseffectdata.TickTime);
+                        if (buff.tickTimer >= interval)
+                        {
+                            buff.tickTimer -= interval;
+
+                            // 毒と同様に防御力・最低ダメージを適用した後、魅了用倍率を乗算。
+                            float poisonDamage = Mathf.Max(1f,
+                                TakePoisonDamage(enemyBase.charadata) - DF);
+                            if (enemyBase.status == EnemyBase.Status.ConfusionResistance)
+                                poisonDamage *= 2f;
+
+                            float decay = poisonDamage *
+                                Mathf.Max(0f, buff.statuseffectdata.CharmedDamageMultiplier);
+                            if (decay > 0f)
+                            {
+                                TakeDamage(-decay);
+                                isDamageTextPop(decay, 1, false);
+                                if (enemyBase.HP <= 0f)
+                                    Death();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 魅了成立前の待ち時間は持ち越さない。
+                        buff.tickTimer = 0f;
+                    }
                     break;
             }
 

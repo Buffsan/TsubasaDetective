@@ -213,6 +213,7 @@ public class Boss_SS_MageOfTheStarChoir_AI : Boss_MoveBase
         {
             LookAtCurrentTarget();
             SaveLaser = Instantiate(Laser,transform.position,Quaternion.identity);
+            ConfigureSpawnedAttack(SaveLaser);
             SaveLaser.transform.up = TargetDirection.normalized;
             enemyBase.animator.SetInteger("Anim", 2);
             NextPhase();
@@ -248,6 +249,7 @@ public class Boss_SS_MageOfTheStarChoir_AI : Boss_MoveBase
         {
             LookAtCurrentTarget();
             SaveLaser = Instantiate(Laser, transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(SaveLaser);
             SaveLaser.transform.up = TargetDirection.normalized;
 
             enemyBase.animator.SetInteger("Anim", 2);
@@ -321,6 +323,7 @@ public class Boss_SS_MageOfTheStarChoir_AI : Boss_MoveBase
             if (attackcount() > 2) 
             {
                 GameObject CL_Attack = Instantiate(AttackArea[0], transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Attack);
                 Destroy(CL_Attack,0.1f);
                 GameObject CL_Effect = Instantiate(AttackEffect[0], transform.position, Quaternion.identity);
                 Destroy(CL_Effect, 2);

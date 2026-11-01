@@ -208,13 +208,12 @@ public class DK_PilgrimOfTheMoon_AI : EnemyMoveBase
         if (other == null || other == enemyBase || other.status == EnemyBase.Status.Die || other.HP <= 0f)
             return false;
 
-        if (controller != null && controller.TargetMode == EnemyContoroller.TargetType.EnemyOnly)
-        {
-            if ((controller.Factions & Faction.DebugA) != Faction.None)
-                return (other.Factions & Faction.DebugB) != Faction.None;
-            if ((controller.Factions & Faction.DebugB) != Faction.None)
-                return (other.Factions & Faction.DebugA) != Faction.None;
-        }
+        // EnemyOnly/PlayerAndEnemyでも独自の国別判定を行うとControllerと
+        // 違う標的を拒否する。共通の派閥・除外設定に判定を集約する。
+        if (controller != null && controller.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+            return controller.CanTarget(target);
+
+        // 通常のプレイヤー戦では従来の判定を維持する。
         return (other.Factions & Faction.Diana) == Faction.None;
     }
 

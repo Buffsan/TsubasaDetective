@@ -86,6 +86,11 @@ public class EnemyAttack : MonoBehaviour
         Boss_Controller boss = enemyBase as Boss_Controller;
         if (boss != null && boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
             boss.ConfigureAttackTarget(this);
+        // Instantiate直後などで攻撃オブジェクトの初期化が遅れても、
+        // 通常敵・ボス双方の攻撃判定を現在の対象派閥に合わせる。
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null && controller.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+            controller.ConfigureAttackTarget(this);
 
         if (other.CompareTag("PlayerArea"))
         {

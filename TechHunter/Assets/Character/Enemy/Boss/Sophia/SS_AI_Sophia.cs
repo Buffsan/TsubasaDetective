@@ -647,6 +647,7 @@ public class SS_AI_Sophia : Boss_MoveBase
                         enemyBase.mode = EnemyBase.ModeType.M4;
                     }
                     GameObject CL_Motar = Instantiate(Motar,enemyBase.transform.position,Quaternion.identity);
+                    ConfigureSpawnedAttack(CL_Motar);
                     Mortar_Controller CL_mortar_Controller = CL_Motar.GetComponent<Mortar_Controller>();
 
                     CL_mortar_Controller.ChangePos(TargetPosition);

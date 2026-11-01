@@ -10,6 +10,9 @@ public class StatusEffectAttack : StatusEffect
     // 効果時間が経過しても消えない状態異常（魅了など）
     public bool IsPermanent = false;
 
+    // 魅了成立後の継続ダメージ倍率。毒の実効ダメージに乗算する。
+    public float CharmedDamageMultiplier = 0.5f;
+
     public float number = 1;//効果値　デバフによって値の使い方が変化
 
     public float TickTime = 1;

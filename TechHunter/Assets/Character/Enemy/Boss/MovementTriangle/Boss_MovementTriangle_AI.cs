@@ -437,6 +437,7 @@ public class Boss_MovementTriangle_AI : Boss_MoveBase
             , shotPos
             , Quaternion.identity
         );
+        ConfigureSpawnedAttack(CL_Arrow);
 
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
         Vector2 direction = (Vector2)TargetPosition - shotPos;
@@ -456,6 +457,7 @@ public class Boss_MovementTriangle_AI : Boss_MoveBase
             , shotPos
             , Quaternion.identity
             );
+        ConfigureSpawnedAttack(CL_Arrow);
 
         Mortar_Controller mortar = CL_Arrow.GetComponent<Mortar_Controller>();
         mortar.ChangePos(TargetPosition + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
@@ -508,6 +510,7 @@ public class Boss_MovementTriangle_AI : Boss_MoveBase
     void NeedleSpawn(Vector2 Ptransform)
     {
         GameObject CL_Needle = Instantiate(RockNeedle, Ptransform, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Needle);
 
         Destroy(CL_Needle, 5);
     }

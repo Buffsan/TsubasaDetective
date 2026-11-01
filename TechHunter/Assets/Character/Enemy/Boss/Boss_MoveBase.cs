@@ -199,7 +199,12 @@ public class Boss_MoveBase : MonoBehaviour
             boss.TargetMode == EnemyContoroller.TargetType.PlayerOnly) return;
 
         foreach (EnemyAttack attack in instance.GetComponentsInChildren<EnemyAttack>(true))
-            if (attack != null) boss.ConfigureAttackTarget(attack);
+        {
+            if (attack == null) continue;
+            // 独立した召喚体がEnemyBaseを持つ場合は、その攻撃力を維持する。
+            EnemyBase localOwner = attack.GetComponentInParent<EnemyBase>();
+            boss.ConfigureAttackTarget(attack, localOwner != null ? localOwner : boss);
+        }
     }
 
     public void SpawnObjectNow(GameObject SpawnObject, Vector2 Target, float DestroyTime)

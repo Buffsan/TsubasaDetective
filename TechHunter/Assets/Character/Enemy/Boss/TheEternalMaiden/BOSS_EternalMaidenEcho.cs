@@ -2,15 +2,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ‰i‰“‚Ì­—‚Ì•ªgB•ªgPrefab‚É‚Í EnemyBase ‚Æ charaDamage ‚ğ‚»‚Ì‚Ü‚Ü•t‚¯‚éB
-/// ‚½‚¾‚µ EnemyContoroller / BOSS_TheEternalMaiden ‚Í•t‚¯‚È‚¢B
-/// charaDamage ‚Í DamageType=1 ‚É‚µ‚ÄA–{‘Ì‚Ì DamageType=0 ‚É“]‘—‚·‚éB
+/// æ°¸é ã®å°‘å¥³ã®åˆ†èº«ã€‚åˆ†èº«Prefabã«ã¯ EnemyBase ã¨ charaDamage ã‚’ãã®ã¾ã¾ä»˜ã‘ã‚‹ã€‚
+/// ãŸã ã— EnemyContoroller / BOSS_TheEternalMaiden ã¯ä»˜ã‘ãªã„ã€‚
+/// charaDamage ã¯ DamageType=1 ã«ã—ã¦ã€æœ¬ä½“ã® DamageType=0 ã«è»¢é€ã™ã‚‹ã€‚
 /// </summary>
 public class BOSS_EternalMaidenEcho : MonoBehaviour
 {
-    [Header("•ªg‚Ì•K{QÆ")]
+    [Header("åˆ†èº«ã®å¿…é ˆå‚ç…§")]
     [SerializeField] EnemyBase localEnemy;
-    [Header("•¡»‹@‚Ì¬—ó‘Ôi¶¬‚É©“®Ú‘±j")]
+    [Header("è¤‡è£½æ©Ÿã®æ··ä¹±çŠ¶æ…‹ï¼ˆç”Ÿæˆæ™‚ã«è‡ªå‹•æ¥ç¶šï¼‰")]
     [SerializeField] EnemyBase replicatorEnemyBase;
     [SerializeField] Rigidbody2D body;
     [SerializeField] Transform animationBody;
@@ -18,17 +18,17 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
     [SerializeField] GameObject dashHitbox;
     [SerializeField] ParticleSystem attackParticles;
 
-    [Header("•¡»‹@‚Ì¬—’†Fíƒp[ƒeƒBƒNƒ‹")]
-    [Tooltip("•ªgPrefab‚ªŒ³‚©‚ç‚ÂíÄ¶—pParticleSystemBUŒ‚—p‚ÌAttack Particles‚Æ‚Í•Ê‚Ì‚à‚Ì‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢B")]
+    [Header("è¤‡è£½æ©Ÿã®æ··ä¹±ä¸­ï¼šå¸¸æ™‚ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«")]
+    [Tooltip("åˆ†èº«PrefabãŒå…ƒã‹ã‚‰æŒã¤å¸¸æ™‚å†ç”Ÿç”¨ParticleSystemã€‚æ”»æ’ƒç”¨ã®Attack Particlesã¨ã¯åˆ¥ã®ã‚‚ã®ã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚")]
     [SerializeField] ParticleSystem defaultParticles;
     [Min(0f)][SerializeField] float confusionParticleEmission = 0.2f;
 
-    [Header("•¡»‹@‚Ì¬—’†F”í’e0i2–‡‚ÌSprite‚ğŒğŒİ•\¦j")]
+    [Header("è¤‡è£½æ©Ÿã®æ··ä¹±ä¸­ï¼šè¢«å¼¾0ï¼ˆ2æšã®Spriteã‚’äº¤äº’è¡¨ç¤ºï¼‰")]
     [SerializeField] Sprite confusionSprite0;
     [SerializeField] Sprite confusionSprite1;
     [Min(0.01f)][SerializeField] float confusionSpriteInterval = 0.2f;
 
-    [Header("•¡»‹@‚©‚ç‘à—ñ‚Ö‚Ì‡—¬")]
+    [Header("è¤‡è£½æ©Ÿã‹ã‚‰éšŠåˆ—ã¸ã®åˆæµ")]
     [Min(0.1f)][SerializeField] float joinSpeed = 32f;
     [Min(0.02f)][SerializeField] float joinDistance = 0.2f;
 
@@ -51,7 +51,7 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
     public EnemyBase LocalEnemy { get { return localEnemy; } }
     public int Index { get { return index; } }
 
-    /// <summary>¶¬’¼ŒãAÅ‰‚ÌStart/FixedUpdate‚æ‚è‘O‚É–{‘Ì‚Æ‚Ì“]‘—æ‚ğÚ‘±‚·‚éB</summary>
+    /// <summary>ç”Ÿæˆç›´å¾Œã€æœ€åˆã®Start/FixedUpdateã‚ˆã‚Šå‰ã«æœ¬ä½“ã¨ã®è»¢é€å…ˆã‚’æ¥ç¶šã™ã‚‹ã€‚</summary>
     public bool Initialize(BOSS_EternalMaidenReplay replay, int echoIndex)
     {
         owner = replay;
@@ -68,14 +68,14 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
 
         if (owner == null || owner.OriginalDamage == null || localEnemy == null || spriteRenderer == null || replicatorEnemyBase == null)
         {
-            Debug.LogError("‰i‰“‚Ì­—‚Ì•ªg: Owner / –{‘ÌcharaDamage / •ªgEnemyBase / SpriteRenderer / •¡»‹@EnemyBase ‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·", this);
+            Debug.LogError("æ°¸é ã®å°‘å¥³ã®åˆ†èº«: Owner / æœ¬ä½“charaDamage / åˆ†èº«EnemyBase / SpriteRenderer / è¤‡è£½æ©ŸEnemyBase ãŒä¸è¶³ã—ã¦ã„ã¾ã™", this);
             return false;
         }
 
-        // •ªgPrefab©g‚Ì“§–¾“x‚ğ•ÛB–{‘Ì‚ÌSpriteF‚ğ–Í•í‚µ‚Ä‚àalpha‚Íã‘‚«‚µ‚È‚¢B
+        // åˆ†èº«Prefabè‡ªèº«ã®é€æ˜åº¦ã‚’ä¿æŒã€‚æœ¬ä½“ã®Spriteè‰²ã‚’æ¨¡å€£ã—ã¦ã‚‚alphaã¯ä¸Šæ›¸ãã—ãªã„ã€‚
         initialSpriteAlpha = spriteRenderer.color.a;
 
-        // ¬—‰ğœ‚É–ß‚¹‚é‚æ‚¤APrefab‚Éİ’è‚³‚ê‚½Emission‚ğ‚»‚Ì‚Ü‚Ü•Û‘¶‚·‚éB
+        // æ··ä¹±è§£é™¤æ™‚ã«æˆ»ã›ã‚‹ã‚ˆã†ã€Prefabã«è¨­å®šã•ã‚ŒãŸEmissionã‚’ãã®ã¾ã¾ä¿å­˜ã™ã‚‹ã€‚
         if (defaultParticles != null)
         {
             var defaultEmission = defaultParticles.emission;
@@ -83,11 +83,11 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
             hasOriginalDefaultEmission = true;
         }
 
-        // Šù‘¶charaDamage‚ğ‚»‚Ì‚Ü‚Üg—pB“]‘—æ‚Í–{‘ÌDamageType=0‚¾‚¯B
+        // æ—¢å­˜charaDamageã‚’ãã®ã¾ã¾ä½¿ç”¨ã€‚è»¢é€å…ˆã¯æœ¬ä½“DamageType=0ã ã‘ã€‚
         charaDamage[] hitAreas = GetComponentsInChildren<charaDamage>(true);
         if (hitAreas.Length == 0)
         {
-            Debug.LogError("‰i‰“‚Ì­—‚Ì•ªg: ”í’e—pcharaDamage‚ª‚ ‚è‚Ü‚¹‚ñ", this);
+            Debug.LogError("æ°¸é ã®å°‘å¥³ã®åˆ†èº«: è¢«å¼¾ç”¨charaDamageãŒã‚ã‚Šã¾ã›ã‚“", this);
             return false;
         }
         for (int i = 0; i < hitAreas.Length; i++)
@@ -97,7 +97,7 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
             receiver.passDamageAreas.Clear();
             receiver.passDamageAreas.Add(owner.OriginalDamage);
 
-            // ”í’e”»’è—pCollider‚Í‰ŠúƒtƒŒ[ƒ€‚ª‘µ‚¤‚Ü‚Å‰B‚·B
+            // è¢«å¼¾åˆ¤å®šç”¨Colliderã¯åˆæœŸãƒ•ãƒ¬ãƒ¼ãƒ ãŒæƒã†ã¾ã§éš ã™ã€‚
             Collider2D[] colliders = receiver.GetComponents<Collider2D>();
             for (int j = 0; j < colliders.Length; j++)
             {
@@ -106,7 +106,7 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
             }
         }
 
-        // Unity‚ÌAnimationXV‚Å‚Í‚È‚­AŒ³‚ÌSprite‚ğŠÔ·‚ÅƒRƒs[‚·‚éB
+        // Unityã®Animationæ›´æ–°ã§ã¯ãªãã€å…ƒã®Spriteã‚’æ™‚é–“å·®ã§ã‚³ãƒ”ãƒ¼ã™ã‚‹ã€‚
         if (animationBody != null)
         {
             Animator[] animators = animationBody.GetComponentsInChildren<Animator>(true);
@@ -114,14 +114,22 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
         }
 
         EnemyAttack[] hitboxAttacks = GetComponentsInChildren<EnemyAttack>(true);
+        Boss_Controller mainBoss = owner.Source as Boss_Controller;
         for (int i = 0; i < hitboxAttacks.Length; i++)
-            hitboxAttacks[i].enemyBase = localEnemy;
+        {
+            EnemyAttack hitbox = hitboxAttacks[i];
+            if (mainBoss != null &&
+                mainBoss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+                mainBoss.ConfigureAttackTarget(hitbox, localEnemy);
+            else
+                hitbox.enemyBase = localEnemy;
+        }
 
         if (dashHitbox != null) dashHitbox.SetActive(false);
         if (attackParticles != null)
             attackParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
-        // ’a¶‚µ‚½uŠÔ‚Í•¡»‹@‚ÌˆÊ’u‚É—¯‚ßA‘à—ñ‚Ö”ò‚Ñ‚Ş‚Ü‚Å‚Í“–‚½‚è”»’è‚È‚µB
+        // èª•ç”Ÿã—ãŸç¬é–“ã¯è¤‡è£½æ©Ÿã®ä½ç½®ã«ç•™ã‚ã€éšŠåˆ—ã¸é£›ã³è¾¼ã‚€ã¾ã§ã¯å½“ãŸã‚Šåˆ¤å®šãªã—ã€‚
         float when = Time.time - index * owner.DelaySeconds;
         lastEventId = owner.LastEventIdBefore(when);
         SetAttackAndDamageEnabled(false);
@@ -133,18 +141,18 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
         specialMode = value;
         if (!value && owner != null)
         {
-            // “Áês“®’†‚É”­¶‚µ‚½’Êí‚ÌUŒ‚‚ÍA‚ ‚Æ‚©‚çˆê‹C‚É”­Ë‚µ‚È‚¢B
+            // ç‰¹æ®Šè¡Œå‹•ä¸­ã«ç™ºç”Ÿã—ãŸé€šå¸¸ã®æ”»æ’ƒã¯ã€ã‚ã¨ã‹ã‚‰ä¸€æ°—ã«ç™ºå°„ã—ãªã„ã€‚
             lastEventId = owner.LastEventIdBefore(Time.time - index * owner.DelaySeconds);
         }
         if (value && dashHitbox != null) dashHitbox.SetActive(false);
         if (value && attackParticles != null)
             attackParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        // “Áê‘à—ñ’†‚Í–{‘Ì‚Ì‰ß‹‚Ì–³“Gó‘Ô‚ğˆø‚«Œp‚ª‚¸A•ªg‚Í”í’e‰Â”\‚É‚·‚éB
+        // ç‰¹æ®ŠéšŠåˆ—ä¸­ã¯æœ¬ä½“ã®éå»ã®ç„¡æ•µçŠ¶æ…‹ã‚’å¼•ãç¶™ãŒãšã€åˆ†èº«ã¯è¢«å¼¾å¯èƒ½ã«ã™ã‚‹ã€‚
         if (value) SetDamageCollidersEnabled(isVisible);
     }
 
-    // ‘æOŒ`‘Ô‚Ì“Áês“®’†A’Êí‚Ì’x‰„Ä¶‚É‘ã‚í‚Á‚Ä’¼Úw’è‚³‚ê‚½‘à—ñˆÊ’u‚ÖˆÚ“®B
-    // ˆÚ“®’†‚Å‚à•¡»‹@‚ª¬—‚µ‚½‚ç‚»‚Ìê‚Å’â~‚·‚éB
+    // ç¬¬ä¸‰å½¢æ…‹ã®ç‰¹æ®Šè¡Œå‹•ä¸­ã€é€šå¸¸ã®é…å»¶å†ç”Ÿã«ä»£ã‚ã£ã¦ç›´æ¥æŒ‡å®šã•ã‚ŒãŸéšŠåˆ—ä½ç½®ã¸ç§»å‹•ã€‚
+    // ç§»å‹•ä¸­ã§ã‚‚è¤‡è£½æ©ŸãŒæ··ä¹±ã—ãŸã‚‰ãã®å ´ã§åœæ­¢ã™ã‚‹ã€‚
     public bool SpecialMoveTowards(Vector2 destination, float speed, float tolerance)
     {
         if (!specialMode || pausedByMachine || phase3Frozen) return false;
@@ -156,7 +164,7 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
         return Vector2.Distance(next, destination) <= tolerance;
     }
 
-    // ƒtƒBƒjƒbƒVƒ…Œã‚Í•¡»‹@‚ğ¬—‚³‚¹‚¸A•ªg‚¾‚¯‚ª3•bŠÔs“®•s”\‚É‚È‚éB
+    // ãƒ•ã‚£ãƒ‹ãƒƒã‚·ãƒ¥å¾Œã¯è¤‡è£½æ©Ÿã‚’æ··ä¹±ã•ã›ãšã€åˆ†èº«ã ã‘ãŒ3ç§’é–“è¡Œå‹•ä¸èƒ½ã«ãªã‚‹ã€‚
     public void BeginPhase3Recovery(float duration)
     {
         phase3Frozen = true;
@@ -171,11 +179,11 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
         if (attackParticles != null)
             attackParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         SetDefaultParticleConfused(true);
-        // ƒtƒBƒjƒbƒVƒ…Œã‚Ì3•b’â~’†‚àA–{‘Ì‚Ì–³“GƒtƒŒ[ƒ€‚ğˆø‚«‚¸‚ç‚È‚¢B
+        // ãƒ•ã‚£ãƒ‹ãƒƒã‚·ãƒ¥å¾Œã®3ç§’åœæ­¢ä¸­ã‚‚ã€æœ¬ä½“ã®ç„¡æ•µãƒ•ãƒ¬ãƒ¼ãƒ ã‚’å¼•ããšã‚‰ãªã„ã€‚
         SetDamageCollidersEnabled(isVisible);
     }
 
-    // ¬—‚Ü‚½‚Í‘æOŒ`‘Ô‚Ì’â~‰ğœŒã‚ÍA’Êí‚Ì’x‰„‘à—ñ‚Ö‚‘¬‚Å•œ‹A‚·‚éB
+    // æ··ä¹±ã¾ãŸã¯ç¬¬ä¸‰å½¢æ…‹ã®åœæ­¢è§£é™¤å¾Œã¯ã€é€šå¸¸æ™‚ã®é…å»¶éšŠåˆ—ã¸é«˜é€Ÿã§å¾©å¸°ã™ã‚‹ã€‚
     void ReturnToReplayFormation()
     {
         if (owner == null || specialMode || phase3Frozen || pausedByMachine) return;
@@ -203,13 +211,13 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
         SetAttackAndDamageEnabled(false);
     }
 
-    // ƒ_ƒ[ƒW”»’è‚Íu‘à—ñó‘Ôv‚ÅŠÇ—‚µA–{‘Ì‚Ì‰ß‹‚ÌDamageBodyó‘Ô‚©‚ç“Æ—§‚³‚¹‚éB
-    // ˆÈ‘O‚ÌƒR[ƒh‚Å‚Í ApplyFrame ‚ªDamageBody©‘Ì‚ğ”ñƒAƒNƒeƒBƒu‚É‚Å‚«‚½‚½‚ßA
-    // ¬—‚ÅApplyFrame‚ª~‚Ü‚é‚ÆA–³“G‚Ì‚Ü‚ÜŒÅ’è‚³‚ê‚é‚±‚Æ‚ª‚ ‚Á‚½B
+    // ãƒ€ãƒ¡ãƒ¼ã‚¸åˆ¤å®šã¯ã€ŒéšŠåˆ—çŠ¶æ…‹ã€ã§ç®¡ç†ã—ã€æœ¬ä½“ã®éå»ã®DamageBodyçŠ¶æ…‹ã‹ã‚‰ç‹¬ç«‹ã•ã›ã‚‹ã€‚
+    // ä»¥å‰ã®ã‚³ãƒ¼ãƒ‰ã§ã¯ ApplyFrame ãŒDamageBodyè‡ªä½“ã‚’éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ã§ããŸãŸã‚ã€
+    // æ··ä¹±ã§ApplyFrameãŒæ­¢ã¾ã‚‹ã¨ã€ç„¡æ•µã®ã¾ã¾å›ºå®šã•ã‚Œã‚‹ã“ã¨ãŒã‚ã£ãŸã€‚
     void SetDamageCollidersEnabled(bool enabledState)
     {
-        // •ªg‚ª‰Â‹E”í’e‰Â”\‚È’iŠK‚ÅAPrefab‚ÌDamageBody‚ªˆÈ‘O‚Ìˆ—‚Å
-        // –³Œø‚É‚È‚Á‚Ä‚¢‚Ä‚à•œ‹Œ‚·‚éB‰‰ñ‡—¬’†‚ÍCollider‚¾‚¯‚ğ–³Œø‚É‚·‚éB
+        // åˆ†èº«ãŒå¯è¦–ãƒ»è¢«å¼¾å¯èƒ½ãªæ®µéšã§ã€Prefabã®DamageBodyãŒä»¥å‰ã®å‡¦ç†ã§
+        // ç„¡åŠ¹ã«ãªã£ã¦ã„ã¦ã‚‚å¾©æ—§ã™ã‚‹ã€‚åˆå›åˆæµä¸­ã¯Colliderã ã‘ã‚’ç„¡åŠ¹ã«ã™ã‚‹ã€‚
         if (enabledState && localEnemy != null && localEnemy.DamageBody != null &&
             localEnemy.DamageBody != gameObject && !localEnemy.DamageBody.activeSelf)
             localEnemy.DamageBody.SetActive(true);
@@ -230,8 +238,8 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
             attackParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
-    // •¡»‹@‚ª¬—iConfusionResistancej‚ÌŠÔA•ªg‚Ìs“®Ä¶‚ğ’â~‚·‚éB
-    // ¬—‰ğœŒã‚Í’â~’n“_‚©‚çŒ»İ‚Ì’x‰„‘à—ñˆÊ’u‚Ö‚‘¬‚Å–ß‚èA‡—¬Œã‚ÉÄ¶‚·‚éB
+    // è¤‡è£½æ©ŸãŒæ··ä¹±ï¼ˆConfusionResistanceï¼‰ã®é–“ã€åˆ†èº«ã®è¡Œå‹•å†ç”Ÿã‚’åœæ­¢ã™ã‚‹ã€‚
+    // æ··ä¹±è§£é™¤å¾Œã¯åœæ­¢åœ°ç‚¹ã‹ã‚‰ç¾åœ¨ã®é…å»¶éšŠåˆ—ä½ç½®ã¸é«˜é€Ÿã§æˆ»ã‚Šã€åˆæµå¾Œã«å†ç”Ÿã™ã‚‹ã€‚
     void SyncMachineConfusion()
     {
         bool confused = replicatorEnemyBase != null &&
@@ -251,18 +259,18 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
             if (attackParticles != null)
                 attackParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             SetDefaultParticleConfused(true);
-            // ‰‰ñ‡—¬‚È‚Ç‚Å”»’è‚ªOFF‚¾‚Á‚½ê‡‚àA’â~’†‚ÍUŒ‚‚Å‚«‚éB
+            // åˆå›åˆæµãªã©ã§åˆ¤å®šãŒOFFã ã£ãŸå ´åˆã‚‚ã€åœæ­¢ä¸­ã¯æ”»æ’ƒã§ãã‚‹ã€‚
             SetDamageCollidersEnabled(isVisible);
             return;
         }
 
-        // ‘æOŒ`‘Ô‚Ì’â~ŠÔ‚ª‚Ü‚¾‘±‚­‚È‚çAƒGƒtƒFƒNƒg‚ğŒ³‚É–ß‚³‚È‚¢B
+        // ç¬¬ä¸‰å½¢æ…‹ã®åœæ­¢æ™‚é–“ãŒã¾ã ç¶šããªã‚‰ã€ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å…ƒã«æˆ»ã•ãªã„ã€‚
         SetDefaultParticleConfused(phase3Frozen);
-        // “Áês“®’†‚È‚ç‰~Œ`‘à—ñ‚ğ‘±s‚µA’Êí‚È‚ç’x‰„‘à—ñ‚Ö•œ‹A‚·‚éB
+        // ç‰¹æ®Šè¡Œå‹•ä¸­ãªã‚‰å††å½¢éšŠåˆ—ã‚’ç¶šè¡Œã—ã€é€šå¸¸æ™‚ãªã‚‰é…å»¶éšŠåˆ—ã¸å¾©å¸°ã™ã‚‹ã€‚
         if (!specialMode && !phase3Frozen) ReturnToReplayFormation();
     }
 
-    // í—pƒp[ƒeƒBƒNƒ‹‚ÌEmission‚¾‚¯‚ğ•ÏX‚·‚éBUŒ‚—pƒp[ƒeƒBƒNƒ‹‚É‚ÍG‚ê‚È‚¢B
+    // å¸¸æ™‚ç”¨ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®Emissionã ã‘ã‚’å¤‰æ›´ã™ã‚‹ã€‚æ”»æ’ƒç”¨ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã«ã¯è§¦ã‚Œãªã„ã€‚
     void SetDefaultParticleConfused(bool confused)
     {
         if (defaultParticles == null || !hasOriginalDefaultEmission) return;
@@ -273,7 +281,7 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
 
     void OnDisable()
     {
-        // í“¬“r’†‚Å–³Œø‰»‚³‚ê‚½ê‡‚àPrefab–{—ˆ‚ÌEmission‚É•œŒ³‚·‚éB
+        // æˆ¦é—˜é€”ä¸­ã§ç„¡åŠ¹åŒ–ã•ã‚ŒãŸå ´åˆã‚‚Prefabæœ¬æ¥ã®Emissionã«å¾©å…ƒã™ã‚‹ã€‚
         SetDefaultParticleConfused(false);
     }
 
@@ -332,7 +340,7 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
         float when = Time.time - index * owner.DelaySeconds;
         if (!joined)
         {
-            // ‡—¬’†‚à‰ŠúSprite‚¾‚¯”½‰f‚µA‰ß‹‚ÌUŒ‚‚ğŒë‚Á‚Ä”­Ë‚µ‚È‚¢B
+            // åˆæµä¸­ã‚‚åˆæœŸSpriteã ã‘åæ˜ ã—ã€éå»ã®æ”»æ’ƒã‚’èª¤ã£ã¦ç™ºå°„ã—ãªã„ã€‚
             BOSS_EternalMaidenReplay.Frame joiningFrame;
             if (spriteRenderer != null && owner.TrySample(when, out joiningFrame))
                 spriteRenderer.sprite = joiningFrame.sprite;
@@ -342,15 +350,15 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
         lastEventId = owner.ReplayEvents(when, lastEventId, localEnemy);
     }
 
-    // •ªg‚ÌAnimator‚ÍInitialize‚Å–³Œø‰»‚µ‚Ä‚¢‚é‚½‚ßA¬—’†‚¾‚¯Sprite‚ğ’¼Ú·‚µ‘Ö‚¦‚éB
-    // Œ³‚Ìs“®‚ğÄŠJ‚·‚ê‚ÎAApplyFrame‚Ü‚½‚Í‡—¬’†‚ÌXV‚ª’ÊíSprite‚É–ß‚·B
+    // åˆ†èº«ã®Animatorã¯Initializeã§ç„¡åŠ¹åŒ–ã—ã¦ã„ã‚‹ãŸã‚ã€æ··ä¹±ä¸­ã ã‘Spriteã‚’ç›´æ¥å·®ã—æ›¿ãˆã‚‹ã€‚
+    // å…ƒã®è¡Œå‹•ã‚’å†é–‹ã™ã‚Œã°ã€ApplyFrameã¾ãŸã¯åˆæµä¸­ã®æ›´æ–°ãŒé€šå¸¸Spriteã«æˆ»ã™ã€‚
     void ShowConfusionSprite()
     {
         if (spriteRenderer == null) return;
         int frameIndex = Mathf.FloorToInt((Time.time - confusionStartedAt) /
                                           Mathf.Max(0.01f, confusionSpriteInterval)) % 2;
         Sprite frame = frameIndex == 0 ? confusionSprite0 : confusionSprite1;
-        // Sprite‚ª–¢İ’è‚È‚ç•\¦‚ğÁ‚³‚¸‚ÉŒ³‚Ì‰æ‘œ‚ğˆÛ‚·‚éB
+        // SpriteãŒæœªè¨­å®šãªã‚‰è¡¨ç¤ºã‚’æ¶ˆã•ãšã«å…ƒã®ç”»åƒã‚’ç¶­æŒã™ã‚‹ã€‚
         if (frame != null) spriteRenderer.sprite = frame;
     }
 
@@ -375,7 +383,7 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
             //animationBody.localScale = frame.visualLocalScale;
         }
         spriteRenderer.sprite = frame.sprite;
-        // ”í’e‰Â”Û‚Í–{‘Ì‚Ì‹L˜^‚Æ“Æ—§BŠù‘¶v15‚Ì–³“Gó‘Ô‚ğ•œ‹Œ‚·‚éB
+        // è¢«å¼¾å¯å¦ã¯æœ¬ä½“ã®è¨˜éŒ²ã¨ç‹¬ç«‹ã€‚æ—¢å­˜v15ã®ç„¡æ•µçŠ¶æ…‹ã‚’å¾©æ—§ã™ã‚‹ã€‚
         if (joined && !joining) SetDamageCollidersEnabled(true);
         Color replayColor = frame.color;
         replayColor.a = initialSpriteAlpha;
@@ -399,8 +407,8 @@ public class BOSS_EternalMaidenEcho : MonoBehaviour
         if (isVisible == visible) return;
         isVisible = visible;
         if (spriteRenderer != null) spriteRenderer.enabled = visible;
-        // SetVisible‚Í•`‰æ‚¾‚¯‚Å‚È‚­A‡—¬E’â~‚É‚æ‚é”í’e‰Â”Û‚ğ‘¸d‚·‚éB
-        // u•\¦•œ‹Av‚Æ“¯‚É‡—¬’†‚Ì–³“G”»’è‚ğŒë‚Á‚Ä—LŒø‰»‚µ‚È‚¢B
+        // SetVisibleã¯æç”»ã ã‘ã§ãªãã€åˆæµãƒ»åœæ­¢ã«ã‚ˆã‚‹è¢«å¼¾å¯å¦ã‚’å°Šé‡ã™ã‚‹ã€‚
+        // ã€Œè¡¨ç¤ºå¾©å¸°ã€ã¨åŒæ™‚ã«åˆæµä¸­ã®ç„¡æ•µåˆ¤å®šã‚’èª¤ã£ã¦æœ‰åŠ¹åŒ–ã—ãªã„ã€‚
         SetDamageCollidersEnabled(visible &&
             (joined || pausedByMachine || phase3Frozen || specialMode));
         if (!visible && dashHitbox != null) dashHitbox.SetActive(false);

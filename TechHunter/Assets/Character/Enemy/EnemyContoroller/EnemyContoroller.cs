@@ -366,6 +366,9 @@ public class EnemyContoroller : EnemyBase
         return nearest;
     }
 
+    // 個別AIでもControllerと同じ派閥・生存判定を使うための窓口。
+    public bool CanTarget(Transform candidate) => IsValidTarget(candidate);
+
     bool IsValidTarget(Transform candidate)
     {
         if (candidate == null) return false;

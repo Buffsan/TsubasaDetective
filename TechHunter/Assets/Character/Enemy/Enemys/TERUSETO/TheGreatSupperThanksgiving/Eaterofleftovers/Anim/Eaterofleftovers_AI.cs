@@ -29,6 +29,31 @@ public class Eaterofleftovers_AI : EnemyMoveBase
     public float LestTime = 0;
     float LestCount = 0;
 
+    // TargetDistance は対象消失時に Infinity になることがある。
+    // Infinity を角度へ渡すと Mathf.Sin/Cos が NaN を返すため、移動前に検査する。
+    static bool IsFinite(float value)
+    {
+        return !float.IsNaN(value) && !float.IsInfinity(value);
+    }
+
+    static bool IsFinite(Vector2 value)
+    {
+        return IsFinite(value.x) && IsFinite(value.y);
+    }
+
+    void SetSafeVelocity(Vector2 velocity)
+    {
+        enemyBase.rb.velocity = IsFinite(velocity) ? velocity : Vector2.zero;
+    }
+
+    Vector2 SafeTargetDirection()
+    {
+        Vector2 direction = TargetDirection;
+        if (!IsFinite(direction) || direction.sqrMagnitude < 0.000001f)
+            return Vector2.zero;
+        return direction.normalized;
+    }
+
     public override void EnemyConfusionPlay()
     {
         enemyBase.DamageBody.SetActive(false);
@@ -73,24 +98,38 @@ public class Eaterofleftovers_AI : EnemyMoveBase
 
             RefreshTargetInfo();
             enemyBase.animator.SetInteger("Anim", 1);
-            RefreshTargetInfo();
+
+            // 魅了・死亡・敵VS敵でターゲットが消えたフレームは安全に停止。
+            // 有限でない距離を角度計算へ渡さない。
+            Vector2 targetDirection = TargetDirection;
+            float targetDistance = TargetDistance;
+            float speed = enemyBase.SPEED;
+            if (CurrentTarget == null || !IsFinite(targetDirection) ||
+                !IsFinite(targetDistance) || !IsFinite(speed) ||
+                targetDirection.sqrMagnitude < 0.000001f)
+            {
+                SetSafeVelocity(Vector2.zero);
+                return;
+            }
 
             if (Strate)
             {
-                enemyBase.rb.velocity = TargetDirection.normalized * enemyBase.SPEED;
+                SetSafeVelocity(targetDirection.normalized * speed);
             }
             else
             {
-                float angle = Mathf.Atan2(TargetDirection.y, TargetDirection.x) * Mathf.Rad2Deg;
-                if (trune)
+                float angle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg;
+                float turn = 150f - targetDistance * 12f;
+                angle += trune ? turn : -turn;
+
+                if (!IsFinite(angle))
                 {
-                    angle += 150 - TargetDistance * 12;
+                    SetSafeVelocity(Vector2.zero);
+                    return;
                 }
-                else
-                {
-                    angle -= 150 - TargetDistance * 12;
-                }
-                Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+
+                Vector2 direction = new Vector2(
+                    Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
                 if (direction.y > 0)
                 {
@@ -101,13 +140,13 @@ public class Eaterofleftovers_AI : EnemyMoveBase
                     enemyBase.EnemyAnimBody.transform.localScale = new Vector2(-2.5f, 2.5f);
                 }
 
-                enemyBase.rb.velocity = direction * enemyBase.SPEED;
+                SetSafeVelocity(direction * speed);
             }
         }
         else 
         {
             LestCount += Time.deltaTime;
-            enemyBase.rb.velocity = enemyBase.rb.velocity * 0.3f;
+            SetSafeVelocity(enemyBase.rb.velocity * 0.3f);
             if (LestCount > LestTime ) 
             {
                 LestCount = 0;
@@ -128,7 +167,8 @@ public class Eaterofleftovers_AI : EnemyMoveBase
             
             LookAtCurrentTarget();
             GameObject CL_Before = Instantiate(AttackBefore, enemyBase.AttackSpawnPoint.transform.position,Quaternion.identity);
-            CL_Before.transform.up = TargetDirection.normalized;
+            Vector2 warningDirection = SafeTargetDirection();
+            CL_Before.transform.up = warningDirection == Vector2.zero ? Vector2.up : warningDirection;
             Destroy(CL_Before, 1);
 
             
@@ -146,7 +186,8 @@ public class Eaterofleftovers_AI : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M3)
         {
             
-            enemyBase.rb.velocity = TargetDirection.normalized * DashSpeed;
+            float safeDashSpeed = IsFinite(DashSpeed) ? DashSpeed : 0f;
+            SetSafeVelocity(SafeTargetDirection() * safeDashSpeed);
             if (enemyBase.AttackCount > 0.5f)
             {
                 enemyBase.DamageBody.SetActive(false);
@@ -157,7 +198,7 @@ public class Eaterofleftovers_AI : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M4)
         {
             enemyBase.animator.SetInteger("Anim", 0);
-            enemyBase.rb.velocity = new Vector2(enemyBase.rb.velocity.x * 0.5f, enemyBase.rb.velocity.y * 0.5f);
+            SetSafeVelocity(enemyBase.rb.velocity * 0.5f);
             if (enemyBase.AttackCount > 0.3)
             {
                 enemyBase.mode = EnemyBase.ModeType.M5;

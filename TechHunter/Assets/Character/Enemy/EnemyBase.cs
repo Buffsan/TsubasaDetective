@@ -241,12 +241,26 @@ public class EnemyBase : MonoBehaviour
     public void AttackAreaSpawn()
     {
         GameObject CL_AttackArea = Instantiate(AttackArea, AttackSpawnPoint.transform.position, Quaternion.identity);
+        EnemyAttack[] attacks = CL_AttackArea.GetComponentsInChildren<EnemyAttack>(true);
         myAttack = CL_AttackArea.GetComponent<EnemyAttack>();
+        if (myAttack == null && attacks.Length > 0) myAttack = attacks[0];
         Destroy(CL_AttackArea, AttackDellTimer);
-        myAttack.enemyBase = Ebase;
-        if (IsCharmed)
-            myAttack.ConfigureAttack(this, myAttack.AttackPowerPercent,
-                (Faction)(~(int)Faction.Charmed), false);
+
+        // プレイヤー用の元の攻撃を維持しつつ、敵VS敵の場合のみ現在の標的設定を適用する。
+        foreach (EnemyAttack attack in attacks)
+        {
+            if (attack == null) continue;
+            attack.enemyBase = Ebase;
+            if (IsCharmed)
+                attack.ConfigureAttack(this, attack.AttackPowerPercent,
+                    (Faction)(~(int)Faction.Charmed), false);
+            else if (this is EnemyContoroller controller &&
+                     controller.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+                controller.ConfigureAttackTarget(attack);
+            else if (this is Boss_Controller boss &&
+                     boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+                boss.ConfigureAttackTarget(attack);
+        }
     }
     public void isTargetLook(Vector2 target)
     {

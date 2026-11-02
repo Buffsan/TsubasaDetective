@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(SpriteRenderer))]
 public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
 {
     [SerializeField] float orbitRadius = 1.25f, orbitSpeed = 1.4f;
@@ -12,7 +13,6 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
     float time, charge;
     Vector2 dashOrigin, dashDirection;
     readonly HashSet<EnemyBase> targets = new HashSet<EnemyBase>();
-    static Sprite pixel;
     public bool CanCharge => isActiveAndEnabled && mode == Mode.Orbit;
 
     void Awake()
@@ -25,29 +25,6 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
         if (box == null) box = gameObject.AddComponent<BoxCollider2D>();
         box.isTrigger = true;
         box.size = new Vector2(0.6f, 1.6f);
-        if (GetComponentInChildren<SpriteRenderer>() == null)
-        {
-            Piece("Shaft", 0f, -0.1f, 0.12f, 1.5f, 0f);
-            Piece("Point", 0f, 0.7f, 0.4f, 0.4f, 45f);
-            Piece("BarbL", -0.23f, 0.45f, 0.12f, 0.5f, -40f);
-            Piece("BarbR", 0.23f, 0.45f, 0.12f, 0.5f, 40f);
-        }
-    }
-
-    void Piece(string name, float x, float y, float width, float height, float angle)
-    {
-        if (pixel == null) pixel = Sprite.Create(Texture2D.whiteTexture,
-            new Rect(0, 0, Texture2D.whiteTexture.width, Texture2D.whiteTexture.height),
-            new Vector2(0.5f, 0.5f), 1f);
-        GameObject part = new GameObject(name);
-        part.transform.SetParent(transform, false);
-        part.transform.localPosition = new Vector3(x, y, 0f);
-        part.transform.localScale = new Vector3(width, height, 1f);
-        part.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
-        SpriteRenderer renderer = part.AddComponent<SpriteRenderer>();
-        renderer.sprite = pixel;
-        renderer.color = new Color(0.7f, 0.82f, 0.94f);
-        renderer.sortingOrder = 200;
     }
 
     public bool ChargeFromPlayer(float damage)

@@ -108,6 +108,19 @@ public class EnemyAttack : MonoBehaviour
         EnemyBase victim = target.OwnerEnemyBase;
         if (victim == null || victim.status == EnemyBase.Status.Die || victim.HP <= 0f) return;
 
+        // PlayerOnlyの敵は敵を攻撃できない。Prefabに残った派閥フラグや
+        // 攻撃判定の初期化順序で、意図せず味方へダメージが通るのを防ぐ。
+        // 魅了済みの敵を狙える場合はController側でPlayerAndEnemyに切り替わる。
+        if (enemyBase is EnemyContoroller regularOwner &&
+            regularOwner.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+            return;
+        if (enemyBase is Boss_Controller bossOwner &&
+            bossOwner.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+            return;
+        if (enemyBase is CG_Knght legacyOwner &&
+            legacyOwner.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+            return;
+
         // AllEnemyの位置は動的な個体ID。リスト不在の場合は実体参照で自己判定。
         bool isSelf;
         SystemManager manager = SystemManager.Instance;

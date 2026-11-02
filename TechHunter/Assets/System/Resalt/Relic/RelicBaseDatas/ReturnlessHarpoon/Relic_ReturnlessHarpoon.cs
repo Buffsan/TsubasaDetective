@@ -148,11 +148,11 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
 
                 float baselineTime = Mathf.Max(0.1f, returnTime);
                 float baselineSpeed = baselineReturnDistance / baselineTime;
-                float progress = Mathf.Max(0f, time / baselineTime);
+                float returnProgress = Mathf.Max(0f, time / baselineTime);
                 // Speed rises linearly. Its integral over 4 seconds equals the
                 // original distance to the player at the moment of throwing.
                 float scheduledSpeed = baselineSpeed *
-                    (0.25f + 1.5f * Mathf.Min(progress, 1.5f));
+                    (0.25f + 1.5f * Mathf.Min(returnProgress, 1.5f));
 
                 // The player may move closer (early pickup), sideways, or farther
                 // away. Add speed only when their new position is farther from
@@ -178,12 +178,20 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
                     (1f + Mathf.Max(0f, time - baselineTime) * 6f);
                 returnVelocity = Vector2.MoveTowards(returnVelocity,
                     desiredVelocity, steering * dt);
-                Vector2 next = (Vector2)transform.position + returnVelocity * dt;
-                transform.position = next;
+                Vector2 returnStart = transform.position;
+                Vector2 returnNextPosition = returnStart + returnVelocity * dt;
+                transform.position = returnNextPosition;
                 if (returnVelocity.sqrMagnitude > 0.001f)
                     transform.up = returnVelocity.normalized;
 
-                if ((next - destination).sqrMagnitude <=
+                // Pick up even if high-speed pursuit crosses the player between frames.
+                Vector2 step = returnNextPosition - returnStart;
+                float fraction = step.sqrMagnitude > 0.000001f
+                    ? Mathf.Clamp01(Vector2.Dot(destination - returnStart, step) /
+                        step.sqrMagnitude)
+                    : 0f;
+                Vector2 closestPoint = returnStart + step * fraction;
+                if ((closestPoint - destination).sqrMagnitude <=
                     returnCatchRadius * returnCatchRadius)
                     ResetAfterReturn(player);
                 break;

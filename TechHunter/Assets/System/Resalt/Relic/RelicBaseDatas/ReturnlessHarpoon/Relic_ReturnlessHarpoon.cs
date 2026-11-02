@@ -10,9 +10,12 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
     [SerializeField] float spinPower = 2000f;
 
     [Header("Return homing")]
-    [SerializeField, Min(0.1f)] float returnStartSpeed = 2f;
-    [SerializeField, Min(0.1f)] float returnMaxSpeed = 17f;
-    [SerializeField, Min(0.1f)] float returnAcceleration = 24f;
+    [Tooltip("Acceleration used to turn toward the moving player while returning.")]
+    [SerializeField, Min(0.1f)] float returnSteeringAcceleration = 26f;
+    [Tooltip("Extra time after the baseline return duration to catch a moving player.")]
+    [SerializeField, Min(0.05f)] float movingTargetGraceSeconds = 0.5f;
+    [Tooltip("Additional chase speed for players moving farther from the dash endpoint.")]
+    [SerializeField, Min(0f)] float movingTargetCompensation = 2f;
     [SerializeField, Min(0.1f)] float returnCatchRadius = 0.85f;
 
     [Header("Hitbox")]
@@ -22,6 +25,9 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
     Mode mode;
     float time, charge;
     Vector2 dashOrigin, dashDirection;
+    // The player position when the harpoon was thrown is our four-second baseline.
+    Vector2 playerPositionAtThrow, returnStartPosition;
+    float baselineReturnDistance;
     Vector2 returnVelocity;
     float orbitPhaseOffset;
     BoxCollider2D hitbox;
@@ -93,6 +99,7 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
                     dashDirection = (cursor - (Vector2)transform.position).normalized;
                     if (dashDirection.sqrMagnitude < 0.001f) dashDirection = Vector2.up;
                     dashOrigin = transform.position;
+                    playerPositionAtThrow = player.transform.position;
                     transform.up = dashDirection;
                     time = 0f;
                     mode = Mode.Dash;
@@ -110,8 +117,18 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
                 if (progress >= 1f)
                 {
                     time = 0f;
-                    // The returning harpoon has inertia rather than snapping toward the player.
-                    returnVelocity = dashDirection * returnStartSpeed;
+                    // Calibrate the return flight to the player's position at throw time.
+                    returnStartPosition = transform.position;
+                    baselineReturnDistance = Mathf.Max(0f,
+                        Vector2.Distance(returnStartPosition, playerPositionAtThrow) -
+                        returnCatchRadius);
+                    Vector2 home = playerPositionAtThrow - returnStartPosition;
+                    if (home.sqrMagnitude < 0.001f)
+                        home = (Vector2)player.transform.position - returnStartPosition;
+                    returnVelocity = home.sqrMagnitude > 0.001f
+                        ? home.normalized * (baselineReturnDistance /
+                            Mathf.Max(0.1f, returnTime) * 0.25f)
+                        : Vector2.zero;
                     mode = Mode.Return;
                 }
                 break;
@@ -120,26 +137,53 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
                 Vector2 destination = player.transform.position;
                 Vector2 displacement = destination - (Vector2)transform.position;
                 float distance = displacement.magnitude;
+
+                // Physically meeting the player is always enough to retrieve it,
+                // even if only a fraction of the expected return time has passed.
                 if (distance <= returnCatchRadius)
                 {
                     ResetAfterReturn(player);
                     break;
                 }
 
-                // Gradually accelerate and steer toward the moving player.
-                // Never force the harpoon to arrive on a timer: that caused screen-pinned motion.
-                float speedLimit = Mathf.Lerp(returnStartSpeed, returnMaxSpeed,
-                    Mathf.Clamp01(time / Mathf.Max(0.1f, returnTime)));
-                float brakingSpeed = Mathf.Sqrt(2f * returnAcceleration * distance);
-                Vector2 desiredVelocity = displacement.normalized *
-                    Mathf.Min(speedLimit, brakingSpeed);
-                returnVelocity = Vector2.MoveTowards(returnVelocity, desiredVelocity,
-                    returnAcceleration * dt);
-                transform.position = (Vector2)transform.position + returnVelocity * dt;
+                float baselineTime = Mathf.Max(0.1f, returnTime);
+                float baselineSpeed = baselineReturnDistance / baselineTime;
+                float progress = Mathf.Max(0f, time / baselineTime);
+                // Speed rises linearly. Its integral over 4 seconds equals the
+                // original distance to the player at the moment of throwing.
+                float scheduledSpeed = baselineSpeed *
+                    (0.25f + 1.5f * Mathf.Min(progress, 1.5f));
+
+                // The player may move closer (early pickup), sideways, or farther
+                // away. Add speed only when their new position is farther from
+                // the harpoon's return starting point than the original location.
+                float extraTravel = Mathf.Max(0f,
+                    Vector2.Distance(returnStartPosition, destination) -
+                    Vector2.Distance(returnStartPosition, playerPositionAtThrow));
+                float chaseSpeed = movingTargetCompensation * extraTravel / baselineTime;
+                float desiredSpeed = scheduledSpeed + chaseSpeed;
+
+                // After the baseline ~4 seconds, accelerate further to intercept
+                // a moving player within roughly another half second. This is
+                // still normal world-space movement: never teleport or force-pickup.
+                if (time > baselineTime)
+                {
+                    float remaining = Mathf.Max(0.04f,
+                        baselineTime + movingTargetGraceSeconds - time);
+                    desiredSpeed = Mathf.Max(desiredSpeed, distance / remaining);
+                }
+
+                Vector2 desiredVelocity = displacement.normalized * desiredSpeed;
+                float steering = returnSteeringAcceleration *
+                    (1f + Mathf.Max(0f, time - baselineTime) * 6f);
+                returnVelocity = Vector2.MoveTowards(returnVelocity,
+                    desiredVelocity, steering * dt);
+                Vector2 next = (Vector2)transform.position + returnVelocity * dt;
+                transform.position = next;
                 if (returnVelocity.sqrMagnitude > 0.001f)
                     transform.up = returnVelocity.normalized;
 
-                if (((Vector2)transform.position - destination).sqrMagnitude <=
+                if ((next - destination).sqrMagnitude <=
                     returnCatchRadius * returnCatchRadius)
                     ResetAfterReturn(player);
                 break;

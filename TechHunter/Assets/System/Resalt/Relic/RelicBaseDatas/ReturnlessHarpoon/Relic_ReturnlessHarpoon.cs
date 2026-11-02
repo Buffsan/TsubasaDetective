@@ -7,6 +7,7 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
     [SerializeField] float orbitRadius = 1.25f, orbitSpeed = 1.4f;
     [SerializeField] float windup = 1f, dashTime = 0.5f, dashDistance = 15f, returnTime = 4f;
     [SerializeField] float stun = 4f, confusion = 1f;
+    [SerializeField] float spinPower = 2000f;
 
     enum Mode { Orbit, Spin, Dash, Return }
     Mode mode;
@@ -52,7 +53,7 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
                 break;
             case Mode.Spin:
                 time += dt;
-                transform.Rotate(0f, 0f, 720f * dt);
+                transform.Rotate(0f, 0f, spinPower * dt);
                 if (time >= Mathf.Max(windup, 0.01f))
                 {
                     Vector2 cursor = player.cursorController != null

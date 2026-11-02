@@ -5,12 +5,34 @@ using UnityEngine;
 // Each enemy accumulates post-defense HP damage during confusion.
 public sealed class Relic_ColdAnchor : RelicBase_AI
 {
-    [SerializeField] float fallSeconds = 0.35f, aboveHead = 0.7f;
+    [SerializeField] float fallSeconds = 0.28f, aboveHead = 0.7f;
 
     [Header("Anchor Appearance")]
     [SerializeField] Sprite AnchorSprite;
     [SerializeField, Min(0.01f)] float AnchorSpriteScale = 1f;
-    class Anchor { public float damage; public charaDamage receiver; public GameObject visual; }
+
+    [Header("Summon Animation")]
+    [SerializeField, Min(0.01f)] float summonSeconds = 0.6f;
+    [SerializeField] float summonSpinDegrees = 540f;
+    [SerializeField, Range(0.01f, 1f)] float summonStartScale = 0.05f;
+
+    [Header("Slam Animation")]
+    [SerializeField, Min(0.01f)] float riseSeconds = 0.16f;
+    [SerializeField, Min(0f)] float riseHeight = 0.85f;
+
+    [Header("Impact Effect")]
+    [SerializeField] GameObject ImpactEffectPrefab;
+    [SerializeField, Min(0.01f)] float impactEffectScale = 0.35f;
+    [SerializeField, Min(0.05f)] float impactEffectLifetime = 3f;
+
+    class Anchor
+    {
+        public float damage;
+        public charaDamage receiver;
+        public GameObject visual;
+        public Vector3 finalScale;
+        public float summonElapsed;
+    }
     readonly Dictionary<EnemyBase, Anchor> anchors = new Dictionary<EnemyBase, Anchor>();
     readonly List<EnemyBase> finished = new List<EnemyBase>();
     readonly HashSet<GameObject> visuals = new HashSet<GameObject>();
@@ -36,6 +58,12 @@ public sealed class Relic_ColdAnchor : RelicBase_AI
         if (!anchors.TryGetValue(enemy, out anchor))
         {
             anchor = new Anchor { receiver = receiver, visual = CreateVisual() };
+            if (anchor.visual != null)
+            {
+                anchor.finalScale = anchor.visual.transform.localScale;
+                anchor.visual.transform.localScale = anchor.finalScale * summonStartScale;
+                anchor.visual.transform.rotation = Quaternion.Euler(0f, 0f, summonSpinDegrees);
+            }
             anchors.Add(enemy, anchor);
         }
         anchor.damage += amount;
@@ -58,39 +86,120 @@ public sealed class Relic_ColdAnchor : RelicBase_AI
                 finished.Add(enemy);
                 StartCoroutine(Drop(enemy, anchor));
             }
-            else Follow(anchor.visual, enemy);
+            else
+            {
+                Follow(anchor.visual, enemy);
+                AnimateSummoning(anchor);
+            }
         }
         foreach (EnemyBase enemy in finished) anchors.Remove(enemy);
     }
+    Vector3 AboveEnemy(EnemyBase enemy)
+    {
+        float top = enemy.spriteRenderer != null
+            ? enemy.spriteRenderer.bounds.max.y : enemy.transform.position.y + 1.5f;
+        return new Vector3(enemy.transform.position.x, top + aboveHead,
+            enemy.transform.position.z);
+    }
+
     void Follow(GameObject visual, EnemyBase enemy)
     {
-        if (visual == null || enemy == null) return;
-        float y = enemy.spriteRenderer != null
-            ? enemy.spriteRenderer.bounds.max.y : enemy.transform.position.y + 1.5f;
-        visual.transform.position = new Vector3(enemy.transform.position.x,
-            y + aboveHead, enemy.transform.position.z);
+        if (visual != null && enemy != null)
+            visual.transform.position = AboveEnemy(enemy);
     }
+
+    void AnimateSummoning(Anchor anchor)
+    {
+        if (anchor.visual == null) return;
+        float duration = Mathf.Max(0.01f, summonSeconds);
+        anchor.summonElapsed = Mathf.Min(duration, anchor.summonElapsed + Time.deltaTime);
+        float progress = Mathf.SmoothStep(0f, 1f, anchor.summonElapsed / duration);
+
+        // Spin through the requested number of degrees while growing, then
+        // settle perfectly upright (zero local Z rotation).
+        anchor.visual.transform.localScale = anchor.finalScale *
+            Mathf.Lerp(summonStartScale, 1f, progress);
+        anchor.visual.transform.rotation = Quaternion.Euler(0f, 0f,
+            summonSpinDegrees * (1f - progress));
+    }
+
+    static bool CanSlam(EnemyBase enemy)
+    {
+        return enemy != null && enemy.HP > 0f &&
+            enemy.status != EnemyBase.Status.Die;
+    }
+
     IEnumerator Drop(EnemyBase enemy, Anchor anchor)
     {
         GameObject visual = anchor.visual;
-        Vector3 start = visual != null ? visual.transform.position : Vector3.zero;
-        float duration = Mathf.Max(0.05f, fallSeconds);
-        for (float t = 0f; t < duration; t += Time.deltaTime)
+
+        // Finish the summoning pose before the upward anticipation.
+        if (visual != null)
         {
-            if (enemy == null || enemy.HP <= 0f || enemy.status == EnemyBase.Status.Die)
+            visual.transform.localScale = anchor.finalScale;
+            visual.transform.rotation = Quaternion.identity;
+        }
+
+        // Anticipation: briefly rise above the enemy before striking down.
+        float liftTime = Mathf.Max(0.01f, riseSeconds);
+        for (float elapsed = 0f; elapsed < liftTime;)
+        {
+            if (!CanSlam(enemy))
             {
                 Dispose(visual);
                 yield break;
             }
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / liftTime));
             if (visual != null)
-                visual.transform.position = Vector3.Lerp(start, enemy.transform.position,
-                    Mathf.Clamp01(t / duration));
+                visual.transform.position = AboveEnemy(enemy) + Vector3.up * (riseHeight * t);
             yield return null;
         }
-        if (enemy != null && enemy.HP > 0f && enemy.status != EnemyBase.Status.Die &&
-            anchor.receiver != null && anchor.damage > 0f)
-            anchor.receiver.DamageFixed(anchor.damage);
+
+        Vector3 start = visual != null ? visual.transform.position : AboveEnemy(enemy);
+        float duration = Mathf.Max(0.01f, fallSeconds);
+        for (float elapsed = 0f; elapsed < duration;)
+        {
+            if (!CanSlam(enemy))
+            {
+                Dispose(visual);
+                yield break;
+            }
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            // Cubic easing: almost motionless at first, accelerating into impact.
+            float slamProgress = t * t * t;
+            if (visual != null)
+                visual.transform.position = Vector3.Lerp(start,
+                    enemy.transform.position, slamProgress);
+            yield return null;
+        }
+
+        if (CanSlam(enemy))
+        {
+            Vector3 impactPosition = enemy.transform.position;
+            if (visual != null) visual.transform.position = impactPosition;
+
+            SpawnImpactEffect(impactPosition);
+            if (anchor.receiver != null && anchor.damage > 0f)
+                anchor.receiver.DamageFixed(anchor.damage);
+        }
         Dispose(visual);
+    }
+
+    void SpawnImpactEffect(Vector3 impactPosition)
+    {
+        if (ImpactEffectPrefab == null) return;
+
+        // The HOUKOU animation scales its own root Transform.
+        // Scale a wrapper instead so the Inspector size is respected.
+        GameObject wrapper = new GameObject("ColdAnchor_ImpactEffect");
+        wrapper.transform.position = impactPosition;
+        wrapper.transform.localScale = Vector3.one * Mathf.Max(0.01f, impactEffectScale);
+        GameObject roar = Instantiate(ImpactEffectPrefab, wrapper.transform);
+        roar.transform.localPosition = Vector3.zero;
+        roar.transform.localRotation = Quaternion.identity;
+        Destroy(wrapper, Mathf.Max(0.05f, impactEffectLifetime));
     }
     GameObject CreateVisual()
     {

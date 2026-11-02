@@ -31,21 +31,33 @@ public class PlayerAttack : MonoBehaviour
         EnemyData.Clear();
     }
 
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        // Player attacks can start while already overlapping the orbiting harpoon.
+        TryChargeHarpoon(other);
+    }
+
+    bool TryChargeHarpoon(Collider2D other)
+    {
+        Relic_ReturnlessHarpoon harpoon = other.GetComponent<Relic_ReturnlessHarpoon>();
+        if (harpoon == null) return false;
+        if (controller == null || weapondata == null || !harpoon.CanCharge) return true;
+        if (!AgeinAttack && EnemyData.Contains(harpoon.gameObject)) return true;
+
+        float damage = AttackMathf();
+        if (isCriticulUse && controller.AddCritical + controller.Critical > Random.Range(0f, 100f))
+            damage = (damage * 3f + 5f) * Mathf.Max(0f, 1f + controller.AddLuckyDamagePercent / 100f);
+        if (harpoon.ChargeFromPlayer(damage))
+        {
+            if (!AgeinAttack) EnemyData.Add(harpoon.gameObject);
+            controller.HitEffectSpawn(other.transform.position);
+        }
+        return true;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Relic targets absorb actual player attack damage, without triggering enemy-hit events.
-        Relic_ReturnlessHarpoon harpoon = other.GetComponent<Relic_ReturnlessHarpoon>();
-        if (harpoon != null)
-        {
-            if (controller == null || weapondata == null || !harpoon.CanCharge) return;
-            if (!AgeinAttack && !EnemyData.Add(harpoon.gameObject)) return;
-            float damage = AttackMathf();
-            if (isCriticulUse && controller.AddCritical + controller.Critical > Random.Range(0f, 100f))
-                damage = (damage * 3f + 5f) * Mathf.Max(0f, 1f + controller.AddLuckyDamagePercent / 100f);
-            harpoon.ChargeFromPlayer(damage);
-            controller.HitEffectSpawn(other.transform.position);
-            return;
-        }
+        if (TryChargeHarpoon(other)) return;
         if (other.gameObject.CompareTag("EnemyArea")) 
         { 
         IDamageable damageable = other.GetComponent<IDamageable>();

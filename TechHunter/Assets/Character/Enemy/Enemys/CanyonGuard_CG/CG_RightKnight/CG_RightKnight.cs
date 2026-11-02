@@ -140,8 +140,9 @@ public class CG_RightKnight : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M5)
         {
             GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
-            EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
-            enemyAttack.enemyBase = enemyBase;
+            // PlayerOnlyなら敵への攻撃を許可せず、敵VS敵ならControllerの
+            // 攻撃対象設定を反映する。子階層のEnemyAttackもまとめて設定。
+            ConfigureSummonedAttack(CL_Attack);
             Destroy(CL_Attack, 0.1f);
 
             enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);

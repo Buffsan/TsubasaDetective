@@ -6,6 +6,10 @@ using UnityEngine;
 public sealed class Relic_ColdAnchor : RelicBase_AI
 {
     [SerializeField] float fallSeconds = 0.35f, aboveHead = 0.7f;
+
+    [Header("Anchor Appearance")]
+    [SerializeField] Sprite AnchorSprite;
+    [SerializeField, Min(0.01f)] float AnchorSpriteScale = 1f;
     class Anchor { public float damage; public charaDamage receiver; public GameObject visual; }
     readonly Dictionary<EnemyBase, Anchor> anchors = new Dictionary<EnemyBase, Anchor>();
     readonly List<EnemyBase> finished = new List<EnemyBase>();
@@ -92,11 +96,24 @@ public sealed class Relic_ColdAnchor : RelicBase_AI
     {
         GameObject root = new GameObject("ColdAnchor_Visual");
         visuals.Add(root);
-        Part(root.transform, "Stem", 0f, 0f, 0.12f, 0.85f);
-        Part(root.transform, "Stock", 0f, 0.32f, 0.7f, 0.12f);
-        Part(root.transform, "Flukes", 0f, -0.39f, 0.75f, 0.12f);
-        Part(root.transform, "Left", -0.37f, -0.27f, 0.12f, 0.36f);
-        Part(root.transform, "Right", 0.37f, -0.27f, 0.12f, 0.36f);
+
+        // Keep the same GameObject and movement logic; swap only its appearance.
+        if (AnchorSprite != null)
+        {
+            SpriteRenderer renderer = root.AddComponent<SpriteRenderer>();
+            renderer.sprite = AnchorSprite;
+            renderer.sortingOrder = 201;
+            root.transform.localScale = Vector3.one * Mathf.Max(0.01f, AnchorSpriteScale);
+        }
+        else
+        {
+            // Preserve the original temporary visual when no Sprite is assigned.
+            Part(root.transform, "Stem", 0f, 0f, 0.12f, 0.85f);
+            Part(root.transform, "Stock", 0f, 0.32f, 0.7f, 0.12f);
+            Part(root.transform, "Flukes", 0f, -0.39f, 0.75f, 0.12f);
+            Part(root.transform, "Left", -0.37f, -0.27f, 0.12f, 0.36f);
+            Part(root.transform, "Right", 0.37f, -0.27f, 0.12f, 0.36f);
+        }
         return root;
     }
     void Part(Transform parent, string name, float x, float y, float w, float h)

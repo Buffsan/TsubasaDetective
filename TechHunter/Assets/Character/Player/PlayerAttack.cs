@@ -22,7 +22,7 @@ public class PlayerAttack : MonoBehaviour
     public bool AgeinAttack = false;
 
     // Optional buff granted once per valid enemy hit (including pooled attacks).
-    [SerializeField] private BuffData buffOnEnemyHit;
+    [SerializeField] public BuffData buffOnEnemyHit;
 
     // 攻撃判定1回につき敵本体単位で重複命中を防ぐ。
     // AgeinAttack が true の攻撃は、従来どおり再入場で再ヒット可能。

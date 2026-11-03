@@ -21,6 +21,9 @@ public class PlayerAttack : MonoBehaviour
 
     public bool AgeinAttack = false;
 
+    // Optional buff granted once per valid enemy hit (including pooled attacks).
+    [SerializeField] private BuffData buffOnEnemyHit;
+
     // 攻撃判定1回につき敵本体単位で重複命中を防ぐ。
     // AgeinAttack が true の攻撃は、従来どおり再入場で再ヒット可能。
     readonly HashSet<GameObject> EnemyData = new HashSet<GameObject>();
@@ -120,6 +123,8 @@ public class PlayerAttack : MonoBehaviour
                     // Apply luck after both the 3x attack scaling and +5 flat damage.
                     DealDamage(damageable, ((attackValue * 3f) + 5f) * luckyMultiplier, true, applyCharm);
                 }
+                if (buffOnEnemyHit != null)
+                    controller.playerBuff.SpawnBuff(buffOnEnemyHit);
                 controller.HitEffectSpawn(other.transform.position);
             }
         }

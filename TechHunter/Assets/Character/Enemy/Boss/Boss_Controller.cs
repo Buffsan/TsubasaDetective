@@ -113,6 +113,9 @@ public class Boss_Controller : EnemyBase
 
     public void BecomeCharmedAlly()
     {
+        // 魅了はこのボスの撃破扱い。通常死亡で消える眷属を同じように
+        // 片付け、眷属が戦闘クリアを妨げないようにする。
+        CleanupSummonsOnDefeat();
         targetType = EnemyContoroller.TargetType.EnemyOnly;
         targetPriority = EnemyContoroller.TargetPriority.Nearest;
         targetAllFactions = true;
@@ -371,6 +374,25 @@ public class Boss_Controller : EnemyBase
             ALL_System.systemManager.AllEnemy.Add(this.gameObject);
 
     }
+    // ボス死亡時と魅了成立時の眷属処理を共通化。
+    // ボスが管理する眷属だけを除外するため、他の敵が残っていれば
+    // SystemManagerの通常の全滅判定がそのまま適用される。
+    private void CleanupSummonsOnDefeat()
+    {
+        if (moveBase == null) return;
+
+        SystemManager manager = SystemManager.Instance;
+        foreach (GameObject summoned in moveBase.AllEnemy)
+        {
+            if (summoned == null) continue;
+            // Destroyはフレーム末まで遅延するため、勝利判定の登録からも外す。
+            if (manager != null) manager.AllEnemy.Remove(summoned);
+            Destroy(summoned);
+        }
+        moveBase.AllEnemy.Clear();
+        moveBase.enemyList.Clear();
+    }
+
     private void FixedUpdate()
     {
         switch (status)
@@ -385,11 +407,7 @@ public class Boss_Controller : EnemyBase
                 isConfusion();
                 break;
             case Status.Die:
-                foreach (var enemys in moveBase.AllEnemy) 
-                {
-                    if (enemys)Destroy(enemys.gameObject);
-                }
-                moveBase.enemyList.Clear();
+                CleanupSummonsOnDefeat();
                 return; // 死亡中は一切動かさない
             case Status.MovieStay:
                 isMovie();

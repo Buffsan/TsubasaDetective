@@ -10,6 +10,8 @@ static class GlobalEvents
     public static event Action<PlayerSkillBase,SkillCardData> OnSkillUse;
     public static event Action<int> OnSkillCooldownStarted;
     public static event Action<charaDamage, float> OnEnemyDamagedWhileConfused;
+    // Only direct hits from a player skill (before that hit's damage calculation).
+    public static event Action OnPlayerSkillHit;
     public static event Action<float> OnPlayerDie;
     public static event Action<float> OnDecide;
     // Critical発生時のイベント
@@ -35,6 +37,10 @@ static class GlobalEvents
     public static void InvokeEnemyDamagedWhileConfused(charaDamage receiver, float damage)
     {
         OnEnemyDamagedWhileConfused?.Invoke(receiver, damage);
+    }
+    public static void InvokePlayerSkillHit()
+    {
+        OnPlayerSkillHit?.Invoke();
     }
     public static void InvokeSkillUse(PlayerSkillBase skill , SkillCardData Skill_AI)
     {

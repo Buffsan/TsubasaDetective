@@ -55,6 +55,20 @@ public class PlayerAttack : MonoBehaviour
         return true;
     }
 
+    bool IsPlayerSkillAttack()
+    {
+        if (SourceSkillSlotIndex >= 0) return true;
+        // Legacy skill prefabs may not have the origin marker. Only accept
+        // their card if it is currently equipped by this player.
+        if (skillcarddata == null || controller == null) return false;
+        foreach (SkillInfo info in controller.skillINFO)
+        {
+            if (info != null && info.skillDATA == skillcarddata)
+                return true;
+        }
+        return false;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (TryChargeHarpoon(other)) return;
@@ -82,7 +96,10 @@ public class PlayerAttack : MonoBehaviour
 
                 if(weapondata.HitAudio) audioManager.PlaySE(weapondata.HitAudio);
                 float criticalRandom = Random.Range(0f, 100f);
-                float attackValue = AttackMathf(); // 同一命中では1回だけ計算
+                bool isSkillHit = IsPlayerSkillAttack();
+                if (isSkillHit)
+                    GlobalEvents.InvokePlayerSkillHit();
+                float attackValue = AttackMathf(isSkillHit); // 同一命中では1回だけ計算
                 // Qスロット(index 2)にセットしたカードからの攻撃を魅了攻撃に変える。
                 bool applyCharm = controller.HandInHandRelicActive &&
                     (SourceSkillSlotIndex == 2 ||
@@ -135,7 +152,7 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    float AttackMathf() 
+    float AttackMathf(bool applySkillOnlyBuff = false)
     {
         float AttackAll;
         float Level_BONUS_Damage = 0;
@@ -157,7 +174,10 @@ public class PlayerAttack : MonoBehaviour
             }
         }
 
-        AttackAll = ((weapondata.Attack + controller.ATK + Level_BONUS_Damage) * ((100 + controller.AddATK + Level_BONUS_Damage_multiply) / 100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * controller.playerBuff.MultiplyAttack_AllBuff;
+        float buffMultiplier = controller.playerBuff.MultiplyAttack_AllBuff;
+        if (applySkillOnlyBuff)
+            buffMultiplier += controller.playerBuff.SkillOnlyAttackMultiplierBonus;
+        AttackAll = ((weapondata.Attack + controller.ATK + Level_BONUS_Damage) * ((100 + controller.AddATK + Level_BONUS_Damage_multiply) / 100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * buffMultiplier;
        return AttackAll;
     }
 

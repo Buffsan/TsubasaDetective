@@ -255,8 +255,11 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
                 Vector2 aim = (slotPosition - harpoonPosition).normalized;
                 Vector2 heading = returnVelocity.sqrMagnitude > 0.000001f
                     ? returnVelocity.normalized : aim;
-                heading = Vector2.RotateTowards(heading, aim,
-                    returnTurnSpeed * Mathf.Deg2Rad * dt, 0f).normalized;
+                float headingAngle = Mathf.Atan2(heading.y, heading.x) * Mathf.Rad2Deg;
+                float aimAngle = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;
+                float turnAngle = Mathf.MoveTowardsAngle(
+                    headingAngle, aimAngle, returnTurnSpeed * dt) * Mathf.Deg2Rad;
+                heading = new Vector2(Mathf.Cos(turnAngle), Mathf.Sin(turnAngle));
 
                 // Real acceleration and bounded turning, like a bird flying home.
                 float speed = Mathf.MoveTowards(returnVelocity.magnitude,

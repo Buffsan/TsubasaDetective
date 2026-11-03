@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ba888ecbe55fb74fa1508e01c5c75ac, type: 3}
   m_Name: DK_Zweihander_HitBuff
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   Invincible: 0
   BuffNAME: Zweihander Hit Bonus
   BuffTime: 3
@@ -19,7 +19,7 @@ MonoBehaviour:
   SPEED: 0
   MultiplySPEED: 0
   ATK: 0
-  MultiplyATK: 0.1
+  MultiplyATK: 0.05
   SkillAttackOnly: 0
   ATKDF: 0
   MultiplyATKDF: 0

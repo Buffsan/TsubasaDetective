@@ -5,6 +5,7 @@ using UnityEngine;
 public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
 {
     [SerializeField] float orbitRadius = 1.25f, orbitSpeed = 1.4f;
+    [SerializeField, Min(1f)] float orbitAlignmentSpeed = 720f;
     [SerializeField] float windup = 1f, dashTime = 0.5f, dashDistance = 15f, returnTime = 4f;
     [SerializeField] float stun = 4f, confusion = 1f;
     [SerializeField] float spinPower = 2000f;
@@ -29,14 +30,40 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
     Vector2 playerPositionAtThrow, returnStartPosition;
     float baselineReturnDistance;
     Vector2 returnVelocity;
-    float orbitPhaseOffset;
+    float orbitAngle;
+    bool orbitAngleInitialized;
     BoxCollider2D hitbox;
+
+    // Every acquired copy gets its own slot, including copies currently
+    // spinning, dashing, or returning. Their slots stay reserved until removed.
+    static readonly List<Relic_ReturnlessHarpoon> activeHarpoons =
+        new List<Relic_ReturnlessHarpoon>();
 
     // The dash is only 0.5 seconds; non-allocating sweeps prevent skipped nearby enemies.
     readonly Collider2D[] overlapBuffer = new Collider2D[128];
     readonly RaycastHit2D[] sweepBuffer = new RaycastHit2D[128];
     readonly HashSet<EnemyBase> targets = new HashSet<EnemyBase>();
     public bool CanCharge => isActiveAndEnabled && mode == Mode.Orbit;
+
+    void OnEnable()
+    {
+        if (!activeHarpoons.Contains(this))
+            activeHarpoons.Add(this);
+    }
+
+    void OnDisable()
+    {
+        activeHarpoons.Remove(this);
+        orbitAngleInitialized = false;
+    }
+
+    float TargetOrbitAngle()
+    {
+        int count = Mathf.Max(1, activeHarpoons.Count);
+        int index = activeHarpoons.IndexOf(this);
+        if (index < 0) index = 0;
+        return Time.time * orbitSpeed * Mathf.Rad2Deg + 360f * index / count;
+    }
 
     void Awake()
     {
@@ -83,9 +110,20 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
         switch (mode)
         {
             case Mode.Orbit:
-                float angle = Time.time * orbitSpeed + orbitPhaseOffset;
+                float targetAngle = TargetOrbitAngle();
+                if (!orbitAngleInitialized)
+                {
+                    orbitAngle = targetAngle;
+                    orbitAngleInitialized = true;
+                }
+
+                // When another copy is collected or this one comes back,
+                // ease toward its evenly-spaced slot instead of teleporting.
+                orbitAngle = Mathf.MoveTowardsAngle(
+                    orbitAngle, targetAngle, orbitAlignmentSpeed * dt);
+                float orbitRadians = orbitAngle * Mathf.Deg2Rad;
                 transform.position = (Vector2)player.transform.position +
-                    orbitRadius * new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+                    orbitRadius * new Vector2(Mathf.Cos(orbitRadians), Mathf.Sin(orbitRadians));
                 transform.up = Vector2.up;
                 break;
             case Mode.Spin:
@@ -204,10 +242,13 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
         time = 0f;
         returnVelocity = Vector2.zero;
         targets.Clear();
-        // Resume the orbit near the pickup angle instead of jumping to a fixed point.
+        // Resume from the arrival angle, then smoothly rejoin the slot assigned
+        // to this copy. All copies eventually orbit at exactly equal intervals.
         Vector2 relative = (Vector2)transform.position - (Vector2)player.transform.position;
-        if (relative.sqrMagnitude > 0.001f)
-            orbitPhaseOffset = Mathf.Atan2(relative.y, relative.x) - Time.time * orbitSpeed;
+        orbitAngle = relative.sqrMagnitude > 0.001f
+            ? Mathf.Atan2(relative.y, relative.x) * Mathf.Rad2Deg
+            : TargetOrbitAngle();
+        orbitAngleInitialized = true;
         mode = Mode.Orbit;
     }
 

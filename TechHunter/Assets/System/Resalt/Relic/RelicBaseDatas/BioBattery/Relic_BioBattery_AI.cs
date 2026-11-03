@@ -41,7 +41,7 @@ public class Relic_BioBattery_AI : RelicBase_AI
         if (AI.CoolTime >= 30)
         {
             ThenderSize *= 2;
-            ThenderNumber *= 2;
+            ThenderNumber *= 4;
         }
         StartCoroutine(shotThender(1.5f * SPAWN_NUMBER-1, ThenderSize, ThenderNumber));
     }

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d9db937061371a418fa7ad9233fd38b, type: 3}
   m_Name: BioBattery_Attack 1
   m_EditorClassIdentifier: 
+  statusEffects:
+  - {fileID: 11400000, guid: 4af0e14c5984f1543b2f7f28f98dabca, type: 2}
   attackType: 3
   Attack: 15
   AttackSpeedTime: 0

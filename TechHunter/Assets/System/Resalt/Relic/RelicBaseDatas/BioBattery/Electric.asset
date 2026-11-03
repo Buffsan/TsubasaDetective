@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effecttype: 2
   PoisonEffectPrefab: {fileID: 6111644391743638336, guid: 1a80fba26e62f334babcce6a215a48a6, type: 3}
-  Duration: 8
+  Duration: 1.2
+  IsPermanent: 0
+  CharmedDamageMultiplier: 0.5
   number: 1
   TickTime: 0.3
   EffectObject: {fileID: 6111644391743638336, guid: 1a80fba26e62f334babcce6a215a48a6, type: 3}

@@ -10,6 +10,7 @@ public sealed class Relic_ColdAnchor : RelicBase_AI
     [Header("Anchor Appearance")]
     [SerializeField] Sprite AnchorSprite;
     [SerializeField, Min(0.01f)] float AnchorSpriteScale = 1f;
+    [SerializeField] float baseHeght = 3;
 
     [Header("Summon Animation")]
     [SerializeField, Min(0.01f)] float summonSeconds = 0.6f;
@@ -24,6 +25,8 @@ public sealed class Relic_ColdAnchor : RelicBase_AI
     [SerializeField] GameObject ImpactEffectPrefab;
     [SerializeField, Min(0.01f)] float impactEffectScale = 0.35f;
     [SerializeField, Min(0.05f)] float impactEffectLifetime = 3f;
+    [SerializeField] AudioClip audioClip;
+    AudioManager audioManager => AudioManager.instance;
 
     class Anchor
     {
@@ -97,7 +100,7 @@ public sealed class Relic_ColdAnchor : RelicBase_AI
     Vector3 AboveEnemy(EnemyBase enemy)
     {
         float top = enemy.spriteRenderer != null
-            ? enemy.spriteRenderer.bounds.max.y : enemy.transform.position.y + 1.5f;
+            ? enemy.spriteRenderer.bounds.max.y : enemy.transform.position.y + baseHeght;
         return new Vector3(enemy.transform.position.x, top + aboveHead,
             enemy.transform.position.z);
     }
@@ -194,6 +197,7 @@ public sealed class Relic_ColdAnchor : RelicBase_AI
         // The HOUKOU animation scales its own root Transform.
         // Scale a wrapper instead so the Inspector size is respected.
         GameObject wrapper = new GameObject("ColdAnchor_ImpactEffect");
+        audioManager.PlaySE(audioClip);
         wrapper.transform.position = impactPosition;
         wrapper.transform.localScale = Vector3.one * Mathf.Max(0.01f, impactEffectScale);
         GameObject roar = Instantiate(ImpactEffectPrefab, wrapper.transform);

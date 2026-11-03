@@ -45,15 +45,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AttackObject: {fileID: 0}
-  fallSeconds: 0.28
-  aboveHead: 0.7
+  fallSeconds: 0.1
+  aboveHead: 2
   AnchorSprite: {fileID: 21300000, guid: 2da3cf7dc6520884fbe0c1517dfee515, type: 3}
-  AnchorSpriteScale: 1
+  AnchorSpriteScale: 2
+  baseHeght: 5
   summonSeconds: 0.6
-  summonSpinDegrees: 540
-  summonStartScale: 0.05
-  riseSeconds: 0.16
-  riseHeight: 0.85
+  summonSpinDegrees: 100
+  summonStartScale: 0.044
+  riseSeconds: 0.1
+  riseHeight: 2
   ImpactEffectPrefab: {fileID: 7711856317104832382, guid: 916a488a0ef4f6a4d9803e0930b2eecd, type: 3}
-  impactEffectScale: 0.35
+  impactEffectScale: 0.2
   impactEffectLifetime: 3
+  audioClip: {fileID: 8300000, guid: 94a19eb241b73fe45801fae23390fdd1, type: 3}

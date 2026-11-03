@@ -21399,19 +21399,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3081947830748872456, guid: 6c2ac4c87a7201a42b8dbcbdda7a41e8, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4652034020577443909, guid: 6c2ac4c87a7201a42b8dbcbdda7a41e8, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4652034020577443909, guid: 6c2ac4c87a7201a42b8dbcbdda7a41e8, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4652034020577443909, guid: 6c2ac4c87a7201a42b8dbcbdda7a41e8, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6781235963046254884, guid: 6c2ac4c87a7201a42b8dbcbdda7a41e8, type: 3}
       propertyPath: m_Name
@@ -22334,10 +22334,6 @@ MonoBehaviour:
     ConfusionDamagePercent: 0
     HealingPercent: 0
     LuckyDamagePercent: 0
-  CoinGainCardPercent: 20
-  ConfusionDamageCardPercent: 20
-  HealingCardPercent: 20
-  LuckyDamageCardPercent: 20
   Relics:
   - Name: "\u8840\u306B\u6109\u60A6\u3059\u308B\u69CD"
     data: {fileID: 11400000, guid: 8a3e9f84b2f78464ab7a1695ae9fd8cc, type: 2}
@@ -22381,6 +22377,14 @@ MonoBehaviour:
     data: {fileID: 11400000, guid: 701509380fa882647abe29efa44147cc, type: 2}
   - Name: "\u30A8\u30A4\u30C8\u306E\u9060\u5F81\u63A2\u7D22\u30AD\u30C3\u30C9"
     data: {fileID: 11400000, guid: 235567277fe1b434fa1d1351d966f40d, type: 2}
+  - Name: "\u540D\u753B\u300C\u624B\u3068\u624B\u3092\u53D6\u308A\u5408\u3063\u3066\u6B7B\u306D\u300D"
+    data: {fileID: 11400000, guid: ba1e29a4c6d54ad3a9a612896c84687e, type: 2}
+  - Name: "12\u672C\u76EE\u306E\u6A5F\u68B0\u4ED5\u639B\u3051\u306E\u874B\u71ED"
+    data: {fileID: 11400000, guid: a1b20000d5a64c26b000000000001303, type: 2}
+  - Name: "\u5E30\u3089\u305A\u306E\u929B"
+    data: {fileID: 11400000, guid: a1b20000d5a64c26b000000000001103, type: 2}
+  - Name: "\u51B7\u305F\u3044\u9328"
+    data: {fileID: 11400000, guid: a1b20000d5a64c26b000000000001203, type: 2}
   Stages:
   - {fileID: 11400000, guid: 3b388d311caf6ce43a987ac525709f34, type: 2}
   - {fileID: 11400000, guid: 58d6d16f563caa544bae94592ecb3d40, type: 2}
@@ -23572,6 +23576,7 @@ MonoBehaviour:
   Targetrb: {fileID: 0}
   TargetObject: {fileID: 0}
   SkillLevel: 0
+  SkillSlotIndex: -1
   Att: 0
   skillcount: 0
   SaveTarget: {fileID: 0}

@@ -11,9 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5350f31428789b94589b208b814222cc, type: 3}
   m_Name: TwelfthCandle
-  m_EditorClassIdentifier:
-  RelicName: "機械仕掛けの12本目の蝋燭"
+  m_EditorClassIdentifier: 
+  RelicName: "12\u672C\u76EE\u306E\u6A5F\u68B0\u4ED5\u639B\u3051\u306E\u874B\u71ED"
   RelicDataObject: {fileID: 7709000000000000001, guid: a1b20000d5a64c26b000000000001302, type: 3}
-  RelicImage: {fileID: 0}
-  Explanation: "12回目に使用するスキルのクールタイムが即座に回復する。使用回数は表示されない。"
+  RelicImage: {fileID: 21300000, guid: 0a103153457b93844a134fcd4be92c04, type: 3}
+  Explanation: "12\u56DE\u76EE\u306B\u4F7F\u7528\u3059\u308B\u30B9\u30AD\u30EB\u306E\u30AF\u30FC\u30EB\u30BF\u30A4\u30E0\u304C\u5373\u5EA7\u306B\u56DE\u5FA9\u3059\u308B\u3002\u4F7F\u7528\u56DE\u6570\u306F\u8868\u793A\u3055\u308C\u306A\u3044\u3002"
   stage: 0

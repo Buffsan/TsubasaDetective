@@ -11,9 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5350f31428789b94589b208b814222cc, type: 3}
   m_Name: ColdAnchor
-  m_EditorClassIdentifier:
-  RelicName: "冷たい錨"
+  m_EditorClassIdentifier: 
+  RelicName: "\u51B7\u305F\u3044\u9328"
   RelicDataObject: {fileID: 7709000000000000001, guid: a1b20000d5a64c26b000000000001202, type: 3}
-  RelicImage: {fileID: 0}
-  Explanation: "混乱中の敵がダメージを受けると頭上に錨が出現する。混乱中の被ダメージを蓄積し、混乱解除時に落下して同量のHPダメージを与える。混乱ダメージ0、スタン0。"
+  RelicImage: {fileID: 21300000, guid: 9f22b32723b4d43469ef668f371cee26, type: 3}
+  Explanation: "\u6DF7\u4E71\u4E2D\u306E\u6575\u304C\u30C0\u30E1\u30FC\u30B8\u3092\u53D7\u3051\u308B\u3068\u982D\u4E0A\u306B\u9328\u304C\u51FA\u73FE\u3059\u308B\u3002\u6DF7\u4E71\u4E2D\u306E\u88AB\u30C0\u30E1\u30FC\u30B8\u3092\u84C4\u7A4D\u3057\u3001\u6DF7\u4E71\u89E3\u9664\u6642\u306B\u843D\u4E0B\u3057\u3066\u540C\u91CF\u306EHP\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002\u6DF7\u4E71\u30C0\u30E1\u30FC\u30B80\u3001\u30B9\u30BF\u30F30\u3002"
   stage: 0

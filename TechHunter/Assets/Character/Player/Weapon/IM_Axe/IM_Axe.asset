@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statusEffects: []
   attackType: 0
-  Attack: 33
+  Attack: 15
   AttackSpeedTime: 0
-  StaggerPower: 10
+  StaggerPower: 12
   ConfusionPower: 0.4
   KnockBackPower: 0
   MaxStack: 0

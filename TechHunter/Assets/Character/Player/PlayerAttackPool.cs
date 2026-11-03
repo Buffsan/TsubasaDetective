@@ -62,12 +62,14 @@ public class AttackPool : MonoBehaviour
             iAttack.weapondata = tAttack.weapondata;
             iAttack.isCriticulUse = tAttack.isCriticulUse;
             iAttack.AgeinAttack = tAttack.AgeinAttack;
+            iAttack.buffOnEnemyHit = tAttack.buffOnEnemyHit;
             // プールを使い回す度に前のQスロット情報を破棄する。
             iAttack.SourceSkillSlotIndex = tAttack.SourceSkillSlotIndex;
         }
         else if (iAttack != null)
         {
             iAttack.SourceSkillSlotIndex = -1;
+            iAttack.buffOnEnemyHit = null;
         }
 
         instance.SetActive(true);

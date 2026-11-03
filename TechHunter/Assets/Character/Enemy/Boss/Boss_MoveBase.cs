@@ -165,9 +165,13 @@ public class Boss_MoveBase : MonoBehaviour
         
         GameObject CL_Enemy  = Instantiate(enemyprefab,SpawnPos,Quaternion.identity);
         AllEnemy.Add(CL_Enemy);
-        aLL_System.systemManager.AllEnemy.Add(CL_Enemy);
 
         Boss_Controller boss = enemyBase as Boss_Controller;
+        // 撃破扱いの魅了ボスから生まれた眷属は、戦闘クリアを妨げない。
+        // 通常のボスから生まれた眷属はこれまでどおり敵として登録する。
+        bool summonedByCharmedBoss = boss != null && boss.IsCharmed;
+        if (!summonedByCharmedBoss)
+            aLL_System.systemManager.AllEnemy.Add(CL_Enemy);
         if (boss != null && boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
         {
             EnemyBase summoned = CL_Enemy.GetComponent<EnemyBase>();
@@ -186,6 +190,11 @@ public class Boss_MoveBase : MonoBehaviour
                     CG_Knght knight = summoned as CG_Knght;
                     if (knight != null) knight.RefreshSummonedTarget();
                 }
+
+                // 新たな眷属も味方として扱い、次スポットで破棄する。
+                // 魅了効果を付与していないので、魅了報酬の誤ドロップは起こさない。
+                if (summonedByCharmedBoss && SystemManager.Instance != null)
+                    SystemManager.Instance.RegisterCharmedAlly(summoned);
             }
         }
         return CL_Enemy;

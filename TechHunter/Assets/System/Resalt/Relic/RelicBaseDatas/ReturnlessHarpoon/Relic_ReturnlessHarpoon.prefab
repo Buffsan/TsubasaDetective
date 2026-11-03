@@ -49,6 +49,11 @@ MonoBehaviour:
   orbitRadius: 1.25
   orbitSpeed: 1.4
   orbitAlignmentSpeed: 720
+  returnTurnSpeed: 220
+  returnOrbitCatchRadius: 0.32
+  returnApproachPadding: 0.15
+  returnRejoinAngularSpeed: 180
+  returnRejoinRadialSpeed: 3.5
   windup: 1
   dashTime: 0.5
   dashDistance: 15

@@ -11,13 +11,23 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
     [SerializeField] float spinPower = 2000f;
 
     [Header("Return homing")]
-    [Tooltip("Acceleration used to turn toward the moving player while returning.")]
+    [Tooltip("Acceleration of the returning harpoon, in world units/sec squared.")]
     [SerializeField, Min(0.1f)] float returnSteeringAcceleration = 26f;
-    [Tooltip("Extra time after the baseline return duration to catch a moving player.")]
+    [Tooltip("Maximum turning speed while flying back, in degrees/second.")]
+    [SerializeField, Min(1f)] float returnTurnSpeed = 220f;
+    [Tooltip("Extra acceleration after the expected return time, with no teleport or deadline.")]
     [SerializeField, Min(0.05f)] float movingTargetGraceSeconds = 0.5f;
-    [Tooltip("Additional chase speed for players moving farther from the dash endpoint.")]
+    [Tooltip("Additional chase speed when the orbiting slot moves farther away.")]
     [SerializeField, Min(0f)] float movingTargetCompensation = 2f;
+    [Tooltip("Pickup distance when the player physically touches the returning harpoon.")]
     [SerializeField, Min(0.1f)] float returnCatchRadius = 0.85f;
+    [Tooltip("Distance from its assigned orbit position needed to rejoin the orbit.")]
+    [SerializeField, Min(0.05f)] float returnOrbitCatchRadius = 0.32f;
+    [Tooltip("Pickup slightly before contact when the player approaches the harpoon.")]
+    [SerializeField, Min(0f)] float returnApproachPadding = 0.15f;
+    [Header("Orbit rejoin")]
+    [SerializeField, Min(1f)] float returnRejoinAngularSpeed = 180f;
+    [SerializeField, Min(0.1f)] float returnRejoinRadialSpeed = 3.5f;
 
     [Header("Hitbox")]
     [SerializeField, Min(1f)] float spriteHitboxPadding = 1.15f;
@@ -27,11 +37,11 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
     float time, charge;
     Vector2 dashOrigin, dashDirection;
     // The player position when the harpoon was thrown is our four-second baseline.
-    Vector2 playerPositionAtThrow, returnStartPosition;
+    Vector2 playerPositionAtThrow, returnStartPosition, lastPlayerPosition;
     float baselineReturnDistance;
     Vector2 returnVelocity;
-    float orbitAngle;
-    bool orbitAngleInitialized;
+    float orbitAngle, currentOrbitRadius;
+    bool orbitAngleInitialized, rejoiningOrbit;
     BoxCollider2D hitbox;
 
     // Every acquired copy gets its own slot, including copies currently
@@ -55,6 +65,7 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
     {
         activeHarpoons.Remove(this);
         orbitAngleInitialized = false;
+        rejoiningOrbit = false;
     }
 
     float TargetOrbitAngle()
@@ -63,6 +74,13 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
         int index = activeHarpoons.IndexOf(this);
         if (index < 0) index = 0;
         return Time.time * orbitSpeed * Mathf.Rad2Deg + 360f * index / count;
+    }
+
+    Vector2 AssignedOrbitPosition(Vector2 playerPosition)
+    {
+        float angle = TargetOrbitAngle() * Mathf.Deg2Rad;
+        return playerPosition + orbitRadius *
+            new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
     }
 
     void Awake()
@@ -114,16 +132,24 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
                 if (!orbitAngleInitialized)
                 {
                     orbitAngle = targetAngle;
+                    currentOrbitRadius = orbitRadius;
                     orbitAngleInitialized = true;
                 }
 
-                // When another copy is collected or this one comes back,
-                // ease toward its evenly-spaced slot instead of teleporting.
+                // Rejoin from the actual arrival point instead of jumping to the circle.
+                float alignment = rejoiningOrbit ? returnRejoinAngularSpeed : orbitAlignmentSpeed;
                 orbitAngle = Mathf.MoveTowardsAngle(
-                    orbitAngle, targetAngle, orbitAlignmentSpeed * dt);
+                    orbitAngle, targetAngle, alignment * dt);
+                currentOrbitRadius = Mathf.MoveTowards(
+                    currentOrbitRadius, orbitRadius, returnRejoinRadialSpeed * dt);
+                if (rejoiningOrbit &&
+                    Mathf.Abs(Mathf.DeltaAngle(orbitAngle, targetAngle)) < 1f &&
+                    Mathf.Abs(currentOrbitRadius - orbitRadius) < 0.02f)
+                    rejoiningOrbit = false;
+
                 float orbitRadians = orbitAngle * Mathf.Deg2Rad;
                 transform.position = (Vector2)player.transform.position +
-                    orbitRadius * new Vector2(Mathf.Cos(orbitRadians), Mathf.Sin(orbitRadians));
+                    currentOrbitRadius * new Vector2(Mathf.Cos(orbitRadians), Mathf.Sin(orbitRadians));
                 transform.up = Vector2.up;
                 break;
             case Mode.Spin:
@@ -155,82 +181,117 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
                 if (progress >= 1f)
                 {
                     time = 0f;
-                    // Calibrate the return flight to the player's position at throw time.
+                    // Calibrate the ~4-second flight to this harpoon's orbit slot,
+                    // using the player's position when the attack was thrown.
                     returnStartPosition = transform.position;
+                    Vector2 originalSlot = AssignedOrbitPosition(playerPositionAtThrow);
                     baselineReturnDistance = Mathf.Max(0f,
-                        Vector2.Distance(returnStartPosition, playerPositionAtThrow) -
-                        returnCatchRadius);
-                    Vector2 home = playerPositionAtThrow - returnStartPosition;
+                        Vector2.Distance(returnStartPosition, originalSlot) -
+                        returnOrbitCatchRadius);
+                    Vector2 home = originalSlot - returnStartPosition;
                     if (home.sqrMagnitude < 0.001f)
-                        home = (Vector2)player.transform.position - returnStartPosition;
+                        home = AssignedOrbitPosition(player.transform.position) - returnStartPosition;
+                    float startSpeed = baselineReturnDistance /
+                        Mathf.Max(0.1f, returnTime) * 0.25f;
                     returnVelocity = home.sqrMagnitude > 0.001f
-                        ? home.normalized * (baselineReturnDistance /
-                            Mathf.Max(0.1f, returnTime) * 0.25f)
+                        ? home.normalized * Mathf.Max(0.1f, startSpeed)
                         : Vector2.zero;
+                    lastPlayerPosition = player.transform.position;
                     mode = Mode.Return;
                 }
                 break;
             case Mode.Return:
                 time += dt;
-                Vector2 destination = player.transform.position;
-                Vector2 displacement = destination - (Vector2)transform.position;
-                float distance = displacement.magnitude;
+                Vector2 playerPosition = player.transform.position;
+                Vector2 harpoonPosition = transform.position;
+                Vector2 slotPosition = AssignedOrbitPosition(playerPosition);
+                Vector2 playerMotion = playerPosition - lastPlayerPosition;
+                Vector2 towardHarpoon = harpoonPosition - playerPosition;
+                float playerDistance = towardHarpoon.magnitude;
 
-                // Physically meeting the player is always enough to retrieve it,
-                // even if only a fraction of the expected return time has passed.
-                if (distance <= returnCatchRadius)
+                // Approaching the weapon picks it up: it must not fly away simply
+                // because the assigned orbit position shifts with the player.
+                bool playerApproaching = playerMotion.sqrMagnitude > 0.000001f &&
+                    Vector2.Dot(playerMotion, towardHarpoon) > 0f;
+                if (playerDistance <= returnCatchRadius ||
+                    (playerApproaching &&
+                     playerDistance <= orbitRadius + returnApproachPadding))
                 {
                     ResetAfterReturn(player);
                     break;
                 }
 
+                float distanceToSlot = Vector2.Distance(harpoonPosition, slotPosition);
+                if (distanceToSlot <= returnOrbitCatchRadius)
+                {
+                    ResetAfterReturn(player);
+                    break;
+                }
+
+                // The speed grows along a natural flight curve. Unlike the old
+                // deadline-based catch-up there is no distance / time-remaining
+                // boost that makes the weapon stick to the screen.
                 float baselineTime = Mathf.Max(0.1f, returnTime);
                 float baselineSpeed = baselineReturnDistance / baselineTime;
                 float returnProgress = Mathf.Max(0f, time / baselineTime);
-                // Speed rises linearly. Its integral over 4 seconds equals the
-                // original distance to the player at the moment of throwing.
                 float scheduledSpeed = baselineSpeed *
-                    (0.25f + 1.5f * Mathf.Min(returnProgress, 1.5f));
-
-                // The player may move closer (early pickup), sideways, or farther
-                // away. Add speed only when their new position is farther from
-                // the harpoon's return starting point than the original location.
+                    (0.25f + 1.5f * Mathf.Min(returnProgress, 1f));
                 float extraTravel = Mathf.Max(0f,
-                    Vector2.Distance(returnStartPosition, destination) -
-                    Vector2.Distance(returnStartPosition, playerPositionAtThrow));
+                    Vector2.Distance(returnStartPosition, slotPosition) -
+                    Vector2.Distance(returnStartPosition,
+                        AssignedOrbitPosition(playerPositionAtThrow)));
                 float chaseSpeed = movingTargetCompensation * extraTravel / baselineTime;
                 float desiredSpeed = scheduledSpeed + chaseSpeed;
 
-                // After the baseline ~4 seconds, accelerate further to intercept
-                // a moving player within roughly another half second. This is
-                // still normal world-space movement: never teleport or force-pickup.
+                // Speed keeps rising after ~4 seconds for a moving target,
+                // but retrieval still requires physically reaching the slot.
                 if (time > baselineTime)
                 {
-                    float remaining = Mathf.Max(0.04f,
-                        baselineTime + movingTargetGraceSeconds - time);
-                    desiredSpeed = Mathf.Max(desiredSpeed, distance / remaining);
+                    float lateProgress = (time - baselineTime) /
+                        Mathf.Max(0.05f, movingTargetGraceSeconds);
+                    desiredSpeed += baselineSpeed * 2f * lateProgress;
                 }
 
-                Vector2 desiredVelocity = displacement.normalized * desiredSpeed;
-                float steering = returnSteeringAcceleration *
-                    (1f + Mathf.Max(0f, time - baselineTime) * 6f);
-                returnVelocity = Vector2.MoveTowards(returnVelocity,
-                    desiredVelocity, steering * dt);
-                Vector2 returnStart = transform.position;
-                Vector2 returnNextPosition = returnStart + returnVelocity * dt;
+                Vector2 aim = (slotPosition - harpoonPosition).normalized;
+                Vector2 heading = returnVelocity.sqrMagnitude > 0.000001f
+                    ? returnVelocity.normalized : aim;
+                heading = Vector2.RotateTowards(heading, aim,
+                    returnTurnSpeed * Mathf.Deg2Rad * dt, 0f).normalized;
+
+                // Real acceleration and bounded turning, like a bird flying home.
+                float speed = Mathf.MoveTowards(returnVelocity.magnitude,
+                    Mathf.Max(0.1f, desiredSpeed), returnSteeringAcceleration * dt);
+                returnVelocity = heading * speed;
+
+                Vector2 returnNextPosition = harpoonPosition + returnVelocity * dt;
                 transform.position = returnNextPosition;
-                if (returnVelocity.sqrMagnitude > 0.001f)
+                if (returnVelocity.sqrMagnitude > 0.000001f)
                     transform.up = returnVelocity.normalized;
 
-                // Pick up even if high-speed pursuit crosses the player between frames.
-                Vector2 step = returnNextPosition - returnStart;
+                // Catch a fast crossing of the moving orbit slot between frames.
+                Vector2 step = returnNextPosition - harpoonPosition;
                 float fraction = step.sqrMagnitude > 0.000001f
-                    ? Mathf.Clamp01(Vector2.Dot(destination - returnStart, step) /
+                    ? Mathf.Clamp01(Vector2.Dot(slotPosition - harpoonPosition, step) /
                         step.sqrMagnitude)
                     : 0f;
-                Vector2 closestPoint = returnStart + step * fraction;
-                if ((closestPoint - destination).sqrMagnitude <=
-                    returnCatchRadius * returnCatchRadius)
+                Vector2 closestPoint = harpoonPosition + step * fraction;
+
+                // Also account for the player walking into the harpoon in the
+                // same frame, even when the harpoon moves quickly.
+                Vector2 playerStep = playerPosition - lastPlayerPosition;
+                float playerFraction = playerStep.sqrMagnitude > 0.000001f
+                    ? Mathf.Clamp01(Vector2.Dot(harpoonPosition - lastPlayerPosition,
+                        playerStep) / playerStep.sqrMagnitude)
+                    : 0f;
+                Vector2 playerClosest = lastPlayerPosition + playerStep * playerFraction;
+
+                lastPlayerPosition = playerPosition;
+                if ((closestPoint - slotPosition).sqrMagnitude <=
+                        returnOrbitCatchRadius * returnOrbitCatchRadius ||
+                    (returnNextPosition - playerPosition).sqrMagnitude <=
+                        returnCatchRadius * returnCatchRadius ||
+                    (playerClosest - harpoonPosition).sqrMagnitude <=
+                        returnCatchRadius * returnCatchRadius)
                     ResetAfterReturn(player);
                 break;
         }
@@ -242,13 +303,15 @@ public sealed class Relic_ReturnlessHarpoon : RelicBase_AI
         time = 0f;
         returnVelocity = Vector2.zero;
         targets.Clear();
-        // Resume from the arrival angle, then smoothly rejoin the slot assigned
-        // to this copy. All copies eventually orbit at exactly equal intervals.
+        // Preserve the actual pickup position for the first orbit frame.
+        // Neither radial position nor angle is snapped onto the ideal circle.
         Vector2 relative = (Vector2)transform.position - (Vector2)player.transform.position;
         orbitAngle = relative.sqrMagnitude > 0.001f
             ? Mathf.Atan2(relative.y, relative.x) * Mathf.Rad2Deg
             : TargetOrbitAngle();
+        currentOrbitRadius = relative.magnitude;
         orbitAngleInitialized = true;
+        rejoiningOrbit = true;
         mode = Mode.Orbit;
     }
 

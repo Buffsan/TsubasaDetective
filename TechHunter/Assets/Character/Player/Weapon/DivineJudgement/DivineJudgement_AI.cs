@@ -49,9 +49,10 @@ public class DivineJudgement_AI : PlayerSkillBase
         int desired = Mathf.Min(maxMarks, Mathf.FloorToInt(maxMarks * 0.5f * (x * x + x * x * x) + 0.00001f));
         while (issued < desired)
         {
-            issued++;
             EnemyBase target = FindNearestEnemy();
-            if (target != null) AddMark(target);
+            if (target == null) break; // 敵がいない間は付与せず、次のフレームで再試行する。
+            issued++;
+            AddMark(target);
         }
         if (elapsed >= chantDuration) Fire();
     }

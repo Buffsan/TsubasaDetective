@@ -76,6 +76,13 @@ public class SkillController : MonoBehaviour
     void Start()
     {
         systemManager = GetComponent<SystemManager>();
+        // New skill cards are registered without replacing the existing Inspector list.
+        foreach (SkillCardData entry in Resources.LoadAll<SkillCardData>("SkillCards"))
+        {
+            if (entry != null && !SkillList.Exists(skill => skill != null && skill.skill == entry))
+                SkillList.Add(new Skill { SkillName = entry.SkillName, Rarity = 1, skill = entry });
+        }
+
         // 新規遺物を既存の遺物カード抽選リストに追加する。
         RelicData masterpiece = Resources.Load<RelicData>("Relics/HandInHandAndDie");
         if (masterpiece != null && !Relics.Exists(relic => relic != null && relic.data == masterpiece))

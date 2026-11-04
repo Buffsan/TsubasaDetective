@@ -30,14 +30,14 @@ public class DivineJudgement_AI : PlayerSkillBase
         public GameObject visual;
     }
 
-    void Awake() => ownSkill = GetComponent<PlayerSkillBase>();
+    void Start() => ownSkill = this;
 
     void Update()
     {
         if (fired) return;
         if (playerController == null) return;
         // 別のスキルや回避により中断された場合も、それまでの指定を発射する。
-        if (playerController.SaveSkillBase != ownSkill && issued > 0)
+        if (playerController.SaveSkillBase != ownSkill)
             Fire();
     }
 
@@ -78,8 +78,7 @@ public class DivineJudgement_AI : PlayerSkillBase
     {
         Mark mark = new Mark { target = target };
         marks.Add(mark);
-        if (crossPrefab == null) return;
-        mark.visual = Instantiate(crossPrefab);
+        mark.visual = crossPrefab != null ? Instantiate(crossPrefab) : DivineJudgementVisual.CreateCross();
         UpdateCrown(target);
     }
 
@@ -114,7 +113,7 @@ public class DivineJudgement_AI : PlayerSkillBase
         GameObject runnerObject = new GameObject("DivineJudgement_StrikeRunner");
         DivineJudgementStrikeRunner runner = runnerObject.AddComponent<DivineJudgementStrikeRunner>();
         runner.Begin(marks.ConvertAll(m => m.target), marks.ConvertAll(m => m.visual),
-            lightPillarAttackPrefab, strikeInterval);
+            lightPillarAttackPrefab, strikeInterval, playerController, SkillLevel, SkillSlotIndex);
         end();
     }
 
@@ -133,13 +132,20 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
     readonly List<GameObject> crosses = new List<GameObject>();
     GameObject pillarPrefab;
     float interval;
+    PlayerController player;
+    int skillLevel;
+    int slot;
+    [SerializeField] float baseDamage = 20f;
 
-    public void Begin(List<EnemyBase> assigned, List<GameObject> visuals, GameObject prefab, float delay)
+    public void Begin(List<EnemyBase> assigned, List<GameObject> visuals, GameObject prefab, float delay, PlayerController owner, int level, int sourceSlot)
     {
         targets.AddRange(assigned);
         crosses.AddRange(visuals);
         pillarPrefab = prefab;
         interval = delay;
+        player = owner;
+        skillLevel = level;
+        slot = sourceSlot;
         StartCoroutine(Strike());
     }
 
@@ -149,9 +155,27 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
         {
             if (crosses[i] != null) Destroy(crosses[i]);
             EnemyBase enemy = targets[i];
-            if (enemy != null && enemy.HP > 0 && enemy.status != EnemyBase.Status.Die &&
-                !enemy.IsCharmed && pillarPrefab != null)
-                Instantiate(pillarPrefab, enemy.transform.position, Quaternion.identity);
+            if (enemy != null && enemy.HP > 0 && enemy.status != EnemyBase.Status.Die && !enemy.IsCharmed)
+            {
+                if (pillarPrefab != null) Instantiate(pillarPrefab, enemy.transform.position, Quaternion.identity);
+                else DivineJudgementVisual.CreateImpact(enemy.transform.position);
+                charaDamage receiver = enemy.CharaDamage != null ? enemy.CharaDamage : enemy.CharmStatusReceiver;
+                if (receiver != null && player != null)
+                {
+                    float levelBonus = Mathf.Max(0, skillLevel - 1);
+                    float buff = player.playerBuff != null ? player.playerBuff.MultiplyAttack_AllBuff + player.playerBuff.SkillOnlyAttackMultiplierBonus : 1f;
+                    float attack = ((baseDamage + player.ATK + 0.5f * levelBonus) *
+                        ((100f + player.AddATK + 50f * levelBonus) / 100f) +
+                        (player.playerBuff != null ? player.playerBuff.Attack_AllBuff : 0f)) * player.AddMultiplierATK * buff;
+                    bool critical = player.AddCritical + player.Critical > Random.Range(0f, 100f);
+                    if (critical) attack = (attack * 3f + 5f) * Mathf.Max(0f, 1f + player.AddLuckyDamagePercent / 100f);
+                    GlobalEvents.InvokePlayerSkillHit();
+                    GlobalEvents.InvokePlayerAttack(enemy.gameObject, attack, critical ? 3f : 1f, critical);
+                    bool charm = player.HandInHandRelicActive && slot == 2;
+                    if (charm) receiver.DamageFromPlayerAsCharm(attack, 0f, 0f, critical, player.AddConfusionDamagePercent, player.HandInHandCharmEffect);
+                    else receiver.DamageFromPlayer(attack, 0f, 0f, critical, player.AddConfusionDamagePercent);
+                }
+            }
             if (interval > 0) yield return new WaitForSeconds(interval);
             else yield return null;
         }
@@ -162,5 +186,58 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
     {
         foreach (GameObject cross in crosses)
             if (cross != null) Destroy(cross);
+    }
+}
+
+
+// Fallback visuals are generated at runtime; artists can replace both prefab slots.
+public static class DivineJudgementVisual
+{
+    static Sprite white;
+    static Sprite White
+    {
+        get
+        {
+            if (white != null) return white;
+            Texture2D tex = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+            tex.SetPixel(0, 0, Color.white);
+            tex.Apply();
+            white = Sprite.Create(tex, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 1f);
+            return white;
+        }
+    }
+
+    static GameObject Rect(string name, Transform parent, Vector3 position, Vector3 scale, Color color, int order)
+    {
+        GameObject go = new GameObject(name);
+        if (parent != null) go.transform.SetParent(parent, false);
+        go.transform.localPosition = position;
+        go.transform.localScale = scale;
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = White;
+        sr.color = color;
+        sr.sortingOrder = order;
+        return go;
+    }
+
+    public static GameObject CreateCross()
+    {
+        GameObject root = new GameObject("DivineJudgement_Cross");
+        Color gold = new Color(1f, 0.88f, 0.35f, 0.95f);
+        Rect("VerticalGlow", root.transform, Vector3.zero, new Vector3(0.16f, 0.72f, 1f), new Color(1f, 0.75f, 0.15f, 0.35f), 201);
+        Rect("Vertical", root.transform, Vector3.zero, new Vector3(0.065f, 0.65f, 1f), gold, 202);
+        Rect("Horizontal", root.transform, new Vector3(0f, 0.10f, 0f), new Vector3(0.35f, 0.07f, 1f), gold, 202);
+        return root;
+    }
+
+    public static void CreateImpact(Vector3 position)
+    {
+        GameObject root = new GameObject("DivineJudgement_Impact");
+        root.transform.position = position;
+        Rect("OuterBeam", root.transform, new Vector3(0, 2.3f, 0), new Vector3(1.35f, 5f, 1), new Color(1f, 0.75f, 0.15f, 0.38f), 190);
+        Rect("Beam", root.transform, new Vector3(0, 2.3f, 0), new Vector3(0.85f, 5f, 1), new Color(1f, 0.93f, 0.55f, 0.8f), 191);
+        Rect("Core", root.transform, new Vector3(0, 2.3f, 0), new Vector3(0.35f, 5f, 1), Color.white, 192);
+        Rect("Impact", root.transform, Vector3.zero, new Vector3(1.8f, 0.28f, 1), new Color(1f, 0.87f, 0.4f, 0.8f), 193);
+        Object.Destroy(root, 0.22f);
     }
 }

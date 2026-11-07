@@ -11,13 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d9db937061371a418fa7ad9233fd38b, type: 3}
   m_Name: PD_DivineJudgement_Attack
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   statusEffects: []
   attackType: 3
   Attack: 20
   AttackSpeedTime: 0
-  StaggerPower: 0
-  ConfusionPower: 0
+  StaggerPower: 30
+  ConfusionPower: 1
   KnockBackPower: 0
   MaxStack: 0
-  HitAudio: {fileID: 0}
+  HitAudio: {fileID: 8300000, guid: b360cd3b457bf4742a4b09af804c955d, type: 3}

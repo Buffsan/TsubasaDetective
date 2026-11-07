@@ -372,27 +372,6 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
         }
     }
 
-    static charaDamage ResolveDamageReceiver(EnemyBase enemy)
-    {
-        if (enemy == null) return null;
-        if (enemy.CharaDamage != null && enemy.CharaDamage.OwnerEnemyBase == enemy)
-            return enemy.CharaDamage;
-        charaDamage charmReceiver = enemy.CharmStatusReceiver;
-        if (charmReceiver != null && charmReceiver.OwnerEnemyBase == enemy)
-            return charmReceiver;
-        foreach (charaDamage area in enemy.GetComponentsInChildren<charaDamage>(true))
-        {
-            if (area != null && area.OwnerEnemyBase == enemy && area.DamageType == 0)
-                return area;
-        }
-        foreach (charaDamage area in enemy.GetComponentsInChildren<charaDamage>(true))
-        {
-            if (area != null && area.OwnerEnemyBase == enemy)
-                return area;
-        }
-        return null;
-    }
-
     void OnDestroy()
     {
         foreach (DivineJudgement_AI.Mark mark in marks)

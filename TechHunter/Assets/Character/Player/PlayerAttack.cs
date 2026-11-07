@@ -159,31 +159,39 @@ public class PlayerAttack : MonoBehaviour
 
     float AttackMathf(bool applySkillOnlyBuff = false)
     {
-        float AttackAll;
-        float Level_BONUS_Damage = 0;
-        float Level_BONUS_Damage_multiply = 0;
-
-        if (skillcarddata != null) 
+        if (skillcarddata != null)
         {
-            foreach (var skillinfo in controller.skillINFO) 
+            foreach (var skillinfo in controller.skillINFO)
             {
-                if (skillinfo.skillDATA == skillcarddata) 
+                if (skillinfo.skillDATA == skillcarddata)
                 {
-                    AttackLevel = skillinfo.SkillLevel -1;
-
-                    Level_BONUS_Damage = Level_AttackBONUS * AttackLevel;
-                    Level_BONUS_Damage_multiply = Level_AttackBONUS_multiplier * AttackLevel;
-
+                    AttackLevel = skillinfo.SkillLevel - 1;
                     break;
                 }
             }
         }
+        return CalculateWeaponDamage(weapondata, controller, AttackLevel, applySkillOnlyBuff);
+    }
 
-        float buffMultiplier = controller.playerBuff.MultiplyAttack_AllBuff;
+    // Standard player-attack calculation, shared with targeted skill attacks
+    // such as DivineJudgement (which do not create a trigger collider).
+    // attackLevel is the number of upgrades after the first card level.
+    public static float CalculateWeaponDamage(
+        weapondata attackData, PlayerController player, int attackLevel, bool applySkillOnlyBuff)
+    {
+        if (attackData == null || player == null || player.playerBuff == null)
+            return 0f;
+
+        float levelBonusDamage = 0.5f * attackLevel;
+        float levelBonusMultiplier = 50f * attackLevel;
+        float buffMultiplier = player.playerBuff.MultiplyAttack_AllBuff;
         if (applySkillOnlyBuff)
-            buffMultiplier += controller.playerBuff.SkillOnlyAttackMultiplierBonus;
-        AttackAll = ((weapondata.Attack + controller.ATK + Level_BONUS_Damage) * ((100 + controller.AddATK + Level_BONUS_Damage_multiply) / 100) + controller.playerBuff.Attack_AllBuff) * controller.AddMultiplierATK * buffMultiplier;
-       return AttackAll;
+            buffMultiplier += player.playerBuff.SkillOnlyAttackMultiplierBonus;
+
+        return ((attackData.Attack + player.ATK + levelBonusDamage)
+                * ((100f + player.AddATK + levelBonusMultiplier) / 100f)
+                + player.playerBuff.Attack_AllBuff)
+            * player.AddMultiplierATK * buffMultiplier;
     }
 
 }

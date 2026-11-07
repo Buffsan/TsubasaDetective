@@ -53,9 +53,9 @@ MonoBehaviour:
   SkillSlotIndex: -1
   Att: 0
   skillcount: 0
-  weapondata: {fileID: 11400000, guid: b9e63d8428e3415c9560c5a417b2d90f, type: 2}
   chantDuration: 4
   maxMarks: 20
+  weapondata: {fileID: 11400000, guid: b9e63d8428e3415c9560c5a417b2d90f, type: 2}
   crossPrefab: {fileID: 0}
   lightPillarAttackPrefab: {fileID: 6642189099075312861, guid: ffb6973bd8fdbc049a5a0f3e2f4717be, type: 3}
   chantEffectPrefab: {fileID: 6642189099075312862, guid: a203e5f37a8ff624e9ff4a5535f6d2e7, type: 3}
@@ -65,7 +65,7 @@ MonoBehaviour:
   chantMoveMultiplier: 0.1
   impactEffectPrefab: {fileID: 5260724196922729195, guid: bf6a28e1457c7704eb842ac97170e8fe, type: 3}
   impactScatterRadius: 1.8
-  strikeAreaSize: {x: 1.5, y: 1.5}
+  strikeAreaSize: {x: 2, y: 2}
   strikeInterval: 0.12
   crownRadius: 0.65
   crownHeight: 0.8

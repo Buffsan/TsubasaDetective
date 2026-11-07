@@ -21933,6 +21933,9 @@ MonoBehaviour:
   - SkillName: "\u5263\u7D99\u306E\u5951\u7D04"
     Rarity: 2
     skill: {fileID: 11400000, guid: c80207853fb7dda4e814ef30ba44aca1, type: 2}
+  - SkillName: "\u5263\u7D99\u306E\u5951\u7D04"
+    Rarity: 2
+    skill: {fileID: 11400000, guid: 5fb1430c7a12492bb5bb95b7b12dbda1, type: 2}
   StatusUPs:
   - MainImage: {fileID: 21300000, guid: cd059f8ea1dce9148ab5c348307a30ec, type: 3}
     PageName: "\u6226\u95D8\u8A13\u7DF4"

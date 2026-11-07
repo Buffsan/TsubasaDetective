@@ -14,8 +14,6 @@ public class PlayerAttack : MonoBehaviour
 
     public bool isCriticulUse = true;
 
-     float Level_AttackBONUS_multiplier = 50;
-     float Level_AttackBONUS = 0.5f;
     PlayerController controller => PlayerController.Instance;
     public AudioManager audioManager => AudioManager.instance;
 

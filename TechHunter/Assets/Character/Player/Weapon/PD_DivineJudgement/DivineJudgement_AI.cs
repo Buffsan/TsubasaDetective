@@ -55,6 +55,22 @@ public class DivineJudgement_AI : PlayerSkillBase
         public GameObject pillar;
         public Vector3 impactPosition;
         public bool hasImpactPosition;
+
+        // Preserve the last valid world position after the target dies,
+        // is charmed, despawns or is destroyed. The reservation outlives it.
+        public Vector3 lastTargetPosition;
+        public bool hasLastTargetPosition;
+
+        public void RememberTargetPosition()
+        {
+            if (target == null || !target.isActiveAndEnabled ||
+                target.HP <= 0f || target.status == EnemyBase.Status.Die ||
+                target.IsCharmed)
+                return;
+
+            lastTargetPosition = target.transform.position;
+            hasLastTargetPosition = true;
+        }
     }
 
     void Start()
@@ -114,16 +130,18 @@ public class DivineJudgement_AI : PlayerSkillBase
         for (int i = 0; i < marks.Count; i++)
         {
             Mark mark = marks[i];
-            if (mark.pillar != null || mark.target == null || mark.target.HP <= 0f ||
-                mark.target.status == EnemyBase.Status.Die || mark.target.IsCharmed)
-                continue;
+            if (mark.pillar != null) continue;
+            mark.RememberTargetPosition();
+            if (!mark.hasLastTargetPosition) continue;
 
             float beamStartTime = chantDuration + i * strikeInterval - pillarLeadTime;
             if (elapsed < beamStartTime) continue;
 
+            // Even if the original enemy has died, its reserved location
+            // still gets a pillar, and nearby enemies can take AoE damage.
             Vector2 scatter = Random.insideUnitCircle * impactScatterRadius;
-            Vector3 targetPosition = mark.target.transform.position;
-            mark.impactPosition = targetPosition + new Vector3(scatter.x, scatter.y, 0f);
+            mark.impactPosition = mark.lastTargetPosition +
+                new Vector3(scatter.x, scatter.y, 0f);
             mark.hasImpactPosition = true;
             mark.pillar = DivineJudgementVisual.SpawnPillar(
                 lightPillarAttackPrefab, mark.impactPosition, pillarHeightMultiplier);
@@ -150,7 +168,13 @@ public class DivineJudgement_AI : PlayerSkillBase
 
     void AddMark(EnemyBase target)
     {
-        Mark mark = new Mark { target = target };
+        // Cache the position immediately, before death/despawn can happen.
+        Mark mark = new Mark
+        {
+            target = target,
+            lastTargetPosition = target.transform.position,
+            hasLastTargetPosition = true
+        };
         marks.Add(mark);
         mark.visual = crossPrefab != null ? Instantiate(crossPrefab) : DivineJudgementVisual.CreateCross();
         if (mark.visual != null)
@@ -198,13 +222,24 @@ public class DivineJudgement_AI : PlayerSkillBase
         if (fired) return;
         HashSet<EnemyBase> targets = new HashSet<EnemyBase>();
         foreach (Mark mark in marks)
-            if (mark.target != null && mark.visual != null) targets.Add(mark.target);
+        {
+            mark.RememberTargetPosition();
+            if (mark.target != null && mark.target.isActiveAndEnabled &&
+                mark.target.HP > 0f &&
+                mark.target.status != EnemyBase.Status.Die &&
+                !mark.target.IsCharmed &&
+                mark.visual != null)
+                targets.Add(mark.target);
+        }
+        // Only living targets move their crosses; marks on dead targets
+        // remain at the last position until the scheduled pillar lands.
         foreach (EnemyBase target in targets) UpdateCrown(target);
     }
 
     void Fire()
     {
         if (fired) return;
+        foreach (Mark mark in marks) mark.RememberTargetPosition();
         fired = true;
         // スキルオブジェクトが破棄されても神罰が最後まで発生するように独立させる。
         GameObject runnerObject = new GameObject("DivineJudgement_StrikeRunner");
@@ -266,6 +301,14 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
         StartCoroutine(Strike());
     }
 
+    void Update()
+    {
+        // Casting has ended, but later reserved strikes must continue to
+        // remember moving targets until their death or despawn.
+        foreach (DivineJudgement_AI.Mark mark in marks)
+            mark.RememberTargetPosition();
+    }
+
     System.Collections.IEnumerator Strike()
     {
         for (int i = 0; i < marks.Count; i++)
@@ -273,15 +316,16 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
             DivineJudgement_AI.Mark mark = marks[i];
             if (mark.visual != null) Destroy(mark.visual);
 
-            // The impact position is fixed when the pillar begins charging.
-            // A mark whose enemy dies after the beam appeared still lands there.
+            // The reservation is independent of the target's lifetime.
+            // A dead/destroyed target still produces its scheduled pillar
+            // at the last known location, preserving the 1.5m AoE hit.
             if (!mark.hasImpactPosition)
             {
-                EnemyBase target = mark.target;
-                if (target != null)
+                mark.RememberTargetPosition();
+                if (mark.hasLastTargetPosition)
                 {
                     Vector2 scatter = Random.insideUnitCircle * scatterRadius;
-                    mark.impactPosition = target.transform.position +
+                    mark.impactPosition = mark.lastTargetPosition +
                         new Vector3(scatter.x, scatter.y, 0f);
                     mark.hasImpactPosition = true;
                 }

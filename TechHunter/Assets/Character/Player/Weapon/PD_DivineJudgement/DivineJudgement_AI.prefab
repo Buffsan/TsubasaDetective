@@ -53,6 +53,7 @@ MonoBehaviour:
   SkillSlotIndex: -1
   Att: 0
   skillcount: 0
+  weapondata: {fileID: 11400000, guid: b9e63d8428e3415c9560c5a417b2d90f, type: 2}
   chantDuration: 4
   maxMarks: 20
   crossPrefab: {fileID: 0}

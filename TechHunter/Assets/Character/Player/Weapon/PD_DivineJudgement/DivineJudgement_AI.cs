@@ -14,6 +14,8 @@ public class DivineJudgement_AI : PlayerSkillBase
     [Header("演出・攻撃")]
     [SerializeField] GameObject crossPrefab;
     [SerializeField] GameObject lightPillarAttackPrefab;
+    [SerializeField] GameObject chantEffectPrefab;
+    [SerializeField] AudioClip chantSE;
     [SerializeField] GameObject impactEffectPrefab;
     [SerializeField, Min(0f)] float impactScatterRadius = 1f;
     [SerializeField, Min(0f)] float strikeInterval = 0.12f;
@@ -25,6 +27,7 @@ public class DivineJudgement_AI : PlayerSkillBase
     int issued;
     bool fired;
     PlayerSkillBase ownSkill;
+    GameObject chantEffectInstance;
 
     class Mark
     {
@@ -32,7 +35,25 @@ public class DivineJudgement_AI : PlayerSkillBase
         public GameObject visual;
     }
 
-    void Start() => ownSkill = this;
+    void Start()
+    {
+        ownSkill = this;
+
+        // Spawn one chanting effect at the player and keep it attached during charging.
+        if (chantEffectPrefab != null && playerController != null)
+        {
+            Transform owner = playerController.transform;
+            chantEffectInstance = Instantiate(chantEffectPrefab, owner.position, Quaternion.identity);
+            chantEffectInstance.transform.SetParent(owner, true);
+            chantEffectInstance.transform.localPosition = Vector3.zero;
+        }
+        else if (chantEffectPrefab == null)
+            Debug.LogWarning("神罰の詠唱エフェクトが未設定です。", this);
+
+        // This is a dedicated, inspector-configurable chant SE, played once on start.
+        if (chantSE != null && AudioManager.instance != null)
+            AudioManager.instance.PlaySE(chantSE);
+    }
 
     void Update()
     {
@@ -123,6 +144,7 @@ public class DivineJudgement_AI : PlayerSkillBase
 
     void OnDestroy()
     {
+        if (chantEffectInstance != null) Destroy(chantEffectInstance);
         if (fired) return;
         foreach (Mark mark in marks)
             if (mark.visual != null) Destroy(mark.visual);
@@ -154,6 +176,8 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
         player = owner;
         skillLevel = level;
         slot = sourceSlot;
+        if (pillarPrefab == null)
+            Debug.LogError("神罰の光柱プレハブ参照がありません。仮の光柱は表示せず、ダメージ処理を継続します。", this);
         StartCoroutine(Strike());
     }
 
@@ -173,7 +197,6 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
                     GameObject pillar = Instantiate(pillarPrefab, impactPosition, Quaternion.identity);
                     Destroy(pillar, 5f);
                 }
-                else DivineJudgementVisual.CreateImpact(impactPosition);
                 if (impactPrefab != null)
                 {
                     GameObject impact = Instantiate(impactPrefab, impactPosition, Quaternion.identity);
@@ -274,14 +297,5 @@ public static class DivineJudgementVisual
         return root;
     }
 
-    public static void CreateImpact(Vector3 position)
-    {
-        GameObject root = new GameObject("DivineJudgement_Impact");
-        root.transform.position = position;
-        Rect("OuterBeam", root.transform, new Vector3(0, 2.3f, 0), new Vector3(1.35f, 5f, 1), new Color(1f, 0.75f, 0.15f, 0.38f), 190);
-        Rect("Beam", root.transform, new Vector3(0, 2.3f, 0), new Vector3(0.85f, 5f, 1), new Color(1f, 0.93f, 0.55f, 0.8f), 191);
-        Rect("Core", root.transform, new Vector3(0, 2.3f, 0), new Vector3(0.35f, 5f, 1), Color.white, 192);
-        Rect("Impact", root.transform, Vector3.zero, new Vector3(1.8f, 0.28f, 1), new Color(1f, 0.87f, 0.4f, 0.8f), 193);
-        Object.Destroy(root, 0.22f);
-    }
+
 }

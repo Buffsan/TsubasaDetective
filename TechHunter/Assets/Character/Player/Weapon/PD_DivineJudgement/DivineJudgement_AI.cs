@@ -11,6 +11,10 @@ public class DivineJudgement_AI : PlayerSkillBase
     [Header("詠唱")]
     [SerializeField, Min(0.1f)] float chantDuration = 4f;
     [SerializeField, Range(1, 100)] int maxMarks = 20;
+    [Header("攻撃ステータス")]
+    [Tooltip("光柱1発の攻撃力、スタン、混乱、状態異常を管理する既存のweapondata SO")]
+    public weapondata weapondata;
+
     [Header("演出・攻撃")]
     [SerializeField] GameObject crossPrefab;
     [SerializeField] GameObject lightPillarAttackPrefab;
@@ -205,7 +209,7 @@ public class DivineJudgement_AI : PlayerSkillBase
         DivineJudgementStrikeRunner runner = runnerObject.AddComponent<DivineJudgementStrikeRunner>();
         runner.Begin(marks, lightPillarAttackPrefab, impactEffectPrefab,
             impactScatterRadius, strikeInterval, playerController, SkillLevel,
-            SkillSlotIndex, strikeSE, pillarHeightMultiplier);
+            SkillSlotIndex, strikeSE, pillarHeightMultiplier, weapondata);
         end();
     }
 
@@ -231,11 +235,12 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
     PlayerController player;
     int skillLevel;
     int slot;
-    [SerializeField] float baseDamage = 20f;
+    weapondata attackData;
 
     public void Begin(List<DivineJudgement_AI.Mark> assigned, GameObject prefab,
         GameObject impactEffect, float radius, float delay, PlayerController owner,
-        int level, int sourceSlot, AudioClip firingSound, float heightMultiplier)
+        int level, int sourceSlot, AudioClip firingSound, float heightMultiplier,
+        weapondata skillWeaponData)
     {
         marks.AddRange(assigned);
         pillarPrefab = prefab;
@@ -247,6 +252,9 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
         slot = sourceSlot;
         strikeSE = firingSound;
         pillarHeightMultiplier = Mathf.Max(0.01f, heightMultiplier);
+        attackData = skillWeaponData;
+        if (attackData == null)
+            Debug.LogError("神罰のweapondataが未設定です。DivineJudgement_AIプレハブに武器データSOを割り当ててください。", this);
         if (pillarPrefab == null)
             Debug.LogError("神罰の光柱プレハブ参照がありません。", this);
         StartCoroutine(Strike());
@@ -279,44 +287,56 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
                 }
 
                 charaDamage receiver = ResolveDamageReceiver(enemy);
-                if (receiver != null && player != null)
+                if (receiver != null && player != null && attackData != null)
                 {
-                    // Impact visuals and gunshot SE are tied to the damage frame,
-                    // not to the earlier beam appearance.
+                    // The skill is a direct-target attack, but it uses the same
+                    // weapondata statistics and damage formula as PlayerAttack.
                     if (impactPrefab != null)
                     {
                         GameObject impact = Instantiate(impactPrefab, mark.impactPosition,
                             Quaternion.identity);
                         Destroy(impact, 5f);
                     }
-                    if (strikeSE != null && AudioManager.instance != null)
-                        AudioManager.instance.PlaySE(strikeSE);
+                    if (AudioManager.instance != null)
+                    {
+                        if (strikeSE != null)
+                            AudioManager.instance.PlaySE(strikeSE);
+                        if (attackData.HitAudio != null && attackData.HitAudio != strikeSE)
+                            AudioManager.instance.PlaySE(attackData.HitAudio);
+                    }
 
-                    float levelBonus = Mathf.Max(0, skillLevel - 1);
-                    float buff = player.playerBuff != null
-                        ? player.playerBuff.MultiplyAttack_AllBuff +
-                          player.playerBuff.SkillOnlyAttackMultiplierBonus : 1f;
-                    float attack = ((baseDamage + player.ATK + 0.5f * levelBonus) *
-                        ((100f + player.AddATK + 50f * levelBonus) / 100f) +
-                        (player.playerBuff != null
-                            ? player.playerBuff.Attack_AllBuff : 0f)) *
-                        player.AddMultiplierATK * buff;
+                    float attack = PlayerAttack.CalculateWeaponDamage(
+                        attackData, player, Mathf.Max(0, skillLevel - 1), true);
                     bool critical = player.AddCritical + player.Critical >
                         Random.Range(0f, 100f);
-                    if (critical)
-                        attack = (attack * 3f + 5f) *
-                            Mathf.Max(0f, 1f + player.AddLuckyDamagePercent / 100f);
 
+                    // Match the regular attack event order: report base damage
+                    // and critical multiplier, apply status, then resolve damage.
                     GlobalEvents.InvokePlayerSkillHit();
                     GlobalEvents.InvokePlayerAttack(enemy.gameObject, attack,
                         critical ? 3f : 1f, critical);
+                    if (attackData.statusEffects != null)
+                    {
+                        foreach (StatusEffectAttack effect in attackData.statusEffects)
+                        {
+                            if (effect != null) receiver.SpawnBuff(effect);
+                        }
+                    }
+
+                    float actualDamage = critical
+                        ? (attack * 3f + 5f) *
+                          Mathf.Max(0f, 1f + player.AddLuckyDamagePercent / 100f)
+                        : attack;
                     bool charm = player.HandInHandRelicActive && slot == 2;
                     if (charm)
-                        receiver.DamageFromPlayerAsCharm(attack, 0f, 0f, critical,
+                        receiver.DamageFromPlayerAsCharm(actualDamage,
+                            attackData.StaggerPower, attackData.ConfusionPower, critical,
                             player.AddConfusionDamagePercent, player.HandInHandCharmEffect);
                     else
-                        receiver.DamageFromPlayer(attack, 0f, 0f, critical,
+                        receiver.DamageFromPlayer(actualDamage,
+                            attackData.StaggerPower, attackData.ConfusionPower, critical,
                             player.AddConfusionDamagePercent);
+                    player.HitEffectSpawn(mark.impactPosition);
                 }
             }
             if (interval > 0f) yield return new WaitForSeconds(interval);

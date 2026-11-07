@@ -11,10 +11,10 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8eb115587ebfd0544b17a03fb5d1cda0, type: 3}
   m_Name: DivineJudgement
-  m_EditorClassIdentifier:
-  SkillImage: {fileID: 0}
-  SkillName: "神の名の下に…「死ね！！」"
-  SkillMessage: "詠唱4秒\n詠唱中、カーソルに最も近い敵に十字架の標的を付与する。付与速度は時間とともに加速し、最大20個。\n詠唱終了・中断時、標的の数だけ神罰の光柱を叩きつける。"
+  m_EditorClassIdentifier: 
+  SkillImage: {fileID: 21300000, guid: 3fe3f627ca8e9f5418eb05fb82dc91aa, type: 3}
+  SkillName: "\u795E\u306E\u540D\u306E\u4E0B\u306B\u2026\u300C\u6B7B\u306D\uFF01\uFF01\u300D"
+  SkillMessage: "\u8A60\u55314\u79D2\n\u8A60\u5531\u4E2D\u3001\u30AB\u30FC\u30BD\u30EB\u306B\u6700\u3082\u8FD1\u3044\u6575\u306B\u5341\u5B57\u67B6\u306E\u6A19\u7684\u3092\u4ED8\u4E0E\u3059\u308B\u3002\u4ED8\u4E0E\u901F\u5EA6\u306F\u6642\u9593\u3068\u3068\u3082\u306B\u52A0\u901F\u3057\u3001\u6700\u592720\u500B\u3002\n\u8A60\u5531\u7D42\u4E86\u30FB\u4E2D\u65AD\u6642\u3001\u6A19\u7684\u306E\u6570\u3060\u3051\u795E\u7F70\u306E\u5149\u67F1\u3092\u53E9\u304D\u3064\u3051\u308B\u3002"
   CoolTime: 25
   SkillData: {fileID: 710000000000000001, guid: bd06f13257f44b2c8a75fd0f70ed47a1, type: 3}
   SkillDataList:

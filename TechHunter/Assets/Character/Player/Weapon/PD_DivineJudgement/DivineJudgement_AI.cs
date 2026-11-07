@@ -14,6 +14,8 @@ public class DivineJudgement_AI : PlayerSkillBase
     [Header("演出・攻撃")]
     [SerializeField] GameObject crossPrefab;
     [SerializeField] GameObject lightPillarAttackPrefab;
+    [SerializeField] GameObject impactEffectPrefab;
+    [SerializeField, Min(0f)] float impactScatterRadius = 1f;
     [SerializeField, Min(0f)] float strikeInterval = 0.12f;
     [SerializeField, Min(0f)] float crownRadius = 0.65f;
     [SerializeField, Min(0f)] float crownHeight = 0.8f;
@@ -114,7 +116,8 @@ public class DivineJudgement_AI : PlayerSkillBase
         GameObject runnerObject = new GameObject("DivineJudgement_StrikeRunner");
         DivineJudgementStrikeRunner runner = runnerObject.AddComponent<DivineJudgementStrikeRunner>();
         runner.Begin(marks.ConvertAll(m => m.target), marks.ConvertAll(m => m.visual),
-            lightPillarAttackPrefab, strikeInterval, playerController, SkillLevel, SkillSlotIndex);
+            lightPillarAttackPrefab, impactEffectPrefab, impactScatterRadius,
+            strikeInterval, playerController, SkillLevel, SkillSlotIndex);
         end();
     }
 
@@ -132,17 +135,21 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
     readonly List<EnemyBase> targets = new List<EnemyBase>();
     readonly List<GameObject> crosses = new List<GameObject>();
     GameObject pillarPrefab;
+    GameObject impactPrefab;
+    float scatterRadius;
     float interval;
     PlayerController player;
     int skillLevel;
     int slot;
     [SerializeField] float baseDamage = 20f;
 
-    public void Begin(List<EnemyBase> assigned, List<GameObject> visuals, GameObject prefab, float delay, PlayerController owner, int level, int sourceSlot)
+    public void Begin(List<EnemyBase> assigned, List<GameObject> visuals, GameObject prefab, GameObject impactEffect, float radius, float delay, PlayerController owner, int level, int sourceSlot)
     {
         targets.AddRange(assigned);
         crosses.AddRange(visuals);
         pillarPrefab = prefab;
+        impactPrefab = impactEffect;
+        scatterRadius = Mathf.Max(0f, radius);
         interval = delay;
         player = owner;
         skillLevel = level;
@@ -158,9 +165,16 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
             EnemyBase enemy = targets[i];
             if (enemy != null && enemy.HP > 0 && enemy.status != EnemyBase.Status.Die && !enemy.IsCharmed)
             {
-                if (pillarPrefab != null) Instantiate(pillarPrefab, enemy.transform.position, Quaternion.identity);
-                else DivineJudgementVisual.CreateImpact(enemy.transform.position);
-                charaDamage receiver = enemy.CharaDamage != null ? enemy.CharaDamage : enemy.CharmStatusReceiver;
+                // The scatter is visual only: every assigned mark hits its original target.
+                Vector2 scatter = Random.insideUnitCircle * scatterRadius;
+                Vector3 impactPosition = enemy.transform.position + new Vector3(scatter.x, scatter.y, 0f);
+                if (pillarPrefab != null) Instantiate(pillarPrefab, impactPosition, Quaternion.identity);
+                else DivineJudgementVisual.CreateImpact(impactPosition);
+                if (impactPrefab != null) Instantiate(impactPrefab, impactPosition, Quaternion.identity);
+
+                // Many enemy prefabs leave EnemyBase.CharaDamage unassigned. Resolve a
+                // valid damage area from the enemy hierarchy instead of silently skipping.
+                charaDamage receiver = ResolveDamageReceiver(enemy);
                 if (receiver != null && player != null)
                 {
                     float levelBonus = Mathf.Max(0, skillLevel - 1);
@@ -181,6 +195,27 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
             else yield return null;
         }
         Destroy(gameObject);
+    }
+
+    static charaDamage ResolveDamageReceiver(EnemyBase enemy)
+    {
+        if (enemy == null) return null;
+        if (enemy.CharaDamage != null && enemy.CharaDamage.OwnerEnemyBase == enemy)
+            return enemy.CharaDamage;
+        charaDamage charmReceiver = enemy.CharmStatusReceiver;
+        if (charmReceiver != null && charmReceiver.OwnerEnemyBase == enemy)
+            return charmReceiver;
+        foreach (charaDamage area in enemy.GetComponentsInChildren<charaDamage>(true))
+        {
+            if (area != null && area.OwnerEnemyBase == enemy && area.DamageType == 0)
+                return area;
+        }
+        foreach (charaDamage area in enemy.GetComponentsInChildren<charaDamage>(true))
+        {
+            if (area != null && area.OwnerEnemyBase == enemy)
+                return area;
+        }
+        return null;
     }
 
     void OnDestroy()

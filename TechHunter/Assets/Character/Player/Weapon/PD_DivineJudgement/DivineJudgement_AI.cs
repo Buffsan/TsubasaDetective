@@ -156,8 +156,21 @@ public class DivineJudgement_AI : PlayerSkillBase
             animation.Initialize(crossAppearDuration, crossStartScale, crossFinalOpacity);
         }
         UpdateCrown(target);
-        if (markSE != null && AudioManager.instance != null)
-            AudioManager.instance.PlaySE(markSE);
+        // Up to 20 marks are placed in 4 seconds, and some occur less than
+        // AudioManager.minInterval apart. Play each assignment through the
+        // existing audio pool so rapid marks do not lose their paper-tear SE.
+        if (markSE != null)
+        {
+            if (AudioPool.Instance != null)
+            {
+                AudioSource source = AudioPool.Instance.GetSource();
+                AudioPlay sound = source != null ? source.GetComponent<AudioPlay>() : null;
+                if (sound != null) sound.Play(markSE);
+                else if (source != null) AudioPool.Instance.Release(source);
+            }
+            else if (AudioManager.instance != null)
+                AudioManager.instance.PlaySE(markSE);
+        }
     }
 
     void UpdateCrown(EnemyBase target)

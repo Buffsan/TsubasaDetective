@@ -25,6 +25,8 @@ public class DivineJudgement_AI : PlayerSkillBase
     [SerializeField, Range(0f, 1f)] float chantMoveMultiplier = 0.1f;
     [SerializeField] GameObject impactEffectPrefab;
     [SerializeField, Min(0f)] float impactScatterRadius = 1f;
+    [Tooltip("光柱の着弾地点を中心とした矩形攻撃範囲（Unity単位）")]
+    [SerializeField] Vector2 strikeAreaSize = new Vector2(1.5f, 1.5f);
     [SerializeField, Min(0f)] float strikeInterval = 0.12f;
     [SerializeField, Min(0f)] float crownRadius = 0.65f;
     [SerializeField, Min(0f)] float crownHeight = 0.8f;
@@ -209,7 +211,8 @@ public class DivineJudgement_AI : PlayerSkillBase
         DivineJudgementStrikeRunner runner = runnerObject.AddComponent<DivineJudgementStrikeRunner>();
         runner.Begin(marks, lightPillarAttackPrefab, impactEffectPrefab,
             impactScatterRadius, strikeInterval, playerController, SkillLevel,
-            SkillSlotIndex, strikeSE, pillarHeightMultiplier, weapondata);
+            SkillSlotIndex, strikeSE, pillarHeightMultiplier, weapondata,
+            strikeAreaSize);
         end();
     }
 
@@ -236,11 +239,12 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
     int skillLevel;
     int slot;
     weapondata attackData;
+    Vector2 strikeAreaSize;
 
     public void Begin(List<DivineJudgement_AI.Mark> assigned, GameObject prefab,
         GameObject impactEffect, float radius, float delay, PlayerController owner,
         int level, int sourceSlot, AudioClip firingSound, float heightMultiplier,
-        weapondata skillWeaponData)
+        weapondata skillWeaponData, Vector2 hitAreaSize)
     {
         marks.AddRange(assigned);
         pillarPrefab = prefab;
@@ -253,6 +257,8 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
         strikeSE = firingSound;
         pillarHeightMultiplier = Mathf.Max(0.01f, heightMultiplier);
         attackData = skillWeaponData;
+        strikeAreaSize = new Vector2(Mathf.Max(0.01f, hitAreaSize.x),
+            Mathf.Max(0.01f, hitAreaSize.y));
         if (attackData == null)
             Debug.LogError("神罰のweapondataが未設定です。DivineJudgement_AIプレハブに武器データSOを割り当ててください。", this);
         if (pillarPrefab == null)
@@ -266,83 +272,104 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
         {
             DivineJudgement_AI.Mark mark = marks[i];
             if (mark.visual != null) Destroy(mark.visual);
-            EnemyBase enemy = mark.target;
-            if (enemy != null && enemy.HP > 0 && enemy.status != EnemyBase.Status.Die &&
-                !enemy.IsCharmed)
+
+            // The impact position is fixed when the pillar begins charging.
+            // A mark whose enemy dies after the beam appeared still lands there.
+            if (!mark.hasImpactPosition)
             {
-                // Prewarmed pillars retain their actual impact position.
-                // On early interruption, create missing pillars immediately,
-                // rather than delaying damage or changing the original strike schedule.
-                if (!mark.hasImpactPosition)
+                EnemyBase target = mark.target;
+                if (target != null)
                 {
                     Vector2 scatter = Random.insideUnitCircle * scatterRadius;
-                    mark.impactPosition = enemy.transform.position +
+                    mark.impactPosition = target.transform.position +
                         new Vector3(scatter.x, scatter.y, 0f);
                     mark.hasImpactPosition = true;
                 }
+            }
+
+            if (mark.hasImpactPosition)
+            {
                 if (mark.pillar == null && pillarPrefab != null)
                 {
                     mark.pillar = DivineJudgementVisual.SpawnPillar(
                         pillarPrefab, mark.impactPosition, pillarHeightMultiplier);
                 }
 
-                charaDamage receiver = ResolveDamageReceiver(enemy);
-                if (receiver != null && player != null && attackData != null)
+                // Once per pillar, independent of how many enemies it hits.
+                if (impactPrefab != null)
                 {
-                    // The skill is a direct-target attack, but it uses the same
-                    // weapondata statistics and damage formula as PlayerAttack.
-                    if (impactPrefab != null)
-                    {
-                        GameObject impact = Instantiate(impactPrefab, mark.impactPosition,
-                            Quaternion.identity);
-                        Destroy(impact, 5f);
-                    }
-                    if (AudioManager.instance != null)
-                    {
-                        if (strikeSE != null)
-                            AudioManager.instance.PlaySE(strikeSE);
-                        if (attackData.HitAudio != null && attackData.HitAudio != strikeSE)
-                            AudioManager.instance.PlaySE(attackData.HitAudio);
-                    }
-
-                    float attack = PlayerAttack.CalculateWeaponDamage(
-                        attackData, player, Mathf.Max(0, skillLevel - 1), true);
-                    bool critical = player.AddCritical + player.Critical >
-                        Random.Range(0f, 100f);
-
-                    // Match the regular attack event order: report base damage
-                    // and critical multiplier, apply status, then resolve damage.
-                    GlobalEvents.InvokePlayerSkillHit();
-                    GlobalEvents.InvokePlayerAttack(enemy.gameObject, attack,
-                        critical ? 3f : 1f, critical);
-                    if (attackData.statusEffects != null)
-                    {
-                        foreach (StatusEffectAttack effect in attackData.statusEffects)
-                        {
-                            if (effect != null) receiver.SpawnBuff(effect);
-                        }
-                    }
-
-                    float actualDamage = critical
-                        ? (attack * 3f + 5f) *
-                          Mathf.Max(0f, 1f + player.AddLuckyDamagePercent / 100f)
-                        : attack;
-                    bool charm = player.HandInHandRelicActive && slot == 2;
-                    if (charm)
-                        receiver.DamageFromPlayerAsCharm(actualDamage,
-                            attackData.StaggerPower, attackData.ConfusionPower, critical,
-                            player.AddConfusionDamagePercent, player.HandInHandCharmEffect);
-                    else
-                        receiver.DamageFromPlayer(actualDamage,
-                            attackData.StaggerPower, attackData.ConfusionPower, critical,
-                            player.AddConfusionDamagePercent);
-                    player.HitEffectSpawn(mark.impactPosition);
+                    GameObject impact = Instantiate(impactPrefab, mark.impactPosition,
+                        Quaternion.identity);
+                    Destroy(impact, 5f);
                 }
+                if (strikeSE != null && AudioManager.instance != null)
+                    AudioManager.instance.PlaySE(strikeSE);
+
+                ApplyAreaDamage(mark.impactPosition);
             }
+
             if (interval > 0f) yield return new WaitForSeconds(interval);
             else yield return null;
         }
         Destroy(gameObject);
+    }
+
+    void ApplyAreaDamage(Vector3 impactPosition)
+    {
+        if (attackData == null || player == null || player.playerBuff == null) return;
+
+        // Query the same EnemyArea trigger colliders used by PlayerAttack.
+        // The box is centered on the scattered pillar impact, NOT on the
+        // originally assigned enemy. Multiple enemy colliders count once.
+        Collider2D[] hits = Physics2D.OverlapBoxAll(
+            (Vector2)impactPosition, strikeAreaSize, 0f);
+        HashSet<EnemyBase> damaged = new HashSet<EnemyBase>();
+
+        foreach (Collider2D hit in hits)
+        {
+            if (hit == null || !hit.gameObject.CompareTag("EnemyArea")) continue;
+            charaDamage receiver = hit.GetComponent<charaDamage>();
+            if (receiver == null) continue;
+
+            EnemyBase enemy = receiver.OwnerEnemyBase;
+            if (enemy == null || enemy.status == EnemyBase.Status.Die ||
+                enemy.HP <= 0f || enemy.IsCharmed || !enemy.isActiveAndEnabled)
+                continue;
+            if (!damaged.Add(enemy)) continue;
+
+            // Existing weapondata-based skill damage formula and effects.
+            float attack = PlayerAttack.CalculateWeaponDamage(
+                attackData, player, Mathf.Max(0, skillLevel - 1), true);
+            bool critical = player.AddCritical + player.Critical >
+                Random.Range(0f, 100f);
+
+            GlobalEvents.InvokePlayerSkillHit();
+            GlobalEvents.InvokePlayerAttack(enemy.gameObject, attack,
+                critical ? 3f : 1f, critical);
+            if (attackData.HitAudio != null && AudioManager.instance != null &&
+                attackData.HitAudio != strikeSE)
+                AudioManager.instance.PlaySE(attackData.HitAudio);
+            if (attackData.statusEffects != null)
+            {
+                foreach (StatusEffectAttack effect in attackData.statusEffects)
+                    if (effect != null) receiver.SpawnBuff(effect);
+            }
+
+            float actualDamage = critical
+                ? (attack * 3f + 5f) *
+                  Mathf.Max(0f, 1f + player.AddLuckyDamagePercent / 100f)
+                : attack;
+            bool charm = player.HandInHandRelicActive && slot == 2;
+            if (charm)
+                receiver.DamageFromPlayerAsCharm(actualDamage,
+                    attackData.StaggerPower, attackData.ConfusionPower, critical,
+                    player.AddConfusionDamagePercent, player.HandInHandCharmEffect);
+            else
+                receiver.DamageFromPlayer(actualDamage,
+                    attackData.StaggerPower, attackData.ConfusionPower, critical,
+                    player.AddConfusionDamagePercent);
+            player.HitEffectSpawn(hit.transform.position);
+        }
     }
 
     static charaDamage ResolveDamageReceiver(EnemyBase enemy)

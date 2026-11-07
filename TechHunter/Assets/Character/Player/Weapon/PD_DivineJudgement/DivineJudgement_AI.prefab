@@ -65,6 +65,7 @@ MonoBehaviour:
   chantMoveMultiplier: 0.1
   impactEffectPrefab: {fileID: 5260724196922729195, guid: bf6a28e1457c7704eb842ac97170e8fe, type: 3}
   impactScatterRadius: 1.8
+  strikeAreaSize: {x: 1.5, y: 1.5}
   strikeInterval: 0.12
   crownRadius: 0.65
   crownHeight: 0.8

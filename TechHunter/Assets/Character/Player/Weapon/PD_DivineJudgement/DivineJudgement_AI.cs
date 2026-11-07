@@ -168,9 +168,17 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
                 // The scatter is visual only: every assigned mark hits its original target.
                 Vector2 scatter = Random.insideUnitCircle * scatterRadius;
                 Vector3 impactPosition = enemy.transform.position + new Vector3(scatter.x, scatter.y, 0f);
-                if (pillarPrefab != null) Instantiate(pillarPrefab, impactPosition, Quaternion.identity);
+                if (pillarPrefab != null)
+                {
+                    GameObject pillar = Instantiate(pillarPrefab, impactPosition, Quaternion.identity);
+                    Destroy(pillar, 5f);
+                }
                 else DivineJudgementVisual.CreateImpact(impactPosition);
-                if (impactPrefab != null) Instantiate(impactPrefab, impactPosition, Quaternion.identity);
+                if (impactPrefab != null)
+                {
+                    GameObject impact = Instantiate(impactPrefab, impactPosition, Quaternion.identity);
+                    Destroy(impact, 5f);
+                }
 
                 // Many enemy prefabs leave EnemyBase.CharaDamage unassigned. Resolve a
                 // valid damage area from the enemy hierarchy instead of silently skipping.

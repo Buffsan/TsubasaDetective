@@ -25,6 +25,16 @@ public class DivineJudgement_AI : PlayerSkillBase
     [SerializeField, Min(0f)] float crownRadius = 0.65f;
     [SerializeField, Min(0f)] float crownHeight = 0.8f;
 
+    [Header("十字架の付与演出")]
+    [SerializeField] AudioClip markSE;
+    [SerializeField, Min(0.01f)] float crossAppearDuration = 0.3f;
+    [SerializeField, Min(1f)] float crossStartScale = 1.6f;
+    [SerializeField, Range(0f, 1f)] float crossFinalOpacity = 0.5f;
+
+    [Header("光柱のサイズ")]
+    [Tooltip("1 = プレハブ本来の高さ、2 = 2倍、0.5 = 半分。光柱の幅は変更しません。")]
+    [SerializeField, Min(0.01f)] float pillarHeightMultiplier = 1f;
+
     readonly List<Mark> marks = new List<Mark>();
     float elapsed;
     int issued;
@@ -109,8 +119,8 @@ public class DivineJudgement_AI : PlayerSkillBase
             Vector3 targetPosition = mark.target.transform.position;
             mark.impactPosition = targetPosition + new Vector3(scatter.x, scatter.y, 0f);
             mark.hasImpactPosition = true;
-            mark.pillar = Instantiate(lightPillarAttackPrefab, mark.impactPosition, Quaternion.identity);
-            Destroy(mark.pillar, 5f);
+            mark.pillar = DivineJudgementVisual.SpawnPillar(
+                lightPillarAttackPrefab, mark.impactPosition, pillarHeightMultiplier);
         }
     }
 
@@ -137,7 +147,17 @@ public class DivineJudgement_AI : PlayerSkillBase
         Mark mark = new Mark { target = target };
         marks.Add(mark);
         mark.visual = crossPrefab != null ? Instantiate(crossPrefab) : DivineJudgementVisual.CreateCross();
+        if (mark.visual != null)
+        {
+            // Start larger and fully transparent. Over 0.3s shrink into the
+            // regular crown placement while fading to half opacity.
+            DivineJudgementCrossAppear animation = mark.visual.GetComponent<DivineJudgementCrossAppear>();
+            if (animation == null) animation = mark.visual.AddComponent<DivineJudgementCrossAppear>();
+            animation.Initialize(crossAppearDuration, crossStartScale, crossFinalOpacity);
+        }
         UpdateCrown(target);
+        if (markSE != null && AudioManager.instance != null)
+            AudioManager.instance.PlaySE(markSE);
     }
 
     void UpdateCrown(EnemyBase target)
@@ -172,7 +192,7 @@ public class DivineJudgement_AI : PlayerSkillBase
         DivineJudgementStrikeRunner runner = runnerObject.AddComponent<DivineJudgementStrikeRunner>();
         runner.Begin(marks, lightPillarAttackPrefab, impactEffectPrefab,
             impactScatterRadius, strikeInterval, playerController, SkillLevel,
-            SkillSlotIndex, strikeSE);
+            SkillSlotIndex, strikeSE, pillarHeightMultiplier);
         end();
     }
 
@@ -194,6 +214,7 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
     AudioClip strikeSE;
     float scatterRadius;
     float interval;
+    float pillarHeightMultiplier;
     PlayerController player;
     int skillLevel;
     int slot;
@@ -201,7 +222,7 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
 
     public void Begin(List<DivineJudgement_AI.Mark> assigned, GameObject prefab,
         GameObject impactEffect, float radius, float delay, PlayerController owner,
-        int level, int sourceSlot, AudioClip firingSound)
+        int level, int sourceSlot, AudioClip firingSound, float heightMultiplier)
     {
         marks.AddRange(assigned);
         pillarPrefab = prefab;
@@ -212,6 +233,7 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
         skillLevel = level;
         slot = sourceSlot;
         strikeSE = firingSound;
+        pillarHeightMultiplier = Mathf.Max(0.01f, heightMultiplier);
         if (pillarPrefab == null)
             Debug.LogError("神罰の光柱プレハブ参照がありません。", this);
         StartCoroutine(Strike());
@@ -239,9 +261,8 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
                 }
                 if (mark.pillar == null && pillarPrefab != null)
                 {
-                    mark.pillar = Instantiate(pillarPrefab, mark.impactPosition,
-                        Quaternion.identity);
-                    Destroy(mark.pillar, 5f);
+                    mark.pillar = DivineJudgementVisual.SpawnPillar(
+                        pillarPrefab, mark.impactPosition, pillarHeightMultiplier);
                 }
 
                 charaDamage receiver = ResolveDamageReceiver(enemy);
@@ -321,6 +342,58 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
 
 
 // Fallback visuals are generated at runtime; artists can replace both prefab slots.
+/// <summary>
+/// On attachment, animate the entire cross from 0% opacity and oversize down
+/// to its normal scale and 50% opacity. The crown controller owns rotation/position.
+/// </summary>
+public class DivineJudgementCrossAppear : MonoBehaviour
+{
+    SpriteRenderer[] sprites;
+    float[] originalAlpha;
+    Vector3 finalScale;
+    float duration;
+    float startingScale;
+    float targetOpacity;
+    float elapsed;
+    bool initialized;
+
+    public void Initialize(float seconds, float scale, float opacity)
+    {
+        duration = Mathf.Max(0.01f, seconds);
+        startingScale = Mathf.Max(1f, scale);
+        targetOpacity = Mathf.Clamp01(opacity);
+        finalScale = transform.localScale;
+        sprites = GetComponentsInChildren<SpriteRenderer>(true);
+        originalAlpha = new float[sprites.Length];
+        for (int i = 0; i < sprites.Length; i++)
+            originalAlpha[i] = sprites[i].color.a;
+        elapsed = 0f;
+        initialized = true;
+        Apply(0f);
+    }
+
+    void Update()
+    {
+        if (!initialized || elapsed >= duration) return;
+        elapsed = Mathf.Min(duration, elapsed + Time.deltaTime);
+        float t = elapsed / duration;
+        Apply(t * t * (3f - 2f * t));
+    }
+
+    void Apply(float t)
+    {
+        transform.localScale = finalScale * Mathf.Lerp(startingScale, 1f, t);
+        float opacity = Mathf.Lerp(0f, targetOpacity, t);
+        for (int i = 0; i < sprites.Length; i++)
+        {
+            if (sprites[i] == null) continue;
+            Color color = sprites[i].color;
+            color.a = originalAlpha[i] * opacity;
+            sprites[i].color = color;
+        }
+    }
+}
+
 public static class DivineJudgementVisual
 {
     static Sprite white;
@@ -335,6 +408,20 @@ public static class DivineJudgementVisual
             white = Sprite.Create(tex, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 1f);
             return white;
         }
+    }
+
+    // Scale the beam's HEIGHT through an independent parent rather than the
+    // animated prefab root, whose Animator may overwrite localScale.
+    public static GameObject SpawnPillar(GameObject prefab, Vector3 position, float heightMultiplier)
+    {
+        if (prefab == null) return null;
+        GameObject holder = new GameObject("DivineJudgement_Pillar");
+        holder.transform.position = position;
+        GameObject beam = Object.Instantiate(prefab, position, Quaternion.identity);
+        beam.transform.SetParent(holder.transform, true);
+        holder.transform.localScale = new Vector3(1f, Mathf.Max(0.01f, heightMultiplier), 1f);
+        Object.Destroy(holder, 5f);
+        return holder;
     }
 
     static GameObject Rect(string name, Transform parent, Vector3 position, Vector3 scale, Color color, int order)

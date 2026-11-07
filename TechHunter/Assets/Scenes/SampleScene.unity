@@ -24958,6 +24958,7 @@ MonoBehaviour:
   AttackLevel: 0
   isCriticulUse: 1
   AgeinAttack: 0
+  buffOnEnemyHit: {fileID: 0}
 --- !u!1001 &741366929
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -324476,7 +324477,7 @@ PrefabInstance:
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[4].skillDATA
       value: 
-      objectReference: {fileID: 11400000, guid: e81f81b4167ffae4e858465169441a34, type: 2}
+      objectReference: {fileID: 11400000, guid: 5fb1430c7a12492bb5bb95b7b12dbda1, type: 2}
     - target: {fileID: 7902684107158933039, guid: cb2f65c52544ea446a025f1a596248dc, type: 3}
       propertyPath: skillINFO.Array.data[5].skillDATA
       value: 

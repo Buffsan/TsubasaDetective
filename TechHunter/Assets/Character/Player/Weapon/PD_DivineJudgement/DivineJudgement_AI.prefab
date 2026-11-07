@@ -67,3 +67,8 @@ MonoBehaviour:
   strikeInterval: 0.12
   crownRadius: 0.65
   crownHeight: 0.8
+  markSE: {fileID: 8300000, guid: 2493cc64b1a333148a18e518609ebc19, type: 3}
+  crossAppearDuration: 0.3
+  crossStartScale: 1.6
+  crossFinalOpacity: 0.5
+  pillarHeightMultiplier: 1

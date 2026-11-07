@@ -42,8 +42,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d17c12b6b0e4d8da23a2e47cf109ef2, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   SkillWeapon: {fileID: 0}
   SlillBullet: {fileID: 0}
   A_Phase: 0
@@ -60,10 +60,10 @@ MonoBehaviour:
   chantEffectPrefab: {fileID: 6642189099075312862, guid: a203e5f37a8ff624e9ff4a5535f6d2e7, type: 3}
   chantSE: {fileID: 8300000, guid: 8c18d3b2cb6ea0348ab67878c930e209, type: 3}
   strikeSE: {fileID: 8300000, guid: 7605819949a993c4a80e6e275fce96f8, type: 3}
-  pillarLeadTime: 1
+  pillarLeadTime: 0.1
   chantMoveMultiplier: 0.1
   impactEffectPrefab: {fileID: 5260724196922729195, guid: bf6a28e1457c7704eb842ac97170e8fe, type: 3}
-  impactScatterRadius: 1
+  impactScatterRadius: 1.8
   strikeInterval: 0.12
   crownRadius: 0.65
   crownHeight: 0.8
@@ -71,4 +71,4 @@ MonoBehaviour:
   crossAppearDuration: 0.3
   crossStartScale: 1.6
   crossFinalOpacity: 0.5
-  pillarHeightMultiplier: 1
+  pillarHeightMultiplier: 1.3

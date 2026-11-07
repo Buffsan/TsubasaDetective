@@ -73,3 +73,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9418d7c1fd760854c9fbd1a8b5e513eb, type: 3}
+--- !u!1 &6642189099075312862 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8215016417045908084, guid: 9418d7c1fd760854c9fbd1a8b5e513eb, type: 3}
+  m_PrefabInstance: {fileID: 5884241968654539750}
+  m_PrefabAsset: {fileID: 0}

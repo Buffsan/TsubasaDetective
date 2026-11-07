@@ -16,6 +16,9 @@ public class DivineJudgement_AI : PlayerSkillBase
     [SerializeField] GameObject lightPillarAttackPrefab;
     [SerializeField] GameObject chantEffectPrefab;
     [SerializeField] AudioClip chantSE;
+    [SerializeField] AudioClip strikeSE;
+    [SerializeField, Min(0f)] float pillarLeadTime = 1f;
+    [SerializeField, Range(0f, 1f)] float chantMoveMultiplier = 0.1f;
     [SerializeField] GameObject impactEffectPrefab;
     [SerializeField, Min(0f)] float impactScatterRadius = 1f;
     [SerializeField, Min(0f)] float strikeInterval = 0.12f;
@@ -29,10 +32,13 @@ public class DivineJudgement_AI : PlayerSkillBase
     PlayerSkillBase ownSkill;
     GameObject chantEffectInstance;
 
-    class Mark
+    public class Mark
     {
         public EnemyBase target;
         public GameObject visual;
+        public GameObject pillar;
+        public Vector3 impactPosition;
+        public bool hasImpactPosition;
     }
 
     void Start()
@@ -67,6 +73,8 @@ public class DivineJudgement_AI : PlayerSkillBase
     public override void SkillPlay()
     {
         if (fired) return;
+        // Consistent with existing chant skills (e.g. SS_StarSmog).
+        PlayerMove(chantMoveMultiplier);
         elapsed = Mathf.Min(chantDuration, elapsed + Time.deltaTime);
         float x = elapsed / chantDuration;
         int desired = Mathf.Min(maxMarks, Mathf.FloorToInt(maxMarks * 0.5f * (x * x + x * x * x) + 0.00001f));
@@ -77,7 +85,33 @@ public class DivineJudgement_AI : PlayerSkillBase
             issued++;
             AddMark(target);
         }
+        PrewarmPillars();
         if (elapsed >= chantDuration) Fire();
+    }
+
+    // Each strike keeps its original damage time (chant ends + index * interval).
+    // The beam starts one second earlier whenever the mark already exists.
+    // A newly assigned mark or an early interruption may have less preparation time.
+    void PrewarmPillars()
+    {
+        if (lightPillarAttackPrefab == null) return;
+        for (int i = 0; i < marks.Count; i++)
+        {
+            Mark mark = marks[i];
+            if (mark.pillar != null || mark.target == null || mark.target.HP <= 0f ||
+                mark.target.status == EnemyBase.Status.Die || mark.target.IsCharmed)
+                continue;
+
+            float beamStartTime = chantDuration + i * strikeInterval - pillarLeadTime;
+            if (elapsed < beamStartTime) continue;
+
+            Vector2 scatter = Random.insideUnitCircle * impactScatterRadius;
+            Vector3 targetPosition = mark.target.transform.position;
+            mark.impactPosition = targetPosition + new Vector3(scatter.x, scatter.y, 0f);
+            mark.hasImpactPosition = true;
+            mark.pillar = Instantiate(lightPillarAttackPrefab, mark.impactPosition, Quaternion.identity);
+            Destroy(mark.pillar, 5f);
+        }
     }
 
     EnemyBase FindNearestEnemy()
@@ -136,9 +170,9 @@ public class DivineJudgement_AI : PlayerSkillBase
         // スキルオブジェクトが破棄されても神罰が最後まで発生するように独立させる。
         GameObject runnerObject = new GameObject("DivineJudgement_StrikeRunner");
         DivineJudgementStrikeRunner runner = runnerObject.AddComponent<DivineJudgementStrikeRunner>();
-        runner.Begin(marks.ConvertAll(m => m.target), marks.ConvertAll(m => m.visual),
-            lightPillarAttackPrefab, impactEffectPrefab, impactScatterRadius,
-            strikeInterval, playerController, SkillLevel, SkillSlotIndex);
+        runner.Begin(marks, lightPillarAttackPrefab, impactEffectPrefab,
+            impactScatterRadius, strikeInterval, playerController, SkillLevel,
+            SkillSlotIndex, strikeSE);
         end();
     }
 
@@ -154,10 +188,10 @@ public class DivineJudgement_AI : PlayerSkillBase
 /// <summary>神罰を詠唱オブジェクトの寿命から独立して連続生成する。</summary>
 public class DivineJudgementStrikeRunner : MonoBehaviour
 {
-    readonly List<EnemyBase> targets = new List<EnemyBase>();
-    readonly List<GameObject> crosses = new List<GameObject>();
+    readonly List<DivineJudgement_AI.Mark> marks = new List<DivineJudgement_AI.Mark>();
     GameObject pillarPrefab;
     GameObject impactPrefab;
+    AudioClip strikeSE;
     float scatterRadius;
     float interval;
     PlayerController player;
@@ -165,10 +199,11 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
     int slot;
     [SerializeField] float baseDamage = 20f;
 
-    public void Begin(List<EnemyBase> assigned, List<GameObject> visuals, GameObject prefab, GameObject impactEffect, float radius, float delay, PlayerController owner, int level, int sourceSlot)
+    public void Begin(List<DivineJudgement_AI.Mark> assigned, GameObject prefab,
+        GameObject impactEffect, float radius, float delay, PlayerController owner,
+        int level, int sourceSlot, AudioClip firingSound)
     {
-        targets.AddRange(assigned);
-        crosses.AddRange(visuals);
+        marks.AddRange(assigned);
         pillarPrefab = prefab;
         impactPrefab = impactEffect;
         scatterRadius = Mathf.Max(0f, radius);
@@ -176,53 +211,81 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
         player = owner;
         skillLevel = level;
         slot = sourceSlot;
+        strikeSE = firingSound;
         if (pillarPrefab == null)
-            Debug.LogError("神罰の光柱プレハブ参照がありません。仮の光柱は表示せず、ダメージ処理を継続します。", this);
+            Debug.LogError("神罰の光柱プレハブ参照がありません。", this);
         StartCoroutine(Strike());
     }
 
     System.Collections.IEnumerator Strike()
     {
-        for (int i = 0; i < targets.Count; i++)
+        for (int i = 0; i < marks.Count; i++)
         {
-            if (crosses[i] != null) Destroy(crosses[i]);
-            EnemyBase enemy = targets[i];
-            if (enemy != null && enemy.HP > 0 && enemy.status != EnemyBase.Status.Die && !enemy.IsCharmed)
+            DivineJudgement_AI.Mark mark = marks[i];
+            if (mark.visual != null) Destroy(mark.visual);
+            EnemyBase enemy = mark.target;
+            if (enemy != null && enemy.HP > 0 && enemy.status != EnemyBase.Status.Die &&
+                !enemy.IsCharmed)
             {
-                // The scatter is visual only: every assigned mark hits its original target.
-                Vector2 scatter = Random.insideUnitCircle * scatterRadius;
-                Vector3 impactPosition = enemy.transform.position + new Vector3(scatter.x, scatter.y, 0f);
-                if (pillarPrefab != null)
+                // Prewarmed pillars retain their actual impact position.
+                // On early interruption, create missing pillars immediately,
+                // rather than delaying damage or changing the original strike schedule.
+                if (!mark.hasImpactPosition)
                 {
-                    GameObject pillar = Instantiate(pillarPrefab, impactPosition, Quaternion.identity);
-                    Destroy(pillar, 5f);
+                    Vector2 scatter = Random.insideUnitCircle * scatterRadius;
+                    mark.impactPosition = enemy.transform.position +
+                        new Vector3(scatter.x, scatter.y, 0f);
+                    mark.hasImpactPosition = true;
                 }
-                if (impactPrefab != null)
+                if (mark.pillar == null && pillarPrefab != null)
                 {
-                    GameObject impact = Instantiate(impactPrefab, impactPosition, Quaternion.identity);
-                    Destroy(impact, 5f);
+                    mark.pillar = Instantiate(pillarPrefab, mark.impactPosition,
+                        Quaternion.identity);
+                    Destroy(mark.pillar, 5f);
                 }
 
-                // Many enemy prefabs leave EnemyBase.CharaDamage unassigned. Resolve a
-                // valid damage area from the enemy hierarchy instead of silently skipping.
                 charaDamage receiver = ResolveDamageReceiver(enemy);
                 if (receiver != null && player != null)
                 {
+                    // Impact visuals and gunshot SE are tied to the damage frame,
+                    // not to the earlier beam appearance.
+                    if (impactPrefab != null)
+                    {
+                        GameObject impact = Instantiate(impactPrefab, mark.impactPosition,
+                            Quaternion.identity);
+                        Destroy(impact, 5f);
+                    }
+                    if (strikeSE != null && AudioManager.instance != null)
+                        AudioManager.instance.PlaySE(strikeSE);
+
                     float levelBonus = Mathf.Max(0, skillLevel - 1);
-                    float buff = player.playerBuff != null ? player.playerBuff.MultiplyAttack_AllBuff + player.playerBuff.SkillOnlyAttackMultiplierBonus : 1f;
+                    float buff = player.playerBuff != null
+                        ? player.playerBuff.MultiplyAttack_AllBuff +
+                          player.playerBuff.SkillOnlyAttackMultiplierBonus : 1f;
                     float attack = ((baseDamage + player.ATK + 0.5f * levelBonus) *
                         ((100f + player.AddATK + 50f * levelBonus) / 100f) +
-                        (player.playerBuff != null ? player.playerBuff.Attack_AllBuff : 0f)) * player.AddMultiplierATK * buff;
-                    bool critical = player.AddCritical + player.Critical > Random.Range(0f, 100f);
-                    if (critical) attack = (attack * 3f + 5f) * Mathf.Max(0f, 1f + player.AddLuckyDamagePercent / 100f);
+                        (player.playerBuff != null
+                            ? player.playerBuff.Attack_AllBuff : 0f)) *
+                        player.AddMultiplierATK * buff;
+                    bool critical = player.AddCritical + player.Critical >
+                        Random.Range(0f, 100f);
+                    if (critical)
+                        attack = (attack * 3f + 5f) *
+                            Mathf.Max(0f, 1f + player.AddLuckyDamagePercent / 100f);
+
                     GlobalEvents.InvokePlayerSkillHit();
-                    GlobalEvents.InvokePlayerAttack(enemy.gameObject, attack, critical ? 3f : 1f, critical);
+                    GlobalEvents.InvokePlayerAttack(enemy.gameObject, attack,
+                        critical ? 3f : 1f, critical);
                     bool charm = player.HandInHandRelicActive && slot == 2;
-                    if (charm) receiver.DamageFromPlayerAsCharm(attack, 0f, 0f, critical, player.AddConfusionDamagePercent, player.HandInHandCharmEffect);
-                    else receiver.DamageFromPlayer(attack, 0f, 0f, critical, player.AddConfusionDamagePercent);
+                    if (charm)
+                        receiver.DamageFromPlayerAsCharm(attack, 0f, 0f, critical,
+                            player.AddConfusionDamagePercent, player.HandInHandCharmEffect);
+                    else
+                        receiver.DamageFromPlayer(attack, 0f, 0f, critical,
+                            player.AddConfusionDamagePercent);
                 }
             }
-            if (interval > 0) yield return new WaitForSeconds(interval);
+            if (interval > 0f) yield return new WaitForSeconds(interval);
             else yield return null;
         }
         Destroy(gameObject);
@@ -251,8 +314,8 @@ public class DivineJudgementStrikeRunner : MonoBehaviour
 
     void OnDestroy()
     {
-        foreach (GameObject cross in crosses)
-            if (cross != null) Destroy(cross);
+        foreach (DivineJudgement_AI.Mark mark in marks)
+            if (mark.visual != null) Destroy(mark.visual);
     }
 }
 

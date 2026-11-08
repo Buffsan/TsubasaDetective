@@ -178,6 +178,10 @@ public class PlayerController : PlayerStatus
             return;
         }
 
+        // NPC interaction takes priority over the old Decide event while
+        // standing in talk range. Do not fire both actions on one click.
+        if (DialogueNPCInteractable.TryInteractClosest(this)) return;
+
         GlobalEvents.InvokeOnDecide(0);
     }
     public void OnMove(InputAction.CallbackContext context)
@@ -255,6 +259,11 @@ public class PlayerController : PlayerStatus
     public void OnNomalAttack(InputAction.CallbackContext context)
     {
         if (IsDialogueInputBlocked) return;
+        // Decide and NormalAttack share the mouse left button. Avoid attacking
+        // an NPC before OnDecide gets a chance to start the conversation.
+        if (context.control != null && context.control.device is Mouse &&
+            DialogueNPCInteractable.HasAvailableNPC(this))
+            return;
         //Debug.Log("攻撃した");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {

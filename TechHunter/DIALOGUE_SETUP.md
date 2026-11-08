@@ -55,3 +55,18 @@ Unity上でのコンパイル/Play Mode検証は未実施です。
 
 既存のバストールのID=10と`VastorPurchaseConversation.asset`の参照は維持しています。
 
+
+## 近づいて話しかけられるNPC
+
+1. NPCのGameObjectに `DialogueNPCInteractable` を追加します（Collider2Dは必須ではありません）。
+2. `Conversation` に `DialogueData` を設定します。登録済み会話IDを使う場合は `Conversation Id` に入力してください（こちらが優先）。
+3. `Interaction Distance` をInspectorで調節します。NPC選択時にはSceneに緑色の範囲が表示されます。`Interaction Point`を設定した場合はその座標が中心です。
+4. `Prompt Anchor` は任意の頭部Transformです。未設定ならNPCの座標に `Prompt Offset`（初期値は上方向1.2）を足してアイコンを表示します。`Prompt World Height`でサイズを指定できます。
+5. `Prompt Sprite` はコンポーネント追加時、`Assets/System/UI/Dialogue/resource/会話待機用コメント.PNG` を自動参照します（空欄ならInspectorから手動で割り当ててください）。
+6. プレイヤーが指定距離に入ると頭上にアイコンが表示され、左クリック（Decide）で会話が始まります。会話中はアイコンが消え、会話終了後は距離内で再表示します。`Only Once`をオンにすると初回会話後は再表示されません。
+7. NPCが複数いるときは最も近い会話可能なNPCが選ばれます。NPCの会話範囲内では左クリックを会話に優先し、同じ入力で通常攻撃が発生しないようにしています。他のスキルやゲームパッド右トリガーの通常攻撃は従来どおりです。
+8. `On Dialogue Finished` と `On Choice Selected` のUnityEventも使えます。
+
+この方法はイベント用の `DialogueEventTrigger` に影響せず、会話の呼び出しには既存 `DialogueUIController.Play` / `PlayById` を使用します。
+画像ファイルはUnityの特殊な `Resources` フォルダではなく `Assets/System/UI/Dialogue/resource` にあるため、エディタのResetで直接Sprite参照を保存します。ビルド時に `Resources.Load` は使いません。
+

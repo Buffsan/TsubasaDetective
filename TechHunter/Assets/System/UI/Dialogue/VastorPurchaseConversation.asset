@@ -15,6 +15,8 @@ MonoBehaviour:
   conversationId: shop.vastor.purchase
   participants: 0a000000
   entryNodeId: 0
+  graphVersion: 1
+  graphStartPosition: {x: -450, y: 80}
   nodes:
   - nodeId: 0
     type: 0
@@ -24,7 +26,10 @@ MonoBehaviour:
     showSpeakerName: 1
     text: "{itemName}\u3067\u3059\u306D\u3002\u4FA1\u683C\u306F{itemPrice}\u30B3\u30A4\u30F3\u3067\u3059\u3002\n{itemDescription}"
     endDialogue: 0
-    nextNodeId: -1
+    nextNodeId: 10
+    conditionKey: 
+    falseNodeId: -1
+    graphPosition: {x: 120, y: 80}
     choices: []
   - nodeId: 10
     type: 1
@@ -35,11 +40,14 @@ MonoBehaviour:
     text: "\u3044\u304B\u304C\u306A\u3055\u3044\u307E\u3059\u304B\uFF1F"
     endDialogue: 0
     nextNodeId: -1
+    conditionKey: 
+    falseNodeId: -1
+    graphPosition: {x: 550, y: 80}
     choices:
     - label: "\u8CFC\u5165\u3059\u308B"
-      targetNodeId: 20
-      conditionKey: canAfford
-      falseTargetNodeId: 25
+      targetNodeId: 50
+      conditionKey: 
+      falseTargetNodeId: -1
       selectedShopItem: {fileID: 0}
     - label: "\u3084\u3081\u308B"
       targetNodeId: 30
@@ -55,9 +63,12 @@ MonoBehaviour:
     text: "\u3042\u308A\u304C\u3068\u3046\u3054\u3056\u3044\u307E\u3059\u3002\u304A\u54C1\u7269\u3092\u3054\u7528\u610F\u3044\u305F\u3057\u307E\u3059\u3002"
     endDialogue: 0
     nextNodeId: 40
+    conditionKey: 
+    falseNodeId: -1
+    graphPosition: {x: 1420, y: 10}
     choices: []
   - nodeId: 25
-    type: 0
+    type: 4
     speakerId: 10
     expression: 0
     otherExpressionKey: 
@@ -65,6 +76,9 @@ MonoBehaviour:
     text: "\u5C11\u3005\u3001\u8DB3\u308A\u306A\u3044\u3088\u3046\u3067\u3059\u306D\u3002\u3054\u5FC3\u914D\u306A\u304F\u3002\u6570\u3048\u76F4\u3057\u305F\u7A0B\u5EA6\u3067\u6A5F\u5ACC\u3092\u640D\u306D\u305F\u308A\u306F\u3044\u305F\u3057\u307E\u305B\u3093\u3002"
     endDialogue: 1
     nextNodeId: -1
+    conditionKey: 
+    falseNodeId: -1
+    graphPosition: {x: 1420, y: 390}
     choices: []
   - nodeId: 30
     type: 0
@@ -75,9 +89,12 @@ MonoBehaviour:
     text: "\u304B\u3057\u3053\u307E\u308A\u307E\u3057\u305F\u3002"
     endDialogue: 0
     nextNodeId: 40
+    conditionKey: 
+    falseNodeId: -1
+    graphPosition: {x: 970, y: 610}
     choices: []
   - nodeId: 40
-    type: 0
+    type: 4
     speakerId: 10
     expression: 0
     otherExpressionKey: 
@@ -85,6 +102,22 @@ MonoBehaviour:
     text: "\u307B\u304B\u306B\u3082\u305C\u3072\u3054\u89A7\u304F\u3060\u3055\u3044\u3002"
     endDialogue: 1
     nextNodeId: -1
+    conditionKey: 
+    falseNodeId: -1
+    graphPosition: {x: 1840, y: 250}
+    choices: []
+  - nodeId: 50
+    type: 3
+    speakerId: 0
+    expression: 0
+    otherExpressionKey: 
+    showSpeakerName: 0
+    text: 
+    endDialogue: 0
+    nextNodeId: 20
+    conditionKey: 
+    falseNodeId: 25
+    graphPosition: {x: 970, y: 80}
     choices: []
   characters: []
   lines: []

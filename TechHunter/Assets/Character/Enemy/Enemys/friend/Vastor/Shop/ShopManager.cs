@@ -242,23 +242,58 @@ public class ShopManager : MonoBehaviour
         // The conversation asset owns both response texts and branch destinations.
         ui.SetBoolVariable("canAfford", canAfford);
 
+        // Purchase nodes perform the live balance check themselves, before
+        // following either success or failure branch. Old choice-only assets
+        // still use the previous deferred purchase behaviour.
+        DialogueData activeConversation = !string.IsNullOrWhiteSpace(shopConversationId)
+            ? ui.FindConversation(shopConversationId) : shopConversationData;
+        bool graphHandlesPurchases = activeConversation != null && activeConversation.nodes != null &&
+            activeConversation.nodes.Exists(n => n != null && n.type == DialogueData.NodeType.Purchase);
+        List<ItemData> deferredRewards = new List<ItemData>();
+
         bool wantsPurchase = false;
         shopConversationActive = true;
         Action onFinished = () =>
-            {
-                shopConversationActive = false;
-                if (this != null && isActiveAndEnabled &&
-                    wantsPurchase && canAfford && shop != null && shop.PlayerFind)
-                    BuyItem(shop);
-            };
+        {
+            shopConversationActive = false;
+            if (this == null) return;
+
+            // Grant the purchased card/relic after the conversation window
+            // closes so it never overlaps the card-selection UI.
+            foreach (ItemData reward in deferredRewards)
+                ItemChoiceBuy(reward);
+
+            if (!graphHandlesPurchases && isActiveAndEnabled &&
+                wantsPurchase && canAfford && shop != null && shop.PlayerFind)
+                BuyItem(shop);
+        };
         Action<int,int> onPicked = (nodeId, optionIndex) =>
-            {
-                if (nodeId == purchaseChoiceNodeId)
-                    wantsPurchase = optionIndex == purchaseOptionIndex;
-            };
+        {
+            if (nodeId == purchaseChoiceNodeId)
+                wantsPurchase = optionIndex == purchaseOptionIndex;
+        };
+        Func<bool> onPurchase = () =>
+        {
+            if (this == null || !isActiveAndEnabled || shop == null || !shop.PlayerFind ||
+                playerController == null || playerController.movetype == PlayerController.MoveType.Wait ||
+                notBuyCount < notBuyTime)
+                return false;
+
+            // The price is recalculated NOW, not from the bool cached when
+            // the dialogue opened. Deduction and reward reservation are atomic.
+            int price = Mathf.RoundToInt(shop.AllValue);
+            if (playerController.AllCoins < price) return false;
+            playerController.AllCoins -= price;
+            shop.BuyNumber++;
+            if (audioManager != null && audioClips.Count > 0)
+                audioManager.PlaySE(audioClips[0]);
+            deferredRewards.Add(shop.shopItemDatas.itemData);
+            shop.ChangeUIs();
+            return true;
+        };
         bool started = !string.IsNullOrWhiteSpace(shopConversationId)
-            ? ui.PlayById(shopConversationId, onFinished, onPicked)
-            : ui.Play(shopConversationData, onFinished, onPicked);
+            ? ui.PlayById(shopConversationId, onFinished, onPicked, onPurchase)
+            : ui.Play(shopConversationData, onFinished, onPicked, onPurchase);
 
         if (!started)
         {

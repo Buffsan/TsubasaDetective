@@ -40,6 +40,7 @@ public class DialogueUIController : MonoBehaviour
     PlayerController player;
     Action finished;
     Action<int,int> picked;
+    Func<bool> purchaseHandler;
     RectTransform choicesPanel;
     int current, visible, total, focusedChoice, lastInputFrame = -1;
     float charactersAccumulator, savedTimeScale;
@@ -47,8 +48,13 @@ public class DialogueUIController : MonoBehaviour
 
     public void SetDatabase(DialogueCharacterDatabase db) { characterDatabase = db; }
     public void SetConversationDatabase(DialogueDatabase db) { conversationDatabase = db; }
+    public DialogueData FindConversation(string conversationId)
+    {
+        return conversationDatabase != null ? conversationDatabase.Find(conversationId) : null;
+    }
 
-    public bool PlayById(string conversationId, Action onFinished = null, Action<int,int> onPicked = null)
+    public bool PlayById(string conversationId, Action onFinished = null, Action<int,int> onPicked = null,
+        Func<bool> onPurchase = null)
     {
         if (conversationDatabase == null)
         {
@@ -61,7 +67,7 @@ public class DialogueUIController : MonoBehaviour
             Debug.LogError("Dialogue: unknown conversation ID '" + conversationId + "'.", this);
             return false;
         }
-        return Play(conversation, onFinished, onPicked);
+        return Play(conversation, onFinished, onPicked, onPurchase);
     }
 
     void Awake()
@@ -99,7 +105,8 @@ public class DialogueUIController : MonoBehaviour
         if (continueIndicator != null) continueIndicator.SetActive(visible >= total);
     }
 
-    public bool Play(DialogueData conversation, Action onFinished = null, Action<int,int> onPicked = null)
+    public bool Play(DialogueData conversation, Action onFinished = null, Action<int,int> onPicked = null,
+        Func<bool> onPurchase = null)
     {
         if (IsPlaying || conversation == null) return false;
         bool newFormat = conversation.nodes != null && conversation.nodes.Count != 0;
@@ -134,6 +141,7 @@ public class DialogueUIController : MonoBehaviour
         current = newFormat && data.entryNodeId >= 0 ? nodeMap[data.entryNodeId] : 0;
         finished = onFinished;
         picked = onPicked;
+        purchaseHandler = onPurchase;
         lastInputFrame = Time.frameCount;
         IsPlaying = true;
         player = PlayerController.Instance;
@@ -169,25 +177,79 @@ public class DialogueUIController : MonoBehaviour
         }
         if (usingLegacy) { current++; Show(); return; }
         DialogueData.Node node = data.nodes[current];
-        if (node.endDialogue) { Finish(); return; }
+        if (node.endDialogue || node.type == DialogueData.NodeType.End) { Finish(); return; }
         Jump(node.nextNodeId, current + 1);
     }
 
     void Jump(int nodeId, int nextIndex)
     {
-        if (nodeId < 0) current = nextIndex;
-        else if (!nodeMap.TryGetValue(nodeId, out current))
+        if (nodeId < 0 && data.graphVersion == 0) current = nextIndex;
+        else if (nodeId < 0 || !nodeMap.TryGetValue(nodeId, out current))
         {
-            Debug.LogError("Dialogue: missing destination node " + nodeId, data);
+            Debug.LogError("Dialogue: missing graph connection / destination node " + nodeId, data);
             Finish();
             return;
         }
         Show();
     }
 
+    // Branch and Purchase nodes are invisible steps, evaluated when entered.
+    // A guard avoids a freeze from a cycle of logic-only nodes.
+    bool ResolveLogicNodes()
+    {
+        if (usingLegacy) return true;
+        int steps = 0;
+        while (current >= 0 && current < data.nodes.Count)
+        {
+            DialogueData.Node node = data.nodes[current];
+            if (node.type != DialogueData.NodeType.Branch &&
+                node.type != DialogueData.NodeType.Purchase)
+                return true;
+
+            if (++steps > Mathf.Max(32, data.nodes.Count * 4))
+            {
+                Debug.LogError("Dialogue: loop of logic-only nodes. Add a Line or Choice.", data);
+                Finish();
+                return false;
+            }
+
+            int destination;
+            if (node.type == DialogueData.NodeType.Branch)
+            {
+                bool value = false;
+                if (string.IsNullOrWhiteSpace(node.conditionKey) ||
+                    !boolVariables.TryGetValue(node.conditionKey, out value))
+                    Debug.LogWarning("Dialogue: missing bool variable '" + node.conditionKey + "'.", data);
+                destination = value ? node.nextNodeId : node.falseNodeId;
+            }
+            else
+            {
+                bool purchased = false;
+                if (purchaseHandler == null)
+                    Debug.LogWarning("Dialogue: Purchase node requires a shop purchase handler.", data);
+                else
+                {
+                    try { purchased = purchaseHandler(); }
+                    catch (Exception exception) { Debug.LogException(exception, this); }
+                }
+                destination = purchased ? node.nextNodeId : node.falseNodeId;
+            }
+
+            if (destination < 0 || !nodeMap.TryGetValue(destination, out current))
+            {
+                Debug.LogError("Dialogue: logic node " + node.nodeId +
+                    " has no valid branch destination " + destination, data);
+                Finish();
+                return false;
+            }
+        }
+        Finish();
+        return false;
+    }
+
     void Show()
     {
-        if (!IsPlaying) return;
+        if (!IsPlaying || !ResolveLogicNodes()) return;
         int count = usingLegacy ? data.lines.Count : data.nodes.Count;
         if (current >= count || current < 0) { Finish(); return; }
         inChoice = false;
@@ -481,7 +543,7 @@ public class DialogueUIController : MonoBehaviour
         data = null;
         ClearTextVariables();
         Action callback = finished;
-        finished = null; picked = null;
+        finished = null; picked = null; purchaseHandler = null;
         callback?.Invoke();
     }
     void OnDisable() { Finish(); }

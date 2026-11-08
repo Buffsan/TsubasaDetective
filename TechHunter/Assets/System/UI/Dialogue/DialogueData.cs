@@ -8,7 +8,8 @@ public class DialogueData : ScriptableObject
     [Tooltip("Stable unique ID used to start this conversation from game events.")]
     public string conversationId;
 
-    public enum NodeType { Line, Choice }
+    // Keep Line=0 and Choice=1 for serialized conversations already in the project.
+    public enum NodeType { Line = 0, Choice = 1, Branch = 2, Purchase = 3, End = 4 }
 
     [Serializable] public class Choice
     {
@@ -35,6 +36,12 @@ public class DialogueData : ScriptableObject
         public bool endDialogue;
         [Tooltip("-1 = next node in the array (NOT conversation end). To finish here, check End Dialogue; Next Node ID is ignored when End Dialogue is checked.")]
         public int nextNodeId = -1;
+        [Tooltip("Condition key for a Branch node; true follows Next Node, false follows False Node.")]
+        public string conditionKey;
+        [Tooltip("False branch destination, also used for insufficient funds on Purchase nodes.")]
+        public int falseNodeId = -1;
+        [Tooltip("Position in the node-based dialogue graph.")]
+        public Vector2 graphPosition;
         public List<Choice> choices = new List<Choice>();
     }
 
@@ -43,6 +50,11 @@ public class DialogueData : ScriptableObject
     [Tooltip("-1 = start at the first node.")]
     public int entryNodeId = -1;
     public List<Node> nodes = new List<Node>();
+
+    // Version 0 conversations used -1 as an implicit array-next transition.
+    // Version 1 uses only explicit graph links. The graph editor migrates version 0.
+    [HideInInspector] public int graphVersion;
+    [HideInInspector] public Vector2 graphStartPosition = new Vector2(-420, 0);
 
     // Old assets from the first version of this feature remain usable.
     [Serializable] public class Character

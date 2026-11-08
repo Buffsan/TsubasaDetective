@@ -48,7 +48,7 @@ public sealed class DialogueCharacterIdDrawer : PropertyDrawer
         EditorGUI.BeginProperty(position, label, property);
         EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
         EditorGUI.BeginChangeCheck();
-        int selected = EditorGUI.Popup(position, label, current, labels.ToArray());
+        int selected = EditorGUI.Popup(position, label.text, current, labels.ToArray());
         if (EditorGUI.EndChangeCheck() && selected >= 0 && selected < ids.Count)
             property.intValue = ids[selected];
         EditorGUI.showMixedValue = false;

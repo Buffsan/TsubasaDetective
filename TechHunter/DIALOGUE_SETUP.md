@@ -70,3 +70,8 @@ Unity上でのコンパイル/Play Mode検証は未実施です。
 この方法はイベント用の `DialogueEventTrigger` に影響せず、会話の呼び出しには既存 `DialogueUIController.Play` / `PlayById` を使用します。
 画像ファイルはUnityの特殊な `Resources` フォルダではなく `Assets/System/UI/Dialogue/resource` にあるため、エディタのResetで直接Sprite参照を保存します。ビルド時に `Resources.Load` は使いません。
 
+
+### NPC会話の左クリック判定
+NPCに接近すると、プレイヤー位置とInteraction Point（またはNPC位置）の距離だけで会話可能か判定します。カーソルがNPCの画像やColliderに重なっている必要はありません。会話可能なときは画面内のどこを左クリックしても会話が始まります。UIへのポインタRaycastによる会話開始禁止も撤廃しました。
+`PlayerController.OnDecide`から既存の共通会話を開始し、PlayerInput側でDecideが通知されない場合に備え、`PlayerController.Update`で左クリックの押下を補助的に検知します。同一フレームの二重実行は抑止します。
+

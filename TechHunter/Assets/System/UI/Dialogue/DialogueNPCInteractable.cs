@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
 /// <summary>
 /// Attach this component to an NPC to show a world-space speech prompt when
@@ -160,41 +158,11 @@ public sealed class DialogueNPCInteractable : MonoBehaviour
     public static bool TryInteractClosest(PlayerController player)
     {
         if (player == null) return false;
-        // The old IsPointerOverGameObject check also treated transparent HUD
-        // images and non-interactive screen overlays as blocking UI. Only an
-        // actual clickable control should take precedence over NPC dialogue.
-        if (IsPointerOverInteractiveUI()) return false;
 
+        // Interaction is proximity-based. The mouse cursor does not need to
+        // point at the NPC or any particular position on the screen.
         DialogueNPCInteractable closest = FindClosest(player);
         return closest != null && closest.TryStartDialogue(player);
-    }
-
-    static readonly List<RaycastResult> UIRaycastResults = new List<RaycastResult>();
-
-    static bool IsPointerOverInteractiveUI()
-    {
-        EventSystem eventSystem = EventSystem.current;
-        Mouse mouse = Mouse.current;
-        if (eventSystem == null || mouse == null || !mouse.leftButton.wasPressedThisFrame)
-            return false;
-
-        // Raycast the current mouse position instead of relying on the
-        // EventSystem's potentially stale cached pointer-over-UI state.
-        PointerEventData pointer = new PointerEventData(eventSystem)
-        {
-            position = mouse.position.ReadValue()
-        };
-        UIRaycastResults.Clear();
-        eventSystem.RaycastAll(pointer, UIRaycastResults);
-
-        foreach (RaycastResult hit in UIRaycastResults)
-        {
-            if (hit.gameObject == null) continue;
-            UnityEngine.UI.Selectable control = hit.gameObject.GetComponentInParent<UnityEngine.UI.Selectable>();
-            if (control != null && control.IsActive() && control.IsInteractable())
-                return true;
-        }
-        return false;
     }
 
     public bool TryStartDialogue(PlayerController player)

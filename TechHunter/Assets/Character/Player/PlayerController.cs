@@ -153,6 +153,8 @@ public class PlayerController : PlayerStatus
 
 
     public bool IsDialogueInputBlocked { get; private set; }
+    // Avoid handling a mouse click twice through PlayerInput and Update.
+    int lastDecideInputFrame = -1;
 
     // Only manual Input System callbacks are blocked. Scripts can still set MoveInput,
     // movetype or rb.velocity to control the character during a cutscene.
@@ -170,6 +172,7 @@ public class PlayerController : PlayerStatus
     public void OnDecide(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
+        lastDecideInputFrame = Time.frameCount;
 
         DialogueUIController dialogue = DialogueUIController.Instance;
         if (dialogue != null && dialogue.IsPlaying)
@@ -441,6 +444,26 @@ public class PlayerController : PlayerStatus
     void Update()
     {
         isCursorDirection();
+
+        // Both Decide and NormalAttack use the left mouse button. PlayerInput's
+        // callback normally handles Decide, but this polling fallback guarantees
+        // an NPC conversation can start on a click anywhere within talk range
+        // even when the Decide callback isn't delivered.
+        Mouse mouse = Mouse.current;
+        if (mouse == null || !mouse.leftButton.wasPressedThisFrame ||
+            lastDecideInputFrame == Time.frameCount)
+            return;
+
+        DialogueUIController dialogue = DialogueUIController.Instance;
+        if (dialogue != null && dialogue.IsPlaying)
+        {
+            lastDecideInputFrame = Time.frameCount;
+            dialogue.Advance();
+        }
+        else if (DialogueNPCInteractable.TryInteractClosest(this))
+        {
+            lastDecideInputFrame = Time.frameCount;
+        }
     }
 
     private void FixedUpdate()

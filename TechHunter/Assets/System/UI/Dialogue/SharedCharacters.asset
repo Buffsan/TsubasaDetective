@@ -11,7 +11,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ccb70d3a02146c7931615975929425d, type: 3}
   m_Name: SharedCharacters
-  m_EditorClassIdentifier:
-  nextCharacterId: 11
+  m_EditorClassIdentifier: 
   profiles:
   - {fileID: 11400000, guid: 6320baa82d5e4eb196768387730510f4, type: 2}
+  - {fileID: 11400000, guid: f718e3026559e1a43893eacb7e107ba7, type: 2}
+  nextCharacterId: 12

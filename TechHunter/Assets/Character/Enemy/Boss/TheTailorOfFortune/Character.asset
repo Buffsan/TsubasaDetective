@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: 
   flipHorizontally: 0
   scale: 1
-  normal: {fileID: 0}
+  normal: {fileID: 21300000, guid: 763efba71d1b5fb409cd36be47d65d86, type: 3}
   happy: {fileID: 0}
   angry: {fileID: 0}
   crying: {fileID: 0}

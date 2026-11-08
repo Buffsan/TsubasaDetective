@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ccb70d3a02146c7931615975929425d, type: 3}
   m_Name: DialogueCharacterDatabase
   m_EditorClassIdentifier: 
-  profiles: []
+  profiles:
+  - {fileID: 0}
+  nextCharacterId: 1

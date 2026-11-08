@@ -27,13 +27,13 @@ public class DialogueUIController : MonoBehaviour
     [SerializeField] bool pauseWorldWhileTalking;
 
     readonly List<Image> portraits = new List<Image>();
-    readonly List<DialogueCharacterId> portraitIds = new List<DialogueCharacterId>();
+    readonly List<int> portraitIds = new List<int>();
     readonly Dictionary<int, int> nodeMap = new Dictionary<int, int>();
     readonly Dictionary<string, string> textVariables = new Dictionary<string, string>();
     readonly Dictionary<string, bool> boolVariables = new Dictionary<string, bool>();
-    readonly Dictionary<DialogueCharacterId, DialogueExpression> expressions =
-        new Dictionary<DialogueCharacterId, DialogueExpression>();
-    readonly Dictionary<DialogueCharacterId, string> extraKeys = new Dictionary<DialogueCharacterId, string>();
+    readonly Dictionary<int, DialogueExpression> expressions =
+        new Dictionary<int, DialogueExpression>();
+    readonly Dictionary<int, string> extraKeys = new Dictionary<int, string>();
     readonly List<Button> buttons = new List<Button>();
 
     DialogueData data;
@@ -298,8 +298,8 @@ public class DialogueUIController : MonoBehaviour
         else
         {
             if (data.participants != null)
-                foreach (DialogueCharacterId id in data.participants)
-                    if (id != DialogueCharacterId.None && !portraitIds.Contains(id)) portraitIds.Add(id);
+                foreach (int id in data.participants)
+                    if (id != 0 && !portraitIds.Contains(id)) portraitIds.Add(id);
             count = portraitIds.Count;
         }
 
@@ -327,9 +327,9 @@ public class DialogueUIController : MonoBehaviour
         for (int i = count; i < portraits.Count; i++) portraits[i].gameObject.SetActive(false);
     }
 
-    void UpdatePortraits(DialogueCharacterId speaker, DialogueExpression expression, string key)
+    void UpdatePortraits(int speaker, DialogueExpression expression, string key)
     {
-        if (speaker != DialogueCharacterId.None)
+        if (speaker != 0)
         {
             expressions[speaker] = expression;
             extraKeys[speaker] = key;

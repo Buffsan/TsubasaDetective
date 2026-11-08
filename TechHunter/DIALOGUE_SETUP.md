@@ -43,3 +43,15 @@ Unity上でのコンパイル/Play Mode検証は未実施です。
 - 会話の呼び出し例：`ALL_SystemManager.Instance.dialogueUIController.Play(dialogueData)`
 - `ALL_SystemManager.Instance.dialogueUIController.IsPlaying` で会話中の判定が可能です。
 - 立ち絵登録用の `SharedCharacters.asset` を各会話で使い回します。
+
+## Inspectorでキャラクターを追加（C#のenum編集不要）
+
+1. `Assets/System/UI/Dialogue/SharedCharacters.asset` を選択します。
+2. Inspectorの **Register New Character** を押すと、新しい `DialogueCharacterProfile` アセットを自動作成・登録し、未使用の数値IDを割り当てます。
+3. 作成したアセットの **Display Name** と各表情のSpriteを設定します。発行後、IDは変更しないでください。
+4. 会話の `DialogueData` の **Participants**（立ち絵の表示順）および各ノードの **Speaker Id** は、登録済みキャラクター名のプルダウンで選択できます。
+5. 既存のProfileをProfiles欄に手動追加しても、不足・重複したIDは自動採番します。必要なら **Repair Missing / Duplicate IDs** を実行してください。
+6. プロフィール削除やリスト並び替えではほかのIDは変更しません。既に発行したIDは再利用しません。
+
+既存のバストールのID=10と`VastorPurchaseConversation.asset`の参照は維持しています。
+

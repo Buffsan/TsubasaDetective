@@ -26,7 +26,7 @@ public class DialogueData : ScriptableObject
     {
         public int nodeId;
         public NodeType type;
-        public DialogueCharacterId speakerId = DialogueCharacterId.None;
+        [DialogueCharacterId] public int speakerId;
         public DialogueExpression expression;
         public string otherExpressionKey;
         public bool showSpeakerName = true;
@@ -39,7 +39,7 @@ public class DialogueData : ScriptableObject
     }
 
     [Header("Character IDs, in their left-to-right display order")]
-    public List<DialogueCharacterId> participants = new List<DialogueCharacterId>();
+    [DialogueCharacterId] public List<int> participants = new List<int>();
     [Tooltip("-1 = start at the first node.")]
     public int entryNodeId = -1;
     public List<Node> nodes = new List<Node>();

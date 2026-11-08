@@ -11,7 +11,8 @@ public class DialogueCharacterProfile : ScriptableObject
         public Sprite image;
     }
 
-    public DialogueCharacterId id;
+    [Tooltip("Stable numeric ID assigned by SharedCharacters; do not change after use in a conversation.")]
+    public int id;
     public string displayName;
     public bool flipHorizontally;
     [Range(0.5f, 2f)] public float scale = 1f;

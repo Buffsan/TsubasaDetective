@@ -65,18 +65,19 @@ public static class DialogueUISetup
 
     static void EnsureVastorProfile(DialogueCharacterDatabase database)
     {
-        if (database.Find(DialogueCharacterId.Vastor) != null) return;
+        // Existing Vastor profile keeps its serialized numeric ID (10).
         const string profilePath = "Assets/System/UI/Dialogue/ShopVastorCharacter.asset";
         DialogueCharacterProfile profile = AssetDatabase.LoadAssetAtPath<DialogueCharacterProfile>(profilePath);
         if (profile == null)
         {
             profile = ScriptableObject.CreateInstance<DialogueCharacterProfile>();
-            profile.id = DialogueCharacterId.Vastor;
+            Undo.RecordObject(database, "Allocate Vastor character ID");
+            profile.id = database.AllocateId();
             profile.displayName = "Vastor";
             AssetDatabase.CreateAsset(profile, profilePath);
         }
 
-        if (database.Find(DialogueCharacterId.Vastor) == null)
+        if (!database.profiles.Contains(profile))
         {
             Undo.RecordObject(database, "Register Vastor dialogue profile");
             database.profiles.Add(profile);

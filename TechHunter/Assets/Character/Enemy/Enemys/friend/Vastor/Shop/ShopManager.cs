@@ -28,7 +28,7 @@ public class ShopManager : MonoBehaviour
     [SerializeField] bool useDialogueForPurchases = true;
     public bool IsDialogueShopActive =>
         useDialogueForPurchases && DialogueUIController.Instance != null;
-    [SerializeField] DialogueCharacterId shopkeeperId = DialogueCharacterId.Vastor;
+    [SerializeField, DialogueCharacterId] int shopkeeperId = 10;
     [SerializeField] TextMeshProUGUI focusedShopNameText;
     [SerializeField] TextMeshProUGUI focusedShopPriceText;
     [SerializeField] TextMeshProUGUI focusedShopDescriptionText;

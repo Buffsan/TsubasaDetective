@@ -236,9 +236,9 @@ sealed class DialogueGraphView : GraphView
         this.window = window;
         SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
         Insert(0, new GridBackground());
-        AddManipulator(new ContentDragger());
-        AddManipulator(new SelectionDragger());
-        AddManipulator(new RectangleSelector());
+        this.AddManipulator(new ContentDragger());
+        this.AddManipulator(new SelectionDragger());
+        this.AddManipulator(new RectangleSelector());
         graphViewChanged = OnGraphChanged;
         style.flexGrow = 1;
     }

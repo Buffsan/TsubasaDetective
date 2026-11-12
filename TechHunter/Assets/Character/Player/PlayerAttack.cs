@@ -139,7 +139,8 @@ public class PlayerAttack : MonoBehaviour
                 enemy.DamageFromPlayer(damage, weapondata.StaggerPower, weapondata.ConfusionPower,
                     critical, controller.AddConfusionDamagePercent);
         }
-        else if (!applyCharm)
+        else if (!applyCharm || damageable is AllyReleaseCage)
+            // 魅了に変換されるスキルでも檻は物理的に破壊可能。
             damageable.Damage(damage, weapondata.StaggerPower, weapondata.ConfusionPower, critical);
     }
 

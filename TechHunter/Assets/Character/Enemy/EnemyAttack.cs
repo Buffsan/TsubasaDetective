@@ -95,7 +95,7 @@ public class EnemyAttack : MonoBehaviour
         if (other.CompareTag("PlayerArea"))
         {
             // PlayerControllerにはEnemyBaseがないため、従来のPlayerArea判定を維持。
-            if (!attackPlayer || (enemyBase != null && enemyBase.IsCharmed)) return;
+            if (!attackPlayer || (enemyBase != null && enemyBase.IsPlayerAlly)) return;
             ApplyDamage(other.GetComponent<IDamageable>());
             return;
         }
@@ -107,6 +107,8 @@ public class EnemyAttack : MonoBehaviour
 
         EnemyBase victim = target.OwnerEnemyBase;
         if (victim == null || victim.status == EnemyBase.Status.Die || victim.HP <= 0f) return;
+        // 同じプレイヤー陣営には、攻撃Prefabの設定に関係なく命中させない。
+        if (enemyBase != null && enemyBase.IsPlayerAlly && victim.IsPlayerAlly) return;
 
         // PlayerOnlyの敵は敵を攻撃できない。Prefabに残った派閥フラグや
         // 攻撃判定の初期化順序で、意図せず味方へダメージが通るのを防ぐ。

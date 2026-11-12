@@ -37,6 +37,22 @@ public class CG_Knght : EnemyBase
         targetSearchTimer = searchInterval;
     }
 
+    // 既存の騎士AIも新しい味方と魅了済みの味方を攻撃候補にできる。
+    public void EnableAllyTargeting(Faction faction)
+    {
+        if (IsPlayerAlly || targetType == EnemyContoroller.TargetType.EnemyOnly) return;
+        if (targetType == EnemyContoroller.TargetType.PlayerOnly)
+        {
+            targetType = EnemyContoroller.TargetType.PlayerAndEnemy;
+            targetPriority = EnemyContoroller.TargetPriority.Nearest;
+            targetAllFactions = false;
+            targetFactions = faction;
+        }
+        else if (!targetAllFactions) targetFactions |= faction;
+        excludedTargetFactions &= ~faction;
+        targetSearchTimer = targetSearchInterval;
+    }
+
     public void RefreshSummonedTarget()
     {
         targetSearchTimer = targetSearchInterval;
@@ -83,6 +99,35 @@ public class CG_Knght : EnemyBase
                     enemy = other.transform;
                 }
             }
+
+            if (!IsPlayerAlly)
+            {
+                // AllEnemyから外された魅了・ステージ味方も探索する。
+                foreach (EnemyBase other in manager.CharmedAllies)
+                {
+                    if (other == null || other.status == Status.Die || other.HP <= 0f) continue;
+                    if ((other.Factions & excludedTargetFactions) != Faction.None) continue;
+                    if (!targetAllFactions && (other.Factions & targetFactions) == Faction.None) continue;
+                    float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
+                    if (sqr < distanceSqr)
+                    {
+                        distanceSqr = sqr;
+                        enemy = other.transform;
+                    }
+                }
+                foreach (EnemyBase other in manager.StageAllies)
+                {
+                    if (other == null || other.status == Status.Die || other.HP <= 0f) continue;
+                    if ((other.Factions & excludedTargetFactions) != Faction.None) continue;
+                    if (!targetAllFactions && (other.Factions & targetFactions) == Faction.None) continue;
+                    float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
+                    if (sqr < distanceSqr)
+                    {
+                        distanceSqr = sqr;
+                        enemy = other.transform;
+                    }
+                }
+            }
         }
 
         if (targetType == EnemyContoroller.TargetType.EnemyOnly)
@@ -107,8 +152,10 @@ public class CG_Knght : EnemyBase
     // Start is called before the first frame update
     void Start()
     {
-        
-        
+        SystemManager manager = SystemManager.Instance;
+        if (manager == null) return;
+        if (manager.CharmedAllies.Count > 0) EnableAllyTargeting(Faction.Charmed);
+        if (manager.StageAllies.Count > 0) EnableAllyTargeting(Faction.StageAlly);
     }
     private void FixedUpdate()
     {

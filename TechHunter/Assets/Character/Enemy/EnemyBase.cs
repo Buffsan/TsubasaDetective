@@ -100,8 +100,8 @@ public class EnemyBase : MonoBehaviour
         IsStageAlly = true;
         factions = Faction.StageAlly;
 
-        if (controller != null) controller.BecomeStageAlly();
-        else if (boss != null) boss.BecomeStageAlly();
+        if (controller != null) controller.ConfigureStageAllyTargeting();
+        else if (boss != null) boss.ConfigureStageAllyTargeting();
         else
         {
             knight.CopyTargetSettings(EnemyContoroller.TargetType.EnemyOnly,

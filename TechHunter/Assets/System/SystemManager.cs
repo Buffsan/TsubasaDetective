@@ -23,6 +23,8 @@ public class SystemManager : MonoBehaviour
     public List<GameObject> AllEnemy = new List<GameObject>();
     readonly List<EnemyBase> charmedAllies = new List<EnemyBase>();
     public IReadOnlyList<EnemyBase> CharmedAllies => charmedAllies;
+    readonly List<EnemyBase> stageAllies = new List<EnemyBase>();
+    public IReadOnlyList<EnemyBase> StageAllies => stageAllies;
 
     public void RegisterCharmedAlly(EnemyBase ally)
     {
@@ -38,7 +40,36 @@ public class SystemManager : MonoBehaviour
             if (normalEnemy != null) normalEnemy.EnableCharmedAllyTargeting();
             Boss_Controller boss = enemy.GetComponent<Boss_Controller>();
             if (boss != null) boss.EnableCharmedAllyTargeting();
+            CG_Knght knight = enemy.GetComponent<CG_Knght>();
+            if (knight != null) knight.EnableAllyTargeting(Faction.Charmed);
         }
+    }
+
+    // 敵Prefabから召喚した味方は戦闘の敵残数に含めず、別管理する。
+    public void RegisterStageAlly(EnemyBase ally)
+    {
+        if (ally == null || !ally.IsStageAlly) return;
+        AllEnemy.RemoveAll(enemy => enemy == null || enemy == ally.gameObject);
+        stageAllies.RemoveAll(character => character == null);
+        if (!stageAllies.Contains(ally)) stageAllies.Add(ally);
+
+        foreach (GameObject enemy in AllEnemy)
+        {
+            if (enemy == null) continue;
+            EnemyContoroller normalEnemy = enemy.GetComponent<EnemyContoroller>();
+            if (normalEnemy != null) normalEnemy.EnableStageAllyTargeting();
+            Boss_Controller boss = enemy.GetComponent<Boss_Controller>();
+            if (boss != null) boss.EnableStageAllyTargeting();
+            CG_Knght knight = enemy.GetComponent<CG_Knght>();
+            if (knight != null) knight.EnableAllyTargeting(Faction.StageAlly);
+        }
+    }
+
+    public void ClearStageAllies()
+    {
+        foreach (EnemyBase ally in stageAllies)
+            if (ally != null) Destroy(ally.gameObject);
+        stageAllies.Clear();
     }
 
     // 魅了された個体はスポット移動時に消える。
@@ -135,6 +166,7 @@ public class SystemManager : MonoBehaviour
     void Update()
     {
         AllEnemy.RemoveAll(enemy => enemy == null);
+        stageAllies.RemoveAll(ally => ally == null);
         if (Input.GetKeyDown(KeyCode.Escape)) 
         {
 #if UNITY_EDITOR
@@ -211,6 +243,7 @@ public class SystemManager : MonoBehaviour
     public void NextStageReset() 
     {
         ClearCharmedAllies();
+        ClearStageAllies();
         sytem_GameSpotsController.PlayerSystemPos = new Vector2(-1, 0);
 
         controller.transform.position = Vector2.zero;
@@ -222,6 +255,7 @@ public class SystemManager : MonoBehaviour
     public void ReStart() 
     {
         ClearCharmedAllies();
+        ClearStageAllies();
         controller.AddATK = 0;
         controller.AddAtkDF = 0;
         controller.AddCritical = 0;
@@ -420,6 +454,7 @@ public class SystemManager : MonoBehaviour
     public void isGameStart() 
     {
         ClearCharmedAllies();
+        ClearStageAllies();
         skillController.ReRollCount = 0;
         controller.animator.SetBool("Dodge", false);
        
@@ -470,6 +505,7 @@ public class SystemManager : MonoBehaviour
     void nextPhase() 
     {
         ClearCharmedAllies();
+        ClearStageAllies();
         gameModeManager.GameLevel++;
         gameModeManager.BattlePhase = 0;
         AllEnemy.Clear();

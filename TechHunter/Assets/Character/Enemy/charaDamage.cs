@@ -204,6 +204,8 @@ public class charaDamage : MonoBehaviour, IDamageable
     public void DamageFromPlayer(float attack, float stagger, float confusion,
         bool critical, float confusionDamagePercent)
     {
+        // プレイヤーが直接発生させたスキル・攻撃は味方NPCを傷つけない。
+        if (enemyBase != null && enemyBase.IsPlayerAlly) return;
         DamageWithModifier(attack, stagger, confusion, critical, confusionDamagePercent, null);
     }
 
@@ -211,6 +213,7 @@ public class charaDamage : MonoBehaviour, IDamageable
     public void DamageFromPlayerAsCharm(float attack, float stagger, float confusion,
         bool critical, float confusionDamagePercent, StatusEffectAttack charmEffect)
     {
+        if (enemyBase != null && enemyBase.IsPlayerAlly) return;
         if (charmEffect == null ||
             charmEffect.effecttype != StatusEffect.StatusEffectType.Charm)
         {

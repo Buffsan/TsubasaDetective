@@ -27,4 +27,7 @@ public enum Faction
     DebugA   = 1 << 14,
     DebugB   = 1 << 15,
     Charmed  = 1 << 16,
+
+    // 魅了とは別の、ステージで召喚されたプレイヤー側NPC
+    StageAlly = 1 << 17,
 }

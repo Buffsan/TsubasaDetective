@@ -325,7 +325,7 @@ public class EnemySpawnBase : MonoBehaviour
         GameObject[] Enemys = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in Enemys) 
         {
-            EnemyBase combatant = enemy.GetComponent<EnemyBase>();
+            EnemyBase combatant = enemy.GetComponentInParent<EnemyBase>();
             if (combatant != null && combatant.IsPlayerAlly) continue;
             if (!manager.AllEnemy.Contains(enemy))
                 manager.AllEnemy.Add(enemy);

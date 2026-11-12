@@ -12,6 +12,8 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] Faction factions = Faction.None;
     public Faction Factions => factions;
     public bool IsCharmed { get; private set; }
+    public bool IsStageAlly { get; private set; }
+    public bool IsPlayerAlly => IsCharmed || IsStageAlly;
     // 魅了値はcharaDamage.buffsに集約する。古いPrefabでCharaDamage参照が
     // 未設定でも、最初に魅了を受けた判定から実行時に受け口を確定できる。
     [System.NonSerialized] charaDamage charmStatusReceiver;
@@ -49,7 +51,7 @@ public class EnemyBase : MonoBehaviour
 
     public void DropCoinsOnce()
     {
-        if (coinsDropped || GOLD <= 0 || CoinPool.Instance == null) return;
+        if (coinsDropped || IsStageAlly || GOLD <= 0 || CoinPool.Instance == null) return;
 
         coinsDropped = true;
         CoinPool.Instance.RequestDrop(GOLD, transform.position);
@@ -57,7 +59,7 @@ public class EnemyBase : MonoBehaviour
 
     public void BecomeCharmedAlly()
     {
-        if (IsCharmed || status == Status.Die || HP <= 0f) return;
+        if (IsPlayerAlly || status == Status.Die || HP <= 0f) return;
         IsCharmed = true;
         factions = Faction.Charmed;
 
@@ -73,11 +75,44 @@ public class EnemyBase : MonoBehaviour
         {
             knight.CopyTargetSettings(EnemyContoroller.TargetType.EnemyOnly,
                 EnemyContoroller.TargetPriority.Nearest, true, Faction.None,
-                Faction.Charmed, 0f, 0.25f);
+                Faction.Charmed | Faction.StageAlly, 0f, 0.25f);
             knight.RefreshSummonedTarget();
         }
         if (SystemManager.Instance != null)
             SystemManager.Instance.RegisterCharmedAlly(this);
+    }
+
+    // 敵Prefabを変更せず、生成した実体だけをステージ味方として扱う。
+    // 魅了とは異なり、報酬ドロップやボス撃破扱いを発生させない。
+    public void BecomeStageAlly()
+    {
+        if (IsPlayerAlly || status == Status.Die || HP <= 0f) return;
+
+        EnemyContoroller controller = this as EnemyContoroller;
+        Boss_Controller boss = this as Boss_Controller;
+        CG_Knght knight = this as CG_Knght;
+        if (controller == null && boss == null && knight == null)
+        {
+            Debug.LogWarning("ステージ味方召喚に対応していないEnemyBaseです: " + name, this);
+            return;
+        }
+
+        IsStageAlly = true;
+        factions = Faction.StageAlly;
+
+        if (controller != null) controller.BecomeStageAlly();
+        else if (boss != null) boss.BecomeStageAlly();
+        else
+        {
+            knight.CopyTargetSettings(EnemyContoroller.TargetType.EnemyOnly,
+                EnemyContoroller.TargetPriority.Nearest, true, Faction.None,
+                Faction.StageAlly | Faction.Charmed, 0f, 0.25f);
+            knight.RefreshSummonedTarget();
+        }
+
+        SystemManager manager = SystemManager.Instance;
+        if (manager != null) manager.RegisterStageAlly(this);
+        else Debug.LogWarning("味方召喚時にSystemManagerがありません。", this);
     }
 
     // 模擬戦でのみ使用する一時的な派閥変更。
@@ -253,7 +288,7 @@ public class EnemyBase : MonoBehaviour
             attack.enemyBase = Ebase;
             if (IsCharmed)
                 attack.ConfigureAttack(this, attack.AttackPowerPercent,
-                    (Faction)(~(int)Faction.Charmed), false);
+                    (Faction)(~(int)(Faction.Charmed | Faction.StageAlly)), false);
             else if (this is EnemyContoroller controller &&
                      controller.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
                 controller.ConfigureAttackTarget(attack);

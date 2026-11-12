@@ -15,6 +15,9 @@ public class EnemySpawnData : ScriptableObject
   
         public List<EnemySpawnGroup> enemyspawnGroup = new List<EnemySpawnGroup>();
 
+        [Header("共闘ステージ：味方として召喚する既存敵")]
+        public List<EnemySpawnGroup> allyspawnGroup = new List<EnemySpawnGroup>();
+
     
 
         public int StageLevel = 0;

@@ -125,20 +125,23 @@ public class EnemyContoroller : EnemyBase
         ChooseTargetNow();
     }
 
-    public void EnableCharmedAllyTargeting()
+    public void EnableCharmedAllyTargeting() => EnableFriendlyTargeting(Faction.Charmed);
+    public void EnableStageAllyTargeting() => EnableFriendlyTargeting(Faction.StageAlly);
+
+    void EnableFriendlyTargeting(Faction allyFaction)
     {
-        if (IsCharmed || targetType == TargetType.EnemyOnly) return;
+        if (IsPlayerAlly || targetType == TargetType.EnemyOnly) return;
         if (targetType == TargetType.PlayerOnly)
         {
             targetType = TargetType.PlayerAndEnemy;
             targetPriority = TargetPriority.Nearest;
             targetAllFactions = false;
-            targetFactions = Faction.Charmed;
+            targetFactions = allyFaction;
         }
         else if (!targetAllFactions)
-            targetFactions |= Faction.Charmed;
+            targetFactions |= allyFaction;
 
-        excludedTargetFactions &= ~Faction.Charmed;
+        excludedTargetFactions &= ~allyFaction;
         ChooseTargetNow();
     }
 
@@ -148,7 +151,18 @@ public class EnemyContoroller : EnemyBase
         targetPriority = TargetPriority.Nearest;
         targetAllFactions = true;
         targetFactions = Faction.None;
-        excludedTargetFactions = Faction.Charmed;
+        excludedTargetFactions = Faction.Charmed | Faction.StageAlly;
+        ClearForcedTarget();
+        ChooseTargetNow();
+    }
+
+    public void BecomeStageAlly()
+    {
+        targetType = TargetType.EnemyOnly;
+        targetPriority = TargetPriority.Nearest;
+        targetAllFactions = true;
+        targetFactions = Faction.None;
+        excludedTargetFactions = Faction.Charmed | Faction.StageAlly;
         ClearForcedTarget();
         ChooseTargetNow();
     }
@@ -347,9 +361,23 @@ public class EnemyContoroller : EnemyBase
             }
         }
         // 魅了済みの敵はAllEnemyから外れているため、敵側だけ追加検索する。
-        if (!IsCharmed)
+        if (!IsPlayerAlly)
         {
             foreach (EnemyBase other in manager.CharmedAllies)
+            {
+                if (other == null || other.status == Status.Die || other.HP <= 0f) continue;
+                Faction faction = other.Factions;
+                if ((faction & excludedTargetFactions) != Faction.None) continue;
+                if (!targetAllFactions && (faction & targetFactions) == Faction.None) continue;
+                float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
+                if (sqr < minDistanceSqr)
+                {
+                    minDistanceSqr = sqr;
+                    nearest = other.transform;
+                }
+            }
+
+            foreach (EnemyBase other in manager.StageAllies)
             {
                 if (other == null || other.status == Status.Die || other.HP <= 0f) continue;
                 Faction faction = other.Factions;
@@ -455,8 +483,11 @@ public class EnemyContoroller : EnemyBase
         moveBase.enemyBase = this;
         CurrentTarget = Player != null ? Player.transform : null;
         if (targetType != TargetType.PlayerOnly) ChooseTargetNow();
-        if (SystemManager.Instance != null && SystemManager.Instance.CharmedAllies.Count > 0)
-            EnableCharmedAllyTargeting();
+        if (SystemManager.Instance != null)
+        {
+            if (SystemManager.Instance.CharmedAllies.Count > 0) EnableCharmedAllyTargeting();
+            if (SystemManager.Instance.StageAllies.Count > 0) EnableStageAllyTargeting();
+        }
     }
     private void FixedUpdate()
     {

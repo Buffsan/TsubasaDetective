@@ -83,7 +83,7 @@ public class PlayerAttack : MonoBehaviour
                     (damageArea.OwnerEnemyBase == null ||
                      damageArea.OwnerEnemyBase.status == EnemyBase.Status.Die ||
                      damageArea.OwnerEnemyBase.HP <= 0f ||
-                     damageArea.OwnerEnemyBase.IsCharmed))
+                     damageArea.OwnerEnemyBase.IsPlayerAlly))
                     return;
 
                 if (!AgeinAttack)

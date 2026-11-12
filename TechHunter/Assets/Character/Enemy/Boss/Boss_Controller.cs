@@ -128,7 +128,7 @@ public class Boss_Controller : EnemyBase
         ChooseTargetNow();
     }
 
-    public void BecomeStageAlly()
+    public void ConfigureStageAllyTargeting()
     {
         // ボスを味方にしても通常の魅了と違って「撃破扱い」にしない。
         targetType = EnemyContoroller.TargetType.EnemyOnly;

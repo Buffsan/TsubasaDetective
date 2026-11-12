@@ -94,20 +94,23 @@ public class Boss_Controller : EnemyBase
         activeAttackWarnings.Clear();
     }
 
-    public void EnableCharmedAllyTargeting()
+    public void EnableCharmedAllyTargeting() => EnableFriendlyTargeting(Faction.Charmed);
+    public void EnableStageAllyTargeting() => EnableFriendlyTargeting(Faction.StageAlly);
+
+    void EnableFriendlyTargeting(Faction allyFaction)
     {
-        if (IsCharmed || targetType == EnemyContoroller.TargetType.EnemyOnly) return;
+        if (IsPlayerAlly || targetType == EnemyContoroller.TargetType.EnemyOnly) return;
         if (targetType == EnemyContoroller.TargetType.PlayerOnly)
         {
             targetType = EnemyContoroller.TargetType.PlayerAndEnemy;
             targetPriority = EnemyContoroller.TargetPriority.Nearest;
             targetAllFactions = false;
-            targetFactions = Faction.Charmed;
+            targetFactions = allyFaction;
         }
         else if (!targetAllFactions)
-            targetFactions |= Faction.Charmed;
+            targetFactions |= allyFaction;
 
-        excludedTargetFactions &= ~Faction.Charmed;
+        excludedTargetFactions &= ~allyFaction;
         ChooseTargetNow();
     }
 
@@ -120,7 +123,20 @@ public class Boss_Controller : EnemyBase
         targetPriority = EnemyContoroller.TargetPriority.Nearest;
         targetAllFactions = true;
         targetFactions = Faction.None;
-        excludedTargetFactions = Faction.Charmed;
+        excludedTargetFactions = Faction.Charmed | Faction.StageAlly;
+        ClearForcedTarget();
+        ChooseTargetNow();
+    }
+
+    public void BecomeStageAlly()
+    {
+        // ボスを味方にしても通常の魅了と違って「撃破扱い」にしない。
+        targetType = EnemyContoroller.TargetType.EnemyOnly;
+        targetPriority = EnemyContoroller.TargetPriority.Nearest;
+        targetAllFactions = true;
+        targetFactions = Faction.None;
+        excludedTargetFactions = Faction.Charmed | Faction.StageAlly;
+        if (status == Status.MovieStay) status = Status.Nomal;
         ClearForcedTarget();
         ChooseTargetNow();
     }
@@ -301,9 +317,22 @@ public class Boss_Controller : EnemyBase
         }
 
         // 味方化した敵はAllEnemyに含まれないため、敵側からは別リストも探索する。
-        if (!IsCharmed && manager != null)
+        if (!IsPlayerAlly && manager != null)
         {
             foreach (EnemyBase other in manager.CharmedAllies)
+            {
+                if (other == null || other.status == Status.Die || other.HP <= 0f) continue;
+                if ((other.Factions & excludedTargetFactions) != Faction.None) continue;
+                if (!targetAllFactions && (other.Factions & targetFactions) == Faction.None) continue;
+                float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
+                if (sqr < nearestSqr)
+                {
+                    nearestSqr = sqr;
+                    nearestEnemy = other.transform;
+                }
+            }
+
+            foreach (EnemyBase other in manager.StageAllies)
             {
                 if (other == null || other.status == Status.Die || other.HP <= 0f) continue;
                 if ((other.Factions & excludedTargetFactions) != Faction.None) continue;
@@ -365,12 +394,15 @@ public class Boss_Controller : EnemyBase
         moveBase.enemyBase = this;
         CurrentTarget = Player != null ? Player.transform : null;
         if (targetType != EnemyContoroller.TargetType.PlayerOnly) ChooseTargetNow();
-        if (SystemManager.Instance != null && SystemManager.Instance.CharmedAllies.Count > 0)
-            EnableCharmedAllyTargeting();
+        if (SystemManager.Instance != null)
+        {
+            if (SystemManager.Instance.CharmedAllies.Count > 0) EnableCharmedAllyTargeting();
+            if (SystemManager.Instance.StageAllies.Count > 0) EnableStageAllyTargeting();
+        }
 
         if (status == Status.MovieStay) return;
         // デバッグ登録済みの場合でもAllEnemyに二重追加しない。
-        if (!ALL_System.systemManager.AllEnemy.Contains(this.gameObject))
+        if (!IsPlayerAlly && !ALL_System.systemManager.AllEnemy.Contains(this.gameObject))
             ALL_System.systemManager.AllEnemy.Add(this.gameObject);
 
     }

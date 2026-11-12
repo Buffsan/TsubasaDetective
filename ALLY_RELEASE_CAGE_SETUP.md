@@ -2,6 +2,7 @@
 
 ## 仕様
 - 檻の本体は AllyReleaseCage（IDamageable）です。EnemyBase を持たないため、敵AIの探索対象や SystemManager.AllEnemy（敵の討伐対象）に入りません。
+- **耐久力は既存の敵用ScriptableObject charadata を参照**します。通常敵と同じ MAXHP が初期HP、ATKDF が防御力です。受けるダメージも通常敵と同じ「最大(1, 攻撃力 - ATKDF)」で計算します。
 - プレイヤー攻撃が EnemyArea タグの Collider2D に命中すると、檻のHPを減らします。
 - HPが0になったら、一度だけ設定済みの敵セットを既存Prefabから生成し、味方（Faction.StageAlly）へ切り替えます。
 - 味方の通常AIを短時間停止し、檻の中心から放射状に散開させてから戦闘へ移行します。
@@ -14,14 +15,20 @@ Unityのメニュー **Tools > Stages > Create Ally Release Cage Prefab** を押
 生成物：
 - Assets/Character/Enemy/AllyReleaseCage/AllyReleaseCage.prefab
 - Assets/Character/Enemy/AllyReleaseCage/CagePlaceholder.png（仮の檻スプライト）
+- Assets/Character/Enemy/AllyReleaseCage/CageCharaData.asset（既存の charadata 型で作成される檻ステータスSO）
 
 Prefabには EnemyArea タグ、SpriteRenderer、BoxCollider2D（Trigger）、Kinematic Rigidbody2D、
-AllyReleaseCage が設定されます。ゲーム用の本番画像に差し替えて使ってください。
-既にPrefabがある場合、メニュー操作で上書きされません。
+AllyReleaseCage が設定され、CageCharaData.asset が自動で参照されます。
+初期のデータは NAME=「檻」、MAXHP=30、ATKDF=0、GOLD=0、XP=0 です。
+既存の charadata アセットを使う場合は、Inspectorの **Enemy Data** に指定してください。
+**Prefabの数値ではなく charadata の値を調整してください。**
+以前のメニューで生成した既存Prefabには、Enemy Data が未設定の場合のみ参照を補完します。
+既に指定済みの charadata や檻の他の設定は上書きしません。
 
 ## 檻ごとの解放セット
 Prefabまたはシーン上の檻の AllyReleaseCage コンポーネントで設定：
-- Max HP / Defense：耐久値と防御値
+- Enemy Data（charadata）：檻の耐久値 MAXHP と防御値 ATKDF を設定。未設定または MAXHP が0以下の場合、攻撃ダメージは受け付けません。
+- charadata の GOLD と XP は檻には適用せず、破壊報酬は発生しません。
 - Release Enemies：敵の種類（既存 EnemySpawnGroup.EnemyType）と数を指定
 - Release Preset：任意の EnemySpawnData（SO）。allyspawnGroup が空でなければそちらを、空なら enemyspawnGroup を使用
 - Release Enemies と Release Preset の両方を設定した場合は、両方を解放します
@@ -41,7 +48,8 @@ Prefabまたはシーン上の檻の AllyReleaseCage コンポーネントで設
 個別の敵Prefabをコピーする必要はありません。
 
 ## Unityでの検証
-1. 通常攻撃とスキルで檻が壊れるか
+1. 檻の Inspector で Enemy Data を指定し、charadata の MAXHP/ATKDF を変更すると耐久値・被ダメージが変化するか
+2. 通常攻撃とスキルで檻が壊れるか
 2. Qスロットの魅了変換スキルでも檻にダメージが入るか
 3. 設定したEnemyType / 体数で、味方が飛び出すか
 4. 散開後、味方は敵へ、敵はプレイヤーまたは味方へ攻撃するか

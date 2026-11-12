@@ -231,9 +231,11 @@ public class EnemyMoveBase : MonoBehaviour
 
         // SpawnEnemySpawnは従来どおり必ずAllEnemyに登録する。
         // NoListは通常戦闘で登録せず、敵VS敵だけ探索対象に加える。
-        bool needsRegistration = registerInAllEnemy ||
-            (summoned != null && owner != null &&
-             owner.TargetMode != EnemyContoroller.TargetType.PlayerOnly);
+        bool summonedByStageAlly = summoned != null && owner != null && owner.IsStageAlly;
+        bool needsRegistration = !summonedByStageAlly &&
+            (registerInAllEnemy ||
+             (summoned != null && owner != null &&
+              owner.TargetMode != EnemyContoroller.TargetType.PlayerOnly));
         if (needsRegistration)
         {
             SystemManager manager = SystemManager.Instance;
@@ -245,6 +247,8 @@ public class EnemyMoveBase : MonoBehaviour
         }
 
         if (summoned == null) return instance;
+        // 味方の召喚した眷属も敵残数に含めず同じ陣営に所属させる。
+        if (summonedByStageAlly) summoned.BecomeStageAlly();
         if (owner != null && owner.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
         {
             EnemyContoroller child = summoned as EnemyContoroller;

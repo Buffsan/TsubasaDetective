@@ -18,6 +18,9 @@ public class EnemySpawnData : ScriptableObject
         [Header("共闘ステージ：味方として召喚する既存敵")]
         public List<EnemySpawnGroup> allyspawnGroup = new List<EnemySpawnGroup>();
 
+        [Header("通常の敵としてはカウントしない檻（任意）")]
+        public List<CageSpawnGroup> cageSpawnGroups = new List<CageSpawnGroup>();
+
     
 
         public int StageLevel = 0;
@@ -124,3 +127,10 @@ public class EnemyTypeDrawer : PropertyDrawer
     }
 }
 #endif
+
+[System.Serializable]
+public class CageSpawnGroup
+{
+    public AllyReleaseCage cagePrefab;
+    [Min(0)] public int SpawnNumber = 1;
+}

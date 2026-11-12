@@ -211,6 +211,51 @@ public class EnemySpawnBase : MonoBehaviour
             Instantiate(SpawnEffect, spawnPos, Quaternion.identity);
     }
 
+    // 破壊で味方を解放する檻。敵のAllEnemy・討伐数には登録しない。
+    public void SpawnCages(EnemySpawnData data)
+    {
+        if (data == null || data.cageSpawnGroups == null || data.cageSpawnGroups.Count == 0)
+            return;
+        if (FloorTileMap == null || tilePosition.Count == 0)
+        {
+            Debug.LogWarning("檻の生成に使える床タイルがありません。", this);
+            return;
+        }
+
+        Transform stageParent = Seve_TileMap_C != null
+            ? (Seve_TileMap_C.EnemysObject != null
+                ? Seve_TileMap_C.EnemysObject.transform : Seve_TileMap_C.transform)
+            : null;
+
+        foreach (CageSpawnGroup group in data.cageSpawnGroups)
+        {
+            if (group == null || group.SpawnNumber <= 0) continue;
+            if (group.cagePrefab == null)
+            {
+                Debug.LogWarning("EnemySpawnDataの檻Prefabが未設定です。", this);
+                continue;
+            }
+            for (int i = 0; i < group.SpawnNumber; i++)
+            {
+                Vector3Int randomTile = tilePosition[Random.Range(0, tilePosition.Count)];
+                Vector3 position = FloorTileMap.CellToWorld(randomTile) + FloorTileMap.tileAnchor;
+                AllyReleaseCage cage = Instantiate(
+                    group.cagePrefab, position, Quaternion.identity, stageParent);
+                // CageはEnemyBaseを持たず、AllEnemyに入れない。
+                if (SpawnEffect != null)
+                    Instantiate(SpawnEffect, cage.transform.position, Quaternion.identity);
+            }
+        }
+    }
+
+    public GameObject GetEnemyPrefab(EnemySpawnGroup.EnemyType type)
+    {
+        int id = GetEnemyID(type);
+        if (id < 0) return null;
+        EnemyInfo info = enemyList.Find(entry => entry != null && entry.ID == id);
+        return info != null ? info.Enemy : null;
+    }
+
     public void SpawnEnemy(EnemySpawnData enemySpawnDataVALL)
     {
         foreach (EnemySpawnGroup enemy in enemySpawnDataVALL.enemyspawnGroup)
@@ -321,6 +366,7 @@ public class EnemySpawnBase : MonoBehaviour
         EnemySpawnData randomSpawn = level1Spawns[Random.Range(0, level1Spawns.Count)];
         SpawnEnemy(randomSpawn);
         SpawnAllies(randomSpawn);
+        SpawnCages(randomSpawn);
 
         GameObject[] Enemys = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in Enemys) 

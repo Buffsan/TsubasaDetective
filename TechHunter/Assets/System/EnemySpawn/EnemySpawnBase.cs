@@ -127,6 +127,90 @@ public class EnemySpawnBase : MonoBehaviour
 
         
     }
+    // EnemySpawnDataの味方リストを、既存のenemyListを参照して召喚する。
+    public void SpawnAllies(EnemySpawnData data)
+    {
+        if (data == null || data.allyspawnGroup == null) return;
+        foreach (EnemySpawnGroup ally in data.allyspawnGroup)
+        {
+            if (ally == null || ally.SpawnNumber <= 0) continue;
+            int id = GetEnemyID(ally.enemyType);
+            isCloneAlly(id, ally.SpawnNumber);
+        }
+    }
+
+    public void isCloneAlly(int id, int count)
+    {
+        EnemyInfo info = enemyList.Find(entry => entry != null && entry.ID == id);
+        if (info == null || info.Enemy == null)
+        {
+            Debug.LogWarning("味方召喚用の敵PrefabがenemyListにありません。ID: " + id, this);
+            return;
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            PendingSpawnCount++;
+            StartCoroutine(WaitSpawnAlly(info.Enemy, i * 0.4f));
+        }
+    }
+
+    [Header("味方NPCの出現位置（プレイヤー周囲の床タイル）")]
+    [SerializeField, Min(0.5f)] float allySpawnRadius = 5f;
+
+    public IEnumerator WaitSpawnAlly(GameObject allyPrefab, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        PendingSpawnCount = Mathf.Max(0, PendingSpawnCount - 1);
+
+        if (allyPrefab == null || FloorTileMap == null || tilePosition.Count == 0)
+        {
+            Debug.LogWarning("味方召喚に必要なPrefabまたは床Tilemapがありません。", this);
+            yield break;
+        }
+
+        // プレイヤー付近の有効な床を優先。候補がなければランダムな床に出現。
+        int selected = -1;
+        int candidates = 0;
+        PlayerController player = PlayerController.Instance;
+        if (player != null)
+        {
+            Vector2 playerPos = player.transform.position;
+            float radiusSqr = allySpawnRadius * allySpawnRadius;
+            for (int i = 0; i < tilePosition.Count; i++)
+            {
+                Vector3 pos = FloorTileMap.CellToWorld(tilePosition[i]) + FloorTileMap.tileAnchor;
+                if (((Vector2)pos - playerPos).sqrMagnitude > radiusSqr) continue;
+                candidates++;
+                if (Random.Range(0, candidates) == 0) selected = i;
+            }
+        }
+        if (selected < 0) selected = Random.Range(0, tilePosition.Count);
+        Vector3 spawnPos = FloorTileMap.CellToWorld(tilePosition[selected])
+            + FloorTileMap.tileAnchor
+            + new Vector3(Random.Range(-0.35f, 0.35f), Random.Range(-0.35f, 0.35f), 0f);
+
+        GameObject instance = Instantiate(allyPrefab, spawnPos, Quaternion.identity);
+        EnemyBase combatant = instance.GetComponent<EnemyBase>();
+        if (combatant == null)
+        {
+            Debug.LogError("味方召喚PrefabのルートにEnemyBaseがありません: " + allyPrefab.name, instance);
+            Destroy(instance);
+            yield break;
+        }
+
+        // Awakeは実行済み、各ControllerのStartより前に味方として登録。
+        combatant.BecomeStageAlly();
+        if (!combatant.IsStageAlly)
+        {
+            Debug.LogError("味方化できない敵Prefabです: " + allyPrefab.name, instance);
+            Destroy(instance);
+            yield break;
+        }
+        if (SpawnEffect != null)
+            Instantiate(SpawnEffect, spawnPos, Quaternion.identity);
+    }
+
     public void SpawnEnemy(EnemySpawnData enemySpawnDataVALL)
     {
         foreach (EnemySpawnGroup enemy in enemySpawnDataVALL.enemyspawnGroup)
@@ -236,11 +320,13 @@ public class EnemySpawnBase : MonoBehaviour
         }
         EnemySpawnData randomSpawn = level1Spawns[Random.Range(0, level1Spawns.Count)];
         SpawnEnemy(randomSpawn);
-
+        SpawnAllies(randomSpawn);
 
         GameObject[] Enemys = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in Enemys) 
         {
+            EnemyBase combatant = enemy.GetComponent<EnemyBase>();
+            if (combatant != null && combatant.IsPlayerAlly) continue;
             if (!manager.AllEnemy.Contains(enemy))
                 manager.AllEnemy.Add(enemy);
         }

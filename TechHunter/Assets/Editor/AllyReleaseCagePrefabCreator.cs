@@ -9,6 +9,7 @@ public static class AllyReleaseCagePrefabCreator
     const string AssetFolder = "Assets/Character/Enemy/AllyReleaseCage";
     const string PrefabPath = AssetFolder + "/AllyReleaseCage.prefab";
     const string SpritePath = AssetFolder + "/CagePlaceholder.png";
+    const string CageDataPath = AssetFolder + "/CageCharaData.asset";
 
     [MenuItem("Tools/Stages/Create Ally Release Cage Prefab")]
     public static void CreateCagePrefab()
@@ -16,12 +17,43 @@ public static class AllyReleaseCagePrefabCreator
         Directory.CreateDirectory(Path.Combine(Application.dataPath, "Character/Enemy/AllyReleaseCage"));
         AssetDatabase.Refresh();
 
+        // 檻の能力値も通常敵と同じcharadataのアセットとして保存。
+        // 既存のSOがある場合は編集・上書きしない。
+        charadata data = GetOrCreateCageData();
         GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
         if (existing != null)
         {
+            // 旧版で生成したPrefabにはデータ参照だけ補完する。
+            // 既に別のcharadataをセットしている場合は変更しない。
+            GameObject prefabRoot = PrefabUtility.LoadPrefabContents(PrefabPath);
+            try
+            {
+                AllyReleaseCage cage = prefabRoot.GetComponent<AllyReleaseCage>();
+                if (cage == null)
+                {
+                    Debug.LogWarning("既存PrefabにAllyReleaseCageがありません。手動確認してください。", existing);
+                }
+                else
+                {
+                    SerializedObject serialized = new SerializedObject(cage);
+                    SerializedProperty enemyData = serialized.FindProperty("enemyData");
+                    if (enemyData != null && enemyData.objectReferenceValue == null)
+                    {
+                        enemyData.objectReferenceValue = data;
+                        serialized.ApplyModifiedPropertiesWithoutUndo();
+                        PrefabUtility.SaveAsPrefabAsset(prefabRoot, PrefabPath);
+                    }
+                }
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(prefabRoot);
+            }
+
             EditorGUIUtility.PingObject(existing);
             Selection.activeObject = existing;
-            Debug.Log("既存の檻Prefabを開きました（上書きしません）。");
+            AssetDatabase.SaveAssets();
+            Debug.Log("既存の檻Prefabを確認しました（SO未設定なら補完、既存設定は維持）。");
             return;
         }
 
@@ -45,7 +77,10 @@ public static class AllyReleaseCagePrefabCreator
             body.gravityScale = 0f;
             body.constraints = RigidbodyConstraints2D.FreezeAll;
 
-            root.AddComponent<AllyReleaseCage>();
+            AllyReleaseCage cageComponent = root.AddComponent<AllyReleaseCage>();
+            SerializedObject serializedCage = new SerializedObject(cageComponent);
+            serializedCage.FindProperty("enemyData").objectReferenceValue = data;
+            serializedCage.ApplyModifiedPropertiesWithoutUndo();
 
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
             AssetDatabase.SaveAssets();
@@ -57,6 +92,24 @@ public static class AllyReleaseCagePrefabCreator
         {
             Object.DestroyImmediate(root);
         }
+    }
+
+    static charadata GetOrCreateCageData()
+    {
+        charadata data = AssetDatabase.LoadAssetAtPath<charadata>(CageDataPath);
+        if (data != null) return data;
+
+        data = ScriptableObject.CreateInstance<charadata>();
+        data.NAME = "檻";
+        data.MAXHP = 30f;
+        data.ATKDF = 0f;
+        data.GOLD = 0;
+        data.XP = 0;
+        data.enemyStrength = charadata.EnemyStrength.None;
+
+        AssetDatabase.CreateAsset(data, CageDataPath);
+        AssetDatabase.SaveAssets();
+        return data;
     }
 
     static void CreatePlaceholderSprite()

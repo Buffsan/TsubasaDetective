@@ -170,7 +170,8 @@ public class Boss_MoveBase : MonoBehaviour
         // 撃破扱いの魅了ボスから生まれた眷属は、戦闘クリアを妨げない。
         // 通常のボスから生まれた眷属はこれまでどおり敵として登録する。
         bool summonedByCharmedBoss = boss != null && boss.IsCharmed;
-        if (!summonedByCharmedBoss)
+        bool summonedByStageAlly = boss != null && boss.IsStageAlly;
+        if (!summonedByCharmedBoss && !summonedByStageAlly)
             aLL_System.systemManager.AllEnemy.Add(CL_Enemy);
         if (boss != null && boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
         {
@@ -193,7 +194,9 @@ public class Boss_MoveBase : MonoBehaviour
 
                 // 新たな眷属も味方として扱い、次スポットで破棄する。
                 // 魅了効果を付与していないので、魅了報酬の誤ドロップは起こさない。
-                if (summonedByCharmedBoss && SystemManager.Instance != null)
+                if (summonedByStageAlly)
+                    summoned.BecomeStageAlly();
+                else if (summonedByCharmedBoss && SystemManager.Instance != null)
                     SystemManager.Instance.RegisterCharmedAlly(summoned);
             }
         }

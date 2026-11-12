@@ -156,7 +156,7 @@ public class EnemyContoroller : EnemyBase
         ChooseTargetNow();
     }
 
-    public void BecomeStageAlly()
+    public void ConfigureStageAllyTargeting()
     {
         targetType = TargetType.EnemyOnly;
         targetPriority = TargetPriority.Nearest;

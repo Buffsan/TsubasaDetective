@@ -10,9 +10,9 @@ using UnityEngine.Tilemaps;
 [DisallowMultipleComponent]
 public sealed class AllyReleaseCage : MonoBehaviour, IDamageable
 {
-    [Header("檻の耐久力")]
-    [SerializeField, Min(1f)] float maxHP = 30f;
-    [SerializeField, Min(0f)] float defense = 0f;
+    [Header("敵と共通のステータス ScriptableObject")]
+    [Tooltip("通常の敵と同じcharadataを指定します。MAXHPとATKDFを使用し、GOLD/XPは破壊時に付与しません。")]
+    [SerializeField] charadata enemyData;
 
     [Header("破壊時に解放する既存の敵セット（EnemySpawnBase.enemyListから取得）")]
     [SerializeField] List<EnemySpawnGroup> releaseEnemies = new List<EnemySpawnGroup>();
@@ -35,20 +35,38 @@ public sealed class AllyReleaseCage : MonoBehaviour, IDamageable
 
     float hp;
     bool destroyed;
+    bool hasValidData;
+    public charadata EnemyData => enemyData;
     public float CurrentHP => hp;
+    public float MaximumHP => enemyData != null ? enemyData.MAXHP : 0f;
     public bool IsBroken => destroyed;
 
     void Awake()
     {
-        hp = Mathf.Max(1f, maxHP);
+        if (enemyData == null)
+        {
+            Debug.LogError("檻に敵用ScriptableObject（charadata）が設定されていません。", this);
+            return;
+        }
+        if (enemyData.MAXHP <= 0f)
+        {
+            Debug.LogError("檻のcharadata.MAXHPは0より大きい値を指定してください。", this);
+            return;
+        }
+
+        // 敵と同様にcharadata.MAXHPを初期HPとして使用。
+        // HPの残量は個体ごとに管理し、共有SO自体は変更しない。
+        hp = enemyData.MAXHP;
+        hasValidData = true;
     }
 
     // PlayerAttackはEnemyAreaタグのIDamageableを呼ぶ。敵のAIとEnemyAttackは
     // charaDamage/EnemyBaseを対象にするため、この檻をターゲットにしない。
     public void Damage(float attack, float stagger, float confusion, bool critical)
     {
-        if (destroyed || attack <= 0f) return;
-        hp -= Mathf.Max(1f, attack - defense);
+        if (destroyed || !hasValidData || attack <= 0f) return;
+        // charaDamage.receiveDamageと同じ「攻撃力-防御、最低1ダメージ」。
+        hp -= Mathf.Max(1f, attack - enemyData.ATKDF);
         if (hp <= 0f) Death();
     }
 

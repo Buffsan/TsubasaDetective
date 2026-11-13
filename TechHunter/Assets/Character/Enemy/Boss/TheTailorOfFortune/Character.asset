@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f818c6df9824b20b22b8c0c78b73bac, type: 3}
   m_Name: Character
   m_EditorClassIdentifier: 
-  id: 0
+  id: 13
   displayName: 
   flipHorizontally: 0
   scale: 1
   normal: {fileID: 21300000, guid: 763efba71d1b5fb409cd36be47d65d86, type: 3}
   happy: {fileID: 0}
-  angry: {fileID: 0}
-  crying: {fileID: 0}
-  fear: {fileID: 0}
+  angry: {fileID: 21300000, guid: 6db54fca3f6e473429f9eb4ea4ac87fd, type: 3}
+  crying: {fileID: 21300000, guid: 7cc54b9a100695444856cdd2c1e0d0bd, type: 3}
+  fear: {fileID: 21300000, guid: 0b0d5d607e8e46d4dae7a11bca8d05f9, type: 3}
   confused: {fileID: 0}
   laughing: {fileID: 0}
   surprised: {fileID: 0}

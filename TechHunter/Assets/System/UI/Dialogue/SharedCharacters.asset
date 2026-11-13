@@ -15,4 +15,6 @@ MonoBehaviour:
   profiles:
   - {fileID: 11400000, guid: 6320baa82d5e4eb196768387730510f4, type: 2}
   - {fileID: 11400000, guid: f718e3026559e1a43893eacb7e107ba7, type: 2}
-  nextCharacterId: 12
+  - {fileID: 11400000, guid: dfea9b46c4656274883c160fcd53b562, type: 2}
+  - {fileID: 11400000, guid: 523c277154094f74c8ce03641e58229c, type: 2}
+  nextCharacterId: 15

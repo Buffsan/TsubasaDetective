@@ -332492,6 +332492,7 @@ GameObject:
   - component: {fileID: 2070167161}
   - component: {fileID: 2070167160}
   - component: {fileID: 2070167159}
+  - component: {fileID: 2070167163}
   m_Layer: 0
   m_Name: "\u7121\u984C636_20250316104330 (3)"
   m_TagString: Untagged
@@ -332601,6 +332602,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1354239241}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2070167163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070167158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c9feb4959134efca07b9b932f1b095d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  conversation: {fileID: 11400000, guid: 700255f846d35794eb5c3afd35fd2c65, type: 2}
+  conversationId: 
+  onlyOnce: 0
+  onDialogueFinished:
+    m_PersistentCalls:
+      m_Calls: []
+  onChoiceSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  interactionDistance: 2.5
+  interactionPoint: {fileID: 2070167162}
+  promptAnchor: {fileID: 2070167162}
+  promptOffset: {x: 0, y: 1.2, z: 0}
+  promptSprite: {fileID: 21300000, guid: 0dbd3a37a3bbff847b76fca01ae09517, type: 3}
+  promptWorldHeight: 0.5
+  sortingOrderOffset: 100
 --- !u!1001 &2074786024
 PrefabInstance:
   m_ObjectHideFlags: 0

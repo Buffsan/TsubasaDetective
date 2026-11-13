@@ -120,6 +120,8 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public string NAME;
     [HideInInspector] public float MAXHP;
     [HideInInspector] public float HP;
+    // Boss phase transitions can temporarily reject all incoming damage without disabling hit colliders.
+    public bool IsInvulnerable { get; set; }
     [HideInInspector] public float ConfusionHP;
     [HideInInspector] public float MAXMP;
     [HideInInspector] public float SPEED;

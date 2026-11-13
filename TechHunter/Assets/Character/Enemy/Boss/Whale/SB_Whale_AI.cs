@@ -469,7 +469,8 @@ public class SB_Whale_AI : Boss_MoveBase
         if (AttackPhase == 0)
         {
             enemyBase.animator.Play("攻撃待機", 0, 0);
-            DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, 2);
+            thirdRoarPulse = 0;
+            SpawnRoarWarning(2f);
             
             NextPhase();
         }
@@ -478,23 +479,25 @@ public class SB_Whale_AI : Boss_MoveBase
             if (attackcount() > 2) 
             {
                 enemyBase.animator.Play("攻撃", 0, 0);
-                SpawnObjectNow(HoukouAttack, transform.position, 0.1f);
-                SpawnObjectNow(Effects[0], transform.position, 3);
+                EmitRoarPulse();
                 all_System.camera_Controller.Shake(0.2f, 0.3f);
                 audioManager.PlaySE(audioclips[0]);
                 NextPhase();
-                DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, 0.5f);
+                SpawnRoarWarning(0.5f);
             }
         }
         if (AttackPhase == 2) 
         {
             if (attackcount() > 0.5) 
             {
-                DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, 0.5f);
-                SpawnObjectNow(HoukouAttack, transform.position, 0.1f);
+                // Unlike the legacy warning timing, P3 warns before each growing pulse.
+                if (phase != Phase.P3)
+                    DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, 0.5f);
+                EmitRoarPulse();
                 all_System.camera_Controller.Shake(0.2f, 0.3f);
-                SpawnObjectNow(Effects[0], transform.position, 3);
                 AttackNumber++;
+                if (phase == Phase.P3 && AttackNumber < 3)
+                    SpawnRoarWarning(0.5f);
                 if (AttackNumber < 3)
                 {
                     enemyBase.AttackCount = 0;
@@ -544,6 +547,7 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             if (attackcount() > 0.5) 
             {
+                FinishThirdIntro();
                 AttackFinish();
             }
         }

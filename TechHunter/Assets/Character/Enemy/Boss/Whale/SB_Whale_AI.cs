@@ -271,6 +271,7 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     public override void M_AI()
     {
+        if (thirdRecoilActive) return;
         
         if (enemyBase.moveType != EnemyBase.MoveType.Attack)
         {
@@ -380,11 +381,27 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 }
             }
+
+            if (phase == Phase.P3 && AttackWaitTime > 1.5f)
+            {
+                AttackWaitTime = 0f;
+                enemyBase.moveType = EnemyBase.MoveType.Attack;
+                enemyBase.rb.velocity = Vector2.zero;
+                switch (Random.Range(1, 6))
+                {
+                    case 1: enemyBase.attackType = EnemyBase.AttackType.A1; break;
+                    case 2: enemyBase.attackType = EnemyBase.AttackType.A2; break;
+                    case 3: enemyBase.attackType = EnemyBase.AttackType.A3; break;
+                    case 4: enemyBase.attackType = EnemyBase.AttackType.A4; break;
+                    case 5: enemyBase.attackType = EnemyBase.AttackType.A5; break;
+                }
+            }
         }
 
     }
     public override void M_Attack()
     {
+        if (thirdRecoilActive) return;
 
         enemyBase.AttackCount += Time.deltaTime;
         switch (enemyBase.attackType)

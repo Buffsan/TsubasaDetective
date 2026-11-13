@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: KINGYO_GinrinsanshokuWakin
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 6750
+  MAXHP: 8100
   enemyStrength: 4
   Regen: 0
   MAXMP: 0

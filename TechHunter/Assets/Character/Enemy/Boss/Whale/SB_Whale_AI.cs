@@ -39,6 +39,7 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField] GameObject Denger_AttackArea_Stand;
     [SerializeField] GameObject Denger_HoukouAttackArea;
     [SerializeField] GameObject Denger_4AttackArea;
+    [SerializeField] ParticleSystem thirdParticleSystem;
 
     [SerializeField] List<GameObject> Effects = new List<GameObject>();
 

@@ -812,7 +812,7 @@ public class SB_Whale_AI : Boss_MoveBase
                         float range = 6f;
                         randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
 
-                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos * ThirdRangeScale));
+                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos, true));
                     }
                 }
             }
@@ -1234,13 +1234,13 @@ public class SB_Whale_AI : Boss_MoveBase
 
         return false;
     }
-    private IEnumerator LiftSpawnLing(float delayTime, Vector2 Pos)
+    private IEnumerator LiftSpawnLing(float delayTime, Vector2 Pos, bool keepSecondPhaseSize = false)
     {
-        //Debug.Log("コルーチンが開始されました。今から " + delayTime + " 秒待ちます...");
-
-        // ここで指定した秒数だけ待機する
         yield return new WaitForSeconds(delayTime);
-        SpawnThirdScaledObject(SlashLit, Pos, 5f);
+        if (keepSecondPhaseSize)
+            SpawnObjectNow(SlashLit, Pos, 5f);
+        else
+            SpawnThirdScaledObject(SlashLit, Pos, 5f);
     }
     IEnumerator Ougi(int number, Vector2 pos, float delayTime, bool withShockwave = false)
     {

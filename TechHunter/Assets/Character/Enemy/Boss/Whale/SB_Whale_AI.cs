@@ -20,9 +20,13 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField, Min(0f)] float thirdRecoilDuration = 1f;
     [SerializeField, Min(0.01f)] float thirdFourwayAttackDelay = 0.9f;
     [SerializeField, Min(0f)] float thirdWarpRadius = 3f;
-    [SerializeField, Range(1, 50)] int thirdShockwaveEveryNthRift = 3;
-    [SerializeField, Min(0.01f)] float thirdShockwaveAreaScale = 0.35f;
+    // 50 existing rifts remain; only the additional shockwaves are thinned to ~half (17 -> 9).
+    [SerializeField, Range(1, 50)] int thirdShockwaveEveryNthRift = 6;
+    [SerializeField, Min(0.01f)] float thirdShockwaveAreaScale = 0.7f;
+    [SerializeField, Min(0.01f)] float thirdShockwaveWarningDuration = 1.5f;
     [SerializeField, Min(0.01f)] float thirdShockwaveHitDuration = 0.8f;
+    [SerializeField, Min(0f)] float thirdShockwaveShakeDuration = 0.2f;
+    [SerializeField, Min(0f)] float thirdShockwaveShakeStrength = 0.15f;
     [SerializeField] Vector2 thirdShockwaveDelay = new Vector2(3f, 4f);
     bool thirdRecoilActive;
     bool thirdIntroRoar;
@@ -291,15 +295,24 @@ public class SB_Whale_AI : Boss_MoveBase
 
     IEnumerator ThirdRiftShockwave(Vector2 position, float delay)
     {
-        // Show the danger zone throughout the staggered 3-4 second fuse.
-        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, position,
-            Mathf.Max(0.1f, delay)), thirdShockwaveAreaScale);
-        yield return new WaitForSeconds(delay);
+        // Each rift detonates 3-4 seconds after appearing; the warning occupies
+        // the last 1.5 seconds and matches the hitbox size.
+        float warningTime = Mathf.Min(Mathf.Max(0.01f, thirdShockwaveWarningDuration),
+            Mathf.Max(0.01f, delay));
+        yield return new WaitForSeconds(Mathf.Max(0f, delay - warningTime));
         if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
+
+        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, position, warningTime),
+            thirdShockwaveAreaScale);
+        yield return new WaitForSeconds(warningTime);
+        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
+
         ScaleSpawn(SpawnObjectNow_Input(HoukouAttack, position, thirdShockwaveHitDuration),
             thirdShockwaveAreaScale);
-        ScaleSpawn(SpawnObjectNow_Input(Effects[0], position, 2f), thirdShockwaveAreaScale);
-        all_System.camera_Controller.Shake(0.2f, 0.3f);
+        ScaleSpawn(SpawnObjectNow_Input(Effects[0], position, 2f),
+            thirdShockwaveAreaScale);
+        all_System.camera_Controller.Shake(thirdShockwaveShakeDuration,
+            thirdShockwaveShakeStrength);
     }
 
     public override void M_Stan()
@@ -1066,7 +1079,9 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 for (int i = 0; i < 50; i++)
                 {
-                    StartCoroutine(Ougi(i, targetPos, (float)i / 40));
+                    bool withShockwave = phase == Phase.P3 &&
+                        i % Mathf.Max(1, thirdShockwaveEveryNthRift) == 0;
+                    StartCoroutine(Ougi(i, targetPos, (float)i / 40, withShockwave));
                 }
 
                 

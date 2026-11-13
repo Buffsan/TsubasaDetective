@@ -218,25 +218,75 @@ public class SB_Whale_AI : Boss_MoveBase
         return true;
     }
 
+    bool warnedThirdWarpNoDestination;
+
     void WarpThirdFourway()
     {
         if (enemyBase == null || thirdWarpRadius <= 0f) return;
         Vector2 origin = enemyBase.transform.position;
+        Vector2 destination = origin;
+        bool found = false;
+
+        // First attempt random positions, prioritizing a clearly visible teleport.
         for (int attempt = 0; attempt < 36; attempt++)
         {
             Vector2 offset = Random.insideUnitCircle * thirdWarpRadius;
-            if (offset.sqrMagnitude < 0.16f) continue;
-            Vector2 next = origin + offset;
-            if (!IsThirdWarpSafe(next)) continue;
+            if (offset.sqrMagnitude < 1f) continue;
+            Vector2 candidate = origin + offset;
+            if (!IsThirdWarpSafe(candidate)) continue;
+            destination = candidate;
+            found = true;
+            break;
+        }
 
-            enemyBase.rb.velocity = Vector2.zero;
-            enemyBase.transform.position = next;
-            LookAtCurrentTarget();
-            if (audioclips.Count > 2 && audioclips[2] != null)
-                audioManager.PlaySE(audioclips[2]);
+        // Deterministic fallback prevents random bad luck from cancelling every warp.
+        // Grid offsets are world units; one unit corresponds to one tile on the stage grid.
+        if (!found)
+        {
+            int radius = Mathf.CeilToInt(thirdWarpRadius);
+            int validCount = 0;
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
+                {
+                    Vector2 offset = new Vector2(x, y);
+                    if (offset.sqrMagnitude < 1f ||
+                        offset.sqrMagnitude > thirdWarpRadius * thirdWarpRadius)
+                        continue;
+
+                    Vector2 candidate = origin + offset;
+                    if (!IsThirdWarpSafe(candidate)) continue;
+
+                    // Reservoir sampling: every valid grid point has the same probability.
+                    validCount++;
+                    if (Random.Range(0, validCount) == 0)
+                    {
+                        destination = candidate;
+                        found = true;
+                    }
+                }
+            }
+        }
+
+        if (!found)
+        {
+            if (!warnedThirdWarpNoDestination)
+            {
+                Debug.LogWarning(
+                    "SB_Whale_AI: P3 four-direction warp has no safe Stage_Floor " +
+                    "destination within the configured radius. " +
+                    "Check floor/wall tags and the 1.5x boss footprint.", this);
+                warnedThirdWarpNoDestination = true;
+            }
             return;
         }
-        // No valid floor: retain current position instead of forcing a wall overlap.
+
+        warnedThirdWarpNoDestination = false;
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.transform.position = destination;
+        LookAtCurrentTarget();
+        if (audioclips.Count > 2 && audioclips[2] != null)
+            audioManager.PlaySE(audioclips[2]);
     }
 
     IEnumerator ThirdRiftShockwave(Vector2 position, float delay)

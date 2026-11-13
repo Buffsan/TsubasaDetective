@@ -232,12 +232,10 @@ public class SB_Whale_AI : Boss_MoveBase
 
     IEnumerator ThirdRiftShockwave(Vector2 position, float delay)
     {
-        float warningDuration = Mathf.Min(thirdShockwaveWarningDuration, delay);
-        yield return new WaitForSeconds(Mathf.Max(0f, delay - warningDuration));
-        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
-        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, position, warningDuration),
-            thirdShockwaveAreaScale);
-        yield return new WaitForSeconds(warningDuration);
+        // Show the danger zone throughout the staggered 3-4 second fuse.
+        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, position,
+            Mathf.Max(0.1f, delay)), thirdShockwaveAreaScale);
+        yield return new WaitForSeconds(delay);
         if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
         ScaleSpawn(SpawnObjectNow_Input(HoukouAttack, position, thirdShockwaveHitDuration),
             thirdShockwaveAreaScale);

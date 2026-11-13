@@ -870,7 +870,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 3
+      scalar: 0
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -5026,6 +5026,7 @@ MonoBehaviour:
   Denger_AttackArea_Stand: {fileID: 0}
   Denger_HoukouAttackArea: {fileID: 5774931134636762755, guid: 8fd3926bd5c6bc24a94fcc5c437c0cbd, type: 3}
   Denger_4AttackArea: {fileID: 4481739295658814865, guid: d237d2f53fbd3ab45a6eda561724f613, type: 3}
+  thirdParticleSystem: {fileID: 7089358834150652933}
   Effects:
   - {fileID: 7711856317104832382, guid: 916a488a0ef4f6a4d9803e0930b2eecd, type: 3}
 --- !u!1001 &329186374560726424

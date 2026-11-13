@@ -850,7 +850,8 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             LookAtCurrentTarget();
             enemyBase.animator.Play("攻撃待機");
-            GameObject CL_denger = DengerAreaSpawn(Denger_4AttackArea, transform.position, 1);
+            GameObject CL_denger = ScaleSpawn(
+                DengerAreaSpawn(Denger_4AttackArea, transform.position, 1f), ThirdRangeScale);
             CL_denger.transform.up = TargetDirection.normalized;
             targetPos = TargetPosition;
             NextPhase();
@@ -859,19 +860,21 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             if (attackcount() > 1)
             {
-                GameObject CL_Attack = SpawnObjectNow_Input(AttackArea4, transform.position, 0.1f);
+                GameObject CL_Attack = SpawnThirdScaledObject(AttackArea4, transform.position, 0.1f);
                 CL_Attack.transform.up = TargetDirection.normalized;
                 NextPhase();
                 audioManager.PlaySE(audioclips[1]);
 
                 all_System.camera_Controller.Shake(0.3f, 0.2f);
-                SpawnObjectNow(Effects[0], transform.position, 3);
+                SpawnThirdScaledObject(Effects[0], transform.position, 3f);
 
                 if (isSerious)
                 {
                     for (int i = 0; i < 50; i++)
                     {
-                        StartCoroutine(Ougi(i, targetPos, (float)i / 40));
+                        bool withShockwave = phase == Phase.P3 &&
+                            i % Mathf.Max(1, thirdShockwaveEveryNthRift) == 0;
+                        StartCoroutine(Ougi(i, targetPos, (float)i / 40, withShockwave));
                     }
                 }
             }
@@ -977,7 +980,8 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             LookAtCurrentTarget();
             enemyBase.animator.Play("攻撃");
-            GameObject CL_denger = DengerAreaSpawn(Denger_4AttackArea, transform.position, 1);
+            GameObject CL_denger = ScaleSpawn(
+                DengerAreaSpawn(Denger_4AttackArea, transform.position, 1f), ThirdRangeScale);
             CL_denger.transform.up = TargetDirection.normalized;
             targetPos = TargetPosition;
             NextPhase();
@@ -987,13 +991,13 @@ public class SB_Whale_AI : Boss_MoveBase
             if (attackcount() > 1)
             {
                 enemyBase.animator.Play("攻撃待機");
-                GameObject CL_Attack = SpawnObjectNow_Input(AttackArea4, transform.position, 0.1f);
+                GameObject CL_Attack = SpawnThirdScaledObject(AttackArea4, transform.position, 0.1f);
                 CL_Attack.transform.up = TargetDirection.normalized;
                 NextPhase();
                 audioManager.PlaySE(audioclips[1]);
 
                 all_System.camera_Controller.Shake(0.3f, 0.2f);
-                SpawnObjectNow(Effects[0], transform.position, 3);
+                SpawnThirdScaledObject(Effects[0], transform.position, 3f);
 
                 for (int i = 0; i < 50; i++)
                 {

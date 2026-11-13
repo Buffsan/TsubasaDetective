@@ -18,8 +18,14 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField, Min(1f)] float thirdAttackMultiplier = 1.5f;
     [SerializeField, Min(1f)] float thirdRoarGrowth = 1.4f;
     [SerializeField, Min(0f)] float thirdRecoilDuration = 1f;
-    [SerializeField, Min(0.01f)] float thirdFourwayAttackDelay = 0.9f;
+    // Include the fast vanish/appear animation while keeping shots slightly faster than P2.
+    [SerializeField, Min(0.01f)] float thirdFourwayAttackDelay = 0.55f;
+    [SerializeField, Min(0.01f)] float thirdFourwayWarpAnimationSpeed = 6f;
+    [SerializeField, Min(0.01f)] float thirdFourwayDisappearSeconds = 0.25f;
+    [SerializeField, Min(0.01f)] float thirdFourwayAppearSeconds = 0.3f;
     [SerializeField, Min(0f)] float thirdWarpRadius = 3f;
+    bool thirdFourwayWarpAnimating;
+    float thirdFourwayOriginalAnimatorSpeed = 1f;
     // 50 existing rifts remain; only the additional shockwaves are thinned to ~half (17 -> 9).
     [SerializeField, Range(1, 50)] int thirdShockwaveEveryNthRift = 6;
     [SerializeField, Min(0.01f)] float thirdShockwaveAreaScale = 0.7f;
@@ -80,6 +86,7 @@ public class SB_Whale_AI : Boss_MoveBase
 
     void OnDisable()
     {
+        StopThirdFourwayWarpAnimation();
         if (enemyBase != null) enemyBase.IsInvulnerable = false;
     }
 
@@ -520,6 +527,7 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     void Finish()
     {
+        StopThirdFourwayWarpAnimation();
         AttackPhase = 0;
         AttackNumber = 0;
         AttackCount1 = 0;
@@ -616,8 +624,121 @@ public class SB_Whale_AI : Boss_MoveBase
         }
     }
    
+    void StartThirdFourwayWarpAnimation()
+    {
+        if (enemyBase == null) return;
+        enemyBase.rb.velocity = Vector2.zero;
+        if (!thirdFourwayWarpAnimating)
+            thirdFourwayOriginalAnimatorSpeed = enemyBase.animator.speed;
+        thirdFourwayWarpAnimating = true;
+        enemyBase.animator.speed = thirdFourwayOriginalAnimatorSpeed * thirdFourwayWarpAnimationSpeed;
+        enemyBase.animator.Play("ワープ", 0, 0);
+        if (DamageArea != null) DamageArea.SetActive(false);
+        if (audioclips.Count > 2 && audioclips[2] != null)
+            audioManager.PlaySE(audioclips[2]);
+    }
+
+    void StopThirdFourwayWarpAnimation()
+    {
+        if (!thirdFourwayWarpAnimating || enemyBase == null) return;
+        thirdFourwayWarpAnimating = false;
+        enemyBase.animator.speed = thirdFourwayOriginalAnimatorSpeed;
+        if (DamageArea != null && enemyBase.status != EnemyBase.Status.Die)
+            DamageArea.SetActive(true);
+    }
+
+    void A2Third()
+    {
+        // Unlike the previous instant position swap, replay the whale's actual
+        // warp and appearance animations at an accelerated speed for every shot.
+        if (AttackPhase == 0)
+        {
+            StartThirdFourwayWarpAnimation();
+            NextPhase();
+            return;
+        }
+        if (AttackPhase == 1)
+        {
+            if (attackcount() >= thirdFourwayDisappearSeconds)
+            {
+                WarpThirdFourway(); // Move only after the warp animation has hidden the whale.
+                enemyBase.animator.Play("出現", 0, 0);
+                NextPhase();
+            }
+            return;
+        }
+        if (AttackPhase == 2)
+        {
+            if (attackcount() >= thirdFourwayAppearSeconds)
+            {
+                StopThirdFourwayWarpAnimation();
+                enemyBase.animator.Play("攻撃", 0, 0);
+                NextPhase();
+            }
+            return;
+        }
+        if (AttackPhase == 3)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                GameObject warning = ScaleSpawn(
+                    DengerAreaSpawn(Denger_4AttackArea, transform.position,
+                        thirdFourwayAttackDelay), ThirdRangeScale);
+                warning.transform.Rotate(0, 0, saveAngle + 90f * i);
+            }
+            NextPhase();
+            return;
+        }
+        if (AttackPhase == 4)
+        {
+            if (attackcount() >= thirdFourwayAttackDelay)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    GameObject hit = SpawnThirdScaledObject(AttackArea4, transform.position, 0.1f);
+                    hit.transform.Rotate(0, 0, saveAngle + 90f * i);
+                }
+                saveAngle += 45f;
+                enemyBase.animator.Play("攻撃待機", 0, 0);
+                audioManager.PlaySE(audioclips[1]);
+                all_System.camera_Controller.Shake(0.3f, 0.2f);
+                SpawnThirdScaledObject(Effects[0], transform.position, 3f);
+
+                // P2 dimensional-rift follow-ups are deliberately retained.
+                if (isSerious)
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        for (int j = 0; j < 10; j++)
+                        {
+                            Vector2 randomPos = new Vector2(
+                                Random.Range(-12f, 12f), Random.Range(-12f, 12f));
+                            StartCoroutine(LiftSpawnLing((float)i / 30f,
+                                (Vector2)transform.position + randomPos * ThirdRangeScale));
+                        }
+                    }
+                }
+                NextPhase();
+            }
+            return;
+        }
+        if (AttackPhase == 5 && attackcount() > 0.1f)
+        {
+            AttackNumber++;
+            if (AttackNumber > 4)
+                AttackFinish();
+            else
+                ChoiseNextPhase(0);
+        }
+    }
+
     void A2()
     {
+        if (phase == Phase.P3)
+        {
+            A2Third();
+            return;
+        }
         if (AttackPhase == 0)
         {
             enemyBase.animator.Play("攻撃");
@@ -631,7 +752,6 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             if (attackcount() > 0.1)
             {
-                if (phase == Phase.P3) WarpThirdFourway();
                 for (int i = 0; i < 4; i++) 
                 {
                     GameObject CL_Effect = ScaleSpawn(

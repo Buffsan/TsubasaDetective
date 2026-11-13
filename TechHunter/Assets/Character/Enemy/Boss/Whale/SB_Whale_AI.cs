@@ -12,6 +12,23 @@ public class SB_Whale_AI : Boss_MoveBase
     float saveAngle = 0;
     bool StandOk = false;
     bool isSerious = false;
+    [Header("第三形態")]
+    [SerializeField, Range(0.01f, 0.99f)] float thirdHpThreshold = 0.25f;
+    [SerializeField, Min(1f)] float thirdBodyMultiplier = 1.5f;
+    [SerializeField, Min(1f)] float thirdAttackMultiplier = 1.5f;
+    [SerializeField, Min(1f)] float thirdRoarGrowth = 1.4f;
+    [SerializeField, Min(0f)] float thirdRecoilDuration = 1f;
+    [SerializeField, Min(0.01f)] float thirdFourwayAttackDelay = 0.9f;
+    [SerializeField, Min(0f)] float thirdWarpRadius = 3f;
+    [SerializeField, Range(1, 50)] int thirdShockwaveEveryNthRift = 3;
+    [SerializeField, Min(0.01f)] float thirdShockwaveAreaScale = 0.35f;
+    [SerializeField, Min(0.01f)] float thirdShockwaveHitDuration = 0.8f;
+    [SerializeField, Min(0f)] float thirdShockwaveWarningDuration = 0.5f;
+    [SerializeField] Vector2 thirdShockwaveDelay = new Vector2(3f, 4f);
+    bool thirdRecoilActive;
+    bool thirdIntroRoar;
+    int thirdRoarPulse;
+    Vector3 initialBodyScale = Vector3.zero;
 
     [SerializeField] GameObject ARM;
     [SerializeField] GameObject ArmAttackPoint;

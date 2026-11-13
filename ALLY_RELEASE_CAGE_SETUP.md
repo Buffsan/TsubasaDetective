@@ -5,7 +5,8 @@
 - **耐久力は既存の敵用ScriptableObject charadata を参照**します。通常敵と同じ MAXHP が初期HP、ATKDF が防御力です。受けるダメージも通常敵と同じ「最大(1, 攻撃力 - ATKDF)」で計算します。
 - プレイヤー攻撃が EnemyArea タグの Collider2D に命中すると、檻のHPを減らします。
 - HPが0になったら、一度だけ設定済みの敵セットを既存Prefabから生成し、味方（Faction.StageAlly）へ切り替えます。
-- 味方の通常AIを短時間停止し、檻の中心から放射状に散開させてから戦闘へ移行します。
+- 破壊時に檻の周囲の **StandFloor** から出現候補を検索し、範囲内にあるタイルの中心に味方を振り分けます。候補が無ければ檻のワールド座標（オフセット0）に出現します。
+- 出現先は Stage_Wall / Stage_Hole / Stage_NotFloor のコライダーと重ならないタイルに限定します。壁をすり抜ける直線移動は廃止し、各味方が選ばれた地点で短い拡大演出を再生します。
 - 解放された味方は既存の SystemManager.StageAllies に登録し、討伐対象にカウントしません。
 - 味方は死亡してもピアを落としません（既存 EnemyBase.DropCoinsOnce の StageAlly 除外処理）。
 - 檻自体もピアを落としません。敵全滅によるステージクリアは檻が残っていても成立します。
@@ -33,9 +34,11 @@ Prefabまたはシーン上の檻の AllyReleaseCage コンポーネントで設
 - Release Preset：任意の EnemySpawnData（SO）。allyspawnGroup が空でなければそちらを、空なら enemyspawnGroup を使用
 - Release Enemies と Release Preset の両方を設定した場合は、両方を解放します
 - Spawn Database：任意の EnemySpawnBase。空なら ALL_SystemManager.enemySpawnBASE から取得
-- Minimum / Maximum Scatter Radius：散開半径
-- Scatter Duration：飛び出し演出時間
-- Keep On Floor Tiles：床タイルがある位置への出現を優先
+- Minimum / Maximum Scatter Radius：**檻からの探索半径（ワールド座標、StandFloorタイル中心を検索）**
+- Scatter Duration：選ばれた地点での拡大演出の長さ（実際の位置は動かしません）
+- Obstacle Clearance Radius：Stage_Wall / Stage_Hole / Stage_NotFloor コライダーとのチェック半径。大きいNPCでは増やしてください
+- Minimum Ally Spacing：味方同士の出現先タイル中心の最小間隔
+- StandFloor が未設定、範囲内に有効タイルが無い、または候補を使い切った場合は **檻の原点（オフセット0）** を使用します
 - Break Effect / Each Ally Effect：任意の演出Prefab（自動消去されるパーティクル等を指定）
 
 ## ステージへの配置
@@ -51,7 +54,7 @@ Prefabまたはシーン上の檻の AllyReleaseCage コンポーネントで設
 1. 檻の Inspector で Enemy Data を指定し、charadata の MAXHP/ATKDF を変更すると耐久値・被ダメージが変化するか
 2. 通常攻撃とスキルで檻が壊れるか
 2. Qスロットの魅了変換スキルでも檻にダメージが入るか
-3. 設定したEnemyType / 体数で、味方が飛び出すか
+3. 設定したEnemyType / 体数で、味方が StandFloor のタイル中心へ分散して登場するか
 4. 散開後、味方は敵へ、敵はプレイヤーまたは味方へ攻撃するか
 5. 解放された味方・檻からピアがドロップしないか
 6. 檻・味方が残ったまま敵を全滅させても、クリア判定が正常か
@@ -59,5 +62,7 @@ Prefabまたはシーン上の檻の AllyReleaseCage コンポーネントで設
 
 ### 注意
 - 檻はEnemyBaseを持たないため、プレイヤーの「AllEnemyを探索して標的を選ぶ」形式の自動照準攻撃では対象になりません。通常の当たり判定を使うPlayerAttack系攻撃で壊せます。
+- StandFloor が本当に安全な歩行領域を示していることをマップPrefabで確認してください。建物・障害物が別のタグやレイヤーのColliderを使用している場合、Obstacle Clearance Radiusだけでは検知できません。
+- 候補タイル数が出現数より少ないときは、残りを檻の位置に出現させる指定どおりのフォールバックです。多人数が同一点へ出現する可能性があります。
 - 一部の独自スキル・遺物はcharaDamageを直接参照している可能性があり、すべての攻撃への対応は未確認です。
 - Unityエディターでのコンパイル・PlayMode実動作検証は未実施です。

@@ -519,7 +519,7 @@ public class SB_Whale_AI : Boss_MoveBase
                                     randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
                                     if (Mathf.Abs(randomPos.x) > minrange || Mathf.Abs(randomPos.y) > minrange) ok = true;
                                 }
-                                StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
+                                StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos * ThirdRangeScale));
                             }
                         }
                         for (int i = 0; i < 50; i++)
@@ -535,7 +535,7 @@ public class SB_Whale_AI : Boss_MoveBase
                                     randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
                                     if (Mathf.Abs(randomPos.x) > minrange || Mathf.Abs(randomPos.y) > minrange) ok = true;
                                 }
-                                StartCoroutine(LiftSpawnLing((float)i / 30 + 2, (Vector2)transform.position + randomPos));
+                                StartCoroutine(LiftSpawnLing((float)i / 30 + 2, (Vector2)transform.position + randomPos * ThirdRangeScale));
                             }
                         }
                     }
@@ -612,7 +612,7 @@ public class SB_Whale_AI : Boss_MoveBase
                             float range = 12f;
                             randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
 
-                            StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
+                            StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos * ThirdRangeScale));
                         }
                     }
                 }
@@ -812,7 +812,7 @@ public class SB_Whale_AI : Boss_MoveBase
                         float range = 6f;
                         randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
 
-                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
+                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos * ThirdRangeScale));
                     }
                 }
             }
@@ -956,7 +956,7 @@ public class SB_Whale_AI : Boss_MoveBase
                         float range = 6f;
                         randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
 
-                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
+                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos * ThirdRangeScale));
                     }
                 }
             }
@@ -1087,7 +1087,7 @@ public class SB_Whale_AI : Boss_MoveBase
                         float range = 15f;
                         randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
 
-                        StartCoroutine(LiftSpawnLing((float)i / 7, (Vector2)transform.position + randomPos));
+                        StartCoroutine(LiftSpawnLing((float)i / 7, (Vector2)transform.position + randomPos * ThirdRangeScale));
                     }
                 }
             }
@@ -1240,14 +1240,14 @@ public class SB_Whale_AI : Boss_MoveBase
 
         // ここで指定した秒数だけ待機する
         yield return new WaitForSeconds(delayTime);
-        SpawnObjectNow(SlashLit, Pos, 5);
+        SpawnThirdScaledObject(SlashLit, Pos, 5f);
     }
-    IEnumerator Ougi(int number, Vector2 pos ,float delayTime)
+    IEnumerator Ougi(int number, Vector2 pos, float delayTime, bool withShockwave = false)
     {
         yield return new WaitForSeconds(delayTime);
         //number++;
 
-        float AttackDistance = number / 2.5f;
+        float AttackDistance = number / 2.5f * ThirdRangeScale;
 
         // ランダムな角度を生成 (0 ~ 360度)
         float randomAngle = Random.Range(-80f, 80f);
@@ -1263,7 +1263,13 @@ public class SB_Whale_AI : Boss_MoveBase
         Vector2 rotatedDirection = rotation * newDirection; // SavePos方向を基準に角度を回転
         Vector2 newPosition = (Vector2)transform.position + rotatedDirection * AttackDistance; // 回転方向で新しい位置を計算
 
-        SpawnObjectNow(SlashLit,newPosition,2);
+        SpawnThirdScaledObject(SlashLit, newPosition, 2f);
+        if (withShockwave)
+        {
+            float minDelay = Mathf.Max(0f, Mathf.Min(thirdShockwaveDelay.x, thirdShockwaveDelay.y));
+            float maxDelay = Mathf.Max(minDelay, Mathf.Max(thirdShockwaveDelay.x, thirdShockwaveDelay.y));
+            StartCoroutine(ThirdRiftShockwave(newPosition, Random.Range(minDelay, maxDelay)));
+        }
     }
 }
 

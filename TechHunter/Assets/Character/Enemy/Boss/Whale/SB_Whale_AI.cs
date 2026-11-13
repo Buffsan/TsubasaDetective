@@ -23,7 +23,6 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField, Range(1, 50)] int thirdShockwaveEveryNthRift = 3;
     [SerializeField, Min(0.01f)] float thirdShockwaveAreaScale = 0.35f;
     [SerializeField, Min(0.01f)] float thirdShockwaveHitDuration = 0.8f;
-    [SerializeField, Min(0f)] float thirdShockwaveWarningDuration = 0.5f;
     [SerializeField] Vector2 thirdShockwaveDelay = new Vector2(3f, 4f);
     bool thirdRecoilActive;
     bool thirdIntroRoar;
@@ -188,46 +187,56 @@ public class SB_Whale_AI : Boss_MoveBase
         thirdRoarPulse++;
     }
 
+    bool IsThirdWarpSafe(Vector2 destination)
+    {
+        bool onFloor = false;
+        foreach (Collider2D hit in Physics2D.OverlapPointAll(destination))
+        {
+            if (hit != null && hit.CompareTag("Stage_Floor"))
+            {
+                onFloor = true;
+                break;
+            }
+        }
+        if (!onFloor) return false;
+
+        // Use collider's serialized dimensions: bounds is empty while DamageArea is disabled.
+        Vector2 size = new Vector2(4f, 4.5f) * thirdBodyMultiplier;
+        if (DamageArea != null)
+        {
+            CapsuleCollider2D capsule = DamageArea.GetComponent<CapsuleCollider2D>();
+            if (capsule != null)
+            {
+                Vector3 scale = DamageArea.transform.lossyScale;
+                size = Vector2.Scale(capsule.size,
+                    new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
+            }
+        }
+
+        foreach (Collider2D hit in Physics2D.OverlapBoxAll(destination, size * 0.9f, 0f))
+            if (hit != null && hit.CompareTag("Stage_Wall")) return false;
+        return true;
+    }
+
     void WarpThirdFourway()
     {
         if (enemyBase == null || thirdWarpRadius <= 0f) return;
         Vector2 origin = enemyBase.transform.position;
-        Collider2D body = DamageArea != null ? DamageArea.GetComponent<Collider2D>() : null;
-        Vector2 bodySize = body != null ? (Vector2)body.bounds.size * 0.9f :
-            new Vector2(2f, 2f) * thirdBodyMultiplier;
-
         for (int attempt = 0; attempt < 36; attempt++)
         {
             Vector2 offset = Random.insideUnitCircle * thirdWarpRadius;
             if (offset.sqrMagnitude < 0.16f) continue;
             Vector2 next = origin + offset;
-            bool hasFloor = false;
-            foreach (Collider2D hit in Physics2D.OverlapPointAll(next))
-            {
-                if (hit != null && hit.CompareTag("Stage_Floor"))
-                {
-                    hasFloor = true;
-                    break;
-                }
-            }
-            if (!hasFloor) continue;
-            bool blocked = false;
-            foreach (Collider2D hit in Physics2D.OverlapBoxAll(next, bodySize, 0f))
-            {
-                if (hit != null && hit.CompareTag("Stage_Wall"))
-                {
-                    blocked = true;
-                    break;
-                }
-            }
-            if (blocked) continue;
+            if (!IsThirdWarpSafe(next)) continue;
+
             enemyBase.rb.velocity = Vector2.zero;
             enemyBase.transform.position = next;
             LookAtCurrentTarget();
-            if (audioclips.Count > 2 && audioclips[2] != null) audioManager.PlaySE(audioclips[2]);
+            if (audioclips.Count > 2 && audioclips[2] != null)
+                audioManager.PlaySE(audioclips[2]);
             return;
         }
-        // Do not teleport into walls if no suitable floor exists within three tiles.
+        // No valid floor: retain current position instead of forcing a wall overlap.
     }
 
     IEnumerator ThirdRiftShockwave(Vector2 position, float delay)
@@ -778,7 +787,9 @@ public class SB_Whale_AI : Boss_MoveBase
                         Random.Range(-2f, 2f) + TargetPosition.y
                     );
 
-                    FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
+                    FindPlayerPos = phase == Phase.P3
+                        ? IsThirdWarpSafe(TargetFindPlayerPos)
+                        : IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
 
                     if (FindPlayerPos)
                     {
@@ -792,7 +803,9 @@ public class SB_Whale_AI : Boss_MoveBase
                 if (!FindPlayerPos)
                 {
                     // 代替位置を設定（例：現在位置のまま or デフォルト座標）
-                    targetPos = new Vector2 (TargetPosition.x, TargetPosition.y+2);
+                    targetPos = phase == Phase.P3
+                        ? (Vector2)transform.position
+                        : new Vector2(TargetPosition.x, TargetPosition.y + 2f);
                     
                     Debug.LogWarning("Floor not found. Using player position as fallback.");
                 }
@@ -923,7 +936,9 @@ public class SB_Whale_AI : Boss_MoveBase
                         Random.Range(-2f, 2f) + TargetPosition.y
                     );
 
-                    FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
+                    FindPlayerPos = phase == Phase.P3
+                        ? IsThirdWarpSafe(TargetFindPlayerPos)
+                        : IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
 
                     if (FindPlayerPos)
                     {
@@ -937,7 +952,9 @@ public class SB_Whale_AI : Boss_MoveBase
                 if (!FindPlayerPos)
                 {
                     // 代替位置を設定（例：現在位置のまま or デフォルト座標）
-                    targetPos = new Vector2(TargetPosition.x, TargetPosition.y + 2);
+                    targetPos = phase == Phase.P3
+                        ? (Vector2)transform.position
+                        : new Vector2(TargetPosition.x, TargetPosition.y + 2f);
                     Debug.LogWarning("Floor not found. Using player position as fallback.");
                 }
 

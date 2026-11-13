@@ -295,16 +295,9 @@ public class SB_Whale_AI : Boss_MoveBase
 
     IEnumerator ThirdRiftShockwave(Vector2 position, float delay)
     {
-        // Each rift detonates 3-4 seconds after appearing; the warning occupies
-        // the last 1.5 seconds and matches the hitbox size.
-        float warningTime = Mathf.Min(Mathf.Max(0.01f, thirdShockwaveWarningDuration),
-            Mathf.Max(0.01f, delay));
-        yield return new WaitForSeconds(Mathf.Max(0f, delay - warningTime));
-        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
-
-        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, position, warningTime),
-            thirdShockwaveAreaScale);
-        yield return new WaitForSeconds(warningTime);
+        // The warning is spawned together with the rift in Ougi().
+        // Keep the explosion's independently randomized 3-4 second fuse.
+        yield return new WaitForSeconds(Mathf.Max(0f, delay));
         if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
 
         ScaleSpawn(SpawnObjectNow_Input(HoukouAttack, position, thirdShockwaveHitDuration),
@@ -1346,6 +1339,9 @@ public class SB_Whale_AI : Boss_MoveBase
         SpawnThirdScaledObject(SlashLit, newPosition, 2f);
         if (withShockwave)
         {
+            // Same-frame warning: the selected rift and its danger area appear together.
+            ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, newPosition,
+                thirdShockwaveWarningDuration), thirdShockwaveAreaScale);
             float minDelay = Mathf.Max(0f, Mathf.Min(thirdShockwaveDelay.x, thirdShockwaveDelay.y));
             float maxDelay = Mathf.Max(minDelay, Mathf.Max(thirdShockwaveDelay.x, thirdShockwaveDelay.y));
             StartCoroutine(ThirdRiftShockwave(newPosition, Random.Range(minDelay, maxDelay)));

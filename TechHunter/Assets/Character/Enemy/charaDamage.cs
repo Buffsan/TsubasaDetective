@@ -232,7 +232,8 @@ public class charaDamage : MonoBehaviour, IDamageable
     void ForwardDamage(float attack, float stagger, float confusion, bool critical,
         uint token, float confusionDamagePercent, StatusEffectAttack charmEffect)
     {
-        if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die) return;
+        if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die ||
+            enemyBase.IsInvulnerable) return;
         if (lastDamageTraversal == token)
         {
             if (!reportedDamageCycle)
@@ -353,7 +354,7 @@ public class charaDamage : MonoBehaviour, IDamageable
     public void DamageFixed(float value)
     {
         if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die ||
-            enemyBase.HP <= 0f || value <= 0f) return;
+            enemyBase.HP <= 0f || value <= 0f || enemyBase.IsInvulnerable) return;
         TakeDamage(-value);
         enemyBase.TakeDamageColor();
         isDamageTextPop(value, 1, false);
@@ -362,7 +363,8 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     void TakeDamage(float addDamage)
     {
-
+        // Also guard direct HP deductions, including damage-over-time callbacks.
+        if (addDamage < 0f && enemyBase.IsInvulnerable) return;
         enemyBase.HP += addDamage;
 
     }

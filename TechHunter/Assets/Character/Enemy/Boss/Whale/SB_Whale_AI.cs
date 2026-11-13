@@ -62,11 +62,101 @@ public class SB_Whale_AI : Boss_MoveBase
 
     AudioManager audioManager => AudioManager.instance;
 
-    // Start is called before the first frame update
     void Start()
     {
-
+        if (enemyBase != null) initialBodyScale = enemyBase.transform.localScale;
     }
+
+    void Update()
+    {
+        // Watch HP even while the boss is attacking or stunned.
+        if (enemyBase == null || phase == Phase.P3 || enemyBase.IsCharmed ||
+            enemyBase.status == EnemyBase.Status.Die || enemyBase.MAXHP <= 0f) return;
+        if (enemyBase.HP < enemyBase.MAXHP * thirdHpThreshold) BeginThirdPhase();
+    }
+
+    void OnDisable()
+    {
+        if (enemyBase != null) enemyBase.IsInvulnerable = false;
+    }
+
+    void BeginThirdPhase()
+    {
+        phase = Phase.P3;
+        thirdRecoilActive = true;
+        thirdIntroRoar = true;
+        isSerious = true; // Retain the second-phase dimensional-rift follow-ups.
+        if (initialBodyScale == Vector3.zero) initialBodyScale = enemyBase.transform.localScale;
+        enemyBase.IsInvulnerable = true;
+        enemyBase.status = EnemyBase.Status.Nomal;
+        enemyBase.StanCount = 0f;
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.animator.SetBool("Damage", false);
+        enemyBase.moveType = EnemyBase.MoveType.Attack;
+        enemyBase.attackType = EnemyBase.AttackType.A1;
+        enemyBase.AttackCount = 0f;
+        AttackNumber = 0;
+        AttackPhase = 0;
+        AttackWaitTime = 0f;
+        AttackCount1 = 0f;
+        if (DamageArea != null) DamageArea.SetActive(false);
+        if (asaltAttackArea != null) asaltAttackArea.SetActive(false);
+        AllDestroyDengerArea();
+        StartCoroutine(ThirdRecoil());
+    }
+
+    IEnumerator ThirdRecoil()
+    {
+        enemyBase.animator.Play("被弾", 0, 0);
+        yield return new WaitForSeconds(thirdRecoilDuration);
+        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
+        thirdRecoilActive = false;
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.AttackCount = 0f;
+        AttackNumber = 0;
+        AttackPhase = 0;
+    }
+
+    void FinishThirdIntro()
+    {
+        if (!thirdIntroRoar) return;
+        thirdIntroRoar = false;
+        SetThirdBodyScale(thirdBodyMultiplier);
+        if (DamageArea != null) DamageArea.SetActive(true);
+        enemyBase.IsInvulnerable = false;
+        ApplyThirdParticles();
+    }
+
+    void SetThirdBodyScale(float amount)
+    {
+        if (enemyBase == null) return;
+        if (initialBodyScale == Vector3.zero) initialBodyScale = enemyBase.transform.localScale;
+        enemyBase.transform.localScale = initialBodyScale * amount;
+    }
+
+    void ApplyThirdParticles()
+    {
+        if (thirdParticleSystem == null && enemyBase != null)
+        {
+            foreach (ParticleSystem particle in enemyBase.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                if (particle != null &&
+                    string.Equals(particle.gameObject.name, "third", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    thirdParticleSystem = particle;
+                    break;
+                }
+            }
+        }
+        if (thirdParticleSystem == null)
+        {
+            Debug.LogWarning("SB_Whale_AI: thirdParticleSystem is not assigned.", this);
+            return;
+        }
+        ParticleSystem.EmissionModule emission = thirdParticleSystem.emission;
+        emission.rateOverTime = new ParticleSystem.MinMaxCurve(3f);
+    }
+
     public override void M_Stan()
     {
         Finish(); AttackWaitTime = 0; StandOk = false; asaltAttackArea.SetActive(false);

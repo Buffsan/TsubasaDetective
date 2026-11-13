@@ -566,11 +566,15 @@ public class SB_Whale_AI : Boss_MoveBase
         }
         if (AttackPhase == 1) 
         {
-            if (attackcount() > 0.1) 
+            if (attackcount() > 0.1)
             {
+                if (phase == Phase.P3) WarpThirdFourway();
                 for (int i = 0; i < 4; i++) 
                 {
-                    GameObject CL_Effect = DengerAreaSpawn(Denger_4AttackArea, transform.position, 1f);
+                    GameObject CL_Effect = ScaleSpawn(
+                        DengerAreaSpawn(Denger_4AttackArea, transform.position,
+                            phase == Phase.P3 ? thirdFourwayAttackDelay : 1f),
+                        ThirdRangeScale);
 
                     float dirAngle = saveAngle + 90 * i;
                     CL_Effect.transform.Rotate(0, 0, dirAngle);
@@ -582,11 +586,11 @@ public class SB_Whale_AI : Boss_MoveBase
         }
         if (AttackPhase == 2) 
         {
-            if (attackcount() > 1.1f)
+            if (attackcount() > (phase == Phase.P3 ? thirdFourwayAttackDelay : 1.1f))
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    GameObject CL_Effect = SpawnObjectNow_Input(AttackArea4, transform.position, 0.1f);
+                    GameObject CL_Effect = SpawnThirdScaledObject(AttackArea4, transform.position, 0.1f);
                     CL_Effect.transform.Rotate(0, 0, saveAngle + 90 * i);
                 }
                 saveAngle += 45;
@@ -594,7 +598,7 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 audioManager.PlaySE(audioclips[1]);
                 all_System.camera_Controller.Shake(0.3f, 0.2f);
-                SpawnObjectNow(Effects[0], transform.position, 3);
+                SpawnThirdScaledObject(Effects[0], transform.position, 3f);
 
                 NextPhase();
 

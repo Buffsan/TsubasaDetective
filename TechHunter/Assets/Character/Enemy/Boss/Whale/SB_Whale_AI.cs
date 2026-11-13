@@ -157,6 +157,94 @@ public class SB_Whale_AI : Boss_MoveBase
         emission.rateOverTime = new ParticleSystem.MinMaxCurve(3f);
     }
 
+    float ThirdRangeScale => phase == Phase.P3 ? thirdAttackMultiplier : 1f;
+
+    GameObject ScaleSpawn(GameObject instance, float amount)
+    {
+        if (instance != null && !Mathf.Approximately(amount, 1f))
+            instance.transform.localScale *= amount;
+        return instance;
+    }
+
+    GameObject SpawnThirdScaledObject(GameObject prefab, Vector2 position, float lifetime)
+    {
+        return ScaleSpawn(SpawnObjectNow_Input(prefab, position, lifetime), ThirdRangeScale);
+    }
+
+    void SpawnRoarWarning(float seconds)
+    {
+        float amount = phase == Phase.P3 ? Mathf.Pow(thirdRoarGrowth, thirdRoarPulse) : 1f;
+        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, seconds), amount);
+    }
+
+    void EmitRoarPulse()
+    {
+        float amount = phase == Phase.P3 ? Mathf.Pow(thirdRoarGrowth, thirdRoarPulse) : 1f;
+        ScaleSpawn(SpawnObjectNow_Input(HoukouAttack, transform.position, 0.1f), amount);
+        ScaleSpawn(SpawnObjectNow_Input(Effects[0], transform.position, 3f), amount);
+        if (thirdIntroRoar)
+            SetThirdBodyScale(Mathf.Lerp(1f, thirdBodyMultiplier,
+                Mathf.Clamp01((thirdRoarPulse + 1f) / 4f)));
+        thirdRoarPulse++;
+    }
+
+    void WarpThirdFourway()
+    {
+        if (enemyBase == null || thirdWarpRadius <= 0f) return;
+        Vector2 origin = enemyBase.transform.position;
+        Collider2D body = DamageArea != null ? DamageArea.GetComponent<Collider2D>() : null;
+        Vector2 bodySize = body != null ? (Vector2)body.bounds.size * 0.9f :
+            new Vector2(2f, 2f) * thirdBodyMultiplier;
+
+        for (int attempt = 0; attempt < 36; attempt++)
+        {
+            Vector2 offset = Random.insideUnitCircle * thirdWarpRadius;
+            if (offset.sqrMagnitude < 0.16f) continue;
+            Vector2 next = origin + offset;
+            bool hasFloor = false;
+            foreach (Collider2D hit in Physics2D.OverlapPointAll(next))
+            {
+                if (hit != null && hit.CompareTag("Stage_Floor"))
+                {
+                    hasFloor = true;
+                    break;
+                }
+            }
+            if (!hasFloor) continue;
+            bool blocked = false;
+            foreach (Collider2D hit in Physics2D.OverlapBoxAll(next, bodySize, 0f))
+            {
+                if (hit != null && hit.CompareTag("Stage_Wall"))
+                {
+                    blocked = true;
+                    break;
+                }
+            }
+            if (blocked) continue;
+            enemyBase.rb.velocity = Vector2.zero;
+            enemyBase.transform.position = next;
+            LookAtCurrentTarget();
+            if (audioclips.Count > 2 && audioclips[2] != null) audioManager.PlaySE(audioclips[2]);
+            return;
+        }
+        // Do not teleport into walls if no suitable floor exists within three tiles.
+    }
+
+    IEnumerator ThirdRiftShockwave(Vector2 position, float delay)
+    {
+        float warningDuration = Mathf.Min(thirdShockwaveWarningDuration, delay);
+        yield return new WaitForSeconds(Mathf.Max(0f, delay - warningDuration));
+        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
+        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, position, warningDuration),
+            thirdShockwaveAreaScale);
+        yield return new WaitForSeconds(warningDuration);
+        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
+        ScaleSpawn(SpawnObjectNow_Input(HoukouAttack, position, thirdShockwaveHitDuration),
+            thirdShockwaveAreaScale);
+        ScaleSpawn(SpawnObjectNow_Input(Effects[0], position, 2f), thirdShockwaveAreaScale);
+        all_System.camera_Controller.Shake(0.2f, 0.3f);
+    }
+
     public override void M_Stan()
     {
         Finish(); AttackWaitTime = 0; StandOk = false; asaltAttackArea.SetActive(false);

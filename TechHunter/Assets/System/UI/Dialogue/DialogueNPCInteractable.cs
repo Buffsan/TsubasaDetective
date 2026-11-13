@@ -16,6 +16,25 @@ public sealed class DialogueNPCInteractable : MonoBehaviour
     [SerializeField] DialogueData conversation;
     [Tooltip("Optional registered conversation ID. Takes priority over the direct Conversation asset.")]
     [SerializeField] string conversationId;
+
+    [Serializable]
+    public sealed class RandomConversation
+    {
+        [Tooltip("Absolute chance in percent, rolled when starting a conversation.")]
+        [Range(0f, 100f)] public float probabilityPercent = 10f;
+        [Tooltip("Alternative DialogueData asset. Ignored when Conversation Id is set.")]
+        public DialogueData conversation;
+        [Tooltip("Optional registered conversation ID (takes precedence over the asset).")]
+        public string conversationId;
+
+        public bool IsAssigned =>
+            conversation != null || !string.IsNullOrWhiteSpace(conversationId);
+    }
+
+    [Header("Random Conversations (optional)")]
+    [Tooltip("Each entry has an absolute percentage. Their total must not exceed 100%; the remaining chance plays the default Conversation above.")]
+    [SerializeField] List<RandomConversation> randomConversations = new List<RandomConversation>();
+
     [SerializeField] bool onlyOnce;
     [SerializeField] UnityEvent onDialogueFinished;
     [SerializeField] UnityEvent<int> onChoiceSelected;
@@ -51,6 +70,10 @@ public sealed class DialogueNPCInteractable : MonoBehaviour
     {
         interactionDistance = Mathf.Max(0.1f, interactionDistance);
         promptWorldHeight = Mathf.Max(0.01f, promptWorldHeight);
+        if (randomConversations != null)
+            foreach (RandomConversation candidate in randomConversations)
+                if (candidate != null)
+                    candidate.probabilityPercent = Mathf.Clamp(candidate.probabilityPercent, 0f, 100f);
     }
 
     void Awake()
@@ -173,9 +196,19 @@ public sealed class DialogueNPCInteractable : MonoBehaviour
         Action finished = () => onDialogueFinished?.Invoke();
         Action<int, int> picked = (nodeId, optionIndex) => onChoiceSelected?.Invoke(optionIndex);
 
-        bool started = !string.IsNullOrWhiteSpace(conversationId)
-            ? ui.PlayById(conversationId, finished, picked)
-            : ui.Play(conversation, finished, picked);
+        // Roll only here, on actual interaction. Entering/leaving the area
+        // and drawing the overhead prompt never consume a random roll.
+        RandomConversation selected = ChooseRandomConversation();
+        bool started = selected != null && PlayConversation(
+            ui, selected.conversation, selected.conversationId, finished, picked);
+
+        if (selected != null && !started)
+            Debug.LogWarning("NPC dialogue: random conversation could not start. Trying the default conversation.", this);
+
+        // If no alternative was selected (or it was invalid), keep the old
+        // default conversation behavior unchanged.
+        if (!started)
+            started = PlayConversation(ui, conversation, conversationId, finished, picked);
 
         if (started)
         {
@@ -183,6 +216,51 @@ public sealed class DialogueNPCInteractable : MonoBehaviour
             SetPromptVisible(false);
         }
         return started;
+    }
+
+    static bool PlayConversation(DialogueUIController ui, DialogueData asset,
+        string id, Action finished, Action<int, int> picked)
+    {
+        return !string.IsNullOrWhiteSpace(id)
+            ? ui.PlayById(id, finished, picked)
+            : ui.Play(asset, finished, picked);
+    }
+
+    RandomConversation ChooseRandomConversation()
+    {
+        if (randomConversations == null || randomConversations.Count == 0)
+            return null;
+
+        float total = 0f;
+        foreach (RandomConversation candidate in randomConversations)
+        {
+            if (candidate == null || !candidate.IsAssigned) continue;
+            total += Mathf.Clamp(candidate.probabilityPercent, 0f, 100f);
+        }
+
+        // Never silently normalize percentages: the Inspector displays the
+        // exact odds and requires the total to be at most 100%.
+        if (total > 100.0001f)
+        {
+            Debug.LogWarning("NPC dialogue: random conversation probabilities exceed 100%. " +
+                "Using the default conversation until they are corrected.", this);
+            return null;
+        }
+
+        // Integer Range excludes the upper bound, so a configured 100% chance
+        // is guaranteed rather than rarely falling through on Random.value == 1.
+        float roll = UnityEngine.Random.Range(0, 1000000) / 10000f;
+        float accumulated = 0f;
+        foreach (RandomConversation candidate in randomConversations)
+        {
+            if (candidate == null || !candidate.IsAssigned) continue;
+            float chance = Mathf.Clamp(candidate.probabilityPercent, 0f, 100f);
+            if (chance <= 0f) continue;
+            accumulated += chance;
+            if (roll < accumulated)
+                return candidate;
+        }
+        return null; // The remaining percentage uses the default conversation.
     }
 
     void OnDrawGizmosSelected()

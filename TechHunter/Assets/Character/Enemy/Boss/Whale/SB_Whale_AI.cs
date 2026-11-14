@@ -19,7 +19,8 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField, Min(1f)] float thirdRoarGrowth = 1.4f;
     [SerializeField, Min(0f)] float thirdRecoilDuration = 1f;
     // Include the fast vanish/appear animation while keeping shots slightly faster than P2.
-    [SerializeField, Min(0.01f)] float thirdFourwayAttackDelay = 0.55f;
+    [SerializeField, Min(0.01f)] float thirdFourwayAttackDelay = 1.1f;
+    [SerializeField, Min(0.01f)] float thirdFourwayWarningDuration = 1f;
     [SerializeField, Min(0.01f)] float thirdFourwayWarpAnimationSpeed = 6f;
     [SerializeField, Min(0.01f)] float thirdFourwayDisappearSeconds = 0.25f;
     [SerializeField, Min(0.01f)] float thirdFourwayAppearSeconds = 0.3f;
@@ -34,6 +35,9 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField, Min(0f)] float thirdShockwaveShakeDuration = 0.2f;
     [SerializeField, Min(0f)] float thirdShockwaveShakeStrength = 0.15f;
     [SerializeField] Vector2 thirdShockwaveDelay = new Vector2(3f, 4f);
+    // Phase 3 may start only after A6 has finished the full P2 transition,
+    // including its BGM change. Interruption will replay A6 instead of skipping it.
+    bool secondPhaseIntroCompleted;
     bool thirdRecoilActive;
     bool thirdIntroRoar;
     int thirdRoarPulse;
@@ -81,6 +85,9 @@ public class SB_Whale_AI : Boss_MoveBase
         // Watch HP even while the boss is attacking or stunned.
         if (enemyBase == null || phase == Phase.P3 || enemyBase.IsCharmed ||
             enemyBase.status == EnemyBase.Status.Die || enemyBase.MAXHP <= 0f) return;
+        // Do not bypass P2 when a single powerful hit pushes P1 below 25%.
+        // A6 owns the BGM switch and the mandatory phase-two cutscene.
+        if (phase != Phase.P2 || !secondPhaseIntroCompleted) return;
         if (enemyBase.HP < enemyBase.MAXHP * thirdHpThreshold) BeginThirdPhase();
     }
 
@@ -359,6 +366,7 @@ public class SB_Whale_AI : Boss_MoveBase
                     audioManager.BgmSource.clip = BossBGM;
                     
                     phase = Phase.P2;
+                    secondPhaseIntroCompleted = false;
                     AttackWaitTime = 0;
                     enemyBase.moveType = EnemyBase.MoveType.Attack;
                     enemyBase.attackType = EnemyBase.AttackType.A6;
@@ -409,7 +417,22 @@ public class SB_Whale_AI : Boss_MoveBase
             }
             if (phase == Phase.P2)
             {
-
+                // If A6 was interrupted (e.g. by stun), replay it before
+                // selecting any regular P2 attack or allowing phase 3.
+                if (!secondPhaseIntroCompleted)
+                {
+                    if (audioManager != null && audioManager.BgmSource != null)
+                        audioManager.BgmSource.clip = BossBGM;
+                    AttackWaitTime = 0f;
+                    enemyBase.rb.velocity = Vector2.zero;
+                    enemyBase.moveType = EnemyBase.MoveType.Attack;
+                    enemyBase.attackType = EnemyBase.AttackType.A6;
+                    enemyBase.AttackCount = 0f;
+                    AttackNumber = 0;
+                    AttackPhase = 0;
+                    if (DamageArea != null) DamageArea.SetActive(false);
+                    return;
+                }
 
                 if (AttackWaitTime > 1.5)
                 {
@@ -683,7 +706,7 @@ public class SB_Whale_AI : Boss_MoveBase
             {
                 GameObject warning = ScaleSpawn(
                     DengerAreaSpawn(Denger_4AttackArea, transform.position,
-                        thirdFourwayAttackDelay), ThirdRangeScale);
+                        thirdFourwayWarningDuration), ThirdRangeScale);
                 warning.transform.Rotate(0, 0, saveAngle + 90f * i);
             }
             NextPhase();
@@ -1289,6 +1312,8 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             if (attackcount() > 1)
             {
+                // A6 has finished: its appearance and second-phase BGM have played.
+                secondPhaseIntroCompleted = true;
                 ChoiseNextPhase(0);
                 enemyBase.moveType = EnemyBase.MoveType.Attack;
                 enemyBase.attackType = EnemyBase.AttackType.A1;

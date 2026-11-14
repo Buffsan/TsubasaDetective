@@ -269,29 +269,48 @@ public class EnemyMoveBase : MonoBehaviour
     Quaternion rotate,
     int tileDistance)
     {
-        Tilemap tilemap =
-            ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.StandFloor;
+        // 魅了された召喚者からの召喚は味方用マーカーを優先。
+        return SpawnEnemySpawn(enemy, targetPos, rotate, tileDistance,
+            enemyBase != null && enemyBase.IsCharmed);
+    }
 
-        // 中心セル
-        Vector3Int centerCell = tilemap.WorldToCell(targetPos);
+    // 将来の檻・味方召喚側も明示的に専用タイルを利用できる。
+    // bool は出現位置の指定で、召喚体の陣営そのものは従来通り呼び出し元が設定する。
+    public GameObject SpawnEnemySpawn(
+    GameObject enemy,
+    Vector2 targetPos,
+    Quaternion rotate,
+    int tileDistance,
+    bool summonAsAlly)
+    {
+        TileMap_Controller stage =
+            ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C;
 
-        // ランダム角度
-        float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-
-        int dx = Mathf.RoundToInt(Mathf.Cos(angle) * tileDistance);
-        int dy = Mathf.RoundToInt(Mathf.Sin(angle) * tileDistance);
-
-        Vector3Int spawnCell =
-            centerCell + new Vector3Int(dx, dy, 0);
-
-        // フォールバック：中心セル
-        if (!tilemap.HasTile(spawnCell))
+        Vector3 spawnWorldPos;
+        if (summonAsAlly && stage.TryGetAllySpawnPosition(targetPos, tileDistance, out Vector3 allyPosition))
         {
-            spawnCell = centerCell;
+            spawnWorldPos = allyPosition;
         }
-
-        Vector3 spawnWorldPos =
-            tilemap.CellToWorld(spawnCell) + tilemap.tileAnchor;
+        else
+        {
+            Tilemap tilemap = stage.StandFloor;
+            if (tilemap == null)
+            {
+                Debug.LogWarning("SpawnEnemySpawn: StandFloor is missing; use the requested position.", this);
+                spawnWorldPos = targetPos;
+            }
+            else
+            {
+                // 既存の敵召喚はStandFloorと従来のランダム距離設定を維持。
+                Vector3Int centerCell = tilemap.WorldToCell(targetPos);
+                float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+                int dx = Mathf.RoundToInt(Mathf.Cos(angle) * tileDistance);
+                int dy = Mathf.RoundToInt(Mathf.Sin(angle) * tileDistance);
+                Vector3Int spawnCell = centerCell + new Vector3Int(dx, dy, 0);
+                if (!tilemap.HasTile(spawnCell)) spawnCell = centerCell;
+                spawnWorldPos = tilemap.CellToWorld(spawnCell) + tilemap.tileAnchor;
+            }
+        }
 
         GameObject enemyObj =
             Instantiate(enemy, spawnWorldPos, rotate);

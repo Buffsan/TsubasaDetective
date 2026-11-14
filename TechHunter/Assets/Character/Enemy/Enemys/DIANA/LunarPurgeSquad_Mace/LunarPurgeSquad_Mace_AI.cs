@@ -253,36 +253,45 @@ public class LunarPurgeSquad_Mace_AI : EnemyMoveBase
     bool TryChooseLanding(Vector3 targetPosition, out Vector2 result)
     {
         result = Vector2.zero;
-        List<Tilemap> standFloors = new List<Tilemap>();
-        List<Tilemap> floors = new List<Tilemap>();
+        List<Tilemap> stageFloors = new List<Tilemap>();
+        List<Tilemap> fallbackFloors = new List<Tilemap>();
 
-        // ステージ側で明示された StandFloor を最優先。
+        // 正式な床タグは Stage_Floor。StandFloor はシステム上の参照名であり、
+        // タグ名としては使用しない。
+        Tilemap registeredFloor = null;
         if (ALL_SystemManager.Instance != null &&
             ALL_SystemManager.Instance.enemySpawnBASE != null &&
             ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C != null)
+            registeredFloor = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.StandFloor;
+
+        // 登録済みの床も含めて、実際のタグを基準に分類する。
+        if (registeredFloor != null && registeredFloor.gameObject.activeInHierarchy)
         {
-            Tilemap primary = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.StandFloor;
-            if (primary != null) standFloors.Add(primary);
+            if (registeredFloor.CompareTag("Stage_Floor"))
+                stageFloors.Add(registeredFloor);
+            else if (registeredFloor.name == "Floor")
+                fallbackFloors.Add(registeredFloor);
         }
 
         foreach (Tilemap map in FindObjectsOfType<Tilemap>())
         {
             if (map == null || !map.gameObject.activeInHierarchy) continue;
-            string tag = map.gameObject.tag;
-            if (map.name == "StandFloor" || tag == "standfloor" ||
-                tag == "StandFloor" || tag == "Stage_StandFloor")
+
+            if (map.CompareTag("Stage_Floor"))
             {
-                if (!standFloors.Contains(map)) standFloors.Add(map);
+                if (!stageFloors.Contains(map)) stageFloors.Add(map);
             }
-            else if (map.name == "Floor" || tag == "Floor" || tag == "Stage_Floor")
+            else if (map.name == "Floor")
             {
-                floors.Add(map);
+                if (!fallbackFloors.Contains(map)) fallbackFloors.Add(map);
             }
         }
 
-        // StandFloor に有効タイルがない場合のみ Floor を使用。
-        return FindClosestValidCell(standFloors, targetPosition, out result) ||
-               FindClosestValidCell(floors, targetPosition, out result);
+        // どちらのターゲット種別でも同じ探索を使い、
+        // Stage_Floor 内で標的に最も近い安全なセルへ着地する。
+        // 対象セルが存在しない場合だけ、名前が Floor のタイルマップを使用。
+        return FindClosestValidCell(stageFloors, targetPosition, out result) ||
+               FindClosestValidCell(fallbackFloors, targetPosition, out result);
     }
 
     bool FindClosestValidCell(List<Tilemap> maps, Vector3 target, out Vector2 result)

@@ -709,16 +709,8 @@ public class SB_Whale_AI : Boss_MoveBase
                 // P2 dimensional-rift follow-ups are deliberately retained.
                 if (isSerious)
                 {
-                    for (int i = 0; i < 5; i++)
-                    {
-                        for (int j = 0; j < 10; j++)
-                        {
-                            Vector2 randomPos = new Vector2(
-                                Random.Range(-12f, 12f), Random.Range(-12f, 12f));
-                            StartCoroutine(LiftSpawnLing((float)i / 30f,
-                                (Vector2)transform.position + randomPos * ThirdRangeScale));
-                        }
-                    }
+                    StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
+                        5, 10, 1f / 30f, 0f, 12f, 0f, ThirdRangeScale));
                 }
                 NextPhase();
             }
@@ -789,17 +781,8 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 if (isSerious)
                 {
-                    for (int i = 0; i < 5; i++)
-                    {
-                        for (int j = 0; j < 10; j++)
-                        {
-                            Vector2 randomPos = Vector2.zero;
-                            float range = 12f;
-                            randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-
-                            StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos * ThirdRangeScale));
-                        }
-                    }
+                    StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
+                        5, 10, 1f / 30f, 0f, 12f, 0f, ThirdRangeScale));
                 }
             }
             
@@ -993,17 +976,8 @@ public class SB_Whale_AI : Boss_MoveBase
                 enemyBase.animator.Play("出現", 0, 0);
                 NextPhase();
 
-                for (int i = 0; i < 5; i++)
-                {
-                    for (int j = 0; j < 5; j++)
-                    {
-                        Vector2 randomPos = Vector2.zero;
-                        float range = 6f;
-                        randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-
-                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos, true));
-                    }
-                }
+                StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
+                    5, 5, 1f / 30f, 0f, 6f, 0f, 1f));
             }
         }
         if (AttackPhase == 12) 
@@ -1141,17 +1115,8 @@ public class SB_Whale_AI : Boss_MoveBase
                 enemyBase.animator.Play("出現", 0, 0);
                 NextPhase();
 
-                for (int i = 0; i < 5; i++)
-                {
-                    for (int j = 0; j < 5; j++)
-                    {
-                        Vector2 randomPos = Vector2.zero;
-                        float range = 6f;
-                        randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-
-                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos * ThirdRangeScale));
-                    }
-                }
+                StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
+                    5, 5, 1f / 30f, 0f, 6f, 0f, ThirdRangeScale));
             }
         }
         if (AttackPhase == 2)
@@ -1274,17 +1239,8 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 NextPhase();
                 
-                for (int i = 0; i < 30; i++)
-                {
-                    for (int j = 0; j < 8; j++)
-                    {
-                        Vector2 randomPos = Vector2.zero;
-                        float range = 15f;
-                        randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-
-                        StartCoroutine(LiftSpawnLing((float)i / 7, (Vector2)transform.position + randomPos * ThirdRangeScale));
-                    }
-                }
+                StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
+                    30, 8, 1f / 7f, 0f, 15f, 0f, ThirdRangeScale));
             }
         }
         if (AttackPhase == 5)

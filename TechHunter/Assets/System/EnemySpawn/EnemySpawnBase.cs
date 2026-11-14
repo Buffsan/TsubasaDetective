@@ -129,10 +129,26 @@ public class EnemySpawnBase : MonoBehaviour
     }
     public void SpawnEnemy(EnemySpawnData enemySpawnDataVALL)
     {
-        foreach (EnemySpawnGroup enemy in enemySpawnDataVALL.enemyspawnGroup)
+        if (enemySpawnDataVALL == null) return;
+
+        // 通常敵の設定・出現方法は変更しない。
+        if (enemySpawnDataVALL.enemyspawnGroup != null)
         {
-            int id = GetEnemyID(enemy.enemyType);
-            isCloneEnemy(id, enemy.SpawnNumber);
+            foreach (EnemySpawnGroup enemy in enemySpawnDataVALL.enemyspawnGroup)
+            {
+                if (enemy == null || enemy.SpawnNumber <= 0) continue;
+                isCloneEnemy(GetEnemyID(enemy.enemyType), enemy.SpawnNumber);
+            }
+        }
+
+        // EnemySpawnDataの新しい味方リスト。既存のEnemyTypeを共有する。
+        if (enemySpawnDataVALL.allyspawnGroup != null)
+        {
+            foreach (EnemySpawnGroup ally in enemySpawnDataVALL.allyspawnGroup)
+            {
+                if (ally == null || ally.SpawnNumber <= 0) continue;
+                isCloneAlly(GetEnemyID(ally.enemyType), ally.SpawnNumber);
+            }
         }
     }
     private static readonly Dictionary<EnemySpawnGroup.EnemyType, int> enemyIdMap = new()
@@ -277,6 +293,102 @@ public class EnemySpawnBase : MonoBehaviour
          
 
     }
+    private void isCloneAlly(int id, int count)
+    {
+        if (count <= 0) return;
+        EnemyInfo info = enemyList.Find(entry =>
+            entry != null && entry.ID == id && entry.Enemy != null);
+        if (info == null)
+        {
+            Debug.LogWarning("EnemySpawnBase: 味方召喚の敵IDが見つかりません: " + id, this);
+            return;
+        }
+
+        // 非同期の召喚中にステージが変わった場合は、古い味方を生成しない。
+        TileMap_Controller sourceStage = Seve_TileMap_C;
+        float delay = 0f;
+        for (int i = 0; i < count; i++)
+        {
+            PendingSpawnCount++;
+            StartCoroutine(WaitSpawnAlly(info.Enemy, delay, sourceStage));
+            delay += 0.4f;
+        }
+    }
+
+    private IEnumerator WaitSpawnAlly(GameObject prefab, float delay, TileMap_Controller sourceStage)
+    {
+        yield return new WaitForSeconds(delay);
+        PendingSpawnCount = Mathf.Max(0, PendingSpawnCount - 1);
+
+        if (sourceStage == null || sourceStage != Seve_TileMap_C || prefab == null)
+            yield break;
+        if (prefab.GetComponent<EnemyBase>() == null)
+        {
+            Debug.LogWarning("EnemySpawnBase: 味方PrefabにEnemyBaseがありません: " + prefab.name, prefab);
+            yield break;
+        }
+        if (!TryFindAllySpawnPosition(sourceStage, out Vector3 position))
+        {
+            Debug.LogWarning("EnemySpawnBase: 味方が出現できる床タイルがありません。", sourceStage);
+            yield break;
+        }
+
+        GameObject clone = Instantiate(prefab, position, Quaternion.identity);
+        EnemyBase ally = clone.GetComponent<EnemyBase>();
+        if (ally == null)
+        {
+            Destroy(clone);
+            yield break;
+        }
+
+        // 既存の魅了ロジックで味方の派閥・索敵・攻撃・破棄時の管理を流用。
+        // BecomeCharmedAlly()はコインを落とす処理も呼ぶため、先に報酬を無効化する。
+        ally.GOLD = 0;
+        ally.XP = 0;
+        ally.BecomeCharmedAlly();
+        if (!ally.IsCharmed)
+        {
+            Debug.LogWarning("EnemySpawnBase: 味方の初期化に失敗しました: " + prefab.name, clone);
+            Destroy(clone);
+            yield break;
+        }
+
+        // 味方はAllEnemyへ登録しない。BecomeCharmedAlly()がCharmedAlliesへ登録する。
+        if (SpawnEffect != null)
+            Instantiate(SpawnEffect, position, Quaternion.identity);
+        if (manager != null)
+            manager.WaitEnemyDieCount = 0f;
+    }
+
+    // 味方出現時だけステージのboolを参照。
+    // 専用タイルが未設定/空の場合はStandFloor、さらに無い場合はFloorMap。
+    private static bool TryFindAllySpawnPosition(TileMap_Controller stage, out Vector3 position)
+    {
+        position = Vector3.zero;
+        if (stage.UseAllySpawnMap && TryGetRandomTileCenter(stage.AllySpawnMap, out position))
+            return true;
+        if (TryGetRandomTileCenter(stage.StandFloor, out position))
+            return true;
+        return TryGetRandomTileCenter(stage.FloorMap, out position);
+    }
+
+    private static bool TryGetRandomTileCenter(Tilemap map, out Vector3 position)
+    {
+        position = Vector3.zero;
+        if (map == null) return false;
+
+        // すべての有効タイルから均等に1つ選ぶ。リストの一時確保も不要。
+        int count = 0;
+        foreach (Vector3Int cell in map.cellBounds.allPositionsWithin)
+        {
+            if (!map.HasTile(cell)) continue;
+            count++;
+            if (Random.Range(0, count) == 0)
+                position = map.GetCellCenterWorld(cell);
+        }
+        return count > 0;
+    }
+
     public IEnumerator WaitSpawnEnemy(GameObject EnemyObject, float WaitTime)
     {
         //Debug.Log("Wait");

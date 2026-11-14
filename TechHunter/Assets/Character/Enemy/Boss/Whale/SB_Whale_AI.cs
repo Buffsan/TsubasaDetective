@@ -40,6 +40,30 @@ public class SB_Whale_AI : Boss_MoveBase
     // Phase 3 may start only after A6 has finished the full P2 transition,
     // including its BGM change. Interruption will replay A6 instead of skipping it.
     bool secondPhaseIntroCompleted;
+    [Header("第三形態・必殺技")]
+    [SerializeField, Min(1)] int ultimateEveryNthAttack = 6;
+    [SerializeField] Vector2 ultimateCenter = new Vector2(0f, 2f);
+    [SerializeField, Min(0f)] float ultimateWarpDisappearTime = 1f;
+    [SerializeField, Min(0f)] float ultimateWarpAppearTime = 1f;
+    [SerializeField, Min(0.1f)] float ultimateChargeTime = 2f;
+    [SerializeField, Min(0.1f)] float ultimateLastChargeTime = 1.5f;
+    [SerializeField, Range(1, 30)] int ultimateRoarCount = 10;
+    [SerializeField, Min(0.01f)] float ultimateRoarIntervalMultiplier = 1.2f;
+    [SerializeField, Min(1f)] float ultimateRoarRangeGrowth = 1.1f;
+    [SerializeField, Min(0f)] float ultimateChargeShakeStrength = 0.1f;
+    [SerializeField, Min(0f)] float ultimateChargeEmissionRate = 20f;
+    [SerializeField, Min(1)] int ultimateFirstRiftCount = 12;
+    [SerializeField, Min(1)] int ultimateLastRiftCount = 50;
+    [SerializeField, Min(1)] int ultimateFinalRiftCount = 120;
+    [SerializeField, Min(0.1f)] float ultimateRiftBaseRadius = 12f;
+    [SerializeField, Range(1, 32)] int ultimateRiftsPerFrame = 8;
+    [SerializeField, Min(0.1f)] float ultimateRecoveryTime = 2f;
+
+    int thirdAttackActionCount;
+    bool ultimateActive;
+    float ultimateChargeShakeClock;
+    int ultimateRoarFiredCount;
+    GameObject ultimateFinalWarning;
     bool thirdRecoilActive;
     bool thirdIntroRoar;
     int thirdRoarPulse;
@@ -84,6 +108,9 @@ public class SB_Whale_AI : Boss_MoveBase
 
     void Update()
     {
+        if (ultimateActive && (enemyBase == null || enemyBase.IsCharmed ||
+            enemyBase.status == EnemyBase.Status.Die))
+            EndUltimate(false);
         // Watch HP even while the boss is attacking or stunned.
         if (enemyBase == null || phase == Phase.P3 || enemyBase.IsCharmed ||
             enemyBase.status == EnemyBase.Status.Die || enemyBase.MAXHP <= 0f) return;
@@ -95,6 +122,7 @@ public class SB_Whale_AI : Boss_MoveBase
 
     void OnDisable()
     {
+        EndUltimate(false);
         StopThirdFourwayWarpAnimation();
         if (enemyBase != null) enemyBase.IsInvulnerable = false;
     }
@@ -341,6 +369,7 @@ public class SB_Whale_AI : Boss_MoveBase
 
     public override void M_Stan()
     {
+        if (ultimateActive) return;
         Finish(); AttackWaitTime = 0; StandOk = false; asaltAttackArea.SetActive(false);
         if (myRunningCoroutine != null)
         {
@@ -353,6 +382,7 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     public override void M_Con()
     {
+        if (ultimateActive) return;
         Finish(); AttackWaitTime = 0; StandOk = false; asaltAttackArea.SetActive(false);
         if (myRunningCoroutine != null)
         {
@@ -497,13 +527,24 @@ public class SB_Whale_AI : Boss_MoveBase
                 AttackWaitTime = 0f;
                 enemyBase.moveType = EnemyBase.MoveType.Attack;
                 enemyBase.rb.velocity = Vector2.zero;
-                switch (Random.Range(1, 6))
+                // Count attack actions, not individual hits/pulses within an action.
+                // The sixth action is replaced by the ultimate (A7).
+                thirdAttackActionCount++;
+                if (thirdAttackActionCount >= Mathf.Max(1, ultimateEveryNthAttack))
                 {
-                    case 1: enemyBase.attackType = EnemyBase.AttackType.A1; break;
-                    case 2: enemyBase.attackType = EnemyBase.AttackType.A2; break;
-                    case 3: enemyBase.attackType = EnemyBase.AttackType.A3; break;
-                    case 4: enemyBase.attackType = EnemyBase.AttackType.A4; break;
-                    case 5: enemyBase.attackType = EnemyBase.AttackType.A5; break;
+                    thirdAttackActionCount = 0;
+                    enemyBase.attackType = EnemyBase.AttackType.A7;
+                }
+                else
+                {
+                    switch (Random.Range(1, 6))
+                    {
+                        case 1: enemyBase.attackType = EnemyBase.AttackType.A1; break;
+                        case 2: enemyBase.attackType = EnemyBase.AttackType.A2; break;
+                        case 3: enemyBase.attackType = EnemyBase.AttackType.A3; break;
+                        case 4: enemyBase.attackType = EnemyBase.AttackType.A4; break;
+                        case 5: enemyBase.attackType = EnemyBase.AttackType.A5; break;
+                    }
                 }
             }
         }
@@ -536,7 +577,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 A6();
                 break;
             case EnemyBase.AttackType.A7:
-                //A7();
+                A7();
                 break;
             case EnemyBase.AttackType.A8:
                 //A8();

@@ -22,7 +22,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 6b934d55bf2b4a4b97a30c61c9e83e17, type: 2}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: targetType
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: targetFactions
@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: excludedTargetFactions
-      value: 1535
+      value: 65536
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: enemyFirstPlayerDistance

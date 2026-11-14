@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class SB_Whale_AI : Boss_MoveBase
 {
@@ -55,6 +56,9 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField, Min(1)] int ultimateFirstRiftCount = 12;
     [SerializeField, Min(1)] int ultimateLastRiftCount = 50;
     [SerializeField, Min(1)] int ultimateFinalRiftCount = 120;
+    [SerializeField, Min(0.1f)] float ultimateFinalSpawnDuration = 1f;
+    // Optional override. Without it, active Stage_Floor tilemaps are discovered.
+    [SerializeField] Tilemap ultimateFinalFloorTilemap;
     // Compared with the other P3 attacks, A7 spawns half as many shockwaves
     // without reducing dimensional rifts. A multiplier of 2 doubles the
     // stride (e.g. every 6th rift becomes every 12th rift).
@@ -1474,12 +1478,62 @@ public class SB_Whale_AI : Boss_MoveBase
 
     void EmitUltimateFinalRifts()
     {
-        // The former viewport-wide roar hitbox was impossible to evade.
-        // Keep only dimensional rifts and individually warned shockwaves.
-        // Their spawning is spread over frames by SpawnUltimateRifts().
-        GetUltimateScreenRect(out Vector2 unusedCenter, out Vector2 viewSize);
+        // Scatter the final rifts (and their same-frame shockwave warnings)
+        // across the full floor over exactly one second, not in a burst.
         StartCoroutine(SpawnUltimateRifts(Mathf.Max(1, ultimateFinalRiftCount),
-            Mathf.Max(viewSize.x, viewSize.y), false, Vector2.zero, true));
+            0f, false, Vector2.zero, true));
+    }
+
+    List<Tilemap> FindUltimateFinalFloorTilemaps()
+    {
+        List<Tilemap> floors = new List<Tilemap>();
+        if (ultimateFinalFloorTilemap != null && ultimateFinalFloorTilemap.gameObject.activeInHierarchy)
+        {
+            floors.Add(ultimateFinalFloorTilemap);
+            return floors;
+        }
+
+        // Tilemaps tagged Stage_Floor are the same walkable-floor objects
+        // already used by the whale's normal safe-warp checks.
+        foreach (Tilemap tilemap in FindObjectsOfType<Tilemap>())
+        {
+            if (tilemap == null || tilemap.cellBounds.size.x <= 0 ||
+                tilemap.cellBounds.size.y <= 0) continue;
+            for (Transform node = tilemap.transform; node != null; node = node.parent)
+            {
+                if (!node.CompareTag("Stage_Floor")) continue;
+                floors.Add(tilemap);
+                break;
+            }
+        }
+        return floors;
+    }
+
+    Vector2 ChooseUltimateFinalPosition(List<Tilemap> floors,
+        Vector2 screenCenter, Vector2 screenSize)
+    {
+        // Sample existing floor tiles rather than the screen bounds: the
+        // barrage should reach the whole stage, but never the surrounding void.
+        if (floors != null && floors.Count > 0)
+        {
+            for (int attempt = 0; attempt < 40; attempt++)
+            {
+                Tilemap floor = floors[Random.Range(0, floors.Count)];
+                BoundsInt cells = floor.cellBounds;
+                if (cells.size.x <= 0 || cells.size.y <= 0 || cells.size.z <= 0) continue;
+                Vector3Int cell = new Vector3Int(
+                    Random.Range(cells.xMin, cells.xMax),
+                    Random.Range(cells.yMin, cells.yMax),
+                    Random.Range(cells.zMin, cells.zMax));
+                if (floor.HasTile(cell))
+                    return floor.GetCellCenterWorld(cell);
+            }
+        }
+
+        // Compatibility fallback for stages that don't use Stage_Floor tilemaps.
+        return screenCenter + new Vector2(
+            Random.Range(-screenSize.x * 0.5f, screenSize.x * 0.5f),
+            Random.Range(-screenSize.y * 0.5f, screenSize.y * 0.5f));
     }
 
     IEnumerator SpawnUltimateRifts(int count, float radius, bool targetPlayer,
@@ -1487,14 +1541,29 @@ public class SB_Whale_AI : Boss_MoveBase
     {
         Phase ownerPhase = phase;
         int perFrame = Mathf.Max(1, ultimateRiftsPerFrame);
-        // Cache screen bounds once: a finisher should scatter over the same
-        // viewport that received the full-screen roar, without 120 camera lookups.
+        // Capture the finisher's time range and entire floor once. Random
+        // jitter inside each time slot produces a scattered but evenly paced
+        // one-second barrage without allocating a coroutine for every rift.
+        float finalStart = Time.time;
+        float finalDuration = Mathf.Max(0.1f, ultimateFinalSpawnDuration);
+        List<Tilemap> finalFloors = null;
         Vector2 screenCenter = Vector2.zero;
         Vector2 screenSize = Vector2.zero;
-        if (final) GetUltimateScreenRect(out screenCenter, out screenSize);
+        if (final)
+        {
+            GetUltimateScreenRect(out screenCenter, out screenSize);
+            finalFloors = FindUltimateFinalFloorTilemaps();
+        }
         for (int i = 0; i < count; i++)
         {
-            if (i > 0 && i % perFrame == 0)
+            if (final)
+            {
+                float dueTime = finalStart +
+                    (i + Random.value) / count * finalDuration;
+                while (Time.time < dueTime)
+                    yield return null;
+            }
+            else if (i > 0 && i % perFrame == 0)
                 yield return null;
             if (!ultimateActive || enemyBase == null ||
                 enemyBase.status == EnemyBase.Status.Die ||
@@ -1506,9 +1575,8 @@ public class SB_Whale_AI : Boss_MoveBase
                 position = playerSnapshot;
             else if (final)
             {
-                position = screenCenter + new Vector2(
-                    Random.Range(-screenSize.x * 0.5f, screenSize.x * 0.5f),
-                    Random.Range(-screenSize.y * 0.5f, screenSize.y * 0.5f));
+                position = ChooseUltimateFinalPosition(finalFloors,
+                    screenCenter, screenSize);
             }
             else
                 position = ultimateCenter + Random.insideUnitCircle * radius;

@@ -55,6 +55,10 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField, Min(1)] int ultimateFirstRiftCount = 12;
     [SerializeField, Min(1)] int ultimateLastRiftCount = 50;
     [SerializeField, Min(1)] int ultimateFinalRiftCount = 120;
+    // Compared with the other P3 attacks, A7 spawns half as many shockwaves
+    // without reducing dimensional rifts. A multiplier of 2 doubles the
+    // stride (e.g. every 6th rift becomes every 12th rift).
+    [SerializeField, Min(1)] int ultimateShockwaveIntervalMultiplier = 2;
     [SerializeField, Min(0.1f)] float ultimateRiftBaseRadius = 12f;
     [SerializeField, Range(1, 32)] int ultimateRiftsPerFrame = 8;
     [SerializeField, Min(0.1f)] float ultimateRecoveryTime = 2f;
@@ -1422,9 +1426,9 @@ public class SB_Whale_AI : Boss_MoveBase
             ultimateFirstRiftCount, ultimateLastRiftCount, progress));
         count = Mathf.Max(1, count);
 
-        // Every third roar places one telegraphed shockwave at the
-        // player's position, sampled at the instant the roar fires.
-        bool targetPlayer = (index + 1) % 3 == 0;
+        // Only the third roar targets a shockwave at the player's position.
+        // The sixth and ninth roar use random rift locations as usual.
+        bool targetPlayer = index == 2;
         Vector2 playerPos = enemyBase.Player != null
             ? (Vector2)enemyBase.Player.transform.position : (Vector2)TargetPosition;
         StartCoroutine(SpawnUltimateRifts(count,
@@ -1531,8 +1535,10 @@ public class SB_Whale_AI : Boss_MoveBase
                 position = ultimateCenter + Random.insideUnitCircle * radius;
 
             SpawnThirdScaledObject(SlashLit, position, final ? 3f : 2f);
-            if (i % Mathf.Max(1, thirdShockwaveEveryNthRift) == 0 ||
-                (targetPlayer && i == 0))
+            // A7-only reduction. Keep A4/A5 shockwave frequency untouched.
+            int ultimateShockwaveStride = Mathf.Max(1, thirdShockwaveEveryNthRift) *
+                Mathf.Max(1, ultimateShockwaveIntervalMultiplier);
+            if (i % ultimateShockwaveStride == 0 || (targetPlayer && i == 0))
                 StartCoroutine(ThirdRiftShockwave(position));
         }
     }

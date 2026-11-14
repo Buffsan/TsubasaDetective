@@ -9,6 +9,9 @@ public class SB_Whale_AI : Boss_MoveBase
     public float duration = 1;
     public float arcHeight = 30;
     float AttackCount1 = 0;
+    // Reuse physics query storage instead of allocating arrays during every warp search.
+    readonly Collider2D[] warpQueryHits = new Collider2D[64];
+    CapsuleCollider2D cachedWarpCapsule;
     float saveAngle = 0;
     bool StandOk = false;
     bool isSerious = false;
@@ -208,9 +211,14 @@ public class SB_Whale_AI : Boss_MoveBase
 
     bool IsThirdWarpSafe(Vector2 destination)
     {
+        int count = Physics2D.OverlapPointNonAlloc(destination, warpQueryHits);
+        // A saturated buffer is not trustworthy for collision clearance.
+        if (count == warpQueryHits.Length) return false;
+
         bool onFloor = false;
-        foreach (Collider2D hit in Physics2D.OverlapPointAll(destination))
+        for (int i = 0; i < count; i++)
         {
+            Collider2D hit = warpQueryHits[i];
             if (hit != null && hit.CompareTag("Stage_Floor"))
             {
                 onFloor = true;
@@ -219,21 +227,25 @@ public class SB_Whale_AI : Boss_MoveBase
         }
         if (!onFloor) return false;
 
-        // Use collider's serialized dimensions: bounds is empty while DamageArea is disabled.
+        // Bounds can be empty while DamageArea is disabled during a warp.
         Vector2 size = new Vector2(4f, 4.5f) * thirdBodyMultiplier;
-        if (DamageArea != null)
+        if (cachedWarpCapsule == null && DamageArea != null)
+            cachedWarpCapsule = DamageArea.GetComponent<CapsuleCollider2D>();
+
+        if (cachedWarpCapsule != null)
         {
-            CapsuleCollider2D capsule = DamageArea.GetComponent<CapsuleCollider2D>();
-            if (capsule != null)
-            {
-                Vector3 scale = DamageArea.transform.lossyScale;
-                size = Vector2.Scale(capsule.size,
-                    new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
-            }
+            Vector3 scale = cachedWarpCapsule.transform.lossyScale;
+            size = Vector2.Scale(cachedWarpCapsule.size,
+                new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
         }
 
-        foreach (Collider2D hit in Physics2D.OverlapBoxAll(destination, size * 0.9f, 0f))
+        count = Physics2D.OverlapBoxNonAlloc(destination, size * 0.9f, 0f, warpQueryHits);
+        if (count == warpQueryHits.Length) return false;
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D hit = warpQueryHits[i];
             if (hit != null && hit.CompareTag("Stage_Wall")) return false;
+        }
         return true;
     }
 
@@ -1370,13 +1382,15 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     bool IsTagAtPosition(Vector2 position, string tag)
     {
-        Collider2D hit = Physics2D.OverlapPoint(position);
-
-        if (hit != null && hit.CompareTag(tag))
+        // OverlapPoint only sees the first collider, which can be the player
+        // instead of the floor. Check every returned overlap without allocating.
+        int count = Physics2D.OverlapPointNonAlloc(position, warpQueryHits);
+        if (count == warpQueryHits.Length) return false;
+        for (int i = 0; i < count; i++)
         {
-            return true;
+            Collider2D hit = warpQueryHits[i];
+            if (hit != null && hit.CompareTag(tag)) return true;
         }
-
         return false;
     }
     // A single coroutine schedules an entire wave of rifts, instead of one

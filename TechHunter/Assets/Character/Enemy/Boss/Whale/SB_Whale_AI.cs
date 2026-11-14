@@ -37,8 +37,6 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField, Min(0.01f)] float thirdShockwaveHitDuration = 0.8f;
     [SerializeField, Min(0f)] float thirdShockwaveShakeDuration = 0.2f;
     [SerializeField, Min(0f)] float thirdShockwaveShakeStrength = 0.15f;
-    [SerializeField] Vector2 thirdShockwaveDelay = new Vector2(3f, 4f);
-    [SerializeField, Min(0f)] float thirdShockwaveExplosionAdvance = 0.5f;
     // Phase 3 may start only after A6 has finished the full P2 transition,
     // including its BGM change. Interruption will replay A6 instead of skipping it.
     bool secondPhaseIntroCompleted;
@@ -320,14 +318,18 @@ public class SB_Whale_AI : Boss_MoveBase
             audioManager.PlaySE(audioclips[2]);
     }
 
-    IEnumerator ThirdRiftShockwave(Vector2 position, float delay)
+    IEnumerator ThirdRiftShockwave(Vector2 position)
     {
-        // The warning is spawned together with the rift in Ougi().
-        // Trigger the impact slightly earlier to compensate for the visible
-        // gap after its warning animation. Both A4 and A5 use this routine.
-        float adjustedDelay = Mathf.Max(0f, delay - thirdShockwaveExplosionAdvance);
-        yield return new WaitForSeconds(adjustedDelay);
-        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
+        // StartCoroutine executes up to the first yield immediately, so this
+        // warning appears in the same frame as its dimensional rift.
+        // The warning and the actual hit are driven by ONE timer: no gap.
+        float warningDuration = Mathf.Max(0.01f, thirdShockwaveWarningDuration);
+        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, position,
+            warningDuration), thirdShockwaveAreaScale);
+
+        yield return new WaitForSeconds(warningDuration);
+        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die ||
+            enemyBase.IsCharmed || phase != Phase.P3) yield break;
 
         ScaleSpawn(SpawnObjectNow_Input(HoukouAttack, position, thirdShockwaveHitDuration),
             thirdShockwaveAreaScale);
@@ -1466,12 +1468,8 @@ public class SB_Whale_AI : Boss_MoveBase
 
             if (allowShockwaves && i % Mathf.Max(1, thirdShockwaveEveryNthRift) == 0)
             {
-                // Spawn the 1.5s warning on the same frame as its rift.
-                ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, position,
-                    thirdShockwaveWarningDuration), thirdShockwaveAreaScale);
-                float minDelay = Mathf.Max(0f, Mathf.Min(thirdShockwaveDelay.x, thirdShockwaveDelay.y));
-                float maxDelay = Mathf.Max(minDelay, Mathf.Max(thirdShockwaveDelay.x, thirdShockwaveDelay.y));
-                StartCoroutine(ThirdRiftShockwave(position, Random.Range(minDelay, maxDelay)));
+                // Warning and explosion share the same 1.5s timeline.
+                StartCoroutine(ThirdRiftShockwave(position));
             }
         }
     }

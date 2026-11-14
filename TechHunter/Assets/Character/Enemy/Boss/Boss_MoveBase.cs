@@ -265,7 +265,14 @@ public class Boss_MoveBase : MonoBehaviour
     {
         GameObject warning = SpawnAttackWarning(EnemyContoroller.WarningRectangle,
             Effect, Pos, Quaternion.identity, AnimationSpeed);
-        if (warning != null) Clone_DengerObjects.Add(warning);
+        if (warning != null)
+        {
+            // Old warnings are destroyed automatically; avoid retaining stale
+            // UnityEngine.Object references throughout long boss battles.
+            if (Clone_DengerObjects.Count >= 128)
+                Clone_DengerObjects.RemoveAll(w => w == null);
+            Clone_DengerObjects.Add(warning);
+        }
         return warning;
     }
 
@@ -274,7 +281,14 @@ public class Boss_MoveBase : MonoBehaviour
     {
         GameObject warning = SpawnAttackWarning(warningType, null,
             pos, Quaternion.identity, duration);
-        if (warning != null) Clone_DengerObjects.Add(warning);
+        if (warning != null)
+        {
+            // Old warnings are destroyed automatically; avoid retaining stale
+            // UnityEngine.Object references throughout long boss battles.
+            if (Clone_DengerObjects.Count >= 128)
+                Clone_DengerObjects.RemoveAll(w => w == null);
+            Clone_DengerObjects.Add(warning);
+        }
         return warning;
     }
 

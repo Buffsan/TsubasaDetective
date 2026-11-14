@@ -26,7 +26,7 @@ public class OW_DimensionalRift : MonoBehaviour
         if (phase == 0 && attackCount > 1f)
         {
             if (animator != null)
-                animator.Play("”j—ô", 0, 0);
+                animator.Play("破裂", 0, 0f);
 
             SpawnAttackArea(AttackArea1, 1f);
             SpawnAttackArea(AttackArea2, 0.8f);

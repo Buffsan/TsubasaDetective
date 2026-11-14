@@ -5,7 +5,6 @@ using UnityEngine;
 public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
 {
     [Header("行軍")]
-    [SerializeField, Min(0.1f)] float marchSpeed = 4f;
     [SerializeField, Min(0.1f)] float laneRecoverySpeed = 2.5f;
     [SerializeField, Min(0f)] float laneRecoveryGain = 5f;
     [SerializeField, Min(5f)] float maxLifetime = 60f;
@@ -41,7 +40,7 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         controller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Special;
         enemyBase.LookPlayerDistance = -1f; // No automatic proximity attacks.
         enemyBase.moveType = EnemyBase.MoveType.Move;
-        enemyBase.animator.SetInteger("Anim", 1);
+        PlayAnimation("歩行", 1);
         initialized = true;
     }
 
@@ -52,13 +51,13 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
     {
         if (!initialized || enemyBase.status != EnemyBase.Status.Nomal) return;
         if (CheckExit()) return;
-        enemyBase.animator.SetInteger("Anim", 1);
+        PlayAnimation("歩行", 1);
         enemyBase.isTargetLook(enemyBase.transform.position + Vector3.right);
         if (HasTargetAhead())
         {
             enemyBase.rb.velocity = Vector2.zero;
             enemyBase.moveType = EnemyBase.MoveType.Attack;
-            enemyBase.animator.SetInteger("Anim", 2);
+            PlayAnimation("攻撃待機", 2);
             phase = Phase.Windup;
             phaseSeconds = 0f;
             return;
@@ -67,14 +66,14 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         float ySpeed = Mathf.Clamp((laneY - enemyBase.rb.position.y) * laneRecoveryGain,
             -laneRecoverySpeed, laneRecoverySpeed);
         if (Mathf.Abs(laneY - enemyBase.rb.position.y) < 0.03f) ySpeed = 0f;
-        enemyBase.rb.velocity = new Vector2(marchSpeed, ySpeed);
+        enemyBase.rb.velocity = new Vector2(Mathf.Max(0f, enemyBase.SPEED), ySpeed);
     }
 
     bool HasTargetAhead()
     {
         int n = ScanAhead();
         for (int i = 0; i < n; i++)
-            if (IsValidVictim(hitBuffer[i], out _)) return true;
+            if (IsValidTarget(hitBuffer[i], out _)) return true;
         return false;
     }
 
@@ -85,17 +84,32 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
             new Vector2(attackReach, attackLaneWidth), 0f, hitBuffer);
     }
 
-    bool IsValidVictim(Collider2D hit, out EnemyBase victim)
+    bool IsValidTarget(Collider2D hit, out EnemyBase victim)
     {
         victim = null;
-        if (hit == null || !hit.CompareTag("EnemyArea")) return false;
+        if (hit == null) return false;
+        if (hit.CompareTag("PlayerArea")) return true;
+        if (!hit.CompareTag("EnemyArea")) return false;
+
         charaDamage damage = hit.GetComponent<charaDamage>();
         victim = damage != null ? damage.OwnerEnemyBase : null;
         if (victim == null || victim == enemyBase ||
             victim.status == EnemyBase.Status.Die || victim.HP <= 0f || victim.IsCharmed)
             return false;
-        // Other sweep soldiers must not block one another or receive friendly fire.
+        // Other sweep soldiers are allies regardless of country faction.
         return victim.gameObject.layer != LayerMask.NameToLayer("SweepEnemy");
+    }
+
+    void PlayAnimation(string stateName, int anim)
+    {
+        Animator animator = enemyBase.animator;
+        if (animator == null) return;
+        animator.SetInteger("Anim", anim);
+
+        // Cross-frame transitions occasionally leave the inherited base Animator in idle.
+        // Switch once, then leave the sprite walk clip running without resetting its time.
+        if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer." + stateName))
+            animator.Play("Base Layer." + stateName, 0, 0f);
     }
 
     public override void EnemyAttackPlay()
@@ -111,7 +125,7 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
                 {
                     phase = Phase.Swing;
                     phaseSeconds = 0f;
-                    enemyBase.animator.SetInteger("Anim", 3);
+                    PlayAnimation("攻撃", 3);
                     HitInFront();
                 }
                 break;
@@ -128,7 +142,7 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
                     phase = Phase.March;
                     phaseSeconds = 0f;
                     enemyBase.moveType = EnemyBase.MoveType.Move;
-                    enemyBase.animator.SetInteger("Anim", 1);
+                    PlayAnimation("歩行", 1);
                 }
                 break;
             default:
@@ -141,18 +155,31 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
     void HitInFront()
     {
         hitThisSwing.Clear();
-        int n = ScanAhead();
+        int count = ScanAhead();
         GameObject temporary = new GameObject("ShieldSweep_Impact");
         temporary.transform.position = enemyBase.transform.position;
         EnemyAttack attack = temporary.AddComponent<EnemyAttack>();
         attack.ConfigureAttack(enemyBase, attackPowerPercent);
         controller.ConfigureAttackTarget(attack);
-        for (int i = 0; i < n; i++)
+        attack.BeginManualHitWindow();
+
+        bool playerHit = false;
+        for (int i = 0; i < count; i++)
         {
             Collider2D hit = hitBuffer[i];
-            if (IsValidVictim(hit, out EnemyBase victim) && hitThisSwing.Add(victim))
-                attack.CheckHitNow(hit);
+            if (!IsValidTarget(hit, out EnemyBase victim)) continue;
+
+            if (hit.CompareTag("PlayerArea"))
+            {
+                if (playerHit) continue;
+                playerHit = true;
+            }
+            else if (!hitThisSwing.Add(victim))
+                continue;
+
+            attack.CheckHitNow(hit);
         }
+        attack.EndManualHitWindow();
         Destroy(temporary);
         if (enemyBase.AttackAudio != null && enemyBase.audioManager != null)
             enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);

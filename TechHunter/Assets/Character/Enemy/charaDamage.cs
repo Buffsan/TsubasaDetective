@@ -321,8 +321,14 @@ public class charaDamage : MonoBehaviour, IDamageable
         }
 
         enemyBase.TakeDamageColor();
-        ConfusionHP -= (Attackvalue * HP_percent) * ConfusionPower;
-        if (1 - (ConfusionHP / enemyBase.ConfusionHP) > enemyBase.HP / enemyBase.MAXHP && enemyBase.status != EnemyBase.Status.ConfusionResistance)
+        // A boss ultimate cannot be interrupted by stun or confusion.
+        // This does NOT prevent damage, death, or non-stagger status effects.
+        if (!enemyBase.IsUnstaggerable)
+        {
+            ConfusionHP -= (Attackvalue * HP_percent) * ConfusionPower;
+        }
+        if (!enemyBase.IsUnstaggerable &&
+            1 - (ConfusionHP / enemyBase.ConfusionHP) > enemyBase.HP / enemyBase.MAXHP && enemyBase.status != EnemyBase.Status.ConfusionResistance)
         {//混乱
 
             audioManager.PlaySE(enemyBase.ConfusionAudio);
@@ -334,7 +340,8 @@ public class charaDamage : MonoBehaviour, IDamageable
             Destroy(CL_ConfusionText, 2);
 
         }
-        else if (Stan < Stanvalue && enemyBase.status != EnemyBase.Status.ConfusionResistance)
+        else if (!enemyBase.IsUnstaggerable &&
+                 Stan < Stanvalue && enemyBase.status != EnemyBase.Status.ConfusionResistance)
         {
             enemyBase.status = EnemyBase.Status.Stan;
             StanCount = 0;

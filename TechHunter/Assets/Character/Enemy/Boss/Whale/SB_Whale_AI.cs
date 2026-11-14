@@ -67,7 +67,6 @@ public class SB_Whale_AI : Boss_MoveBase
     bool ultimateActive;
     float ultimateChargeShakeClock;
     int ultimateRoarFiredCount;
-    GameObject ultimateFinalWarning;
     bool thirdRecoilActive;
     bool thirdIntroRoar;
     int thirdRoarPulse;
@@ -1312,7 +1311,8 @@ public class SB_Whale_AI : Boss_MoveBase
                 if (ultimateRoarFiredCount >= ultimateRoarCount)
                 {
                     enemyBase.animator.Play("攻撃待機", 0, 0);
-                    SpawnUltimateFinalWarning();
+                    // The finisher remains a telegraphed rift/shockwave barrage,
+                    // without the unavoidable full-screen roar.
                     NextPhase();
                 }
                 else
@@ -1326,10 +1326,9 @@ public class SB_Whale_AI : Boss_MoveBase
 
         if (AttackPhase == 5)
         {
-            UpdateUltimateFinalWarningPosition();
             if (attackcount() >= ultimateLastChargeTime)
             {
-                EmitUltimateFinalRoar();
+                EmitUltimateFinalRifts();
                 NextPhase();
             }
             return;
@@ -1373,11 +1372,6 @@ public class SB_Whale_AI : Boss_MoveBase
                 enemyBase.rb.velocity = Vector2.zero;
                 if (DamageArea != null) DamageArea.SetActive(true);
             }
-        }
-        if (ultimateFinalWarning != null)
-        {
-            Destroy(ultimateFinalWarning);
-            ultimateFinalWarning = null;
         }
         SetUltimateEmission(3f);
     }
@@ -1456,51 +1450,14 @@ public class SB_Whale_AI : Boss_MoveBase
         }
     }
 
-    void SpawnUltimateFinalWarning()
+    void EmitUltimateFinalRifts()
     {
-        GetUltimateScreenRect(out Vector2 center, out Vector2 size);
-        // The existing warning is circular; enlarge it beyond the viewport's
-        // corners. The final damage uses an exact viewport-sized collider.
-        float warningScale = Mathf.Max(size.x, size.y) / 9f * 1.5f;
-        ultimateFinalWarning = ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea,
-            center, ultimateLastChargeTime), warningScale);
-    }
-
-    void UpdateUltimateFinalWarningPosition()
-    {
-        if (ultimateFinalWarning == null) return;
-        GetUltimateScreenRect(out Vector2 center, out Vector2 unused);
-        ultimateFinalWarning.transform.position = center;
-    }
-
-    void EmitUltimateFinalRoar()
-    {
-        GetUltimateScreenRect(out Vector2 center, out Vector2 viewSize);
-        enemyBase.animator.Play("攻撃", 0, 0);
-        // HukouArea.prefab is a 9x9 BoxCollider2D; scale its trigger to
-        // cover the entire viewport, including a margin for camera motion.
-        GameObject hitbox = SpawnObjectNow_Input(HoukouAttack, center, 0.25f);
-        if (hitbox != null)
-        {
-            BoxCollider2D collider = hitbox.GetComponent<BoxCollider2D>();
-            Vector2 originalSize = collider != null ? collider.size : new Vector2(9f, 9f);
-            float width = Mathf.Max(0.1f, originalSize.x);
-            float height = Mathf.Max(0.1f, originalSize.y);
-            hitbox.transform.localScale = new Vector3(
-                viewSize.x * 1.1f / width, viewSize.y * 1.1f / height, 1f);
-        }
-        if (Effects.Count > 0 && Effects[0] != null)
-            ScaleSpawn(SpawnObjectNow_Input(Effects[0], center, 3f),
-                Mathf.Max(viewSize.x, viewSize.y) / 9f);
-        if (audioclips.Count > 0 && audioclips[0] != null)
-            audioManager.PlaySE(audioclips[0]);
-        if (all_System != null && all_System.camera_Controller != null)
-            all_System.camera_Controller.Shake(0.65f, 0.7f);
-
-        Vector2 playerPos = enemyBase.Player != null
-            ? (Vector2)enemyBase.Player.transform.position : (Vector2)TargetPosition;
+        // The former viewport-wide HoukouAttack hitbox was impossible to evade.
+        // Keep only the individually telegraphed dimensional rifts/shockwaves.
+        // Their spawning is spread over frames by SpawnUltimateRifts().
+        GetUltimateScreenRect(out Vector2 unusedCenter, out Vector2 viewSize);
         StartCoroutine(SpawnUltimateRifts(Mathf.Max(1, ultimateFinalRiftCount),
-            Mathf.Max(viewSize.x, viewSize.y), false, playerPos, true));
+            Mathf.Max(viewSize.x, viewSize.y), false, Vector2.zero, true));
     }
 
     IEnumerator SpawnUltimateRifts(int count, float radius, bool targetPlayer,

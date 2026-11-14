@@ -1232,6 +1232,305 @@ public class SB_Whale_AI : Boss_MoveBase
         }
     }
 
+
+    // Ultimate is a dedicated state machine rather than a coroutine that fights
+    // M_Attack's state/timers. This also keeps animator and hitboxes synchronized.
+    void A7()
+    {
+        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) return;
+        enemyBase.rb.velocity = Vector2.zero;
+
+        if (AttackPhase == 0)
+        {
+            StartUltimate();
+            enemyBase.animator.Play("ワープ", 0, 0);
+            if (DamageArea != null) DamageArea.SetActive(false);
+            if (audioclips.Count > 2 && audioclips[2] != null)
+                audioManager.PlaySE(audioclips[2]);
+            NextPhase();
+            return;
+        }
+
+        if (AttackPhase == 1)
+        {
+            if (attackcount() >= ultimateWarpDisappearTime)
+            {
+                Vector3 pos = enemyBase.transform.position;
+                enemyBase.transform.position = new Vector3(ultimateCenter.x, ultimateCenter.y, pos.z);
+                enemyBase.animator.Play("出現", 0, 0);
+                if (audioclips.Count > 2 && audioclips[2] != null)
+                    audioManager.PlaySE(audioclips[2]);
+                NextPhase();
+            }
+            return;
+        }
+
+        if (AttackPhase == 2)
+        {
+            if (attackcount() >= ultimateWarpAppearTime)
+            {
+                if (DamageArea != null) DamageArea.SetActive(true);
+                enemyBase.animator.Play("攻撃待機", 0, 0);
+                SetUltimateEmission(ultimateChargeEmissionRate);
+                ultimateChargeShakeClock = 0f;
+                SpawnUltimateRoarWarning(0, ultimateChargeTime);
+                NextPhase();
+            }
+            return;
+        }
+
+        if (AttackPhase == 3)
+        {
+            ShakeDuringUltimateCharge();
+            if (attackcount() >= ultimateChargeTime)
+            {
+                SetUltimateEmission(3f);
+                ultimateRoarFiredCount = 0;
+                EmitUltimateRoar(ultimateRoarFiredCount);
+                ultimateRoarFiredCount++;
+                if (ultimateRoarFiredCount < ultimateRoarCount)
+                    SpawnUltimateRoarWarning(ultimateRoarFiredCount,
+                        UltimateRoarInterval);
+                NextPhase();
+            }
+            return;
+        }
+
+        if (AttackPhase == 4)
+        {
+            if (attackcount() >= UltimateRoarInterval)
+            {
+                if (ultimateRoarFiredCount < ultimateRoarCount)
+                {
+                    EmitUltimateRoar(ultimateRoarFiredCount);
+                    ultimateRoarFiredCount++;
+                }
+                if (ultimateRoarFiredCount >= ultimateRoarCount)
+                {
+                    enemyBase.animator.Play("攻撃待機", 0, 0);
+                    SpawnUltimateFinalWarning();
+                    NextPhase();
+                }
+                else
+                {
+                    SpawnUltimateRoarWarning(ultimateRoarFiredCount, UltimateRoarInterval);
+                    enemyBase.AttackCount = 0f;
+                }
+            }
+            return;
+        }
+
+        if (AttackPhase == 5)
+        {
+            UpdateUltimateFinalWarningPosition();
+            if (attackcount() >= ultimateLastChargeTime)
+            {
+                EmitUltimateFinalRoar();
+                NextPhase();
+            }
+            return;
+        }
+
+        if (AttackPhase == 6 && attackcount() >= ultimateRecoveryTime)
+        {
+            EndUltimate(true);
+            AttackFinish();
+        }
+    }
+
+    float UltimateRoarInterval => 0.5f * ultimateRoarIntervalMultiplier;
+
+    void StartUltimate()
+    {
+        if (ultimateActive) return;
+        ultimateActive = true;
+        ultimateRoarFiredCount = 0;
+        ultimateChargeShakeClock = 0f;
+        if (enemyBase == null) return;
+        enemyBase.IsUnstaggerable = true;
+        enemyBase.status = EnemyBase.Status.Nomal;
+        enemyBase.StanCount = 0f;
+        enemyBase.animator.SetBool("Damage", false);
+        enemyBase.rb.velocity = Vector2.zero;
+        // A7 begins separately from the fast A2 warp; restore its animator speed.
+        StopThirdFourwayWarpAnimation();
+    }
+
+    void EndUltimate(bool completed)
+    {
+        if (!ultimateActive && (enemyBase == null || !enemyBase.IsUnstaggerable))
+            return;
+        ultimateActive = false;
+        if (enemyBase != null)
+        {
+            enemyBase.IsUnstaggerable = false;
+            enemyBase.rb.velocity = Vector2.zero;
+            if (DamageArea != null && enemyBase.status != EnemyBase.Status.Die)
+                DamageArea.SetActive(true);
+        }
+        if (ultimateFinalWarning != null)
+        {
+            Destroy(ultimateFinalWarning);
+            ultimateFinalWarning = null;
+        }
+        SetUltimateEmission(3f);
+    }
+
+    void SetUltimateEmission(float rate)
+    {
+        if (thirdParticleSystem == null) ApplyThirdParticles();
+        if (thirdParticleSystem == null) return;
+        ParticleSystem.EmissionModule emission = thirdParticleSystem.emission;
+        emission.rateOverTime = new ParticleSystem.MinMaxCurve(Mathf.Max(0f, rate));
+    }
+
+    void ShakeDuringUltimateCharge()
+    {
+        ultimateChargeShakeClock += Time.deltaTime;
+        if (ultimateChargeShakeClock < 0.1f) return;
+        ultimateChargeShakeClock = 0f;
+        if (all_System != null && all_System.camera_Controller != null)
+            all_System.camera_Controller.Shake(0.15f, ultimateChargeShakeStrength);
+    }
+
+    void SpawnUltimateRoarWarning(int index, float warningSeconds)
+    {
+        float radiusMultiplier = Mathf.Pow(ultimateRoarRangeGrowth, index);
+        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea,
+            enemyBase.transform.position, warningSeconds), radiusMultiplier);
+    }
+
+    void EmitUltimateRoar(int index)
+    {
+        enemyBase.animator.Play("攻撃", 0, 0);
+        float radiusMultiplier = Mathf.Pow(ultimateRoarRangeGrowth, index);
+        ScaleSpawn(SpawnObjectNow_Input(HoukouAttack,
+            enemyBase.transform.position, 0.15f), radiusMultiplier);
+        if (Effects.Count > 0 && Effects[0] != null)
+            ScaleSpawn(SpawnObjectNow_Input(Effects[0],
+                enemyBase.transform.position, 3f), radiusMultiplier);
+        if (audioclips.Count > 0 && audioclips[0] != null)
+            audioManager.PlaySE(audioclips[0]);
+        if (all_System != null && all_System.camera_Controller != null)
+            all_System.camera_Controller.Shake(0.25f, 0.3f);
+
+        float progress = ultimateRoarCount <= 1
+            ? 1f : (float)index / (ultimateRoarCount - 1);
+        int count = Mathf.RoundToInt(Mathf.Lerp(
+            ultimateFirstRiftCount, ultimateLastRiftCount, progress));
+        count = Mathf.Max(1, count);
+
+        // Every third roar places one telegraphed shockwave at the
+        // player's position, sampled at the instant the roar fires.
+        bool targetPlayer = (index + 1) % 3 == 0;
+        Vector2 playerPos = enemyBase.Player != null
+            ? (Vector2)enemyBase.Player.transform.position : (Vector2)TargetPosition;
+        StartCoroutine(SpawnUltimateRifts(count,
+            ultimateRiftBaseRadius * radiusMultiplier,
+            targetPlayer, playerPos, false));
+    }
+
+    void GetUltimateScreenRect(out Vector2 center, out Vector2 size)
+    {
+        Camera cam = Camera.main;
+        if (cam == null && all_System != null &&
+            all_System.camera_Controller != null)
+            cam = all_System.camera_Controller.GetComponent<Camera>();
+
+        if (cam != null && cam.orthographic)
+        {
+            center = cam.transform.position;
+            float height = cam.orthographicSize * 2f;
+            size = new Vector2(height * cam.aspect, height);
+        }
+        else
+        {
+            center = ultimateCenter;
+            size = new Vector2(32f, 18f);
+        }
+    }
+
+    void SpawnUltimateFinalWarning()
+    {
+        GetUltimateScreenRect(out Vector2 center, out Vector2 size);
+        // The existing warning is circular; enlarge it beyond the viewport's
+        // corners. The final damage uses an exact viewport-sized collider.
+        float warningScale = Mathf.Max(size.x, size.y) / 9f * 1.5f;
+        ultimateFinalWarning = ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea,
+            center, ultimateLastChargeTime), warningScale);
+    }
+
+    void UpdateUltimateFinalWarningPosition()
+    {
+        if (ultimateFinalWarning == null) return;
+        GetUltimateScreenRect(out Vector2 center, out Vector2 unused);
+        ultimateFinalWarning.transform.position = center;
+    }
+
+    void EmitUltimateFinalRoar()
+    {
+        GetUltimateScreenRect(out Vector2 center, out Vector2 viewSize);
+        enemyBase.animator.Play("攻撃", 0, 0);
+        // HukouArea.prefab is a 9x9 BoxCollider2D; scale its trigger to
+        // cover the entire viewport, including a margin for camera motion.
+        GameObject hitbox = SpawnObjectNow_Input(HoukouAttack, center, 0.25f);
+        if (hitbox != null)
+        {
+            BoxCollider2D collider = hitbox.GetComponent<BoxCollider2D>();
+            Vector2 originalSize = collider != null ? collider.size : new Vector2(9f, 9f);
+            float width = Mathf.Max(0.1f, originalSize.x);
+            float height = Mathf.Max(0.1f, originalSize.y);
+            hitbox.transform.localScale = new Vector3(
+                viewSize.x * 1.1f / width, viewSize.y * 1.1f / height, 1f);
+        }
+        if (Effects.Count > 0 && Effects[0] != null)
+            ScaleSpawn(SpawnObjectNow_Input(Effects[0], center, 3f),
+                Mathf.Max(viewSize.x, viewSize.y) / 9f);
+        if (audioclips.Count > 0 && audioclips[0] != null)
+            audioManager.PlaySE(audioclips[0]);
+        if (all_System != null && all_System.camera_Controller != null)
+            all_System.camera_Controller.Shake(0.65f, 0.7f);
+
+        Vector2 playerPos = enemyBase.Player != null
+            ? (Vector2)enemyBase.Player.transform.position : (Vector2)TargetPosition;
+        StartCoroutine(SpawnUltimateRifts(Mathf.Max(1, ultimateFinalRiftCount),
+            Mathf.Max(viewSize.x, viewSize.y), false, playerPos, true));
+    }
+
+    IEnumerator SpawnUltimateRifts(int count, float radius, bool targetPlayer,
+        Vector2 playerSnapshot, bool final)
+    {
+        Phase ownerPhase = phase;
+        int perFrame = Mathf.Max(1, ultimateRiftsPerFrame);
+        for (int i = 0; i < count; i++)
+        {
+            if (i > 0 && i % perFrame == 0)
+                yield return null;
+            if (!ultimateActive || enemyBase == null ||
+                enemyBase.status == EnemyBase.Status.Die ||
+                enemyBase.IsCharmed || phase != ownerPhase)
+                yield break;
+
+            Vector2 position;
+            if (targetPlayer && i == 0)
+                position = playerSnapshot;
+            else if (final)
+            {
+                GetUltimateScreenRect(out Vector2 screenCenter, out Vector2 screenSize);
+                position = screenCenter + new Vector2(
+                    Random.Range(-screenSize.x * 0.5f, screenSize.x * 0.5f),
+                    Random.Range(-screenSize.y * 0.5f, screenSize.y * 0.5f));
+            }
+            else
+                position = ultimateCenter + Random.insideUnitCircle * radius;
+
+            SpawnThirdScaledObject(SlashLit, position, final ? 3f : 2f);
+            if (i % Mathf.Max(1, thirdShockwaveEveryNthRift) == 0 ||
+                (targetPlayer && i == 0))
+                StartCoroutine(ThirdRiftShockwave(position));
+        }
+    }
+
     void A6() 
     {
         if (AttackPhase == 0) 

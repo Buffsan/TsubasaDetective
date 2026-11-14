@@ -50,8 +50,8 @@ MonoBehaviour:
   attacktype: 0
   AttackCount: 0
   Clone_DengerObjects: []
-  marchSpeed: 4
-  laneRecoverySpeed: 2.5
+  marchSpeed: 1
+  laneRecoverySpeed: 1.2
   laneRecoveryGain: 5
   maxLifetime: 60
   attackReach: 1.7

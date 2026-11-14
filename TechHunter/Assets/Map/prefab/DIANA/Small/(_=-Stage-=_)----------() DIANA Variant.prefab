@@ -3784,6 +3784,10 @@ PrefabInstance:
       propertyPath: stage
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5743106456970045363, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
+      propertyPath: useAllySpawnMap
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6806165514305181764, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: ShapeModule.m_Scale.x
       value: 6.78
@@ -33708,6 +33712,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7300000000000000401, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
+      propertyPath: sweepSoldierPrefab
+      value: 
+      objectReference: {fileID: 8859200305933796471, guid: 3c1955ac0a9c4864b036213d6baf21f5, type: 3}
     - target: {fileID: 7300000000000000503, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_Tiles.Array.size
       value: 33
@@ -34634,7 +34642,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7574221941364845487, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7945993608053462500, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_Size.y
@@ -41862,7 +41870,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8031436975487240802, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -9.5
+      value: -10.54
       objectReference: {fileID: 0}
     - target: {fileID: 8335560891945035605, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_LocalScale.x
@@ -41874,7 +41882,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8335560891945035605, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 10.99
+      value: 12.2
       objectReference: {fileID: 0}
     - target: {fileID: 8403772928360166595, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_Size.x

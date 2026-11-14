@@ -93,6 +93,9 @@ public class EnemySpawnGroup
         PASTAL_SE_Conductor,
         PASTAL_SE_GrowthSector,
         DIANA_LunarPurgeSquad_Mace,
+        DIANA_LunarPurgeSquad_Knight,
+        DIANA_LunarPurgeSquad_Shield,
+        DIANA_PilgrimOfTheMoon,
     }
 
     

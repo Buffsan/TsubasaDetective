@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 100100, guid: f8b22275cde94c3ba8b59d1472c1f0a2, type: 3}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: excludedTargetFactions
-      value: 2
+      value: 1407
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: enemyFirstPlayerDistance

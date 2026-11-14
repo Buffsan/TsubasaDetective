@@ -5124,7 +5124,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: bcb308d284e6ff142b7fdef05e5c5ae0, type: 2}
     - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
       propertyPath: status
-      value: 0
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3603567642929344998, guid: 1560399e849ab07438ec40795c604e39, type: 3}
       propertyPath: StanTime

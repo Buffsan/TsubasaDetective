@@ -49,8 +49,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 100100, guid: d329c8d91d4d4faeb12905705242d0f7, type: 3}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
-      propertyPath: excludedTargetFactions
+      propertyPath: countsForStageClear
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
+      propertyPath: excludedTargetFactions
+      value: 1535
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: enemyFirstPlayerDistance
@@ -67,10 +71,6 @@ PrefabInstance:
     - target: {fileID: 8859200305933763443, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: m_Layer
       value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
-      propertyPath: countsForStageClear
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

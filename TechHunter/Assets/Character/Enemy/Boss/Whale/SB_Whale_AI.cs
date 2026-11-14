@@ -218,8 +218,30 @@ public class SB_Whale_AI : Boss_MoveBase
 
     GameObject SpawnThirdScaledObject(GameObject prefab, Vector2 position, float lifetime)
     {
+        if (prefab == SlashLit)
+            return SpawnWhaleRift(position, lifetime, ThirdRangeScale);
         return ScaleSpawn(SpawnObjectNow_Input(prefab, position, lifetime), ThirdRangeScale);
     }
+
+    GameObject SpawnWhaleRift(Vector2 position, float lifetime, float scale)
+    {
+        if (SlashLit == null) return null;
+        GameObject rift = SpawnObjectNow_Input(SlashLit, position, lifetime);
+        if (rift != null)
+        {
+            OW_DimensionalRift controller = rift.GetComponent<OW_DimensionalRift>();
+            if (controller != null)
+                controller.SetEnemyAttackOwner(enemyBase);
+            else if (!warnedMissingRiftController)
+            {
+                warnedMissingRiftController = true;
+                Debug.LogWarning("SB_Whale_AI: SlashLit has no OW_DimensionalRift component.", this);
+            }
+        }
+        return ScaleSpawn(rift, scale);
+    }
+
+    bool warnedMissingRiftController;
 
     void SpawnRoarWarning(float seconds)
     {
@@ -1742,9 +1764,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 while (Mathf.Abs(offset.x) <= exclusion &&
                     Mathf.Abs(offset.y) <= exclusion && range > exclusion);
 
-                GameObject rift = SpawnObjectNow_Input(SlashLit,
-                    origin + offset * scale, 5f);
-                ScaleSpawn(rift, scale);
+                SpawnWhaleRift(origin + offset * scale, 5f, scale);
             }
         }
     }
@@ -1773,7 +1793,7 @@ public class SB_Whale_AI : Boss_MoveBase
             float angle = Random.Range(-80f, 80f);
             Vector2 directionRotated = Quaternion.AngleAxis(angle, Vector3.forward) * direction;
             Vector2 position = origin + directionRotated * (i / 2.5f * scale);
-            ScaleSpawn(SpawnObjectNow_Input(SlashLit, position, 2f), scale);
+            SpawnWhaleRift(position, 2f, scale);
 
             if (allowShockwaves && i % Mathf.Max(1, thirdShockwaveEveryNthRift) == 0)
             {

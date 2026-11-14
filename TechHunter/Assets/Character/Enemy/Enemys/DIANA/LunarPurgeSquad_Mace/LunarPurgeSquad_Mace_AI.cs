@@ -13,7 +13,7 @@ public class LunarPurgeSquad_Mace_AI : EnemyMoveBase
     [SerializeField, Min(0.1f)] float warningDuration = 2f;
     [SerializeField, Min(0.1f)] float leapDuration = 1f;
     [SerializeField, Min(0f)] float leapHeight = 4f;
-    [SerializeField, Min(0f)] float landingRecovery = 0.2f;
+    [SerializeField, Min(0f)] float landingRecovery = 0.3f;
 
     [Header("着地攻撃")]
     [SerializeField] Vector2 impactSize = new Vector2(5f, 5f);
@@ -195,7 +195,7 @@ public class LunarPurgeSquad_Mace_AI : EnemyMoveBase
         enemyBase.rb.position = landingPoint;
         RestorePhysics(false);
         ClearWarning();
-        enemyBase.animator.SetInteger("Anim", 0);
+        enemyBase.animator.SetInteger("Anim", 4);
 
         if (enemyBase.AttackAudio != null && enemyBase.audioManager != null)
             enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);

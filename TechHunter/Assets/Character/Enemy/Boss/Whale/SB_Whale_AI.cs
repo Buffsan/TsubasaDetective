@@ -1364,9 +1364,11 @@ public class SB_Whale_AI : Boss_MoveBase
         if (enemyBase != null)
         {
             enemyBase.IsUnstaggerable = false;
-            enemyBase.rb.velocity = Vector2.zero;
-            if (DamageArea != null && enemyBase.status != EnemyBase.Status.Die)
-                DamageArea.SetActive(true);
+            if (enemyBase.status != EnemyBase.Status.Die)
+            {
+                enemyBase.rb.velocity = Vector2.zero;
+                if (DamageArea != null) DamageArea.SetActive(true);
+            }
         }
         if (ultimateFinalWarning != null)
         {
@@ -1502,6 +1504,11 @@ public class SB_Whale_AI : Boss_MoveBase
     {
         Phase ownerPhase = phase;
         int perFrame = Mathf.Max(1, ultimateRiftsPerFrame);
+        // Cache screen bounds once: a finisher should scatter over the same
+        // viewport that received the full-screen roar, without 120 camera lookups.
+        Vector2 screenCenter = Vector2.zero;
+        Vector2 screenSize = Vector2.zero;
+        if (final) GetUltimateScreenRect(out screenCenter, out screenSize);
         for (int i = 0; i < count; i++)
         {
             if (i > 0 && i % perFrame == 0)
@@ -1516,7 +1523,6 @@ public class SB_Whale_AI : Boss_MoveBase
                 position = playerSnapshot;
             else if (final)
             {
-                GetUltimateScreenRect(out Vector2 screenCenter, out Vector2 screenSize);
                 position = screenCenter + new Vector2(
                     Random.Range(-screenSize.x * 0.5f, screenSize.x * 0.5f),
                     Random.Range(-screenSize.y * 0.5f, screenSize.y * 0.5f));

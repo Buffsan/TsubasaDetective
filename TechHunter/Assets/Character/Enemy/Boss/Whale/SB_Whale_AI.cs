@@ -603,38 +603,14 @@ public class SB_Whale_AI : Boss_MoveBase
                 {
                     if (isSerious)
                     {
-                        for (int i = 0; i < 50; i++)
-                        {
-                            for (int j = 0; j < 6; j++)
-                            {
-                                Vector2 randomPos = Vector2.zero;
-                                bool ok = false;
-                                float range = 12f;
-                                float minrange = 5.5f;
-                                while (!ok)
-                                {
-                                    randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-                                    if (Mathf.Abs(randomPos.x) > minrange || Mathf.Abs(randomPos.y) > minrange) ok = true;
-                                }
-                                StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos * ThirdRangeScale));
-                            }
-                        }
-                        for (int i = 0; i < 50; i++)
-                        {
-                            for (int j = 0; j < 4; j++)
-                            {
-                                Vector2 randomPos = Vector2.zero;
-                                bool ok = false;
-                                float range = 20;
-                                float minrange = 12f;
-                                while (!ok)
-                                {
-                                    randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-                                    if (Mathf.Abs(randomPos.x) > minrange || Mathf.Abs(randomPos.y) > minrange) ok = true;
-                                }
-                                StartCoroutine(LiftSpawnLing((float)i / 30 + 2, (Vector2)transform.position + randomPos * ThirdRangeScale));
-                            }
-                        }
+                        Vector2 origin = transform.position;
+                        float scale = ThirdRangeScale;
+                        // Originally 300 + 200 rifts in 500 separate coroutines.
+                        // Preserve both waves and their 2-second offset.
+                        StartCoroutine(SpawnRiftWaves(origin, 50, 6,
+                            1f / 30f, 0f, 12f, 5.5f, scale));
+                        StartCoroutine(SpawnRiftWaves(origin, 50, 4,
+                            1f / 30f, 2f, 20f, 12f, scale));
                     }
                     NextPhase();
                 }

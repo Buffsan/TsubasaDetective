@@ -35,6 +35,7 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField, Min(0f)] float thirdShockwaveShakeDuration = 0.2f;
     [SerializeField, Min(0f)] float thirdShockwaveShakeStrength = 0.15f;
     [SerializeField] Vector2 thirdShockwaveDelay = new Vector2(3f, 4f);
+    [SerializeField, Min(0f)] float thirdShockwaveExplosionAdvance = 0.5f;
     // Phase 3 may start only after A6 has finished the full P2 transition,
     // including its BGM change. Interruption will replay A6 instead of skipping it.
     bool secondPhaseIntroCompleted;
@@ -310,8 +311,10 @@ public class SB_Whale_AI : Boss_MoveBase
     IEnumerator ThirdRiftShockwave(Vector2 position, float delay)
     {
         // The warning is spawned together with the rift in Ougi().
-        // Keep the explosion's independently randomized 3-4 second fuse.
-        yield return new WaitForSeconds(Mathf.Max(0f, delay));
+        // Trigger the impact slightly earlier to compensate for the visible
+        // gap after its warning animation. Both A4 and A5 use this routine.
+        float adjustedDelay = Mathf.Max(0f, delay - thirdShockwaveExplosionAdvance);
+        yield return new WaitForSeconds(adjustedDelay);
         if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
 
         ScaleSpawn(SpawnObjectNow_Input(HoukouAttack, position, thirdShockwaveHitDuration),

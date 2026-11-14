@@ -13,7 +13,11 @@ public class EnemySpawnData : ScriptableObject
    
         public EnemySpawnBase enemyspawn;
   
+        [Header("通常の敵として出現")]
         public List<EnemySpawnGroup> enemyspawnGroup = new List<EnemySpawnGroup>();
+
+        [Header("味方として出現（既存の敵Prefabを使用）")]
+        public List<EnemySpawnGroup> allyspawnGroup = new List<EnemySpawnGroup>();
 
     
 

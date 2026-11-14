@@ -1455,6 +1455,50 @@ public class SB_Whale_AI : Boss_MoveBase
 
         return false;
     }
+    // A single coroutine schedules an entire wave of rifts, instead of one
+    // coroutine/WaitForSeconds allocation per individual projectile.
+    // Wave count, positions, total projectiles and timing match the former loops.
+    private IEnumerator SpawnRiftWaves(Vector2 origin, int waves, int perWave,
+        float interval, float initialDelay, float range, float exclusion, float scale)
+    {
+        if (initialDelay > 0f)
+            yield return new WaitForSeconds(initialDelay);
+        else
+            yield return null;
+
+        float beginTime = Time.time;
+        Phase activePhase = phase;
+        for (int wave = 0; wave < waves; wave++)
+        {
+            if (wave > 0)
+            {
+                float dueTime = beginTime + wave * interval;
+                while (Time.time < dueTime)
+                    yield return null;
+            }
+
+            if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die ||
+                enemyBase.IsCharmed || phase != activePhase)
+                yield break;
+
+            for (int j = 0; j < perWave; j++)
+            {
+                Vector2 offset;
+                do
+                {
+                    offset = new Vector2(Random.Range(-range, range),
+                        Random.Range(-range, range));
+                }
+                while (Mathf.Abs(offset.x) <= exclusion &&
+                    Mathf.Abs(offset.y) <= exclusion && range > exclusion);
+
+                GameObject rift = SpawnObjectNow_Input(SlashLit,
+                    origin + offset * scale, 5f);
+                ScaleSpawn(rift, scale);
+            }
+        }
+    }
+
     private IEnumerator LiftSpawnLing(float delayTime, Vector2 Pos, bool keepSecondPhaseSize = false)
     {
         yield return new WaitForSeconds(delayTime);

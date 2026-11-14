@@ -88,6 +88,7 @@ public class EnemySpawnGroup
         PASTAL_SE_ArmorTriangle,
         PASTAL_SE_Conductor,
         PASTAL_SE_GrowthSector,
+        DIANA_LunarPurgeSquad_Mace,
     }
 
     

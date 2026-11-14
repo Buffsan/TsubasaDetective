@@ -193,6 +193,7 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.PASTAL_SE_ArmorTriangle,52},
         { EnemySpawnGroup.EnemyType.PASTAL_SE_Conductor,53},
         { EnemySpawnGroup.EnemyType.PASTAL_SE_GrowthSector,54},
+        { EnemySpawnGroup.EnemyType.DIANA_LunarPurgeSquad_Mace,55},
 
 
     }; 

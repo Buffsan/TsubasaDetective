@@ -933,6 +933,9 @@ MonoBehaviour:
   - ID: 5
     Name: "\u30AD\u30E3\u30CB\u30AA\u30F3\u30AC\u30FC\u30C9\u306E\u8FB2\u5974"
     Enemy: {fileID: 408498929731567729, guid: d75d7855c200e52468d982edd94103bb, type: 3}
+  - ID: 55
+    Name: "月の巡礼者の鈍器使い"
+    Enemy: {fileID: 100100, guid: f8b22275cde94c3ba8b59d1472c1f0a4, type: 3}
   manager: {fileID: 5795139298799790361}
   SpawnList:
   - {fileID: 2481405150458297425, guid: 4d8e3cabc1d117845a5f58496c7fb3f1, type: 3}

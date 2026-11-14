@@ -135,6 +135,14 @@ public class SystemManager : MonoBehaviour
     void Update()
     {
         AllEnemy.RemoveAll(enemy => enemy == null);
+        int requiredEnemyCount = 0;
+        foreach (GameObject enemy in AllEnemy)
+        {
+            if (enemy == null) continue;
+            EnemyBase enemyBase = enemy.GetComponent<EnemyBase>();
+            if (enemyBase == null || enemyBase.CountsForStageClear)
+                requiredEnemyCount++;
+        }
         if (Input.GetKeyDown(KeyCode.Escape)) 
         {
 #if UNITY_EDITOR
@@ -153,14 +161,14 @@ public class SystemManager : MonoBehaviour
             }
             else
             {
-                if (AllEnemy.Count == 0 && (enemySpawn == null || enemySpawn.PendingSpawnCount == 0))
+                if (requiredEnemyCount == 0 && (enemySpawn == null || enemySpawn.PendingSpawnCount == 0))
                 {
                     WaitEnemyDieCount = 0;
                     //Debug.Log("全員死んだ！");
                     gameMode = GameMode.Result;
                     mode = ModeType.M1;
                 }
-                if (AllEnemy.Count >= 5)
+                if (requiredEnemyCount >= 5)
                 {
                     isMinEnemy = true;
                 }

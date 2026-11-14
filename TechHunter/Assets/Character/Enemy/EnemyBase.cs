@@ -11,6 +11,10 @@ public class EnemyBase : MonoBehaviour
     [Header("”h”´Ý’è")]
     [SerializeField] Faction factions = Faction.None;
     public Faction Factions => factions;
+
+    [Header("ステージクリア条件")]
+    [SerializeField] bool countsForStageClear = true;
+    public bool CountsForStageClear => countsForStageClear;
     public bool IsCharmed { get; private set; }
     // 魅了値はcharaDamage.buffsに集約する。古いPrefabでCharaDamage参照が
     // 未設定でも、最初に魅了を受けた判定から実行時に受け口を確定できる。

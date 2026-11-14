@@ -14,6 +14,11 @@ public class TileMap_Controller : MonoBehaviour
     public Tilemap FloorMap;
     public Tilemap StandFloor;
 
+    [Header("侵入不可エリア / 掃討部隊")]
+    public Tilemap LeftOuterBoundary;
+    public Tilemap RightOuterBoundary;
+    public Tilemap SweepSpawnMap;
+
     public GameObject StartPoint;
     public GameObject Goal;
     public GameObject EnemysObject;

@@ -620,9 +620,9 @@ public class SB_Whale_AI : Boss_MoveBase
                         // Originally 300 + 200 rifts in 500 separate coroutines.
                         // Preserve both waves and their 2-second offset.
                         StartCoroutine(SpawnRiftWaves(origin, 50, 6,
-                            1f / 30f, 0f, 12f, 5.5f, scale));
+                            1f / 30f, 0f, 12f, 5.5f, scale, phase));
                         StartCoroutine(SpawnRiftWaves(origin, 50, 4,
-                            1f / 30f, 2f, 20f, 12f, scale));
+                            1f / 30f, 2f, 20f, 12f, scale, phase));
                     }
                     NextPhase();
                 }
@@ -667,6 +667,7 @@ public class SB_Whale_AI : Boss_MoveBase
         // warp and appearance animations at an accelerated speed for every shot.
         if (AttackPhase == 0)
         {
+            if (AttackNumber == 0) saveAngle = 0f;
             StartThirdFourwayWarpAnimation();
             NextPhase();
             return;
@@ -722,7 +723,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 if (isSerious)
                 {
                     StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
-                        5, 10, 1f / 30f, 0f, 12f, 0f, ThirdRangeScale));
+                        5, 10, 1f / 30f, 0f, 12f, 0f, ThirdRangeScale, phase));
                 }
                 NextPhase();
             }
@@ -794,7 +795,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 if (isSerious)
                 {
                     StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
-                        5, 10, 1f / 30f, 0f, 12f, 0f, ThirdRangeScale));
+                        5, 10, 1f / 30f, 0f, 12f, 0f, ThirdRangeScale, phase));
                 }
             }
             
@@ -989,7 +990,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 NextPhase();
 
                 StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
-                    5, 5, 1f / 30f, 0f, 6f, 0f, 1f));
+                    5, 5, 1f / 30f, 0f, 6f, 0f, 1f, phase));
             }
         }
         if (AttackPhase == 12) 
@@ -1046,7 +1047,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 if (isSerious)
                 {
                     StartCoroutine(SpawnFanRifts((Vector2)transform.position,
-                        targetPos, ThirdRangeScale, phase == Phase.P3));
+                        targetPos, ThirdRangeScale, phase == Phase.P3, phase));
                 }
             }
         }
@@ -1124,7 +1125,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 NextPhase();
 
                 StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
-                    5, 5, 1f / 30f, 0f, 6f, 0f, ThirdRangeScale));
+                    5, 5, 1f / 30f, 0f, 6f, 0f, ThirdRangeScale, phase));
             }
         }
         if (AttackPhase == 2)
@@ -1166,7 +1167,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 SpawnThirdScaledObject(Effects[0], transform.position, 3f);
 
                 StartCoroutine(SpawnFanRifts((Vector2)transform.position,
-                    targetPos, ThirdRangeScale, phase == Phase.P3));
+                    targetPos, ThirdRangeScale, phase == Phase.P3, phase));
 
                 
             }
@@ -1244,7 +1245,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 NextPhase();
                 
                 StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
-                    30, 8, 1f / 7f, 0f, 15f, 0f, ThirdRangeScale));
+                    30, 8, 1f / 7f, 0f, 15f, 0f, ThirdRangeScale, phase));
             }
         }
         if (AttackPhase == 5)
@@ -1397,7 +1398,8 @@ public class SB_Whale_AI : Boss_MoveBase
     // coroutine/WaitForSeconds allocation per individual projectile.
     // Wave count, positions, total projectiles and timing match the former loops.
     private IEnumerator SpawnRiftWaves(Vector2 origin, int waves, int perWave,
-        float interval, float initialDelay, float range, float exclusion, float scale)
+        float interval, float initialDelay, float range, float exclusion, float scale,
+        Phase ownerPhase)
     {
         if (initialDelay > 0f)
             yield return new WaitForSeconds(initialDelay);
@@ -1405,7 +1407,6 @@ public class SB_Whale_AI : Boss_MoveBase
             yield return null;
 
         float beginTime = Time.time;
-        Phase activePhase = phase;
         for (int wave = 0; wave < waves; wave++)
         {
             if (wave > 0)
@@ -1416,7 +1417,7 @@ public class SB_Whale_AI : Boss_MoveBase
             }
 
             if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die ||
-                enemyBase.IsCharmed || phase != activePhase)
+                enemyBase.IsCharmed || phase != ownerPhase)
                 yield break;
 
             for (int j = 0; j < perWave; j++)
@@ -1440,11 +1441,10 @@ public class SB_Whale_AI : Boss_MoveBase
     // One timer drives all fifty fan rifts. The cast origin/direction are
     // captured before the boss moves or warps, so delayed rifts don't drift.
     private IEnumerator SpawnFanRifts(Vector2 origin, Vector2 target,
-        float scale, bool allowShockwaves)
+        float scale, bool allowShockwaves, Phase ownerPhase)
     {
         yield return null;
         float beginTime = Time.time;
-        Phase ownerPhase = phase;
         Vector2 direction = (target - origin).normalized;
 
         for (int i = 0; i < 50; i++)

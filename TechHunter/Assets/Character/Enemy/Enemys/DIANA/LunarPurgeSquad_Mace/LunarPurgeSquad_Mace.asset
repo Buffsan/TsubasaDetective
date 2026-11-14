@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
   m_Name: LunarPurgeSquad_Mace
   m_EditorClassIdentifier: 
-  NAME: "月の巡礼者の鈍器使い"
-  MAXHP: 811
+  NAME: "\u6708\u306E\u5DE1\u793C\u8005\u306E\u920D\u5668\u4F7F\u3044"
+  MAXHP: 920
   enemyStrength: 3
   Regen: 0
   MAXMP: 0
   SPEED: 0
-  ATK: 7
+  ATK: 15
   ATKDF: 3
   GOLD: 65
   XP: 0

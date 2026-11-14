@@ -1311,7 +1311,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 if (ultimateRoarFiredCount >= ultimateRoarCount)
                 {
                     enemyBase.animator.Play("攻撃待機", 0, 0);
-                    // The finisher remains a telegraphed rift/shockwave barrage,
+                    // Finish with rifts and individually warned shockwaves,
                     // without the unavoidable full-screen roar.
                     NextPhase();
                 }
@@ -1452,8 +1452,8 @@ public class SB_Whale_AI : Boss_MoveBase
 
     void EmitUltimateFinalRifts()
     {
-        // The former viewport-wide HoukouAttack hitbox was impossible to evade.
-        // Keep only the individually telegraphed dimensional rifts/shockwaves.
+        // The former viewport-wide roar hitbox was impossible to evade.
+        // Keep only dimensional rifts and individually warned shockwaves.
         // Their spawning is spread over frames by SpawnUltimateRifts().
         GetUltimateScreenRect(out Vector2 unusedCenter, out Vector2 viewSize);
         StartCoroutine(SpawnUltimateRifts(Mathf.Max(1, ultimateFinalRiftCount),

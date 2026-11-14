@@ -1033,12 +1033,8 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 if (isSerious)
                 {
-                    for (int i = 0; i < 50; i++)
-                    {
-                        bool withShockwave = phase == Phase.P3 &&
-                            i % Mathf.Max(1, thirdShockwaveEveryNthRift) == 0;
-                        StartCoroutine(Ougi(i, targetPos, (float)i / 40, withShockwave));
-                    }
+                    StartCoroutine(SpawnFanRifts((Vector2)transform.position,
+                        targetPos, ThirdRangeScale, phase == Phase.P3));
                 }
             }
         }
@@ -1157,12 +1153,8 @@ public class SB_Whale_AI : Boss_MoveBase
                 all_System.camera_Controller.Shake(0.3f, 0.2f);
                 SpawnThirdScaledObject(Effects[0], transform.position, 3f);
 
-                for (int i = 0; i < 50; i++)
-                {
-                    bool withShockwave = phase == Phase.P3 &&
-                        i % Mathf.Max(1, thirdShockwaveEveryNthRift) == 0;
-                    StartCoroutine(Ougi(i, targetPos, (float)i / 40, withShockwave));
-                }
+                StartCoroutine(SpawnFanRifts((Vector2)transform.position,
+                    targetPos, ThirdRangeScale, phase == Phase.P3));
 
                 
             }
@@ -1431,45 +1423,44 @@ public class SB_Whale_AI : Boss_MoveBase
         }
     }
 
-    private IEnumerator LiftSpawnLing(float delayTime, Vector2 Pos, bool keepSecondPhaseSize = false)
+    // One timer drives all fifty fan rifts. The cast origin/direction are
+    // captured before the boss moves or warps, so delayed rifts don't drift.
+    private IEnumerator SpawnFanRifts(Vector2 origin, Vector2 target,
+        float scale, bool allowShockwaves)
     {
-        yield return new WaitForSeconds(delayTime);
-        if (keepSecondPhaseSize)
-            SpawnObjectNow(SlashLit, Pos, 5f);
-        else
-            SpawnThirdScaledObject(SlashLit, Pos, 5f);
-    }
-    IEnumerator Ougi(int number, Vector2 pos, float delayTime, bool withShockwave = false)
-    {
-        yield return new WaitForSeconds(delayTime);
-        //number++;
+        yield return null;
+        float beginTime = Time.time;
+        Phase ownerPhase = phase;
+        Vector2 direction = (target - origin).normalized;
 
-        float AttackDistance = number / 2.5f * ThirdRangeScale;
-
-        // ランダムな角度を生成 (0 ~ 360度)
-        float randomAngle = Random.Range(-80f, 80f);
-
-        // ランダムな角度をラジアンに変換
-        float radians = randomAngle * Mathf.Deg2Rad;
-
-       
-        Quaternion rotation = Quaternion.AngleAxis(randomAngle, Vector3.forward);
-        Vector2 newDirection = (pos - (Vector2)transform.position).normalized;
-
-       
-        Vector2 rotatedDirection = rotation * newDirection; // SavePos方向を基準に角度を回転
-        Vector2 newPosition = (Vector2)transform.position + rotatedDirection * AttackDistance; // 回転方向で新しい位置を計算
-
-        SpawnThirdScaledObject(SlashLit, newPosition, 2f);
-        if (withShockwave)
+        for (int i = 0; i < 50; i++)
         {
-            // Same-frame warning: the selected rift and its danger area appear together.
-            ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, newPosition,
-                thirdShockwaveWarningDuration), thirdShockwaveAreaScale);
-            float minDelay = Mathf.Max(0f, Mathf.Min(thirdShockwaveDelay.x, thirdShockwaveDelay.y));
-            float maxDelay = Mathf.Max(minDelay, Mathf.Max(thirdShockwaveDelay.x, thirdShockwaveDelay.y));
-            StartCoroutine(ThirdRiftShockwave(newPosition, Random.Range(minDelay, maxDelay)));
+            if (i > 0)
+            {
+                float dueTime = beginTime + i / 40f;
+                while (Time.time < dueTime)
+                    yield return null;
+            }
+            if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die ||
+                enemyBase.IsCharmed || phase != ownerPhase)
+                yield break;
+
+            float angle = Random.Range(-80f, 80f);
+            Vector2 directionRotated = Quaternion.AngleAxis(angle, Vector3.forward) * direction;
+            Vector2 position = origin + directionRotated * (i / 2.5f * scale);
+            ScaleSpawn(SpawnObjectNow_Input(SlashLit, position, 2f), scale);
+
+            if (allowShockwaves && i % Mathf.Max(1, thirdShockwaveEveryNthRift) == 0)
+            {
+                // Spawn the 1.5s warning on the same frame as its rift.
+                ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, position,
+                    thirdShockwaveWarningDuration), thirdShockwaveAreaScale);
+                float minDelay = Mathf.Max(0f, Mathf.Min(thirdShockwaveDelay.x, thirdShockwaveDelay.y));
+                float maxDelay = Mathf.Max(minDelay, Mathf.Max(thirdShockwaveDelay.x, thirdShockwaveDelay.y));
+                StartCoroutine(ThirdRiftShockwave(position, Random.Range(minDelay, maxDelay)));
+            }
         }
     }
+
 }
 

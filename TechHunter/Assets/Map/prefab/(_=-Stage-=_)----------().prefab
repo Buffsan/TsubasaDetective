@@ -5953,6 +5953,7 @@ MonoBehaviour:
   LeftOuterBoundary: {fileID: 7300000000000000103}
   RightOuterBoundary: {fileID: 7300000000000000203}
   SweepSpawnMap: {fileID: 7300000000000000303}
+  useAllySpawnMap: 0
   allySpawnMap: {fileID: 7300000000000000503}
   StartPoint: {fileID: 8289045061771862521}
   Goal: {fileID: 8334385081340966519}

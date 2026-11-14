@@ -20,6 +20,9 @@ public class TileMap_Controller : MonoBehaviour
     public Tilemap SweepSpawnMap;
 
     [Header("味方の召喚専用タイル（任意）")]
+    [Tooltip("ON: 味方召喚用Tilemapを優先 / OFF: 通常のStandFloorから召喚")]
+    [SerializeField] bool useAllySpawnMap = false;
+    public bool UseAllySpawnMap => useAllySpawnMap;
     [SerializeField] Tilemap allySpawnMap;
     public Tilemap AllySpawnMap => allySpawnMap;
 

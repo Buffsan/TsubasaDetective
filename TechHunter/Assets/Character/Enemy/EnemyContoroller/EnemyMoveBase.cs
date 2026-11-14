@@ -269,25 +269,27 @@ public class EnemyMoveBase : MonoBehaviour
     Quaternion rotate,
     int tileDistance)
     {
-        // 魅了された召喚者からの召喚は味方用マーカーを優先。
+        // 出現場所は召喚者の派閥ではなく、現在のステージのInspector設定を使う。
+        TileMap_Controller stage =
+            ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C;
         return SpawnEnemySpawn(enemy, targetPos, rotate, tileDistance,
-            enemyBase != null && enemyBase.IsCharmed);
+            stage != null && stage.UseAllySpawnMap);
     }
 
-    // 将来の檻・味方召喚側も明示的に専用タイルを利用できる。
-    // bool は出現位置の指定で、召喚体の陣営そのものは従来通り呼び出し元が設定する。
+    // 個別の召喚から切り替える場合はboolを明示指定できる。
+    // true: AllySpawnMap / false: StandFloor（陣営は変更しない）。
     public GameObject SpawnEnemySpawn(
     GameObject enemy,
     Vector2 targetPos,
     Quaternion rotate,
     int tileDistance,
-    bool summonAsAlly)
+    bool useAllySpawnMap)
     {
         TileMap_Controller stage =
             ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C;
 
         Vector3 spawnWorldPos;
-        if (summonAsAlly && stage.TryGetAllySpawnPosition(targetPos, tileDistance, out Vector3 allyPosition))
+        if (useAllySpawnMap && stage.TryGetAllySpawnPosition(targetPos, tileDistance, out Vector3 allyPosition))
         {
             spawnWorldPos = allyPosition;
         }

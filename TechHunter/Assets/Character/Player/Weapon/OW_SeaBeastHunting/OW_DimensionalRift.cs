@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OW_DimensionalRift : MonoBehaviour
@@ -7,46 +5,73 @@ public class OW_DimensionalRift : MonoBehaviour
     [SerializeField] Animator animator;
     [SerializeField] GameObject AttackArea1;
     [SerializeField] GameObject AttackArea2;
-
     [SerializeField] AudioClip clip;
 
     AudioManager audioManager => AudioManager.instance;
 
-    int Phase = 0;
-    float AttackCount =0;
-    // Start is called before the first frame update
-    void Start()
+    // Enemy rift variants are also driven by this script. The player-only
+    // AttackPool cannot produce an EnemyAttack from its PlayerAttack template.
+    EnemyBase enemyAttackOwner;
+    int phase;
+    float attackCount;
+
+    public void SetEnemyAttackOwner(EnemyBase owner)
     {
-        
+        enemyAttackOwner = owner;
     }
 
-    // Update is called once per frame
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        AttackCount += Time.fixedDeltaTime;
-        if (Phase == 0)
+        attackCount += Time.fixedDeltaTime;
+        if (phase == 0 && attackCount > 1f)
         {
-            if (AttackCount > 1)
-            {
-                animator.Play("”j—ô", 0,0);
-                AttackPool.Instance.Get(AttackArea1, transform.position, Quaternion.identity, 1);
-                
-                if (AttackArea2)
-                {
-                    AttackPool.Instance.Get(AttackArea2, transform.position, Quaternion.identity, 0.8f);
-                    
-                }
-                AttackCount = 0;
+            if (animator != null)
+                animator.Play("â€jâ€”Ã´", 0, 0);
+
+            SpawnAttackArea(AttackArea1, 1f);
+            SpawnAttackArea(AttackArea2, 0.8f);
+
+            attackCount = 0f;
+            if (clip != null && audioManager != null)
                 audioManager.PlaySE(clip);
-                Phase++; 
-            }
+            phase = 1;
         }
-        if (Phase == 1) 
+        else if (phase == 1 && attackCount > 2f)
         {
-            if (AttackCount > 2) 
-            {
             Destroy(gameObject);
-            }
         }
+    }
+
+    void SpawnAttackArea(GameObject prefab, float lifetime)
+    {
+        if (prefab == null) return;
+
+        // Boss/Enemy prefabs must retain EnemyAttack and their faction rules.
+        // Do not pass them through AttackPool (which always instantiates a
+        // PlayerAttack, irrespective of its templatePrefab argument).
+        if (prefab.TryGetComponent<EnemyAttack>(out var enemyTemplate))
+        {
+            GameObject hitbox = Instantiate(prefab, transform.position,
+                Quaternion.identity);
+            EnemyAttack attack = hitbox.GetComponent<EnemyAttack>();
+            if (attack != null && enemyAttackOwner != null)
+            {
+                Boss_Controller boss = enemyAttackOwner as Boss_Controller;
+                if (boss != null)
+                    boss.ConfigureAttackTarget(attack);
+                else
+                    attack.ConfigureAttack(enemyAttackOwner,
+                        attack.AttackPowerPercent);
+            }
+            Destroy(hitbox, lifetime);
+            return;
+        }
+
+        // Original player-owned dimensional rifts still use their pool.
+        if (AttackPool.Instance != null)
+            AttackPool.Instance.Get(prefab, transform.position,
+                Quaternion.identity, lifetime);
+        else
+            Debug.LogWarning("OW_DimensionalRift: AttackPool is missing for player rift.", this);
     }
 }

@@ -18,6 +18,14 @@ public class SweepFormationSpawner : MonoBehaviour
     [SerializeField, Min(0f)] float initialDelaySeconds = 1f;
     [SerializeField, Range(1, 24)] int membersCount = 5;
 
+    public enum FormationDirection { Vertical, Horizontal }
+
+    [Header("隊列・出現ウェーブ")]
+    [SerializeField] FormationDirection formationDirection = FormationDirection.Vertical;
+    [SerializeField, Min(0.1f)] float formationSpacing = 1f;
+    [SerializeField, Min(1)] int waveCount = 1;
+    [SerializeField, Min(0f)] float waveIntervalSeconds = 10f;
+
     [Header("反対側にタイルがない場合の保険")]
     [SerializeField, Min(1f)] float fallbackTravelDistance = 40f;
 
@@ -68,7 +76,7 @@ public class SweepFormationSpawner : MonoBehaviour
         return false;
     }
 
-    // Can also be invoked directly from a stage event or cutscene.
+    // Can also be invoked directly from a stage event.
     public void SpawnSweep()
     {
         if (hasSpawned) return;
@@ -84,47 +92,72 @@ public class SweepFormationSpawner : MonoBehaviour
             Debug.LogWarning("SweepFormationSpawner: Shield prefab is missing.", this);
             return;
         }
-        Tilemap spawnMap = tileMapController.SweepSpawnMap;
-        List<Vector3> positions = new List<Vector3>();
-        foreach (Vector3Int cell in spawnMap.cellBounds.allPositionsWithin)
-            if (spawnMap.HasTile(cell))
-                positions.Add(spawnMap.GetCellCenterWorld(cell));
 
-        // The five marker cells form a vertical column, top to bottom.
-        positions.Sort((a, b) => {
-            int byY = b.y.CompareTo(a.y);
-            return byY != 0 ? byY : a.x.CompareTo(b.x);
-        });
-        if (positions.Count < membersCount)
+        Vector3 center = Vector3.zero;
+        int markers = 0;
+        Tilemap map = tileMapController.SweepSpawnMap;
+        foreach (Vector3Int cell in map.cellBounds.allPositionsWithin)
         {
-            Debug.LogWarning("SweepFormationSpawner: Place at least " + membersCount +
-                " marker tiles in SweepSpawnMap. Currently: " + positions.Count, this);
+            if (!map.HasTile(cell)) continue;
+            center += map.GetCellCenterWorld(cell);
+            markers++;
+        }
+        if (markers == 0)
+        {
+            Debug.LogWarning("SweepFormationSpawner: Paint at least one marker tile.", this);
             return;
         }
 
+        // The painted tiles define the center; the Inspector decides row orientation.
+        center /= markers;
+        hasSpawned = true;
+        StartCoroutine(SpawnWaves(center));
+    }
+
+    IEnumerator SpawnWaves(Vector3 center)
+    {
+        int count = Mathf.Max(1, membersCount);
+        float spacing = Mathf.Max(0.1f, formationSpacing);
+        float halfSpan = (count - 1) * 0.5f * spacing;
+
         float exitX = GetExitX(tileMapController.RightOuterBoundary);
-        float leftmostSpawnX = float.PositiveInfinity;
-        for (int i = 0; i < membersCount; i++)
-            leftmostSpawnX = Mathf.Min(leftmostSpawnX, positions[i].x);
-        if (float.IsInfinity(exitX) || exitX <= leftmostSpawnX + 1f)
+        float farthestX = center.x +
+            (formationDirection == FormationDirection.Horizontal ? halfSpan : 0f);
+        if (float.IsInfinity(exitX) || exitX <= farthestX + 1f)
         {
-            exitX = leftmostSpawnX + fallbackTravelDistance;
-            Debug.LogWarning("SweepFormationSpawner: RightOuterBoundary has no usable exit tiles; " +
-                "using fallback distance.", this);
+            exitX = farthestX + Mathf.Max(1f, fallbackTravelDistance);
+            Debug.LogWarning("SweepFormationSpawner: RightOuterBoundary has no usable " +
+                "exit X; falling back to configured travel distance.", this);
         }
 
-        hasSpawned = true;
-        for (int i = 0; i < membersCount; i++)
+        int total = Mathf.Max(1, waveCount);
+        for (int wave = 0; wave < total; wave++)
         {
-            GameObject member = Instantiate(sweepSoldierPrefab, positions[i], Quaternion.identity);
-            SweepShieldRoute route = member.GetComponent<SweepShieldRoute>();
-            if (route == null) route = member.AddComponent<SweepShieldRoute>();
-            route.Initialize(positions[i].y, exitX);
-            spawnedMembers.Add(member);
+            if (wave > 0 && waveIntervalSeconds > 0f)
+                yield return new WaitForSeconds(waveIntervalSeconds);
 
-            SystemManager manager = SystemManager.Instance;
-            if (manager != null && !manager.AllEnemy.Contains(member))
-                manager.AllEnemy.Add(member);
+            if (tileMapController == null || SystemManager.Instance == null ||
+                SystemManager.Instance.gameMode != SystemManager.GameMode.Nomal)
+                yield break;
+
+            for (int i = 0; i < count; i++)
+            {
+                float offset = (i - (count - 1) * 0.5f) * spacing;
+                Vector3 position = center +
+                    (formationDirection == FormationDirection.Vertical
+                        ? new Vector3(0f, -offset, 0f)
+                        : new Vector3(offset, 0f, 0f));
+
+                GameObject member = Instantiate(sweepSoldierPrefab, position, Quaternion.identity);
+                SweepShieldRoute route = member.GetComponent<SweepShieldRoute>();
+                if (route == null) route = member.AddComponent<SweepShieldRoute>();
+                route.Initialize(position.y, exitX);
+                spawnedMembers.Add(member);
+
+                SystemManager manager = SystemManager.Instance;
+                if (manager != null && !manager.AllEnemy.Contains(member))
+                    manager.AllEnemy.Add(member);
+            }
         }
     }
 

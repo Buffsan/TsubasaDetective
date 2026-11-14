@@ -395,6 +395,15 @@ public class Boss_Controller : EnemyBase
 
     private void FixedUpdate()
     {
+        // Forced crowd-control from effects outside charaDamage also must
+        // not break a boss's protected ultimate attack.
+        if (IsUnstaggerable && (status == Status.Stan ||
+            status == Status.StanNext || status == Status.ConfusionResistance))
+        {
+            status = Status.Nomal;
+            animator.SetBool("Damage", false);
+            StanCount = 0f;
+        }
         switch (status)
         {
             case Status.Nomal:

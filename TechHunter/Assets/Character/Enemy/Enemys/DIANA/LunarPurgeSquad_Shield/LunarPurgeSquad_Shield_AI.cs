@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Five shield bearers march independently; only enemies directly ahead interrupt their route.
+// Sweep soldiers march toward their exit, turning to engage nearby enemies or the player.
 public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
 {
     [Header("行軍")]
     [SerializeField, Min(0.1f)] float laneRecoverySpeed = 2.5f;
     [SerializeField, Min(0f)] float laneRecoveryGain = 5f;
     [SerializeField, Min(5f)] float maxLifetime = 60f;
-    [Header("前方攻撃")]
-    [SerializeField, Min(0.1f)] float attackReach = 1.7f;
-    [SerializeField, Min(0.1f)] float attackLaneWidth = 1.25f;
+    [Header("周囲360度の攻撃索敵")]
+    [SerializeField, Min(0.1f), Tooltip("全方向に索敵・攻撃する半径（ワールド単位）")]
+    float attackReach = 1.7f;
     [SerializeField, Min(0f)] float windupSeconds = 0.4f;
     [SerializeField, Min(0f)] float swingSeconds = 0.28f;
     [SerializeField, Min(0f)] float attackCooldown = 0.4f;
@@ -22,6 +22,7 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
     readonly HashSet<EnemyBase> hitThisSwing = new HashSet<EnemyBase>();
     EnemyContoroller controller;
     float laneY, exitX, bornAt, phaseSeconds;
+    SweepShieldRoute route;
     bool initialized;
 
     void Start()
@@ -33,7 +34,7 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
             enabled = false;
             return;
         }
-        SweepShieldRoute route = enemyBase.GetComponent<SweepShieldRoute>();
+        route = enemyBase.GetComponent<SweepShieldRoute>();
         laneY = route != null && route.Initialized ? route.LaneY : enemyBase.transform.position.y;
         exitX = route != null && route.Initialized ? route.ExitX : enemyBase.transform.position.x + 40f;
         bornAt = Time.time;
@@ -42,6 +43,12 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         enemyBase.moveType = EnemyBase.MoveType.Move;
         PlayAnimation("歩行", 1);
         initialized = true;
+    }
+
+    void Update()
+    {
+        // Exit/time limit must work even during stun or confusion.
+        if (initialized) CheckExit();
     }
 
     public override void EnemyMovePlay() { March(); }
@@ -53,8 +60,9 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         if (CheckExit()) return;
         PlayAnimation("歩行", 1);
         enemyBase.isTargetLook(enemyBase.transform.position + Vector3.right);
-        if (HasTargetAhead())
+        if (TryFindNearestTarget(out Vector2 targetPosition))
         {
+            enemyBase.isTargetLook(targetPosition);
             enemyBase.rb.velocity = Vector2.zero;
             enemyBase.moveType = EnemyBase.MoveType.Attack;
             PlayAnimation("攻撃待機", 2);
@@ -69,19 +77,31 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         enemyBase.rb.velocity = new Vector2(Mathf.Max(0f, enemyBase.SPEED), ySpeed);
     }
 
-    bool HasTargetAhead()
+    bool TryFindNearestTarget(out Vector2 targetPosition)
     {
-        int n = ScanAhead();
-        for (int i = 0; i < n; i++)
-            if (IsValidTarget(hitBuffer[i], out _)) return true;
-        return false;
+        targetPosition = Vector2.zero;
+        float nearestSqr = float.PositiveInfinity;
+        bool found = false;
+        int count = ScanAround();
+        Vector2 from = enemyBase.transform.position;
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D hit = hitBuffer[i];
+            if (!IsValidTarget(hit, out _)) continue;
+            Vector2 position = hit.bounds.center;
+            float distanceSqr = (position - from).sqrMagnitude;
+            if (distanceSqr >= nearestSqr) continue;
+            nearestSqr = distanceSqr;
+            targetPosition = position;
+            found = true;
+        }
+        return found;
     }
 
-    int ScanAhead()
+    int ScanAround()
     {
-        return Physics2D.OverlapBoxNonAlloc(
-            (Vector2)enemyBase.transform.position + new Vector2(attackReach * 0.5f, 0f),
-            new Vector2(attackReach, attackLaneWidth), 0f, hitBuffer);
+        return Physics2D.OverlapCircleNonAlloc(
+            enemyBase.transform.position, attackReach, hitBuffer);
     }
 
     bool IsValidTarget(Collider2D hit, out EnemyBase victim)
@@ -117,6 +137,9 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         if (!initialized || enemyBase.status != EnemyBase.Status.Nomal) return;
         if (CheckExit()) return;
         enemyBase.rb.velocity = Vector2.zero;
+        // If the opponent circles around during windup, track its current side.
+        if (phase == Phase.Windup && TryFindNearestTarget(out Vector2 targetPosition))
+            enemyBase.isTargetLook(targetPosition);
         phaseSeconds += Time.fixedDeltaTime;
         switch (phase)
         {
@@ -126,7 +149,7 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
                     phase = Phase.Swing;
                     phaseSeconds = 0f;
                     PlayAnimation("攻撃", 3);
-                    HitInFront();
+                    HitNearbyTargets();
                 }
                 break;
             case Phase.Swing:
@@ -152,10 +175,10 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         }
     }
 
-    void HitInFront()
+    void HitNearbyTargets()
     {
         hitThisSwing.Clear();
-        int count = ScanAhead();
+        int count = ScanAround();
         GameObject temporary = new GameObject("ShieldSweep_Impact");
         temporary.transform.position = enemyBase.transform.position;
         EnemyAttack attack = temporary.AddComponent<EnemyAttack>();
@@ -190,7 +213,13 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         if (enemyBase.transform.position.x < exitX && Time.time - bornAt < maxLifetime)
             return false;
         enemyBase.rb.velocity = Vector2.zero;
+        if (route != null && route.LogLifecycle)
+            Debug.Log("LunarPurgeSquad_Shield: " +
+                (enemyBase.transform.position.x >= exitX ? "目的地到達で消滅" : "最大生存時間で消滅") +
+                " (x=" + enemyBase.transform.position.x.ToString("F1") +
+                ", exitX=" + exitX.ToString("F1") + ")", enemyBase);
         Destroy(enemyBase.gameObject);
+        initialized = false;
         return true;
     }
 
@@ -211,7 +240,6 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
     {
         if (enemyBase == null) return;
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(enemyBase.transform.position + Vector3.right * attackReach * 0.5f,
-            new Vector3(attackReach, attackLaneWidth, 0f));
+        Gizmos.DrawWireSphere(enemyBase.transform.position, attackReach);
     }
 }

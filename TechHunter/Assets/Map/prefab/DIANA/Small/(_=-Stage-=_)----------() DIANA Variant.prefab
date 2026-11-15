@@ -33713,9 +33713,17 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7300000000000000401, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
+      propertyPath: formationDirection
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300000000000000401, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: sweepSoldierPrefab
       value: 
       objectReference: {fileID: 8859200305933796471, guid: 3c1955ac0a9c4864b036213d6baf21f5, type: 3}
+    - target: {fileID: 7300000000000000401, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
+      propertyPath: waveIntervalSeconds
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7300000000000000503, guid: eb66c0447da74454bbdc9395c8fdd7a8, type: 3}
       propertyPath: m_Tiles.Array.size
       value: 33

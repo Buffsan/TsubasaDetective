@@ -210,9 +210,11 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.PASTAL_SE_Conductor,53},
         { EnemySpawnGroup.EnemyType.PASTAL_SE_GrowthSector,54},
         { EnemySpawnGroup.EnemyType.DIANA_LunarPurgeSquad_Mace,55},
-
-
-    }; 
+        { EnemySpawnGroup.EnemyType.DIANA_LunarPurgeSquad_Knight,56},
+        { EnemySpawnGroup.EnemyType.DIANA_LunarPurgeSquad_Shield,57},
+        { EnemySpawnGroup.EnemyType.DIANA_PilgrimOfTheMoon,58},
+      
+    }; // { EnemySpawnGroup.EnemyType.},
 
     public int GetEnemyID(EnemySpawnGroup.EnemyType type)
     {

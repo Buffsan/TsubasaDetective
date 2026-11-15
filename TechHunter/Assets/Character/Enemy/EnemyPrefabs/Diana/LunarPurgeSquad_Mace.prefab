@@ -26,7 +26,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: targetFactions
-      value: 1024
+      value: 2045
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: targetPriority
@@ -50,11 +50,11 @@ PrefabInstance:
       objectReference: {fileID: 100100, guid: f8b22275cde94c3ba8b59d1472c1f0a2, type: 3}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: excludedTargetFactions
-      value: 1407
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5409718167837950281, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: enemyFirstPlayerDistance
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7198778347497280995, guid: 572f260cdddb9b24a9876cb90051e0fc, type: 3}
       propertyPath: m_Sprite

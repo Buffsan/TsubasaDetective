@@ -50,12 +50,12 @@ MonoBehaviour:
   attacktype: 0
   AttackCount: 0
   Clone_DengerObjects: []
-  attackInterval: {x: 1, y: 5}
+  attackInterval: {x: 0.4, y: 3}
   warningDuration: 2
   leapDuration: 1
   leapHeight: 4
   landingRecovery: 0.3
-  impactSize: {x: 5, y: 5}
+  impactSize: {x: 6, y: 6}
   attackPowerPercent: 100
   warningPrefab: {fileID: 8317282966728204219, guid: f065bb0c5e9e4ee4481698931e5c0cc8, type: 3}
   roarEffectPrefab: {fileID: 7711856317104832382, guid: 916a488a0ef4f6a4d9803e0930b2eecd, type: 3}

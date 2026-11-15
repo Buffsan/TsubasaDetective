@@ -20,5 +20,7 @@ MonoBehaviour:
     SpawnNumber: 1
   allyspawnGroup:
   - enemyType: 1
-    SpawnNumber: 10
+    SpawnNumber: 45
+  - enemyType: 10
+    SpawnNumber: 1
   StageLevel: 0

@@ -223,7 +223,7 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         }
         attack.EndManualHitWindow();
         if (logCombatDiagnostics)
-            Debug.Log("LunarPurgeSquad_Shield: 攻撃判定終了。命中対象の数: " +
+            Debug.Log("LunarPurgeSquad_Shield: 攻撃判定終了。攻撃を試みた対象数: " +
                 (hitThisSwing.Count + (playerHit ? 1 : 0)), enemyBase);
         Destroy(temporary);
         if (enemyBase.AttackAudio != null && enemyBase.audioManager != null)

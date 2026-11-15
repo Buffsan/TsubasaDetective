@@ -16,6 +16,9 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
     [SerializeField, Min(0f)] float attackCooldown = 0.4f;
     [SerializeField, Min(0f)] float attackPowerPercent = 100f;
 
+    [Header("デバッグ")]
+    [SerializeField] bool logCombatDiagnostics = false;
+
     enum Phase { March, Windup, Swing, Cooldown }
     Phase phase = Phase.March;
     readonly Collider2D[] hitBuffer = new Collider2D[64];
@@ -65,6 +68,9 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
             enemyBase.isTargetLook(targetPosition);
             enemyBase.rb.velocity = Vector2.zero;
             enemyBase.moveType = EnemyBase.MoveType.Attack;
+            if (logCombatDiagnostics)
+                Debug.Log("LunarPurgeSquad_Shield: 近距離の攻撃対象を検知 " +
+                    targetPosition, enemyBase);
             PlayAnimation("攻撃待機", 2);
             phase = Phase.Windup;
             phaseSeconds = 0f;
@@ -114,10 +120,23 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         charaDamage damage = hit.GetComponent<charaDamage>();
         victim = damage != null ? damage.OwnerEnemyBase : null;
         if (victim == null || victim == enemyBase ||
-            victim.status == EnemyBase.Status.Die || victim.HP <= 0f || victim.IsCharmed)
+            victim.status == EnemyBase.Status.Die || victim.HP <= 0f)
             return false;
-        // Other sweep soldiers are allies regardless of country faction.
-        return victim.gameObject.layer != LayerMask.NameToLayer("SweepEnemy");
+
+        // 盾兵同士は味方。プレイヤーが召喚した魅了済みの敵は攻撃対象。
+        // Earlier code mistakenly skipped IsCharmed here, although EnemyAttack
+        // explicitly permits damage to charmed targets.
+        if (victim.gameObject.layer == LayerMask.NameToLayer("SweepEnemy") ||
+            victim.GetComponent<SweepShieldRoute>() != null)
+            return false;
+
+        // 盾兵と同じ元の国/所属で、魅了されていない敵は攻撃しない。
+        // 魅了済みなら元の所属に関係なく攻撃する。
+        if (!victim.IsCharmed &&
+            (victim.Factions & enemyBase.Factions) != Faction.None)
+            return false;
+
+        return true;
     }
 
     void PlayAnimation(string stateName, int anim)
@@ -203,6 +222,9 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
             attack.CheckHitNow(hit);
         }
         attack.EndManualHitWindow();
+        if (logCombatDiagnostics)
+            Debug.Log("LunarPurgeSquad_Shield: 攻撃判定終了。命中対象の数: " +
+                (hitThisSwing.Count + (playerHit ? 1 : 0)), enemyBase);
         Destroy(temporary);
         if (enemyBase.AttackAudio != null && enemyBase.audioManager != null)
             enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);

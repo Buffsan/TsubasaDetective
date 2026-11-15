@@ -27,6 +27,7 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
     float laneY, exitX, bornAt, phaseSeconds;
     SweepShieldRoute route;
     bool initialized;
+    float lockedFacingScaleX;
 
     void Start()
     {
@@ -71,6 +72,10 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
             if (logCombatDiagnostics)
                 Debug.Log("LunarPurgeSquad_Shield: 近距離の攻撃対象を検知 " +
                     targetPosition, enemyBase);
+            // The windup commits to the facing chosen at acquisition time.
+            // Dodging behind the shield soldier must not turn it mid-attack.
+            lockedFacingScaleX = enemyBase.EnemyAnimBody != null
+                ? enemyBase.EnemyAnimBody.transform.localScale.x : 0f;
             PlayAnimation("攻撃待機", 2);
             phase = Phase.Windup;
             phaseSeconds = 0f;
@@ -156,9 +161,20 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         if (!initialized || enemyBase.status != EnemyBase.Status.Nomal) return;
         if (CheckExit()) return;
         enemyBase.rb.velocity = Vector2.zero;
-        // If the opponent circles around during windup, track its current side.
-        if (phase == Phase.Windup && TryFindNearestTarget(out Vector2 targetPosition))
-            enemyBase.isTargetLook(targetPosition);
+        // Keep the committed facing and animation throughout the attack cycle.
+        // Animator transitions (e.g. after a Damage state) can otherwise leave
+        // the visual state desynchronized from this AI phase.
+        if (enemyBase.EnemyAnimBody != null && lockedFacingScaleX != 0f)
+        {
+            Vector3 scale = enemyBase.EnemyAnimBody.transform.localScale;
+            scale.x = lockedFacingScaleX;
+            enemyBase.EnemyAnimBody.transform.localScale = scale;
+        }
+        switch (phase)
+        {
+            case Phase.Windup: PlayAnimation("攻撃待機", 2); break;
+            case Phase.Swing: PlayAnimation("攻撃", 3); break;
+        }
         phaseSeconds += Time.fixedDeltaTime;
         switch (phase)
         {
@@ -176,6 +192,8 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
                 {
                     phase = Phase.Cooldown;
                     phaseSeconds = 0f;
+                    // Hold the final attack frame until movement resumes.
+                    // Do not send Anim=1 before the cooldown expires.
                 }
                 break;
             case Phase.Cooldown:
@@ -250,6 +268,7 @@ public class LunarPurgeSquad_Shield_AI : EnemyMoveBase
         phase = Phase.March;
         phaseSeconds = 0f;
         hitThisSwing.Clear();
+        lockedFacingScaleX = 0f;
         // The shared charaDamage script owns knockback; avoid resetting rb.velocity here.
         if (enemyBase != null && enemyBase.moveType == EnemyBase.MoveType.Attack)
             enemyBase.moveType = EnemyBase.MoveType.Move;

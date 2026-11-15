@@ -25,12 +25,23 @@ public class SweepFormationSpawner : MonoBehaviour
     [SerializeField, Min(0.1f)] float formationSpacing = 1f;
     [SerializeField, Min(1)] int waveCount = 1;
     [SerializeField, Min(0f)] float waveIntervalSeconds = 10f;
+    [SerializeField] bool logLifecycle = false;
 
     [Header("反対側にタイルがない場合の保険")]
     [SerializeField, Min(1f)] float fallbackTravelDistance = 40f;
 
     readonly List<GameObject> spawnedMembers = new List<GameObject>();
     bool hasSpawned;
+    bool hasCleanedUp;
+
+    void Update()
+    {
+        // SystemManager switches to Result before the stage Prefab is destroyed.
+        if (!hasSpawned || hasCleanedUp) return;
+        SystemManager manager = SystemManager.Instance;
+        if (manager == null || manager.gameMode != SystemManager.GameMode.Nomal)
+            CleanupSweep("戦闘終了");
+    }
 
     IEnumerator Start()
     {
@@ -108,6 +119,10 @@ public class SweepFormationSpawner : MonoBehaviour
             return;
         }
 
+        if (logLifecycle)
+            Debug.Log("SweepFormationSpawner: 出現予約開始: " + waveCount +
+                "回 × " + membersCount + "人 / 間隔 " + waveIntervalSeconds + "秒", this);
+
         // The painted tiles define the center; the Inspector decides row orientation.
         center /= markers;
         hasSpawned = true;
@@ -136,9 +151,14 @@ public class SweepFormationSpawner : MonoBehaviour
             if (wave > 0 && waveIntervalSeconds > 0f)
                 yield return new WaitForSeconds(waveIntervalSeconds);
 
-            if (tileMapController == null || SystemManager.Instance == null ||
+            if (hasCleanedUp || tileMapController == null ||
+                SystemManager.Instance == null ||
                 SystemManager.Instance.gameMode != SystemManager.GameMode.Nomal)
                 yield break;
+
+            if (logLifecycle)
+                Debug.Log("SweepFormationSpawner: " + (wave + 1) + "/" +
+                    total + " 編隊目を生成 (人数 " + count + ")", this);
 
             for (int i = 0; i < count; i++)
             {
@@ -151,7 +171,7 @@ public class SweepFormationSpawner : MonoBehaviour
                 GameObject member = Instantiate(sweepSoldierPrefab, position, Quaternion.identity);
                 SweepShieldRoute route = member.GetComponent<SweepShieldRoute>();
                 if (route == null) route = member.AddComponent<SweepShieldRoute>();
-                route.Initialize(position.y, exitX);
+                route.Initialize(position.y, exitX, logLifecycle);
                 spawnedMembers.Add(member);
 
                 SystemManager manager = SystemManager.Instance;
@@ -173,11 +193,30 @@ public class SweepFormationSpawner : MonoBehaviour
         return minX;
     }
 
+    void CleanupSweep(string reason)
+    {
+        if (hasCleanedUp) return;
+        hasCleanedUp = true;
+        StopAllCoroutines(); // Cancel remaining scheduled waves.
+
+        SystemManager manager = SystemManager.Instance;
+        int cleaned = 0;
+        foreach (GameObject member in spawnedMembers)
+        {
+            if (member == null) continue;
+            if (manager != null && manager.AllEnemy != null)
+                manager.AllEnemy.Remove(member);
+            Destroy(member);
+            cleaned++;
+        }
+        spawnedMembers.Clear();
+        if (logLifecycle)
+            Debug.Log("SweepFormationSpawner: " + reason +
+                "、残りの盾兵 " + cleaned + "体を消滅、以降の出現予約を中止", this);
+    }
+
     void OnDestroy()
     {
-        // Stage transition cleanup: shields must not outlive their stage.
-        foreach (GameObject member in spawnedMembers)
-            if (member != null) Destroy(member);
-        spawnedMembers.Clear();
+        CleanupSweep("ステージ破棄");
     }
 }

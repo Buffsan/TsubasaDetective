@@ -144,10 +144,13 @@ public class EnemySpawnBase : MonoBehaviour
         // EnemySpawnDataの新しい味方リスト。既存のEnemyTypeを共有する。
         if (enemySpawnDataVALL.allyspawnGroup != null)
         {
+            float nextDelay = 0f;
+            float interval = Mathf.Max(0f, enemySpawnDataVALL.allySpawnIntervalSeconds);
             foreach (EnemySpawnGroup ally in enemySpawnDataVALL.allyspawnGroup)
             {
                 if (ally == null || ally.SpawnNumber <= 0) continue;
-                isCloneAlly(GetEnemyID(ally.enemyType), ally.SpawnNumber);
+                nextDelay = isCloneAlly(GetEnemyID(ally.enemyType),
+                    ally.SpawnNumber, nextDelay, interval);
             }
         }
     }
@@ -295,34 +298,36 @@ public class EnemySpawnBase : MonoBehaviour
          
 
     }
-    private void isCloneAlly(int id, int count)
+    // All ally groups share a stage-wave timeline, independently of enemy spawns.
+    private float isCloneAlly(int id, int count, float startDelay, float interval)
     {
-        if (count <= 0) return;
+        if (count <= 0) return startDelay;
         EnemyInfo info = enemyList.Find(entry =>
             entry != null && entry.ID == id && entry.Enemy != null);
         if (info == null)
         {
             Debug.LogWarning("EnemySpawnBase: 味方召喚の敵IDが見つかりません: " + id, this);
-            return;
+            return startDelay;
         }
 
-        // 非同期の召喚中にステージが変わった場合は、古い味方を生成しない。
         TileMap_Controller sourceStage = Seve_TileMap_C;
-        float delay = 0f;
+        float delay = startDelay;
         for (int i = 0; i < count; i++)
         {
-            PendingSpawnCount++;
+            // Do not increase PendingSpawnCount for allied summons.
             StartCoroutine(WaitSpawnAlly(info.Enemy, delay, sourceStage));
-            delay += 0.4f;
+            delay += interval;
         }
+        return delay;
     }
 
     private IEnumerator WaitSpawnAlly(GameObject prefab, float delay, TileMap_Controller sourceStage)
     {
         yield return new WaitForSeconds(delay);
-        PendingSpawnCount = Mathf.Max(0, PendingSpawnCount - 1);
 
-        if (sourceStage == null || sourceStage != Seve_TileMap_C || prefab == null)
+        if (SystemManager.Instance == null ||
+            SystemManager.Instance.gameMode != SystemManager.GameMode.Nomal ||
+            sourceStage == null || sourceStage != Seve_TileMap_C || prefab == null)
             yield break;
         if (prefab.GetComponent<EnemyBase>() == null)
         {
@@ -358,8 +363,6 @@ public class EnemySpawnBase : MonoBehaviour
         // 味方はAllEnemyへ登録しない。BecomeCharmedAlly()がCharmedAlliesへ登録する。
         if (SpawnEffect != null)
             Instantiate(SpawnEffect, position, Quaternion.identity);
-        if (manager != null)
-            manager.WaitEnemyDieCount = 0f;
     }
 
     // 味方出現時だけステージのboolを参照。

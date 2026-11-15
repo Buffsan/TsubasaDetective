@@ -19,6 +19,9 @@ public class EnemySpawnData : ScriptableObject
         [Header("味方として出現（既存の敵Prefabを使用）")]
         public List<EnemySpawnGroup> allyspawnGroup = new List<EnemySpawnGroup>();
 
+        [Header("味方の出現間隔（秒）")]
+        [Min(0f)] public float allySpawnIntervalSeconds = 0.4f;
+
     
 
         public int StageLevel = 0;

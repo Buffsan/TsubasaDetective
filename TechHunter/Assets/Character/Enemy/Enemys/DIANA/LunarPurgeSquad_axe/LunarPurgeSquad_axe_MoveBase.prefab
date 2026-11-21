@@ -68,7 +68,7 @@ MonoBehaviour:
   retreatSpeedRate: 2.8
   lungeDuration: 0.24
   lungeSpeedRate: 3.3
-  quickWindup: 0.26
+  quickWindup: 0.3
   meleeHitboxPrefab: {fileID: 100100, guid: 9ae6b0d026b843a7901aef07111fba05, type: 3}
   meleeDamagePercent: 100
   heavyChance: 0.2
@@ -79,7 +79,7 @@ MonoBehaviour:
   waveDamagePercent: 100
   waveRange: 6.5
   waveSpawnOffset: 0.5
-  waveHitboxSize: {x: 1.4, y: 0.9}
+  waveHitboxSize: {x: 2.8, y: 1.8}
   waveInitialSpeed: 3
   waveAcceleration: 13
   waveMaxSpeed: 19

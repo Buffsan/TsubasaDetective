@@ -26,7 +26,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
     [SerializeField, Min(0.1f)] float retreatSpeedRate = 2.8f;
     [SerializeField, Min(0.05f)] float lungeDuration = 0.24f;
     [SerializeField, Min(0.1f)] float lungeSpeedRate = 3.3f;
-    [SerializeField, Min(0f)] float quickWindup = 0.26f;
+    [SerializeField, Min(0f)] float quickWindup = 0.3f;
     [SerializeField] GameObject meleeHitboxPrefab;
     [SerializeField, Min(0f)] float meleeDamagePercent = 100f;
 
@@ -39,7 +39,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
     [SerializeField, Min(0f)] float waveDamagePercent = 100f;
     [SerializeField, Min(0.1f)] float waveRange = 6.5f;
     [SerializeField, Min(0f)] float waveSpawnOffset = 0.5f;
-    [SerializeField] Vector2 waveHitboxSize = new Vector2(1.4f, 0.9f);
+    [SerializeField] Vector2 waveHitboxSize = new Vector2(2.8f, 1.8f);
     [SerializeField, Min(0f)] float waveInitialSpeed = 3f;
     [SerializeField, Min(0f)] float waveAcceleration = 13f;
     [SerializeField, Min(0.1f)] float waveMaxSpeed = 19f;
@@ -85,6 +85,17 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
         float a = Mathf.Max(0f, Mathf.Min(v.x, v.y));
         float b = Mathf.Max(a, Mathf.Max(v.x, v.y));
         return Random.Range(a, b);
+    }
+
+    // 時間は維持したまま初速を高め、終端で減速する。
+    // 速度倍率は2→0。FixedUpdateの中点で評価することで
+    // 平均移動量は従来の等速ステップに近くなる。
+    static float StepEaseOut(float elapsed, float duration)
+    {
+        float safeDuration = Mathf.Max(0.0001f, duration);
+        float progress = Mathf.Clamp01(
+            (elapsed - Time.fixedDeltaTime * 0.5f) / safeDuration);
+        return 2f * (1f - progress);
     }
 
     public override void EnemyStanPlay() { Cancel(); }
@@ -136,7 +147,8 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
         if (phase == Phase.SideStep)
         {
             phaseTimer += dt;
-            enemyBase.rb.velocity = stepDirection * enemyBase.SPEED * sidestepSpeedRate;
+            enemyBase.rb.velocity = stepDirection * enemyBase.SPEED *
+                sidestepSpeedRate * StepEaseOut(phaseTimer, sidestepDuration);
             PlayAnim(1, "歩行");
             if (phaseTimer >= sidestepDuration)
             {
@@ -160,7 +172,8 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
                 phase = Phase.SideStep;
                 phaseTimer = 0f;
                 stepDirection = tangent;
-                enemyBase.rb.velocity = tangent * enemyBase.SPEED * sidestepSpeedRate;
+                enemyBase.rb.velocity = tangent * enemyBase.SPEED *
+                    sidestepSpeedRate * StepEaseOut(0f, sidestepDuration);
                 PlayAnim(1, "歩行");
                 return;
             }
@@ -218,7 +231,8 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
         switch (phase)
         {
             case Phase.Retreat:
-                enemyBase.rb.velocity = stepDirection * enemyBase.SPEED * retreatSpeedRate;
+                enemyBase.rb.velocity = stepDirection * enemyBase.SPEED *
+                    retreatSpeedRate * StepEaseOut(phaseTimer, retreatDuration);
                 PlayAnim(1, "歩行");
                 if (phaseTimer >= retreatDuration)
                 {
@@ -229,9 +243,14 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
 
             case Phase.Lunge:
                 Vector2 toTarget = (Vector2)committedTarget.position - enemyBase.rb.position;
-                if (toTarget.magnitude > meleeRange && phaseTimer < lungeDuration)
+                // 先に射程へ入ってもステップの所要時間は短縮しない。
+                // 射程到達後は速度を0にし、残り時間で着地を完了する。
+                if (phaseTimer < lungeDuration)
                 {
-                    enemyBase.rb.velocity = toTarget.normalized * enemyBase.SPEED * lungeSpeedRate;
+                    enemyBase.rb.velocity = toTarget.magnitude > meleeRange
+                        ? toTarget.normalized * enemyBase.SPEED * lungeSpeedRate *
+                          StepEaseOut(phaseTimer, lungeDuration)
+                        : Vector2.zero;
                     PlayAnim(1, "歩行");
                 }
                 else BeginWindup();

@@ -53,8 +53,9 @@ MonoBehaviour:
   laneRecoverySpeed: 1.2
   laneRecoveryGain: 5
   maxLifetime: 60
-  attackReach: 1.7
+  attackReach: 1
   windupSeconds: 0.4
   swingSeconds: 0.28
   attackCooldown: 0.4
   attackPowerPercent: 100
+  logCombatDiagnostics: 0

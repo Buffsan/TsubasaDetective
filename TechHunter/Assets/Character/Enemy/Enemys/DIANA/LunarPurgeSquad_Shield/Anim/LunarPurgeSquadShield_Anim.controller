@@ -122,7 +122,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 待機
+  m_Name: "\u5F85\u6A5F"
   m_Speed: 0.3
   m_CycleOffset: 0
   m_Transitions:
@@ -276,8 +276,8 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 歩行
-  m_Speed: 1
+  m_Name: "\u6B69\u884C"
+  m_Speed: 0.3
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -2149205682071293909}
@@ -292,7 +292,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 047a36a01b276e5438e6efe17f759fcc, type: 2}
+  m_Motion: {fileID: 7400000, guid: 6ffd11621e26f16479a6c88e3d432a38, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -364,7 +364,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 攻撃待機
+  m_Name: "\u653B\u6483\u5F85\u6A5F"
   m_Speed: 0.2
   m_CycleOffset: 0
   m_Transitions:
@@ -379,7 +379,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 96a0c6b4715c0004db6c10a6efbf60ba, type: 2}
+  m_Motion: {fileID: 7400000, guid: 17c833649e5af894499e4eb78d46f9ed, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -392,7 +392,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 攻撃
+  m_Name: "\u653B\u6483"
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -408,7 +408,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 6ffd11621e26f16479a6c88e3d432a38, type: 2}
+  m_Motion: {fileID: 7400000, guid: 96a0c6b4715c0004db6c10a6efbf60ba, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -546,7 +546,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 被弾
+  m_Name: "\u88AB\u5F3E"
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:

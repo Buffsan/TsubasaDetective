@@ -44,6 +44,13 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
     [SerializeField, Min(0f)] float waveAcceleration = 13f;
     [SerializeField, Min(0.1f)] float waveMaxSpeed = 19f;
 
+    [Header("高速ステップの残像")]
+    [SerializeField] bool enableStepAfterimages = true;
+    [SerializeField, Range(0f, 1f)] float afterimageOpacity = 0.42f;
+    [SerializeField, Min(0.05f)] float afterimageFadeTime = 0.4f;
+    [SerializeField, Min(0.02f)] float afterimageSpawnInterval = 0.05f;
+    [SerializeField, Range(0f, 2f)] float afterimageFastMotionCutoff = 0.65f;
+
     [Header("攻撃判定と硬直")]
     [SerializeField, Min(0.02f)] float slashActiveSeconds = 0.18f;
     [SerializeField, Min(0f)] float recoverySeconds = 0.4f;
@@ -58,6 +65,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
     int orbitSign;
     bool initialized, heavy, aimLocked;
     float phaseTimer, decisionTimer, sidestepTimer, cooldown;
+    float afterimageTimer;
     GameObject meleeObject, warningObject;
     Vector2 warningVisualSize = Vector2.one, warningVisualCenter;
 
@@ -96,6 +104,30 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
         float progress = Mathf.Clamp01(
             (elapsed - Time.fixedDeltaTime * 0.5f) / safeDuration);
         return 2f * (1f - progress);
+    }
+
+    void BeginAfterimageStep()
+    {
+        // 踏み出し地点に1枚残し、続いて高速区間のみ一定間隔で残す。
+        afterimageTimer = Mathf.Max(0.02f, afterimageSpawnInterval);
+    }
+
+    void EmitStepAfterimage(float elapsed, float stepDuration)
+    {
+        if (!enableStepAfterimages || enemyBase == null ||
+            enemyBase.rb == null || enemyBase.spriteRenderer == null)
+            return;
+        if (enemyBase.rb.velocity.sqrMagnitude <= 0.01f ||
+            StepEaseOut(elapsed, stepDuration) < afterimageFastMotionCutoff)
+            return;
+
+        afterimageTimer += Time.fixedDeltaTime;
+        float interval = Mathf.Max(0.02f, afterimageSpawnInterval);
+        if (afterimageTimer < interval) return;
+        afterimageTimer = 0f;
+
+        LunarPurgeSquad_axe_Afterimage.Spawn(
+            enemyBase.spriteRenderer, afterimageOpacity, afterimageFadeTime);
     }
 
     public override void EnemyStanPlay() { Cancel(); }
@@ -150,6 +182,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
             enemyBase.rb.velocity = stepDirection * enemyBase.SPEED *
                 sidestepSpeedRate * StepEaseOut(phaseTimer, sidestepDuration);
             PlayAnim(1, "歩行");
+            EmitStepAfterimage(phaseTimer, sidestepDuration);
             if (phaseTimer >= sidestepDuration)
             {
                 phase = Phase.Roam;
@@ -171,6 +204,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
             {
                 phase = Phase.SideStep;
                 phaseTimer = 0f;
+                BeginAfterimageStep();
                 stepDirection = tangent;
                 enemyBase.rb.velocity = tangent * enemyBase.SPEED *
                     sidestepSpeedRate * StepEaseOut(0f, sidestepDuration);
@@ -206,6 +240,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
         if (distance <= meleeRange && Random.value < retreatChanceWhenClose)
         {
             phase = Phase.Retreat;
+            BeginAfterimageStep();
             Vector2 away = (Vector2)transform.position - (Vector2)target.position;
             stepDirection = away.sqrMagnitude > 0.0001f ? away.normalized : -direction;
             PlayAnim(1, "歩行");
@@ -213,6 +248,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
         else if (distance > meleeRange)
         {
             phase = Phase.Lunge;
+            BeginAfterimageStep();
             PlayAnim(1, "歩行");
         }
         else BeginWindup();
@@ -234,10 +270,12 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
                 enemyBase.rb.velocity = stepDirection * enemyBase.SPEED *
                     retreatSpeedRate * StepEaseOut(phaseTimer, retreatDuration);
                 PlayAnim(1, "歩行");
+                EmitStepAfterimage(phaseTimer, retreatDuration);
                 if (phaseTimer >= retreatDuration)
                 {
                     phase = Phase.Lunge;
                     phaseTimer = 0f;
+                    BeginAfterimageStep();
                 }
                 break;
 
@@ -252,6 +290,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
                           StepEaseOut(phaseTimer, lungeDuration)
                         : Vector2.zero;
                     PlayAnim(1, "歩行");
+                    EmitStepAfterimage(phaseTimer, lungeDuration);
                 }
                 else BeginWindup();
                 break;

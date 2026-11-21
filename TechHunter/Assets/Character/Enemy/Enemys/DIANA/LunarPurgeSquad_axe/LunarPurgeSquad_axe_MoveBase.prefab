@@ -83,5 +83,10 @@ MonoBehaviour:
   waveInitialSpeed: 3
   waveAcceleration: 13
   waveMaxSpeed: 19
+  enableStepAfterimages: 1
+  afterimageOpacity: 0.42
+  afterimageFadeTime: 0.4
+  afterimageSpawnInterval: 0.05
+  afterimageFastMotionCutoff: 0.65
   slashActiveSeconds: 0.18
   recoverySeconds: 0.4

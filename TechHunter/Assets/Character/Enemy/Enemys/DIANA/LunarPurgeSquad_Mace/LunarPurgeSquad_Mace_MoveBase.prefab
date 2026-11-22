@@ -51,7 +51,7 @@ MonoBehaviour:
   AttackCount: 0
   Clone_DengerObjects: []
   attackInterval: {x: 0.4, y: 3}
-  warningDuration: 2
+  warningDuration: 1
   leapDuration: 1
   leapHeight: 4
   landingRecovery: 0.3

@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: LunarPurgeSquad_axe
   m_EditorClassIdentifier: 
   NAME: "\u6708\u306E\u5DE1\u793C\u8005\u30CF\u30EB\u30D0\u30FC\u30C9\u4F7F\u3044"
-  MAXHP: 1556
+  MAXHP: 2000
   enemyStrength: 3
   Regen: 0
   MAXMP: 0
   SPEED: 4
   ATK: 7
-  ATKDF: 3
-  GOLD: 223
+  ATKDF: 11
+  GOLD: 99
   XP: 0
   StanHP: 8
-  ConfusionResistance: 1000
+  ConfusionResistance: 1200
   Critical: 0
   Range: 0
-  ConfusionResistanceRegen: 25
+  ConfusionResistanceRegen: 40

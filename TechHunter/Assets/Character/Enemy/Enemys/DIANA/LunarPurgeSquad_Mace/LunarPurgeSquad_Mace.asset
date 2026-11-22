@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: LunarPurgeSquad_Mace
   m_EditorClassIdentifier: 
   NAME: "\u6708\u306E\u5DE1\u793C\u8005\u306E\u920D\u5668\u4F7F\u3044"
-  MAXHP: 920
+  MAXHP: 1000
   enemyStrength: 3
   Regen: 0
   MAXMP: 0
   SPEED: 0
   ATK: 15
-  ATKDF: 3
+  ATKDF: 22
   GOLD: 65
-  XP: 0
+  XP: 35
   StanHP: 8
   ConfusionResistance: 1000
   Critical: 0

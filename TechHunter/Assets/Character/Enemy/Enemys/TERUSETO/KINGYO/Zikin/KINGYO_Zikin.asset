@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: KINGYO_Zikin
   m_EditorClassIdentifier: 
   NAME: 
-  MAXHP: 390
-  enemyStrength: 0
+  MAXHP: 290
+  enemyStrength: 1
   Regen: 0
   MAXMP: 0
   SPEED: 1

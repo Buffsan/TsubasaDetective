@@ -245,10 +245,19 @@ public class Boss_MovementTriangle_AI : Boss_MoveBase
             float waitTime = 0;
             if (AttackPhase == 0)
             {
+                Transform target = CurrentTarget;
+                if (target == null)
+                {
+                    Finish();
+                    enemyBase.rb.velocity = Vector2.zero;
+                    enemyBase.animator.Play("待機");
+                    return;
+                }
+
             waitTime = 1.5f;
             LookAtCurrentTarget();
                 enemyBase.animator.Play("攻撃待機", 0, 0);
-                Vector3Int tile = GetTileBehindPlayer(tilemap, transform, CurrentTarget != null ? CurrentTarget : enemyBase.transform);
+                Vector3Int tile = GetTileBehindPlayer(tilemap, transform, target);
                 targetPos = (Vector3)tile;
                 saveTargetDir = (Vector2)targetPos - (Vector2)transform.position;
                 GameObject denger = DengerAreaSpawn(Denger_4AttackArea, enemyBase.transform.position, waitTime);
@@ -297,10 +306,19 @@ public class Boss_MovementTriangle_AI : Boss_MoveBase
         float waitTime = 0;
         if (AttackPhase == 0)
         {
+            Transform target = CurrentTarget;
+            if (target == null)
+            {
+                Finish();
+                enemyBase.rb.velocity = Vector2.zero;
+                enemyBase.animator.Play("待機");
+                return;
+            }
+
             waitTime = 1;
             LookAtCurrentTarget();
             enemyBase.animator.Play("攻撃待機", 0, 0);
-            Vector3Int tile = GetTileBehindPlayer(tilemap, transform, CurrentTarget != null ? CurrentTarget : enemyBase.transform);
+            Vector3Int tile = GetTileBehindPlayer(tilemap, transform, target);
             targetPos = (Vector3)tile;
             saveTargetDir = (Vector2)targetPos - (Vector2)transform.position;
             GameObject denger = DengerAreaSpawn(Denger_HoukouAttackArea, enemyBase.transform.position, waitTime);
@@ -581,11 +599,25 @@ public class Boss_MovementTriangle_AI : Boss_MoveBase
         dir.y = Mathf.Clamp(dir.y, -1, 1);
         dir.z = 0;
 
-        Vector3Int checkTile = playerTile;
-
-        while (tilemap.HasTile(checkTile + dir))
+        // 同じタイルにいる場合、探索方向がゼロになり無限ループするのを防ぐ。
+        if (dir == Vector3Int.zero)
         {
-            checkTile += dir;
+            return playerTile;
+        }
+
+        Vector3Int checkTile = playerTile;
+        const int maxSearchSteps = 256;
+
+        // 広すぎる床や意図しないタイル配置でも探索を必ず終了させる。
+        for (int i = 0; i < maxSearchSteps; i++)
+        {
+            Vector3Int nextTile = checkTile + dir;
+            if (!tilemap.HasTile(nextTile))
+            {
+                break;
+            }
+
+            checkTile = nextTile;
         }
 
         return checkTile;

@@ -32,9 +32,8 @@ public class Kingyo_Koaka : EnemyMoveBase
         if (!one) {
             Vector2 randomPos = new Vector2 (Random.Range(-1f,1f), Random.Range(-1f, 1f));
             // TargetDirectionは既に方向ベクトル。位置を再度引かない。
-            Direction = UsesLegacyPlayerTarget
-                ? (TargetDirection + randomPos) - (Vector2)transform.position
-                : TargetDirection + randomPos;
+            // 既存のプレイヤー追尾時の計算式を敵ターゲットにも適用。
+            Direction = (TargetDirection + randomPos) - (Vector2)transform.position;
             one = true;
         }
         
@@ -85,6 +84,7 @@ public class Kingyo_Koaka : EnemyMoveBase
         {
             GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
             EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
+            ConfigureSummonedAttack(CL_Attack);
             enemyAttack.enemyBase = enemyBase;
             Destroy(CL_Attack, 0.1f);
 

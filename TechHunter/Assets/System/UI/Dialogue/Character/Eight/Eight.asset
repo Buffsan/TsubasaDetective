@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f818c6df9824b20b22b8c0c78b73bac, type: 3}
+  m_Name: Eight
+  m_EditorClassIdentifier: 
+  id: 12
+  displayName: "\u30A8\u30A4\u30C8"
+  flipHorizontally: 0
+  scale: 1
+  normal: {fileID: 21300000, guid: d61968665a500c5418e60643de644c21, type: 3}
+  happy: {fileID: 21300000, guid: cc591f48164157a44908594036604898, type: 3}
+  angry: {fileID: 21300000, guid: 4273061b44f06714baf6aeee4ebc1810, type: 3}
+  crying: {fileID: 21300000, guid: 28c042931c69c4e499f348e6c286f40c, type: 3}
+  fear: {fileID: 21300000, guid: 5c449e8fff1b27b4e996d2150078c6d7, type: 3}
+  confused: {fileID: 21300000, guid: 97f579cd85fc68f44a32be31767dba1b, type: 3}
+  laughing: {fileID: 21300000, guid: b18641f4dda98694c8e7847dcd8dc357, type: 3}
+  surprised: {fileID: 0}
+  sad: {fileID: 0}
+  embarrassed: {fileID: 0}
+  thinking: {fileID: 21300000, guid: 97f579cd85fc68f44a32be31767dba1b, type: 3}
+  others: []

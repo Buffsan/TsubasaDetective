@@ -12,6 +12,78 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] Faction factions = Faction.None;
     public Faction Factions => factions;
 
+    [Header("ステージクリア条件")]
+    [SerializeField] bool countsForStageClear = true;
+    public bool CountsForStageClear => countsForStageClear;
+    public bool IsCharmed { get; private set; }
+    // 魅了値はcharaDamage.buffsに集約する。古いPrefabでCharaDamage参照が
+    // 未設定でも、最初に魅了を受けた判定から実行時に受け口を確定できる。
+    [System.NonSerialized] charaDamage charmStatusReceiver;
+
+    public charaDamage CharmStatusReceiver
+    {
+        get
+        {
+            if (charmStatusReceiver != null) return charmStatusReceiver;
+            if (CharaDamage != null) return CharaDamage;
+            return charaDamage;
+        }
+    }
+
+    public void RegisterCharmStatusReceiver(charaDamage receiver)
+    {
+        if (receiver != null) charmStatusReceiver = receiver;
+    }
+
+    public float CharmValue
+    {
+        get
+        {
+            charaDamage receiver = CharmStatusReceiver;
+            return receiver != null
+                ? receiver.GetAccumulatedStatusValue(StatusEffect.StatusEffectType.Charm)
+                : 0f;
+        }
+    }
+
+    // 蓄積値と現在HPの比較はcharaDamageの状態異常処理で行う。
+    // 敵1体につき、魅了成立時または通常死亡時のどちらかで一度だけ報酬を出す。
+    // 同じ敵に複数のcharaDamageが存在しても二重ドロップしない。
+    bool coinsDropped;
+
+    public void DropCoinsOnce()
+    {
+        if (coinsDropped || GOLD <= 0 || CoinPool.Instance == null) return;
+
+        coinsDropped = true;
+        CoinPool.Instance.RequestDrop(GOLD, transform.position);
+    }
+
+    public void BecomeCharmedAlly()
+    {
+        if (IsCharmed || status == Status.Die || HP <= 0f) return;
+        IsCharmed = true;
+        factions = Faction.Charmed;
+
+        // 魅了成立を撃破報酬の獲得タイミングとして扱う。
+        // 後から衰弱などで死亡しても、死亡処理では再ドロップしない。
+        DropCoinsOnce();
+        EnemyContoroller normalEnemy = this as EnemyContoroller;
+        if (normalEnemy != null) normalEnemy.BecomeCharmedAlly();
+        Boss_Controller boss = this as Boss_Controller;
+        if (boss != null) boss.BecomeCharmedAlly();
+        CG_Knght knight = this as CG_Knght;
+        if (knight != null)
+        {
+            knight.CopyTargetSettings(EnemyContoroller.TargetType.EnemyOnly,
+                EnemyContoroller.TargetPriority.Nearest, true, Faction.None,
+                Faction.Charmed, 0f, 0.25f);
+            knight.RefreshSummonedTarget();
+        }
+        if (SystemManager.Instance != null)
+            SystemManager.Instance.RegisterCharmedAlly(this);
+    }
+
     // 模擬戦でのみ使用する一時的な派閥変更。
     public void SetDebugFaction(Faction debugFaction)
     {
@@ -52,6 +124,10 @@ public class EnemyBase : MonoBehaviour
     [HideInInspector] public string NAME;
     [HideInInspector] public float MAXHP;
     [HideInInspector] public float HP;
+    // Boss phase transitions can temporarily reject all incoming damage without disabling hit colliders.
+    public bool IsInvulnerable { get; set; }
+    // Unlike invulnerability, unstaggerability still allows normal HP damage.
+    public bool IsUnstaggerable { get; set; }
     [HideInInspector] public float ConfusionHP;
     [HideInInspector] public float MAXMP;
     [HideInInspector] public float SPEED;
@@ -173,9 +249,26 @@ public class EnemyBase : MonoBehaviour
     public void AttackAreaSpawn()
     {
         GameObject CL_AttackArea = Instantiate(AttackArea, AttackSpawnPoint.transform.position, Quaternion.identity);
+        EnemyAttack[] attacks = CL_AttackArea.GetComponentsInChildren<EnemyAttack>(true);
         myAttack = CL_AttackArea.GetComponent<EnemyAttack>();
+        if (myAttack == null && attacks.Length > 0) myAttack = attacks[0];
         Destroy(CL_AttackArea, AttackDellTimer);
-        myAttack.enemyBase = Ebase;
+
+        // プレイヤー用の元の攻撃を維持しつつ、敵VS敵の場合のみ現在の標的設定を適用する。
+        foreach (EnemyAttack attack in attacks)
+        {
+            if (attack == null) continue;
+            attack.enemyBase = Ebase;
+            if (IsCharmed)
+                attack.ConfigureAttack(this, attack.AttackPowerPercent,
+                    (Faction)(~(int)Faction.Charmed), false);
+            else if (this is EnemyContoroller controller &&
+                     controller.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+                controller.ConfigureAttackTarget(attack);
+            else if (this is Boss_Controller boss &&
+                     boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+                boss.ConfigureAttackTarget(attack);
+        }
     }
     public void isTargetLook(Vector2 target)
     {

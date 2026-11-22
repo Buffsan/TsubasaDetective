@@ -213,6 +213,7 @@ public class Boss_SS_MageOfTheStarChoir_AI : Boss_MoveBase
         {
             LookAtCurrentTarget();
             SaveLaser = Instantiate(Laser,transform.position,Quaternion.identity);
+            ConfigureSpawnedAttack(SaveLaser);
             SaveLaser.transform.up = TargetDirection.normalized;
             enemyBase.animator.SetInteger("Anim", 2);
             NextPhase();
@@ -248,6 +249,7 @@ public class Boss_SS_MageOfTheStarChoir_AI : Boss_MoveBase
         {
             LookAtCurrentTarget();
             SaveLaser = Instantiate(Laser, transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(SaveLaser);
             SaveLaser.transform.up = TargetDirection.normalized;
 
             enemyBase.animator.SetInteger("Anim", 2);
@@ -321,6 +323,7 @@ public class Boss_SS_MageOfTheStarChoir_AI : Boss_MoveBase
             if (attackcount() > 2) 
             {
                 GameObject CL_Attack = Instantiate(AttackArea[0], transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Attack);
                 Destroy(CL_Attack,0.1f);
                 GameObject CL_Effect = Instantiate(AttackEffect[0], transform.position, Quaternion.identity);
                 Destroy(CL_Effect, 2);
@@ -333,10 +336,18 @@ public class Boss_SS_MageOfTheStarChoir_AI : Boss_MoveBase
             
             for (int i = 0; i < StaffSpawnPoint.Count; i++) 
             {
-                GameObject CL_Staff = Instantiate(Staffs[i], StaffSpawnPoint[i].transform.position, Quaternion.identity);
+                // 敵VS敵では杖も召喚元の派閥・狙いを引き継ぎ、
+                // 通常のプレイヤー戦ではこれまでどおりの生成経路を使う。
+                Boss_Controller boss = enemyBase as Boss_Controller;
+                bool useEnemyTargeting = boss != null &&
+                    boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly;
+                GameObject CL_Staff = useEnemyTargeting
+                    ? EnemySpawn(Staffs[i], StaffSpawnPoint[i].transform.position)
+                    : Instantiate(Staffs[i], StaffSpawnPoint[i].transform.position, Quaternion.identity);
                 NowStaffs.Add(CL_Staff);
 
-                AllEnemy.Add(CL_Staff);
+                // EnemySpawnはボスのAllEnemyへ登録済み。
+                if (!useEnemyTargeting) AllEnemy.Add(CL_Staff);
 
                 GameObject CL_Effect = Instantiate(chainEffect, CL_Staff.transform.position, Quaternion.identity);
                 Vector2 DistanceChain = transform.position - CL_Staff.transform.position;

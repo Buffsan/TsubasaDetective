@@ -14,6 +14,23 @@ public class PlayerBuffController : MonoBehaviour
 
     public float Attack_AllBuff;
     public float MultiplyAttack_AllBuff;
+    // Read directly from active buffs so an initiating hit gets the bonus
+    // immediately, without waiting for the next UpdateBuffs() tick.
+    public float SkillOnlyAttackMultiplierBonus
+    {
+        get
+        {
+            float bonus = 0f;
+            foreach (ActiveBuff buff in buffs)
+            {
+                if (buff != null && buff.data != null && buff.remainTime > 0f &&
+                    buff.data.SkillAttackOnly)
+                    bonus += buff.data.MultiplyATK;
+            }
+            return bonus;
+        }
+    }
+
     public float DEF_AllBuff = 0;
     public float MultiplyDEF_AllBuff = 1;
 
@@ -36,17 +53,17 @@ public class PlayerBuffController : MonoBehaviour
     {
         for (int i = 0; i < buffs.Count; i++)
         {
-            // “¯‚¶ƒoƒt‚ð”­Œ©
+            // åŒã˜ãƒãƒ•ã‚’ç™ºè¦‹
             if (buffs[i].data == buffData)
             {
-                // Œø‰ÊŽžŠÔ‚ðXV
+                // åŠ¹æžœæ™‚é–“ã‚’æ›´æ–°
                 buffs[i].remainTime = buffData.BuffTime;
 
                 return;
             }
         }
 
-        // –³‚¯‚ê‚ÎV‹K’Ç‰Á
+        // ç„¡ã‘ã‚Œã°æ–°è¦è¿½åŠ 
         buffs.Add(new ActiveBuff(buffData));
     }
     public bool HasBuff(BuffData buffData)
@@ -87,8 +104,12 @@ public class PlayerBuffController : MonoBehaviour
                 continue;
             }
 
-            Attack_AllBuff += buff.data.ATK;
-            MultiplyAttack_AllBuff += buff.data.MultiplyATK;
+            if (!buff.data.SkillAttackOnly)
+            {
+                Attack_AllBuff += buff.data.ATK;
+                MultiplyAttack_AllBuff += buff.data.MultiplyATK;
+            }
+            // Defensive effects still apply during the 0.5-second window.
             DEF_AllBuff += buff.data.ATKDF;
             MultiplyDEF_AllBuff += buff.data.MultiplyATKDF;
             Speed_AllBuff += buff.data.SPEED;

@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d9db937061371a418fa7ad9233fd38b, type: 3}
   m_Name: DK_Zweihander
   m_EditorClassIdentifier: 
+  statusEffects: []
   attackType: 0
-  Attack: 30
+  Attack: 25
   AttackSpeedTime: 0
   StaggerPower: 20
   ConfusionPower: 0.5

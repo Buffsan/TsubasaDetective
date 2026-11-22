@@ -27,8 +27,8 @@ TagManager:
   - PlayerAttack
   - Stage
   - Enemy
-  - 
-  - 
+  - SweepEnemy
+  - Stage_OuterBoundary
   - 
   - 
   - 

@@ -94,6 +94,37 @@ public class Boss_Controller : EnemyBase
         activeAttackWarnings.Clear();
     }
 
+    public void EnableCharmedAllyTargeting()
+    {
+        if (IsCharmed || targetType == EnemyContoroller.TargetType.EnemyOnly) return;
+        if (targetType == EnemyContoroller.TargetType.PlayerOnly)
+        {
+            targetType = EnemyContoroller.TargetType.PlayerAndEnemy;
+            targetPriority = EnemyContoroller.TargetPriority.Nearest;
+            targetAllFactions = false;
+            targetFactions = Faction.Charmed;
+        }
+        else if (!targetAllFactions)
+            targetFactions |= Faction.Charmed;
+
+        excludedTargetFactions &= ~Faction.Charmed;
+        ChooseTargetNow();
+    }
+
+    public void BecomeCharmedAlly()
+    {
+        // 魅了はこのボスの撃破扱い。通常死亡で消える眷属を同じように
+        // 片付け、眷属が戦闘クリアを妨げないようにする。
+        CleanupSummonsOnDefeat();
+        targetType = EnemyContoroller.TargetType.EnemyOnly;
+        targetPriority = EnemyContoroller.TargetPriority.Nearest;
+        targetAllFactions = true;
+        targetFactions = Faction.None;
+        excludedTargetFactions = Faction.Charmed;
+        ClearForcedTarget();
+        ChooseTargetNow();
+    }
+
     public EnemyContoroller.TargetType TargetMode => targetType;
 
     // デバッグ専用。通常のボス戦のターゲット設定には影響しない。
@@ -111,13 +142,21 @@ public class Boss_Controller : EnemyBase
     // ボスの既存・新規攻撃判定にも同じ敵対派閥を設定する。
     public void ConfigureAttackTarget(EnemyAttack attack)
     {
+        ConfigureAttackTarget(attack, this);
+    }
+
+    // 分身・召喚体は本体のターゲット派閥を使用しつつ、
+    // ダメージの発生元は分身自身のステータスとして保持できる。
+    public void ConfigureAttackTarget(EnemyAttack attack, EnemyBase attackOwner)
+    {
         if (attack == null) return;
         Faction factions = Faction.None;
         if (targetType != EnemyContoroller.TargetType.PlayerOnly)
             factions = (targetAllFactions ? (Faction)(~0) : targetFactions)
                 & ~excludedTargetFactions;
         bool hitPlayer = targetType != EnemyContoroller.TargetType.EnemyOnly;
-        attack.ConfigureAttack(this, attack.AttackPowerPercent, factions, hitPlayer);
+        attack.ConfigureAttack(attackOwner != null ? attackOwner : this,
+            attack.AttackPowerPercent, factions, hitPlayer);
     }
 
     // ボスの敵対設定を召喚した雑魚敵へ渡す。PlayerOnlyの従来召喚は変更しない。
@@ -191,10 +230,20 @@ public class Boss_Controller : EnemyBase
         {
             TargetDirection = Vector2.zero;
             TargetDistance = float.PositiveInfinity;
-            return;
         }
-        TargetDirection = (Vector2)CurrentTarget.position - (Vector2)transform.position;
-        TargetDistance = TargetDirection.magnitude;
+        else
+        {
+            TargetDirection = (Vector2)CurrentTarget.position - (Vector2)transform.position;
+            TargetDistance = TargetDirection.magnitude;
+        }
+
+        // 通常移動中だけ、個別Boss_MoveBaseが参照する保存値も更新する。
+        // 攻撃中は構え・再照準時の更新タイミングを維持し、PlayerOnlyには触らない。
+        if (targetType != EnemyContoroller.TargetType.PlayerOnly && moveType != MoveType.Attack)
+        {
+            PlayerDirection = TargetDirection;
+            PlayerDistance = TargetDistance;
+        }
     }
 
     bool IsTargetValid(Transform target)
@@ -242,6 +291,23 @@ public class Boss_Controller : EnemyBase
                 if (!targetAllFactions && (other.Factions & targetFactions) == Faction.None)
                     continue;
 
+                float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
+                if (sqr < nearestSqr)
+                {
+                    nearestSqr = sqr;
+                    nearestEnemy = other.transform;
+                }
+            }
+        }
+
+        // 味方化した敵はAllEnemyに含まれないため、敵側からは別リストも探索する。
+        if (!IsCharmed && manager != null)
+        {
+            foreach (EnemyBase other in manager.CharmedAllies)
+            {
+                if (other == null || other.status == Status.Die || other.HP <= 0f) continue;
+                if ((other.Factions & excludedTargetFactions) != Faction.None) continue;
+                if (!targetAllFactions && (other.Factions & targetFactions) == Faction.None) continue;
                 float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
                 if (sqr < nearestSqr)
                 {
@@ -299,7 +365,8 @@ public class Boss_Controller : EnemyBase
         moveBase.enemyBase = this;
         CurrentTarget = Player != null ? Player.transform : null;
         if (targetType != EnemyContoroller.TargetType.PlayerOnly) ChooseTargetNow();
-
+        if (SystemManager.Instance != null && SystemManager.Instance.CharmedAllies.Count > 0)
+            EnableCharmedAllyTargeting();
 
         if (status == Status.MovieStay) return;
         // デバッグ登録済みの場合でもAllEnemyに二重追加しない。
@@ -307,8 +374,36 @@ public class Boss_Controller : EnemyBase
             ALL_System.systemManager.AllEnemy.Add(this.gameObject);
 
     }
+    // ボス死亡時と魅了成立時の眷属処理を共通化。
+    // ボスが管理する眷属だけを除外するため、他の敵が残っていれば
+    // SystemManagerの通常の全滅判定がそのまま適用される。
+    private void CleanupSummonsOnDefeat()
+    {
+        if (moveBase == null) return;
+
+        SystemManager manager = SystemManager.Instance;
+        foreach (GameObject summoned in moveBase.AllEnemy)
+        {
+            if (summoned == null) continue;
+            // Destroyはフレーム末まで遅延するため、勝利判定の登録からも外す。
+            if (manager != null) manager.AllEnemy.Remove(summoned);
+            Destroy(summoned);
+        }
+        moveBase.AllEnemy.Clear();
+        moveBase.enemyList.Clear();
+    }
+
     private void FixedUpdate()
     {
+        // Forced crowd-control from effects outside charaDamage also must
+        // not break a boss's protected ultimate attack.
+        if (IsUnstaggerable && (status == Status.Stan ||
+            status == Status.StanNext || status == Status.ConfusionResistance))
+        {
+            status = Status.Nomal;
+            animator.SetBool("Damage", false);
+            StanCount = 0f;
+        }
         switch (status)
         {
             case Status.Nomal:
@@ -321,11 +416,7 @@ public class Boss_Controller : EnemyBase
                 isConfusion();
                 break;
             case Status.Die:
-                foreach (var enemys in moveBase.AllEnemy) 
-                {
-                    if (enemys)Destroy(enemys.gameObject);
-                }
-                moveBase.enemyList.Clear();
+                CleanupSummonsOnDefeat();
                 return; // 死亡中は一切動かさない
             case Status.MovieStay:
                 isMovie();

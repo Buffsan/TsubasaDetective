@@ -8,6 +8,8 @@ public class CG_Knght : EnemyBase
 
     // この旧式騎士はEnemyContorollerを継承していないため独自に互換対応。
     [SerializeField] EnemyContoroller.TargetType targetType = EnemyContoroller.TargetType.PlayerOnly;
+    // 旧式騎士でも、攻撃判定側が実行時のターゲットモードを確認できるようにする。
+    public EnemyContoroller.TargetType TargetMode => targetType;
     [SerializeField] EnemyContoroller.TargetPriority targetPriority =
         EnemyContoroller.TargetPriority.Nearest;
     [SerializeField] bool targetAllFactions = true;

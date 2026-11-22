@@ -40,6 +40,30 @@ public class PlayerController : PlayerStatus
     public GameObject SpecialBuff;
     public List<SkillInfo> skillINFO = new List<SkillInfo>();
     public List<RelicData> relicDatas = new List<RelicData>();
+    int handInHandRelicCount;
+    public StatusEffectAttack HandInHandCharmEffect { get; private set; }
+    public bool HandInHandRelicActive =>
+        handInHandRelicCount > 0 && HandInHandCharmEffect != null &&
+        HandInHandCharmEffect.effecttype == StatusEffect.StatusEffectType.Charm;
+
+    public bool RegisterHandInHandRelic(StatusEffectAttack charmEffect)
+    {
+        if (charmEffect == null ||
+            charmEffect.effecttype != StatusEffect.StatusEffectType.Charm)
+        {
+            Debug.LogError("名画「手と手を取り合って死ね」の魅了状態異常SOが未設定です。", this);
+            return false;
+        }
+        HandInHandCharmEffect = charmEffect;
+        handInHandRelicCount++;
+        return true;
+    }
+
+    public void UnregisterHandInHandRelic()
+    {
+        handInHandRelicCount = Mathf.Max(0, handInHandRelicCount - 1);
+        if (handInHandRelicCount == 0) HandInHandCharmEffect = null;
+    }
     public List<SkillCardData> NomalSkillData = new List<SkillCardData>();
     public RelicData NoneRelic;
     public GameObject RelicControllerObject;
@@ -128,12 +152,44 @@ public class PlayerController : PlayerStatus
 
 
 
+    public bool IsDialogueInputBlocked { get; private set; }
+    // Avoid handling a mouse click twice through PlayerInput and Update.
+    int lastDecideInputFrame = -1;
+
+    // Only manual Input System callbacks are blocked. Scripts can still set MoveInput,
+    // movetype or rb.velocity to control the character during a cutscene.
+    public void SetDialogueInputBlocked(bool blocked)
+    {
+        IsDialogueInputBlocked = blocked;
+        if (blocked)
+        {
+            MoveInput = Vector2.zero;
+            MoveInputSave = Vector2.zero;
+            Dash = false;
+        }
+    }
+
     public void OnDecide(InputAction.CallbackContext context)
     {
+        if (!context.performed) return;
+        lastDecideInputFrame = Time.frameCount;
+
+        DialogueUIController dialogue = DialogueUIController.Instance;
+        if (dialogue != null && dialogue.IsPlaying)
+        {
+            dialogue.Advance();
+            return;
+        }
+
+        // NPC interaction takes priority over the old Decide event while
+        // standing in talk range. Do not fire both actions on one click.
+        if (DialogueNPCInteractable.TryInteractClosest(this)) return;
+
         GlobalEvents.InvokeOnDecide(0);
     }
     public void OnMove(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         //Debug.Log("移動した");
         MoveInput = context.ReadValue<Vector2>();
 
@@ -157,6 +213,7 @@ public class PlayerController : PlayerStatus
     }
     void useSkill(int skillNumber)
     {
+        if (IsDialogueInputBlocked) return;
 
         if (ALL_System.systemManager.gameMode == SystemManager.GameMode.Movie) return;//ムービー中は手動でスキルを使えない
         // 3フレーム以内に再度呼ばれたら無視
@@ -200,9 +257,16 @@ public class PlayerController : PlayerStatus
 
         GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[skillNumber].skillDATA);
         skillINFO[skillNumber].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
+        GlobalEvents.InvokeSkillCooldownStarted(skillNumber);
     }
     public void OnNomalAttack(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
+        // Decide and NormalAttack share the mouse left button. Avoid attacking
+        // an NPC before OnDecide gets a chance to start the conversation.
+        if (context.control != null && context.control.device is Mouse &&
+            DialogueNPCInteractable.HasAvailableNPC(this))
+            return;
         //Debug.Log("攻撃した");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -220,6 +284,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill1(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             //Debug.Log("スキル1");
@@ -231,6 +296,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill2(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             //Debug.Log("スキル2");
@@ -242,6 +308,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill3(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         //Debug.Log("スキル3");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -252,7 +319,8 @@ public class PlayerController : PlayerStatus
         }
     }
     public void OnSkill4(InputAction.CallbackContext context)
-    {//Debug.Log("スキル４");
+    {
+        if (IsDialogueInputBlocked) return;//Debug.Log("スキル４");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             if (skillINFO[3].SkillCardManager.mode == SkillCardManager.Mode.Standby)
@@ -264,6 +332,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill5(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         //Debug.Log("スキル４");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -276,10 +345,11 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill6(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         //Debug.Log("スキル6");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
-            if (skillINFO[6].SkillCardManager.mode == SkillCardManager.Mode.Standby)
+            if (skillINFO.Count > 5 && skillINFO[5].SkillCardManager.mode == SkillCardManager.Mode.Standby)
             {
                 mode = ModeType.M1;
                 movetype = MoveType.Skill;
@@ -289,6 +359,7 @@ public class PlayerController : PlayerStatus
                 PlayerSkillBase playerSkillBase = Skill6.GetComponent<PlayerSkillBase>();
                 GlobalEvents.InvokeSkillUse(playerSkillBase, skillINFO[5].skillDATA);
                 skillINFO[5].SkillCardManager.mode = SkillCardManager.Mode.CoolTime;
+                GlobalEvents.InvokeSkillCooldownStarted(5);
             }
 
         }
@@ -298,6 +369,7 @@ public class PlayerController : PlayerStatus
 
     public void OnDodge(InputAction.CallbackContext context)
     {
+        if (IsDialogueInputBlocked) return;
         if (context.phase == InputActionPhase.Performed &&
             (movetype != MoveType.Dodge || FlameDanceActive) &&
             movetype != MoveType.NoAction &&
@@ -372,6 +444,26 @@ public class PlayerController : PlayerStatus
     void Update()
     {
         isCursorDirection();
+
+        // Both Decide and NormalAttack use the left mouse button. PlayerInput's
+        // callback normally handles Decide, but this polling fallback guarantees
+        // an NPC conversation can start on a click anywhere within talk range
+        // even when the Decide callback isn't delivered.
+        Mouse mouse = Mouse.current;
+        if (mouse == null || !mouse.leftButton.wasPressedThisFrame ||
+            lastDecideInputFrame == Time.frameCount)
+            return;
+
+        DialogueUIController dialogue = DialogueUIController.Instance;
+        if (dialogue != null && dialogue.IsPlaying)
+        {
+            lastDecideInputFrame = Time.frameCount;
+            dialogue.Advance();
+        }
+        else if (DialogueNPCInteractable.TryInteractClosest(this))
+        {
+            lastDecideInputFrame = Time.frameCount;
+        }
     }
 
     private void FixedUpdate()
@@ -574,6 +666,7 @@ public class PlayerController : PlayerStatus
         }
 
         CL_playerSkill.SkillLevel = SkillLevel;
+        CL_playerSkill.SkillSlotIndex = Level;
     }
     void isAttack()
     {
@@ -758,6 +851,9 @@ public class PlayerController : PlayerStatus
     }
     public void isRecoveryHP(float HPvalue)
     {
+        // Healing amplification affects positive healing only, not HP costs.
+        if (HPvalue > 0f)
+            HPvalue *= Mathf.Max(0f, 1f + AddHealingPercent / 100f);
         HP += HPvalue;
         if (HP > MaxHP)
         {

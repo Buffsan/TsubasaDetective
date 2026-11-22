@@ -26,6 +26,8 @@ public class CG_AutomaticCrossbow_AI : PlayerSkillBase
         {
 
             GameObject CL_Weapon = SkillSpawn(SkillWeapon, TargetObject);
+            CG_AutomaticCrossbow skill = CL_Weapon.GetComponent<CG_AutomaticCrossbow>();
+            skill.SkillObject = gameObject; 
             Att = ATT.A2;
         
         }

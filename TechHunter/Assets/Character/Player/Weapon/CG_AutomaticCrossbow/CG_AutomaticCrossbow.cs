@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class CG_AutomaticCrossbow : MonoBehaviour
 {
-
+    public GameObject SkillObject;
     [SerializeField] GameObject Arrow;
     [SerializeField] AudioClip Clip;
+    [SerializeField] int DefaltArrows = 50;
 
     AudioManager manager => AudioManager.instance;
 
@@ -29,8 +30,14 @@ public class CG_AutomaticCrossbow : MonoBehaviour
         transform.up = controller.CursorDirection;
         transform.Rotate(0, 0, 90);
 
+        int DoubleArrowChance = 1;
+        if (SkillObject) 
+        {
+            DoubleArrowChance = 3;
+        }
+
         AttackCount += Time.deltaTime;
-        if (AttackCount > AttackTime && ArrowCount < 50) 
+        if (AttackCount > AttackTime / DoubleArrowChance && ArrowCount < DefaltArrows * DoubleArrowChance) 
         {
             AttackCount = 0;
             ArrowCount++;
@@ -39,7 +46,7 @@ public class CG_AutomaticCrossbow : MonoBehaviour
             GameObject CL_Arrow = Instantiate(Arrow,transform.position,Quaternion.identity);
             Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
 
-            float A_Random = Random.Range(-5, 5) * Mathf.Deg2Rad;
+            float A_Random = Random.Range(-8, 8) * Mathf.Deg2Rad;
 
             Vector2 RadomDirection = new Vector2(
             Mathf.Cos(A_Random) * controller.CursorDirection.x - Mathf.Sin(A_Random) * controller.CursorDirection.y,
@@ -51,7 +58,7 @@ public class CG_AutomaticCrossbow : MonoBehaviour
 
             Destroy( CL_Arrow ,8f);
         }
-        if (ArrowCount >= 30) 
+        if (ArrowCount >= DefaltArrows) 
         { 
         Destroy(gameObject);
         }

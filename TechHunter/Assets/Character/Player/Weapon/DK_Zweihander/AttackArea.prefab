@@ -114,3 +114,4 @@ MonoBehaviour:
   Level_AttackBONUS_multiplier: 15
   Level_AttackBONUS: 1
   AgeinAttack: 0
+  buffOnEnemyHit: {fileID: 11400000, guid: c96b88fd28184a5f8b313e32b5bfb9a1, type: 2}

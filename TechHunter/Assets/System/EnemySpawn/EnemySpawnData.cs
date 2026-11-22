@@ -13,7 +13,14 @@ public class EnemySpawnData : ScriptableObject
    
         public EnemySpawnBase enemyspawn;
   
+        [Header("通常の敵として出現")]
         public List<EnemySpawnGroup> enemyspawnGroup = new List<EnemySpawnGroup>();
+
+        [Header("味方として出現（既存の敵Prefabを使用）")]
+        public List<EnemySpawnGroup> allyspawnGroup = new List<EnemySpawnGroup>();
+
+        [Header("味方の出現間隔（秒）")]
+        [Min(0f)] public float allySpawnIntervalSeconds = 0.4f;
 
     
 
@@ -88,6 +95,11 @@ public class EnemySpawnGroup
         PASTAL_SE_ArmorTriangle,
         PASTAL_SE_Conductor,
         PASTAL_SE_GrowthSector,
+        DIANA_LunarPurgeSquad_Mace,
+        DIANA_LunarPurgeSquad_Knight,
+        DIANA_LunarPurgeSquad_Shield,
+        DIANA_PilgrimOfTheMoon,
+        DIANA_LunarPurgeSquad_axe,
     }
 
     

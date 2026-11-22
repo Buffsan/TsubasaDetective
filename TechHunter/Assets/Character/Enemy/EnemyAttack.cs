@@ -86,11 +86,16 @@ public class EnemyAttack : MonoBehaviour
         Boss_Controller boss = enemyBase as Boss_Controller;
         if (boss != null && boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
             boss.ConfigureAttackTarget(this);
+        // Instantiate直後などで攻撃オブジェクトの初期化が遅れても、
+        // 通常敵・ボス双方の攻撃判定を現在の対象派閥に合わせる。
+        EnemyContoroller controller = enemyBase as EnemyContoroller;
+        if (controller != null && controller.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+            controller.ConfigureAttackTarget(this);
 
         if (other.CompareTag("PlayerArea"))
         {
             // PlayerControllerにはEnemyBaseがないため、従来のPlayerArea判定を維持。
-            if (!attackPlayer) return;
+            if (!attackPlayer || (enemyBase != null && enemyBase.IsCharmed)) return;
             ApplyDamage(other.GetComponent<IDamageable>());
             return;
         }
@@ -100,20 +105,49 @@ public class EnemyAttack : MonoBehaviour
         charaDamage target = other.GetComponent<charaDamage>();
         if (target == null) return;
 
-        // 攻撃者と被弾者のcharadataを比較して自己攻撃を判定する。
-        charadata attackerData = enemyBase != null ? enemyBase.charadata : charadata;
-        charadata targetData = target.OwnerEnemyBase != null ? target.OwnerEnemyBase.charadata : null;
-        bool isSelf = attackerData != null && attackerData == targetData;
-        if (isSelf)
+        EnemyBase victim = target.OwnerEnemyBase;
+        if (victim == null || victim.status == EnemyBase.Status.Die || victim.HP <= 0f) return;
+
+        // PlayerOnlyの敵は敵を攻撃できない。Prefabに残った派閥フラグや
+        // 攻撃判定の初期化順序で、意図せず味方へダメージが通るのを防ぐ。
+        // 魅了済みの敵を狙える場合はController側でPlayerAndEnemyに切り替わる。
+        if (enemyBase is EnemyContoroller regularOwner &&
+            regularOwner.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+            return;
+        if (enemyBase is Boss_Controller bossOwner &&
+            bossOwner.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+            return;
+        if (enemyBase is CG_Knght legacyOwner &&
+            legacyOwner.TargetMode == EnemyContoroller.TargetType.PlayerOnly)
+            return;
+
+        // AllEnemyの位置は動的な個体ID。リスト不在の場合は実体参照で自己判定。
+        bool isSelf;
+        SystemManager manager = SystemManager.Instance;
+        if (enemyBase != null)
         {
-            if (!canAttackSelf) return;
+            int attackerId = manager != null && manager.AllEnemy != null
+                ? manager.AllEnemy.IndexOf(enemyBase.gameObject) : -1;
+            int victimId = manager != null && manager.AllEnemy != null
+                ? manager.AllEnemy.IndexOf(victim.gameObject) : -1;
+            isSelf = attackerId >= 0 && victimId >= 0
+                ? attackerId == victimId : enemyBase == victim;
         }
-        else if ((attackableFactions & target.MyFactions) == Faction.None)
+        else
         {
+            // 所有者を識別できない旧Prefabだけ従来のScriptableObject照合。
+            isSelf = charadata != null && charadata == victim.charadata;
+        }
+        if (isSelf && !canAttackSelf) return;
+
+        // 味方同士の攻撃を防ぎ、魅了された敵は非魅了の敵のみを攻撃する。
+        if (enemyBase != null && enemyBase.IsCharmed)
+        {
+            if (!victim.IsCharmed) ApplyDamage(target, true);
             return;
         }
-
-        ApplyDamage(target, true);
+        if (victim.IsCharmed || (attackableFactions & target.MyFactions) != Faction.None)
+            ApplyDamage(target, true);
     }
 
     private void ApplyDamage(IDamageable target, bool isEnemyTarget = false)

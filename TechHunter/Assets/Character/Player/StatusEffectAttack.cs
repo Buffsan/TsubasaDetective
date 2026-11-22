@@ -5,9 +5,15 @@ public class StatusEffectAttack : StatusEffect
 {
 
 
-    public float Duration = 1;//���ʎ���
+    public float Duration = 1;//効果時間
 
-    public float number = 1;//���ʒl�@�f�o�t�ɂ���Ēl�̎g�������ω�
+    // 効果時間が経過しても消えない状態異常（魅了など）
+    public bool IsPermanent = false;
+
+    // 魅了成立後の継続ダメージ倍率。毒の実効ダメージに乗算する。
+    public float CharmedDamageMultiplier = 0.5f;
+
+    public float number = 1;//効果値　デバフによって値の使い方が変化
 
     public float TickTime = 1;
 
@@ -15,7 +21,7 @@ public class StatusEffectAttack : StatusEffect
 
     public List<AudioClip> audioClips = new List<AudioClip>();
 
-    //�X�e�[�^�X�ُ�B�o�t�ɂ��Ńo�t�ɂ��Ȃ�悤�ɐ݌v
+    //ステータス異常。バフにもでバフにもなるように設計
     public float AttackBuff = 0;
     public float MultiplyAttackBuff  = 0;
 

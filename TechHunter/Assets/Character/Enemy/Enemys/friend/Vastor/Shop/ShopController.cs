@@ -23,6 +23,8 @@ public class ShopController : MonoBehaviour
       
         valueText.text = AllValue.ToString("F0");
         ItemRender.sprite = shopItemDatas.ItemImage;
+        if (shopManager != null && PlayerFind)
+            shopManager.RefreshShopPreview(this);
     }
    
     private void OnTriggerEnter2D(Collider2D other)
@@ -30,6 +32,7 @@ public class ShopController : MonoBehaviour
         if (other.CompareTag("PlayerArea")) 
         { 
             PlayerFind = true;
+            if (shopManager != null) shopManager.SetFocusedShop(this);
         }
     }
     private void OnTriggerExit2D(Collider2D other)
@@ -37,6 +40,7 @@ public class ShopController : MonoBehaviour
         if (other.CompareTag("PlayerArea"))
         {
             PlayerFind = false;
+            if (shopManager != null) shopManager.ClearFocusedShop(this);
         }
     }
 }

@@ -1,56 +1,50 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Relic_DcorpSupportTerminal_AI : RelicBase_AI
 {
-    [SerializeField] float BuffStartTime =5;
-    [SerializeField] float BuffTime =0.5f;
+    [SerializeField, Min(0.01f)] float BuffTime = 0.5f;
     [SerializeField] BuffData buffdata;
     [SerializeField] Animator RelicObject;
-    float BuffCount = 0;
-    int lastVisualState = -1;
-    PlayerController playerController => PlayerController.Instance;
 
-    private void OnEnable()
+    float activeUntil = -1f;
+    bool showing;
+
+    void OnEnable()
     {
-        // クリティカルイベントを購読
-        GlobalEvents.OnPlayerAttack += OnCritical;
-        lastVisualState = -1;
+        GlobalEvents.OnPlayerSkillHit += OnSkillHit;
+        activeUntil = -1f;
+        showing = false;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
-        // イベント購読を解除（忘れるとバグの原因）
-        GlobalEvents.OnPlayerAttack -= OnCritical;
+        GlobalEvents.OnPlayerSkillHit -= OnSkillHit;
     }
-    private void OnCritical(GameObject target, float damage, float criticalRate, bool c) 
+
+    void Update()
     {
-        BuffCount = 0;
+        if (!showing || Time.time < activeUntil) return;
+        showing = false;
+        if (RelicObject != null)
+            RelicObject.Play("消える", 0, 0f);
     }
-    public override void BaseAction()
+
+    void OnSkillHit()
     {
-        BuffCount += Time.fixedDeltaTime;
-        if (BuffCount > BuffStartTime)
+        PlayerController owner = playerController;
+        if (owner == null || owner.playerBuff == null || buffdata == null) return;
+
+        // Refresh on every direct skill hit. The event is invoked before
+        // the triggering attack calculates its own damage, so that hit
+        // also receives the skill-only attack increase.
+        owner.playerBuff.SpawnOrRefreshBuff(buffdata);
+        activeUntil = Time.time + Mathf.Max(0.01f, BuffTime);
+
+        if (!showing)
         {
-            if (lastVisualState != 1)
-            {
-                RelicObject.Play("出現");
-                lastVisualState = 1;
-            }
-            if (BuffCount > BuffStartTime + BuffTime)
-            {
-                playerController.playerBuff.SpawnBuff(buffdata);
-                BuffCount = BuffStartTime;
-            }
-        }
-        else 
-        {
-            if (lastVisualState != 0)
-            {
-                RelicObject.Play("消える");
-                lastVisualState = 0;
-            }
+            showing = true;
+            if (RelicObject != null)
+                RelicObject.Play("出現", 0, 0f);
         }
     }
 }

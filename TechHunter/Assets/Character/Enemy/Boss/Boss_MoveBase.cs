@@ -50,14 +50,16 @@ public class Boss_MoveBase : MonoBehaviour
         }
     }
 
+    // 攻撃中に再計算するかどうかもプレイヤー戦の旧AIに合わせる。
+    // LookAtCurrentTarget/RefreshTargetInfoが更新した時点の値を、
+    // プレイヤーと敵のどちらを狙うときも同じように使用する。
     protected Vector2 TargetDirection
     {
         get
         {
-            if (enemyBase == null) return Vector2.zero;
-            if (UsesLegacyPlayerTarget) return enemyBase.PlayerDirection;
-            return CurrentTarget != null
-                ? (Vector2)TargetPosition - (Vector2)enemyBase.transform.position : Vector2.zero;
+            if (enemyBase == null || (!UsesLegacyPlayerTarget && CurrentTarget == null))
+                return Vector2.zero;
+            return enemyBase.PlayerDirection;
         }
     }
 
@@ -65,23 +67,27 @@ public class Boss_MoveBase : MonoBehaviour
     {
         get
         {
-            if (enemyBase == null) return float.PositiveInfinity;
-            if (UsesLegacyPlayerTarget) return enemyBase.PlayerDistance;
-            return CurrentTarget != null
-                ? Vector2.Distance(TargetPosition, enemyBase.transform.position)
-                : float.PositiveInfinity;
+            if (enemyBase == null || (!UsesLegacyPlayerTarget && CurrentTarget == null))
+                return float.PositiveInfinity;
+            return enemyBase.PlayerDistance;
         }
     }
 
     protected void RefreshTargetInfo()
     {
-        if (enemyBase == null || CurrentTarget == null) return;
-        if (UsesLegacyPlayerTarget)
+        if (enemyBase == null) return;
+        Transform target = CurrentTarget;
+        if (target == null)
         {
-            Vector2 direction = (Vector2)TargetPosition - (Vector2)enemyBase.transform.position;
-            enemyBase.PlayerDirection = direction;
-            enemyBase.PlayerDistance = direction.magnitude;
+            enemyBase.PlayerDirection = Vector2.zero;
+            enemyBase.PlayerDistance = float.PositiveInfinity;
+            return;
         }
+
+        // PlayerOnlyと同じ方法で現在の標的の方向と距離を保存する。
+        Vector2 direction = (Vector2)target.position - (Vector2)enemyBase.transform.position;
+        enemyBase.PlayerDirection = direction;
+        enemyBase.PlayerDistance = direction.magnitude;
     }
 
     protected void LookAtCurrentTarget()
@@ -159,9 +165,13 @@ public class Boss_MoveBase : MonoBehaviour
         
         GameObject CL_Enemy  = Instantiate(enemyprefab,SpawnPos,Quaternion.identity);
         AllEnemy.Add(CL_Enemy);
-        aLL_System.systemManager.AllEnemy.Add(CL_Enemy);
 
         Boss_Controller boss = enemyBase as Boss_Controller;
+        // 撃破扱いの魅了ボスから生まれた眷属は、戦闘クリアを妨げない。
+        // 通常のボスから生まれた眷属はこれまでどおり敵として登録する。
+        bool summonedByCharmedBoss = boss != null && boss.IsCharmed;
+        if (!summonedByCharmedBoss)
+            aLL_System.systemManager.AllEnemy.Add(CL_Enemy);
         if (boss != null && boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
         {
             EnemyBase summoned = CL_Enemy.GetComponent<EnemyBase>();
@@ -180,18 +190,42 @@ public class Boss_MoveBase : MonoBehaviour
                     CG_Knght knight = summoned as CG_Knght;
                     if (knight != null) knight.RefreshSummonedTarget();
                 }
+
+                // 新たな眷属も味方として扱い、次スポットで破棄する。
+                // 魅了効果を付与していないので、魅了報酬の誤ドロップは起こさない。
+                if (summonedByCharmedBoss && SystemManager.Instance != null)
+                    SystemManager.Instance.RegisterCharmedAlly(summoned);
             }
         }
         return CL_Enemy;
     }
+    // ボスが生成した攻撃の所有者と敵対対象を共通ターゲット設定に同期する。
+    // 通常のPlayerOnlyでは元Prefabの設定を変えない。
+    protected void ConfigureSpawnedAttack(GameObject instance)
+    {
+        Boss_Controller boss = enemyBase as Boss_Controller;
+        if (instance == null || boss == null ||
+            boss.TargetMode == EnemyContoroller.TargetType.PlayerOnly) return;
+
+        foreach (EnemyAttack attack in instance.GetComponentsInChildren<EnemyAttack>(true))
+        {
+            if (attack == null) continue;
+            // 独立した召喚体がEnemyBaseを持つ場合は、その攻撃力を維持する。
+            EnemyBase localOwner = attack.GetComponentInParent<EnemyBase>();
+            boss.ConfigureAttackTarget(attack, localOwner != null ? localOwner : boss);
+        }
+    }
+
     public void SpawnObjectNow(GameObject SpawnObject, Vector2 Target, float DestroyTime)
     {
         GameObject CL_Object = Instantiate(SpawnObject, Target, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Object);
         Destroy(CL_Object, DestroyTime);
     }
     public GameObject SpawnObjectNow_Input(GameObject SpawnObject, Vector2 Target, float DestroyTime)
     {
         GameObject CL_Object = Instantiate(SpawnObject, Target, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Object);
         Destroy(CL_Object, DestroyTime);
         return CL_Object;
     }
@@ -231,7 +265,14 @@ public class Boss_MoveBase : MonoBehaviour
     {
         GameObject warning = SpawnAttackWarning(EnemyContoroller.WarningRectangle,
             Effect, Pos, Quaternion.identity, AnimationSpeed);
-        if (warning != null) Clone_DengerObjects.Add(warning);
+        if (warning != null)
+        {
+            // Old warnings are destroyed automatically; avoid retaining stale
+            // UnityEngine.Object references throughout long boss battles.
+            if (Clone_DengerObjects.Count >= 128)
+                Clone_DengerObjects.RemoveAll(w => w == null);
+            Clone_DengerObjects.Add(warning);
+        }
         return warning;
     }
 
@@ -240,7 +281,14 @@ public class Boss_MoveBase : MonoBehaviour
     {
         GameObject warning = SpawnAttackWarning(warningType, null,
             pos, Quaternion.identity, duration);
-        if (warning != null) Clone_DengerObjects.Add(warning);
+        if (warning != null)
+        {
+            // Old warnings are destroyed automatically; avoid retaining stale
+            // UnityEngine.Object references throughout long boss battles.
+            if (Clone_DengerObjects.Count >= 128)
+                Clone_DengerObjects.RemoveAll(w => w == null);
+            Clone_DengerObjects.Add(warning);
+        }
         return warning;
     }
 

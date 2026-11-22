@@ -51,8 +51,9 @@ public class AI_CGshield : EnemyMoveBase
         if (enemyBase.mode == EnemyBase.ModeType.M5)
         {
             GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
+            ConfigureSummonedAttack(CL_Attack);
             EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
-            enemyAttack.enemyBase = enemyBase;
+            if (enemyAttack != null) enemyAttack.enemyBase = enemyBase;
             Destroy(CL_Attack , 0.01f);
 
             enemyBase.audioManager.PlaySE(enemyBase.AttackAudio);

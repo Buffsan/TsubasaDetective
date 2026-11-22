@@ -14,6 +14,43 @@ public class TileMap_Controller : MonoBehaviour
     public Tilemap FloorMap;
     public Tilemap StandFloor;
 
+    [Header("侵入不可エリア / 掃討部隊")]
+    public Tilemap LeftOuterBoundary;
+    public Tilemap RightOuterBoundary;
+    public Tilemap SweepSpawnMap;
+
+    [Header("味方の召喚専用タイル（任意）")]
+    [Tooltip("ON: 味方召喚用Tilemapを優先 / OFF: 通常のStandFloorから召喚")]
+    [SerializeField] bool useAllySpawnMap = false;
+    public bool UseAllySpawnMap => useAllySpawnMap;
+    [SerializeField] Tilemap allySpawnMap;
+    public Tilemap AllySpawnMap => allySpawnMap;
+
+    // Prefer painted ally spawn tiles. Choose a nearby cell when available;
+    // otherwise choose any marker. No tilemap or no painted cells means fallback.
+    public bool TryGetAllySpawnPosition(Vector2 center, int searchDistance, out Vector3 result)
+    {
+        result = Vector3.zero;
+        if (allySpawnMap == null) return false;
+
+        List<Vector3Int> candidates = new List<Vector3Int>();
+        List<Vector3Int> nearby = new List<Vector3Int>();
+        float radius = Mathf.Max(0, searchDistance);
+        float limitSqr = radius * radius;
+        foreach (Vector3Int cell in allySpawnMap.cellBounds.allPositionsWithin)
+        {
+            if (!allySpawnMap.HasTile(cell)) continue;
+            candidates.Add(cell);
+            Vector2 world = allySpawnMap.GetCellCenterWorld(cell);
+            if ((world - center).sqrMagnitude <= limitSqr)
+                nearby.Add(cell);
+        }
+        if (candidates.Count == 0) return false;
+        List<Vector3Int> pool = nearby.Count > 0 ? nearby : candidates;
+        result = allySpawnMap.GetCellCenterWorld(pool[Random.Range(0, pool.Count)]);
+        return true;
+    }
+
     public GameObject StartPoint;
     public GameObject Goal;
     public GameObject EnemysObject;

@@ -27,7 +27,7 @@ public class Skill_DK_Sword : MonoBehaviour
             Direction = playerController.CursorDirection.normalized;
             transform.up = Direction.normalized;
 
-            animator.Play("�ҋ@");
+            animator.Play("‘Ò‹@");
             if (Count > AttackTime) 
             {
                 Count = 0;
@@ -37,13 +37,18 @@ public class Skill_DK_Sword : MonoBehaviour
         if (Phase == 1) 
         {
             GameObject CL_Effect = Instantiate(Effect, transform.position, Quaternion.identity);
-            AttackPool.Instance.Get(AttackArea, transform.position, Direction.normalized, AttackDestroyTime);
+            GameObject hitboxObject = AttackPool.Instance.Get(
+                AttackArea, transform.position, Direction.normalized, AttackDestroyTime);
+            SkillOriginMarker origin = GetComponent<SkillOriginMarker>();
+            PlayerAttack hitbox = hitboxObject != null ? hitboxObject.GetComponent<PlayerAttack>() : null;
+            if (origin != null && hitbox != null)
+                hitbox.SourceSkillSlotIndex = origin.SkillSlotIndex;
             CL_Effect.transform.up = Direction.normalized;
             CL_Effect.transform.Rotate(0,0,90);
 
             ALL_System.camera_Controller.Shake(0.1f, 0.1f);
             Destroy(CL_Effect, AttackDestroyTime*3);
-            animator.Play("�؂�");
+            animator.Play("Ø‚é");
 
             Count = 0;
             Phase++;

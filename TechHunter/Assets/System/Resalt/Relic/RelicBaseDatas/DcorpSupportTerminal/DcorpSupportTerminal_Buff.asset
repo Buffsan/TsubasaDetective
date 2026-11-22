@@ -20,6 +20,7 @@ MonoBehaviour:
   MultiplySPEED: 0
   ATK: 0
   MultiplyATK: 1
+  SkillAttackOnly: 1
   ATKDF: 1
   MultiplyATKDF: 0
   Multiply_CoolTimeBuff: 0

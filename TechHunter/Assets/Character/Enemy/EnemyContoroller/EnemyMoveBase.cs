@@ -62,14 +62,16 @@ public class EnemyMoveBase : MonoBehaviour
         }
     }
 
+    // 攻撃中に再計算するかどうかもプレイヤー戦の旧AIに合わせる。
+    // LookAtCurrentTarget/RefreshTargetInfoが更新した時点の値を、
+    // プレイヤーと敵のどちらを狙うときも同じように使用する。
     protected Vector2 TargetDirection
     {
         get
         {
-            if (enemyBase == null) return Vector2.zero;
-            if (UsesLegacyPlayerTarget) return enemyBase.PlayerDirection;
-            return CurrentTarget != null
-                ? (Vector2)TargetPosition - (Vector2)enemyBase.transform.position : Vector2.zero;
+            if (enemyBase == null || (!UsesLegacyPlayerTarget && CurrentTarget == null))
+                return Vector2.zero;
+            return enemyBase.PlayerDirection;
         }
     }
 
@@ -77,23 +79,27 @@ public class EnemyMoveBase : MonoBehaviour
     {
         get
         {
-            if (enemyBase == null) return float.PositiveInfinity;
-            if (UsesLegacyPlayerTarget) return enemyBase.PlayerDistance;
-            return CurrentTarget != null
-                ? Vector2.Distance(TargetPosition, enemyBase.transform.position)
-                : float.PositiveInfinity;
+            if (enemyBase == null || (!UsesLegacyPlayerTarget && CurrentTarget == null))
+                return float.PositiveInfinity;
+            return enemyBase.PlayerDistance;
         }
     }
 
     protected void RefreshTargetInfo()
     {
-        if (enemyBase == null || CurrentTarget == null) return;
-        if (UsesLegacyPlayerTarget)
+        if (enemyBase == null) return;
+        Transform target = CurrentTarget;
+        if (target == null)
         {
-            Vector2 direction = (Vector2)TargetPosition - (Vector2)enemyBase.transform.position;
-            enemyBase.PlayerDirection = direction;
-            enemyBase.PlayerDistance = direction.magnitude;
+            enemyBase.PlayerDirection = Vector2.zero;
+            enemyBase.PlayerDistance = float.PositiveInfinity;
+            return;
         }
+
+        // 旧AIにも現在の標的の方向と距離を渡す。PlayerOnlyの計算は従来と同じ。
+        Vector2 direction = (Vector2)target.position - (Vector2)enemyBase.transform.position;
+        enemyBase.PlayerDirection = direction;
+        enemyBase.PlayerDistance = direction.magnitude;
     }
 
     protected void LookAtCurrentTarget()
@@ -189,6 +195,9 @@ public class EnemyMoveBase : MonoBehaviour
                 EnemyContoroller controller = enemyBase as EnemyContoroller;
                 if (controller != null)
                     controller.ConfigureAttackTarget(attack);
+                else if (enemyBase is Boss_Controller boss &&
+                         boss.TargetMode != EnemyContoroller.TargetType.PlayerOnly)
+                    boss.ConfigureAttackTarget(attack);
                 else
                     attack.ConfigureAttack(enemyBase, attack.AttackPowerPercent);
             }
@@ -260,29 +269,50 @@ public class EnemyMoveBase : MonoBehaviour
     Quaternion rotate,
     int tileDistance)
     {
-        Tilemap tilemap =
-            ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C.StandFloor;
+        // 出現場所は召喚者の派閥ではなく、現在のステージのInspector設定を使う。
+        TileMap_Controller stage =
+            ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C;
+        return SpawnEnemySpawn(enemy, targetPos, rotate, tileDistance,
+            stage != null && stage.UseAllySpawnMap);
+    }
 
-        // 中心セル
-        Vector3Int centerCell = tilemap.WorldToCell(targetPos);
+    // 個別の召喚から切り替える場合はboolを明示指定できる。
+    // true: AllySpawnMap / false: StandFloor（陣営は変更しない）。
+    public GameObject SpawnEnemySpawn(
+    GameObject enemy,
+    Vector2 targetPos,
+    Quaternion rotate,
+    int tileDistance,
+    bool useAllySpawnMap)
+    {
+        TileMap_Controller stage =
+            ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C;
 
-        // ランダム角度
-        float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-
-        int dx = Mathf.RoundToInt(Mathf.Cos(angle) * tileDistance);
-        int dy = Mathf.RoundToInt(Mathf.Sin(angle) * tileDistance);
-
-        Vector3Int spawnCell =
-            centerCell + new Vector3Int(dx, dy, 0);
-
-        // フォールバック：中心セル
-        if (!tilemap.HasTile(spawnCell))
+        Vector3 spawnWorldPos;
+        if (useAllySpawnMap && stage.TryGetAllySpawnPosition(targetPos, tileDistance, out Vector3 allyPosition))
         {
-            spawnCell = centerCell;
+            spawnWorldPos = allyPosition;
         }
-
-        Vector3 spawnWorldPos =
-            tilemap.CellToWorld(spawnCell) + tilemap.tileAnchor;
+        else
+        {
+            Tilemap tilemap = stage.StandFloor;
+            if (tilemap == null)
+            {
+                Debug.LogWarning("SpawnEnemySpawn: StandFloor is missing; use the requested position.", this);
+                spawnWorldPos = targetPos;
+            }
+            else
+            {
+                // 既存の敵召喚はStandFloorと従来のランダム距離設定を維持。
+                Vector3Int centerCell = tilemap.WorldToCell(targetPos);
+                float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+                int dx = Mathf.RoundToInt(Mathf.Cos(angle) * tileDistance);
+                int dy = Mathf.RoundToInt(Mathf.Sin(angle) * tileDistance);
+                Vector3Int spawnCell = centerCell + new Vector3Int(dx, dy, 0);
+                if (!tilemap.HasTile(spawnCell)) spawnCell = centerCell;
+                spawnWorldPos = tilemap.CellToWorld(spawnCell) + tilemap.tileAnchor;
+            }
+        }
 
         GameObject enemyObj =
             Instantiate(enemy, spawnWorldPos, rotate);

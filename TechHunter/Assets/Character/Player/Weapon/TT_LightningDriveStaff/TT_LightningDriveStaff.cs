@@ -18,6 +18,10 @@ public class TT_LightningDriveStaff : MonoBehaviour
     [SerializeField] float Speed0 = 15;
     [SerializeField] float Speed1 = 22;
     [SerializeField] float DestroyBullet = 0;
+    [Header("Impact shock field")]
+    [SerializeField] StatusEffectAttack impactElectricShock;
+    [SerializeField, Min(0.1f)] float impactFieldRadius = 0.65f;
+    [SerializeField, Min(0f)] float impactKnockbackImpulse = 3f;
     PlayerController controller => PlayerController.Instance;
     AudioManager audioManager => AudioManager.instance;
     // Start is called before the first frame update
@@ -35,11 +39,11 @@ public class TT_LightningDriveStaff : MonoBehaviour
 
         if (Phase == 0) 
         {
-            animator.Play("�ҋ@");
+            animator.Play("‘Ò‹@");
             if (AttackCont > 0.2) 
             {
                 audioManager.PlaySE(AudioClip);
-                animator.Play("���ˑҋ@");
+                animator.Play("”­ŽË‘Ò‹@");
                 Phase = 1;
                 AttackCont =0;
             }
@@ -51,7 +55,7 @@ public class TT_LightningDriveStaff : MonoBehaviour
             {
 
 
-                animator.Play("����");
+                animator.Play("”­ŽË");
                 Phase = 2;
                 AttackCont =0;
 
@@ -70,6 +74,8 @@ public class TT_LightningDriveStaff : MonoBehaviour
                 if (bio_Battery)
                 {
                     GameObject CL_Bullet = Instantiate(Bullet2, transform.position, Quaternion.identity);
+                    var impact = CL_Bullet.AddComponent<TT_LightningImpact>();
+                    impact.Configure(impactElectricShock, impactFieldRadius, impactKnockbackImpulse);
                     Rigidbody2D rb = CL_Bullet.GetComponent<Rigidbody2D>();
 
                     CL_Bullet.transform.up = controller.CursorDirection;
@@ -78,6 +84,8 @@ public class TT_LightningDriveStaff : MonoBehaviour
                 else 
                 { 
                     GameObject CL_Bullet = Instantiate(Bullet,transform.position,Quaternion.identity);
+                    var impact = CL_Bullet.AddComponent<TT_LightningImpact>();
+                    impact.Configure(impactElectricShock, impactFieldRadius, impactKnockbackImpulse);
                     Rigidbody2D rb = CL_Bullet.GetComponent<Rigidbody2D>();
 
                     CL_Bullet.transform.up = controller.CursorDirection;

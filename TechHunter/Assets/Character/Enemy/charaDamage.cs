@@ -57,39 +57,137 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     public void SpawnBuff(StatusEffectAttack buffData)
     {
-        foreach (var active in buffs)
-        {
-            if (active.statuseffectdata == null) continue;
+        if (buffData == null) return;
+        ApplyStatusEffect(buffData, buffData.number);
+    }
 
-            if (active.statuseffectdata.effecttype == buffData.effecttype)
+    // 毒・感電・魅了すべてをActiveBuffで管理。amountは今回の魅了蓄積値。
+    public void ApplyStatusEffect(StatusEffectAttack buffData, float amount)
+    {
+        if (buffData == null) return;
+        bool isCharm = buffData.effecttype == StatusEffect.StatusEffectType.Charm;
+        if (isCharm && enemyBase != null)
+        {
+            // 複数のEnemyAreaから受けた魅了を、敵本体につき1つのActiveBuffへ集約。
+            // 初期の敵PrefabはEnemyBase.CharaDamage/charaDamageが両方未設定の
+            // 場合があるため、実際に受けたcharaDamageを実行時に登録する。
+            charaDamage primary = enemyBase.CharmStatusReceiver;
+            if (primary != null && primary != this &&
+                (primary.enemyBase == null || primary.enemyBase == enemyBase))
             {
-                // 効果時間だけ延長
-                active.remainTime += buffData.Duration;
+                if (primary.enemyBase == null) primary.enemyBase = enemyBase;
+                primary.ApplyStatusEffect(buffData, amount);
                 return;
             }
 
+            // 参照がない場合も魅了値の読み取り先を確定し、HPバーへ通知できる。
+            enemyBase.RegisterCharmStatusReceiver(this);
+        }
+        if (isCharm && (enemyBase == null || enemyBase.IsCharmed ||
+                        enemyBase.status == EnemyBase.Status.Die || enemyBase.HP <= 0f))
+            return;
+
+        if (isCharm) EnsureCharmHPVisual();
+
+        foreach (ActiveBuff active in buffs)
+        {
+            if (active.statuseffectdata == null ||
+                active.statuseffectdata.effecttype != buffData.effecttype)
+                continue;
+
+            if (isCharm)
+            {
+                active.accumulatedValue += Mathf.Max(0f, amount);
+                TryCompleteCharm(active);
+            }
+            else
+            {
+                // 毒・感電は従来の時間加算方式。
+                active.remainTime += buffData.Duration;
+            }
+            return;
         }
 
         ActiveBuff activeBuff = new ActiveBuff(buffData);
-        if (activeBuff.statuseffectdata.effecttype != StatusEffect.StatusEffectType.None)
+        if (buffData.effecttype != StatusEffect.StatusEffectType.None)
         {
             activeBuff.audioClips = buffData.audioClips;
-            switch (activeBuff.statuseffectdata.effecttype)
+            GameObject effectPrefab = null;
+            switch (buffData.effecttype)
             {
                 case StatusEffect.StatusEffectType.Poison:
-                    activeBuff.effectObject = Instantiate(activeBuff.statuseffectdata.PoisonEffectPrefab, transform.position, Quaternion.identity);
-                    activeBuff.effectObject.transform.parent = transform;
+                    effectPrefab = buffData.PoisonEffectPrefab;
                     break;
-
                 case StatusEffect.StatusEffectType.ElectricShock:
-                    activeBuff.effectObject = Instantiate(activeBuff.statuseffectdata.EffectObject, transform.position, Quaternion.identity);
-                    activeBuff.effectObject.transform.parent = transform;
+                    effectPrefab = buffData.EffectObject;
                     break;
+                case StatusEffect.StatusEffectType.Charm:
+                    // 魅了の蓄積中は発生させず、味方化が成立してから生成する。
+                    break;
+            }
+            if (effectPrefab != null)
+            {
+                activeBuff.effectObject = Instantiate(effectPrefab, transform.position, Quaternion.identity);
+                activeBuff.effectObject.transform.parent = transform;
             }
         }
 
-        // 初めてなら追加
+        if (isCharm)
+            activeBuff.accumulatedValue = Mathf.Max(0f, amount);
         buffs.Add(activeBuff);
+        if (isCharm) TryCompleteCharm(activeBuff);
+    }
+
+    public float GetAccumulatedStatusValue(StatusEffect.StatusEffectType effectType)
+    {
+        foreach (ActiveBuff buff in buffs)
+        {
+            if (buff.statuseffectdata != null &&
+                buff.statuseffectdata.effecttype == effectType)
+                return buff.accumulatedValue;
+        }
+        return 0f;
+    }
+
+    // 敵Prefabへのシリアライズ参照は不要。初回付与時に既存HPバーを拡張。
+    void EnsureCharmHPVisual()
+    {
+        if (enemyBase == null || enemyBase.HP_Slider == null) return;
+
+        var slider = enemyBase.HP_Slider;
+        CharmHPBarVisual visual = slider.GetComponent<CharmHPBarVisual>();
+        if (visual == null)
+            visual = slider.gameObject.AddComponent<CharmHPBarVisual>();
+        visual.Initialize(slider, enemyBase);
+    }
+
+    void TryCompleteCharm(ActiveBuff charm)
+    {
+        if (enemyBase == null || enemyBase.IsCharmed || enemyBase.HP <= 0f)
+            return;
+
+        // 黄色HPがちょうどピンクに覆われた瞬間にも魅了が成立する。
+        if (charm.accumulatedValue >= enemyBase.HP)
+        {
+            charm.tickTimer = 0f;
+            enemyBase.BecomeCharmedAlly();
+            SpawnCompletedCharmEffect(charm);
+        }
+    }
+
+    void SpawnCompletedCharmEffect(ActiveBuff charm)
+    {
+        if (enemyBase == null || !enemyBase.IsCharmed ||
+            charm == null || charm.effectObject != null ||
+            charm.statuseffectdata == null || charm.statuseffectdata.EffectObject == null)
+            return;
+
+        // 毒・感電と同じActiveBuff.effectObjectで管理。魅了後は敵本体へ追従。
+        charm.effectObject = Instantiate(
+            charm.statuseffectdata.EffectObject,
+            enemyBase.transform.position,
+            Quaternion.identity,
+            enemyBase.transform);
     }
 
     // Each damage chain has a unique token: cycles cannot recurse indefinitely.
@@ -99,14 +197,43 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     public void Damage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical)
     {
-        uint token = ++damageTraversalSerial;
-        if (token == 0) token = ++damageTraversalSerial;
-        ForwardDamage(Attackvalue, Stanvalue, ConfusionPower, Critical, token);
+        DamageWithModifier(Attackvalue, Stanvalue, ConfusionPower, Critical, 0f, null);
     }
 
-    void ForwardDamage(float attack, float stagger, float confusion, bool critical, uint token)
+    // Only player-owned hits provide this modifier; enemy-vs-enemy damage is unchanged.
+    public void DamageFromPlayer(float attack, float stagger, float confusion,
+        bool critical, float confusionDamagePercent)
     {
-        if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die) return;
+        DamageWithModifier(attack, stagger, confusion, critical, confusionDamagePercent, null);
+    }
+
+    // 遺物の魅了SOを使い、通常ダメージを状態異常の蓄積へ変換。
+    public void DamageFromPlayerAsCharm(float attack, float stagger, float confusion,
+        bool critical, float confusionDamagePercent, StatusEffectAttack charmEffect)
+    {
+        if (charmEffect == null ||
+            charmEffect.effecttype != StatusEffect.StatusEffectType.Charm)
+        {
+            Debug.LogError("魅了用StatusEffectAttackが未設定です。", this);
+            return;
+        }
+        DamageWithModifier(attack, stagger, confusion, critical, confusionDamagePercent, charmEffect);
+    }
+
+    void DamageWithModifier(float attack, float stagger, float confusion,
+        bool critical, float confusionDamagePercent, StatusEffectAttack charmEffect)
+    {
+        uint token = ++damageTraversalSerial;
+        if (token == 0) token = ++damageTraversalSerial;
+        ForwardDamage(attack, stagger, confusion, critical, token,
+            confusionDamagePercent, charmEffect);
+    }
+
+    void ForwardDamage(float attack, float stagger, float confusion, bool critical,
+        uint token, float confusionDamagePercent, StatusEffectAttack charmEffect)
+    {
+        if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die ||
+            enemyBase.IsInvulnerable) return;
         if (lastDamageTraversal == token)
         {
             if (!reportedDamageCycle)
@@ -121,16 +248,19 @@ public class charaDamage : MonoBehaviour, IDamageable
         switch (DamageType)
         {
             case 0:
-                receiveDamage(attack, stagger, confusion, critical);
+                receiveDamage(attack, stagger, confusion, critical,
+                    confusionDamagePercent, charmEffect);
                 break;
             case 1:
                 if (passDamageAreas.Count > 0 && passDamageAreas[0] != null)
-                    passDamageAreas[0].ForwardDamage(attack, stagger, confusion, critical, token);
+                    passDamageAreas[0].ForwardDamage(attack, stagger, confusion, critical,
+                        token, confusionDamagePercent, charmEffect);
                 break;
             case 2:
                 foreach (charaDamage receiver in passDamageAreas)
                     if (receiver != null)
-                        receiver.ForwardDamage(attack, stagger, confusion, critical, token);
+                        receiver.ForwardDamage(attack, stagger, confusion, critical,
+                            token, confusionDamagePercent, charmEffect);
                 break;
         }
     }
@@ -164,7 +294,8 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     }
 
-    void receiveDamage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical)
+    void receiveDamage(float Attackvalue, float Stanvalue, float ConfusionPower, bool Critical,
+        float confusionDamagePercent, StatusEffectAttack charmEffect)
     {
         float AddDamage = Attackvalue - DF;
         if (AddDamage < 1)
@@ -174,18 +305,30 @@ public class charaDamage : MonoBehaviour, IDamageable
 
         if (enemyBase.status == EnemyBase.Status.ConfusionResistance)
         {
-            TakeDamage(-AddDamage * 2);
-            isDamageTextPop(AddDamage * 2, 2, Critical);
+            // Keep the existing 2x confused-state multiplier, then apply the
+            // player's bonus after defense (not to the confusion buildup).
+            float confusedDamage = AddDamage * 2f
+                * Mathf.Max(0f, 1f + confusionDamagePercent / 100f);
+            TakeDamage(-confusedDamage);
+            isDamageTextPop(confusedDamage, 2, Critical);
+            if (enemyBase.HP > 0f)
+                GlobalEvents.InvokeEnemyDamagedWhileConfused(this, confusedDamage);
         }
-        else
+        else if (charmEffect == null)
         {
             TakeDamage(-AddDamage);
             isDamageTextPop(AddDamage, 1, Critical);
         }
 
         enemyBase.TakeDamageColor();
-        ConfusionHP -= (Attackvalue * HP_percent) * ConfusionPower;
-        if (1 - (ConfusionHP / enemyBase.ConfusionHP) > enemyBase.HP / enemyBase.MAXHP && enemyBase.status != EnemyBase.Status.ConfusionResistance)
+        // A boss ultimate cannot be interrupted by stun or confusion.
+        // This does NOT prevent damage, death, or non-stagger status effects.
+        if (!enemyBase.IsUnstaggerable)
+        {
+            ConfusionHP -= (Attackvalue * HP_percent) * ConfusionPower;
+        }
+        if (!enemyBase.IsUnstaggerable &&
+            1 - (ConfusionHP / enemyBase.ConfusionHP) > enemyBase.HP / enemyBase.MAXHP && enemyBase.status != EnemyBase.Status.ConfusionResistance)
         {//混乱
 
             audioManager.PlaySE(enemyBase.ConfusionAudio);
@@ -197,12 +340,16 @@ public class charaDamage : MonoBehaviour, IDamageable
             Destroy(CL_ConfusionText, 2);
 
         }
-        else if (Stan < Stanvalue && enemyBase.status != EnemyBase.Status.ConfusionResistance)
+        else if (!enemyBase.IsUnstaggerable &&
+                 Stan < Stanvalue && enemyBase.status != EnemyBase.Status.ConfusionResistance)
         {
             enemyBase.status = EnemyBase.Status.Stan;
             StanCount = 0;
             SavePos = enemyBase.gameObject.transform.position;
         }
+
+        if (charmEffect != null && enemyBase.HP > 0f)
+            ApplyStatusEffect(charmEffect, AddDamage * Mathf.Max(0f, charmEffect.number));
 
         if (enemyBase.HP <= 0 && enemyBase.status != EnemyBase.Status.Die)
         {
@@ -210,9 +357,21 @@ public class charaDamage : MonoBehaviour, IDamageable
         }
     }
 
+    // Apply exactly this many HP damage points, without defense or status buildup.
+    public void DamageFixed(float value)
+    {
+        if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die ||
+            enemyBase.HP <= 0f || value <= 0f || enemyBase.IsInvulnerable) return;
+        TakeDamage(-value);
+        enemyBase.TakeDamageColor();
+        isDamageTextPop(value, 1, false);
+        if (enemyBase.HP <= 0f) Death();
+    }
+
     void TakeDamage(float addDamage)
     {
-
+        // Also guard direct HP deductions, including damage-over-time callbacks.
+        if (addDamage < 0f && enemyBase.IsInvulnerable) return;
         enemyBase.HP += addDamage;
 
     }
@@ -223,7 +382,7 @@ public class charaDamage : MonoBehaviour, IDamageable
         {
             ActiveBuff buff = buffs[i];
 
-            buff.remainTime -= Time.deltaTime;
+            buff.Tick(Time.deltaTime);
             buff.tickTimer += Time.deltaTime;
 
             switch (buff.statuseffectdata.effecttype)
@@ -251,9 +410,46 @@ public class charaDamage : MonoBehaviour, IDamageable
                         //感電
                     }
                     break;
+
+                case StatusEffect.StatusEffectType.Charm:
+                    // 魅了前は蓄積した魅了値を保持。HPの減少でも成立を判定する。
+                    if (!enemyBase.IsCharmed)
+                        TryCompleteCharm(buff);
+
+                    if (enemyBase.IsCharmed && enemyBase.status != EnemyBase.Status.Die)
+                    {
+                        // 魅了成立後は死亡まで毒の実効ダメージを基準に衰弱する。
+                        float interval = Mathf.Max(0.05f, buff.statuseffectdata.TickTime);
+                        if (buff.tickTimer >= interval)
+                        {
+                            buff.tickTimer -= interval;
+
+                            // 毒と同様に防御力・最低ダメージを適用した後、魅了用倍率を乗算。
+                            float poisonDamage = Mathf.Max(1f,
+                                TakePoisonDamage(enemyBase.charadata) - DF);
+                            if (enemyBase.status == EnemyBase.Status.ConfusionResistance)
+                                poisonDamage *= 2f;
+
+                            float decay = poisonDamage *
+                                Mathf.Max(0f, buff.statuseffectdata.CharmedDamageMultiplier);
+                            if (decay > 0f)
+                            {
+                                TakeDamage(-decay);
+                                isDamageTextPop(decay, 1, false);
+                                if (enemyBase.HP <= 0f)
+                                    Death();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 魅了成立前の待ち時間は持ち越さない。
+                        buff.tickTimer = 0f;
+                    }
+                    break;
             }
 
-            if (buff.remainTime <= 0)
+            if (buff.IsExpired())
             {
                 if (buff.effectObject) Destroy(buff.effectObject);
                 buffs.RemoveAt(i);
@@ -426,10 +622,10 @@ public class charaDamage : MonoBehaviour, IDamageable
     }
     void CoinDrop()
     {
-        // Defer coin creation until all deaths this frame have been collected.
-        // Each request retains the dying enemy's location.
-        if (CoinPool.Instance != null)
-            CoinPool.Instance.RequestDrop(enemyBase.GOLD, enemyBase.transform.position);
+        // コインは敵本体（EnemyBase）側で一度だけドロップ。
+        // 魅了成立時に既に出していれば、後から死亡しても二重に出さない。
+        if (enemyBase != null)
+            enemyBase.DropCoinsOnce();
     }
 
     float TakeElectricDamage()

@@ -78,6 +78,7 @@ public class Boss_SS_MageOfTheStarChoir_Weapon : EnemyMoveBase
     {
         
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Arrow);
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
         rb.velocity = SaveDirection * AttackSpeed;
 

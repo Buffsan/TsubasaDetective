@@ -5314,6 +5314,11 @@ MonoBehaviour:
   - {fileID: 602073734061672780}
   - {fileID: 264001448566869627}
   - {fileID: 4029390813561401992}
+  useDialogueForPurchases: 1
+  shopkeeperId: 10
+  shopConversationData: {fileID: 11400000, guid: c217a6d5b14f4bbab9e23b5e1466f19b, type: 2}
+  purchaseChoiceNodeId: 10
+  purchaseOptionIndex: 0
   ShopItems:
   - itemData: 0
     value: 200

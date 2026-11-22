@@ -18,6 +18,7 @@ public class PlayerSkillBase : MonoBehaviour
     }
 
     public int SkillLevel =0;
+    public int SkillSlotIndex = -1;
 
     public enum ATT 
     { 
@@ -36,6 +37,7 @@ public class PlayerSkillBase : MonoBehaviour
     {
         GameObject CL_Weapon = Instantiate(Skill, taget.transform.position, Quaternion.identity);
         CL_Weapon.transform.parent = taget.transform;
+        SkillOriginMarker.Stamp(CL_Weapon, SkillSlotIndex);
 
         return CL_Weapon;
     }
@@ -43,12 +45,14 @@ public class PlayerSkillBase : MonoBehaviour
     {
         GameObject CL_Weapon = Instantiate(Skill, Parenttaget.transform.position, Quaternion.identity);
         CL_Weapon.transform.parent = Spawntaget.transform;
+        SkillOriginMarker.Stamp(CL_Weapon, SkillSlotIndex);
 
         return CL_Weapon;
     }
     public GameObject SpawnObject(GameObject Skill, GameObject target , float destroyTime) 
     {
         GameObject CL_Weapon = Instantiate(Skill, target.transform.position, Quaternion.identity);
+        SkillOriginMarker.Stamp(CL_Weapon, SkillSlotIndex);
         if (destroyTime > 0) 
         {
             Destroy(CL_Weapon, destroyTime);

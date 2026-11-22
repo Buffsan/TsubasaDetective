@@ -22,8 +22,8 @@ public class CG_FarScout_AI : EnemyMoveBase
     {
         RefreshTargetInfo();
         LookAtCurrentTarget();
-        enemyBase.rb.velocity = UsesLegacyPlayerTarget ? TargetDirection : TargetDirection.normalized * enemyBase.SPEED;
-        if (!UsesLegacyPlayerTarget) enemyBase.animator.SetInteger("Anim", 1);
+        // プレイヤー戦と同じ非正規化ベクトルを、敵を狙う場合にも使用する。
+        enemyBase.rb.velocity = TargetDirection;
     }
     public override void EnemyAttackPlay()
     {
@@ -42,7 +42,7 @@ public class CG_FarScout_AI : EnemyMoveBase
             {
                 enemyBase.mode = EnemyBase.ModeType.M3;
                 enemyBase.AttackCount = 0;
-                Direction = TargetPosition - (UsesLegacyPlayerTarget ? gameObject.transform.position : enemyBase.transform.position);
+                Direction = TargetPosition - gameObject.transform.position;
                 AttackDirection = Direction;
                 int radom = Random.Range(0, 3);
                 switch (radom) 

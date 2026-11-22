@@ -42,6 +42,7 @@ public class Boss_GoaldTurret : EnemyMoveBase
         //Vector2 ShotPos = enemyBase.Player.transform.position - enemyBase.AttackSpawnPoint.transform.position;
 
         GameObject CL_Arrow = Instantiate(Arrow, enemyBase.transform.position, Quaternion.identity);
+        ConfigureSummonedAttack(CL_Arrow);
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
         rb.velocity = TargetDirection.normalized * 1.8f;
 

@@ -87,6 +87,7 @@ public class StarKnight : EnemyMoveBase
             if (enemyBase.mode == EnemyBase.ModeType.M5)
             {
                 GameObject CL_Attack = Instantiate(enemyBase.AttackArea, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSummonedAttack(CL_Attack);
                 EnemyAttack enemyAttack = CL_Attack.GetComponent<EnemyAttack>();
                 enemyAttack.enemyBase = enemyBase;
                 Destroy(CL_Attack, 0.01f);
@@ -153,6 +154,7 @@ public class StarKnight : EnemyMoveBase
             if (enemyBase.mode == EnemyBase.ModeType.M5)
             {
                 GameObject CL_Moter = Instantiate(Slash, enemyBase.transform.position, Quaternion.identity);
+                ConfigureSummonedAttack(CL_Moter);
                 Mortar_Controller mortar_ = CL_Moter.GetComponent<Mortar_Controller>();
                 mortar_.enemyBase = enemyBase;
                 mortar_.ChangePos(TargetPosition);
@@ -236,6 +238,7 @@ public class StarKnight : EnemyMoveBase
                             Vector2 newPosition = new Vector2(newX, newY);
 
                             GameObject CL_Needle = Instantiate(Arrow, newPosition, Quaternion.identity);
+                            ConfigureSummonedAttack(CL_Needle);
                             CG_Puppeteer_Needle puppeteer_Needle = CL_Needle.GetComponent<CG_Puppeteer_Needle>();
                             puppeteer_Needle.enemyAttack.enemyBase = enemyBase;
 
@@ -269,6 +272,7 @@ public class StarKnight : EnemyMoveBase
                             Vector2 newPosition = new Vector2(newX, newY);
 
                             GameObject CL_Needle = Instantiate(Arrow, newPosition, Quaternion.identity);
+                            ConfigureSummonedAttack(CL_Needle);
                             CG_Puppeteer_Needle puppeteer_Needle = CL_Needle.GetComponent<CG_Puppeteer_Needle>();
                             puppeteer_Needle.enemyAttack.enemyBase = enemyBase;
 

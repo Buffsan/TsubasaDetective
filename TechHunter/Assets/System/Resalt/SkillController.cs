@@ -25,6 +25,7 @@ public class SkillController : MonoBehaviour
 
     public List<Skill> SkillList = new List<Skill>();
     public List<StatusUP> StatusUPs = new List<StatusUP>();
+
     public List<Relic> Relics = new List<Relic>();
     public List<StagePageData> Stages = new List<StagePageData>();
 
@@ -75,6 +76,22 @@ public class SkillController : MonoBehaviour
     void Start()
     {
         systemManager = GetComponent<SystemManager>();
+        // New skill cards are registered without replacing the existing Inspector list.
+        foreach (SkillCardData entry in Resources.LoadAll<SkillCardData>("SkillCards"))
+        {
+            if (entry != null && !SkillList.Exists(skill => skill != null && skill.skill == entry))
+                SkillList.Add(new Skill { SkillName = entry.SkillName, Rarity = 1, skill = entry });
+        }
+
+        // 新規遺物を既存の遺物カード抽選リストに追加する。
+        RelicData masterpiece = Resources.Load<RelicData>("Relics/HandInHandAndDie");
+        if (masterpiece != null && !Relics.Exists(relic => relic != null && relic.data == masterpiece))
+            Relics.Add(new Relic { Name = masterpiece.RelicName, data = masterpiece });
+
+        // Register new relic ScriptableObjects while preserving existing inspector entries.
+        foreach (RelicData entry in Resources.LoadAll<RelicData>("Relics"))
+            if (entry != null && !Relics.Exists(relic => relic != null && relic.data == entry))
+                Relics.Add(new Relic { Name = entry.RelicName, data = entry });
     }
 
     // Select without rejection loops: always terminates, even with fewer than three options.
@@ -1160,7 +1177,18 @@ public class SkillController : MonoBehaviour
             string Rangestring = "混乱時間:" + Range_Count + "→" + Range_Count2;
             AllStatusStrings.Add(Rangestring);
         }
-
+        if (statuspage.CoinGainPercent != 0f)
+            AllStatusStrings.Add("獲得資金増加:" + playerController.AddCoinGainPercent.ToString("0.#") + "%→"
+                + (playerController.AddCoinGainPercent + statuspage.CoinGainPercent).ToString("0.#") + "%");
+        if (statuspage.ConfusionDamagePercent != 0f)
+            AllStatusStrings.Add("混乱時ダメージ:" + playerController.AddConfusionDamagePercent.ToString("0.#") + "%→"
+                + (playerController.AddConfusionDamagePercent + statuspage.ConfusionDamagePercent).ToString("0.#") + "%");
+        if (statuspage.HealingPercent != 0f)
+            AllStatusStrings.Add("回復量増加:" + playerController.AddHealingPercent.ToString("0.#") + "%→"
+                + (playerController.AddHealingPercent + statuspage.HealingPercent).ToString("0.#") + "%");
+        if (statuspage.LuckyDamagePercent != 0f)
+            AllStatusStrings.Add("幸運ダメージ:" + playerController.AddLuckyDamagePercent.ToString("0.#") + "%→"
+                + (playerController.AddLuckyDamagePercent + statuspage.LuckyDamagePercent).ToString("0.#") + "%");
 
         int index = 0;
         string AllStatusString ="";
@@ -1310,7 +1338,11 @@ public class StatusUP
     public float Speed = 0;
     public int RandomLevelUp = 0;
     public float Coin = 0;
-    
+    public float CoinGainPercent = 0f;
+    public float ConfusionDamagePercent = 0f;
+    public float HealingPercent = 0f;
+    public float LuckyDamagePercent = 0f;
+
 }
 [System.Serializable]
 public class Relic 

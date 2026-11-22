@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boss_TheGoldenWitch
   m_EditorClassIdentifier: 
   NAME: "\u91D1\u8CA8\u306E\u9B54\u5973"
-  MAXHP: 31312
+  MAXHP: 37574
   enemyStrength: 4
   Regen: 0
   MAXMP: 0

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class SB_Whale_AI : Boss_MoveBase
 {
@@ -9,9 +10,71 @@ public class SB_Whale_AI : Boss_MoveBase
     public float duration = 1;
     public float arcHeight = 30;
     float AttackCount1 = 0;
+    // Reuse physics query storage instead of allocating arrays during every warp search.
+    readonly Collider2D[] warpQueryHits = new Collider2D[64];
+    CapsuleCollider2D cachedWarpCapsule;
     float saveAngle = 0;
     bool StandOk = false;
     bool isSerious = false;
+    [Header("第三形態")]
+    [SerializeField, Range(0.01f, 0.99f)] float thirdHpThreshold = 0.25f;
+    [SerializeField, Min(1f)] float thirdBodyMultiplier = 1.5f;
+    [SerializeField, Min(1f)] float thirdAttackMultiplier = 1.5f;
+    [SerializeField, Min(1f)] float thirdRoarGrowth = 1.4f;
+    [SerializeField, Min(0f)] float thirdRecoilDuration = 1f;
+    // Include the fast vanish/appear animation while keeping shots slightly faster than P2.
+    [SerializeField, Min(0.01f)] float thirdFourwayAttackDelay = 1.1f;
+    [SerializeField, Min(0.01f)] float thirdFourwayWarningDuration = 1f;
+    [SerializeField, Min(0.01f)] float thirdFourwayWarpAnimationSpeed = 6f;
+    [SerializeField, Min(0.01f)] float thirdFourwayDisappearSeconds = 0.25f;
+    [SerializeField, Min(0.01f)] float thirdFourwayAppearSeconds = 0.3f;
+    [SerializeField, Min(0f)] float thirdWarpRadius = 3f;
+    bool thirdFourwayWarpAnimating;
+    float thirdFourwayOriginalAnimatorSpeed = 1f;
+    // 50 existing rifts remain; only the additional shockwaves are thinned to ~half (17 -> 9).
+    [SerializeField, Range(1, 50)] int thirdShockwaveEveryNthRift = 6;
+    [SerializeField, Min(0.01f)] float thirdShockwaveAreaScale = 0.7f;
+    [SerializeField, Min(0.01f)] float thirdShockwaveWarningDuration = 1.5f;
+    [SerializeField, Min(0.01f)] float thirdShockwaveHitDuration = 0.8f;
+    [SerializeField, Min(0f)] float thirdShockwaveShakeDuration = 0.2f;
+    [SerializeField, Min(0f)] float thirdShockwaveShakeStrength = 0.15f;
+    // Phase 3 may start only after A6 has finished the full P2 transition,
+    // including its BGM change. Interruption will replay A6 instead of skipping it.
+    bool secondPhaseIntroCompleted;
+    [Header("第三形態・必殺技")]
+    [SerializeField, Min(1)] int ultimateEveryNthAttack = 6;
+    [SerializeField] Vector2 ultimateCenter = new Vector2(0f, 2f);
+    [SerializeField, Min(0f)] float ultimateWarpDisappearTime = 1f;
+    [SerializeField, Min(0f)] float ultimateWarpAppearTime = 1f;
+    [SerializeField, Min(0.1f)] float ultimateChargeTime = 2f;
+    [SerializeField, Min(0.1f)] float ultimateLastChargeTime = 1.5f;
+    [SerializeField, Range(1, 30)] int ultimateRoarCount = 10;
+    [SerializeField, Min(0.01f)] float ultimateRoarIntervalMultiplier = 1.2f;
+    [SerializeField, Min(1f)] float ultimateRoarRangeGrowth = 1.1f;
+    [SerializeField, Min(0f)] float ultimateChargeShakeStrength = 0.1f;
+    [SerializeField, Min(0f)] float ultimateChargeEmissionRate = 20f;
+    [SerializeField, Min(1)] int ultimateFirstRiftCount = 12;
+    [SerializeField, Min(1)] int ultimateLastRiftCount = 50;
+    [SerializeField, Min(1)] int ultimateFinalRiftCount = 120;
+    [SerializeField, Min(0.1f)] float ultimateFinalSpawnDuration = 1f;
+    // Optional override. Without it, active Stage_Floor tilemaps are discovered.
+    [SerializeField] Tilemap ultimateFinalFloorTilemap;
+    // Compared with the other P3 attacks, A7 spawns half as many shockwaves
+    // without reducing dimensional rifts. A multiplier of 2 doubles the
+    // stride (e.g. every 6th rift becomes every 12th rift).
+    [SerializeField, Min(1)] int ultimateShockwaveIntervalMultiplier = 2;
+    [SerializeField, Min(0.1f)] float ultimateRiftBaseRadius = 12f;
+    [SerializeField, Range(1, 32)] int ultimateRiftsPerFrame = 8;
+    [SerializeField, Min(0.1f)] float ultimateRecoveryTime = 2f;
+
+    int thirdAttackActionCount;
+    bool ultimateActive;
+    float ultimateChargeShakeClock;
+    int ultimateRoarFiredCount;
+    bool thirdRecoilActive;
+    bool thirdIntroRoar;
+    int thirdRoarPulse;
+    Vector3 initialBodyScale = Vector3.zero;
 
     [SerializeField] GameObject ARM;
     [SerializeField] GameObject ArmAttackPoint;
@@ -39,18 +102,303 @@ public class SB_Whale_AI : Boss_MoveBase
     [SerializeField] GameObject Denger_AttackArea_Stand;
     [SerializeField] GameObject Denger_HoukouAttackArea;
     [SerializeField] GameObject Denger_4AttackArea;
+    [SerializeField] ParticleSystem thirdParticleSystem;
 
     [SerializeField] List<GameObject> Effects = new List<GameObject>();
 
     AudioManager audioManager => AudioManager.instance;
 
-    // Start is called before the first frame update
     void Start()
     {
-
+        if (enemyBase != null) initialBodyScale = enemyBase.transform.localScale;
     }
+
+    void Update()
+    {
+        if (ultimateActive && (enemyBase == null || enemyBase.IsCharmed ||
+            enemyBase.status == EnemyBase.Status.Die))
+            EndUltimate(false);
+        // Watch HP even while the boss is attacking or stunned.
+        if (enemyBase == null || phase == Phase.P3 || enemyBase.IsCharmed ||
+            enemyBase.status == EnemyBase.Status.Die || enemyBase.MAXHP <= 0f) return;
+        // Do not bypass P2 when a single powerful hit pushes P1 below 25%.
+        // A6 owns the BGM switch and the mandatory phase-two cutscene.
+        if (phase != Phase.P2 || !secondPhaseIntroCompleted) return;
+        if (enemyBase.HP < enemyBase.MAXHP * thirdHpThreshold) BeginThirdPhase();
+    }
+
+    void OnDisable()
+    {
+        EndUltimate(false);
+        StopThirdFourwayWarpAnimation();
+        if (enemyBase != null) enemyBase.IsInvulnerable = false;
+    }
+
+    void BeginThirdPhase()
+    {
+        phase = Phase.P3;
+        thirdRecoilActive = true;
+        thirdIntroRoar = true;
+        isSerious = true; // Retain the second-phase dimensional-rift follow-ups.
+        if (initialBodyScale == Vector3.zero) initialBodyScale = enemyBase.transform.localScale;
+        enemyBase.IsInvulnerable = true;
+        enemyBase.status = EnemyBase.Status.Nomal;
+        enemyBase.StanCount = 0f;
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.animator.SetBool("Damage", false);
+        enemyBase.moveType = EnemyBase.MoveType.Attack;
+        enemyBase.attackType = EnemyBase.AttackType.A1;
+        enemyBase.AttackCount = 0f;
+        AttackNumber = 0;
+        AttackPhase = 0;
+        AttackWaitTime = 0f;
+        AttackCount1 = 0f;
+        if (DamageArea != null) DamageArea.SetActive(false);
+        if (asaltAttackArea != null) asaltAttackArea.SetActive(false);
+        AllDestroyDengerArea();
+        StartCoroutine(ThirdRecoil());
+    }
+
+    IEnumerator ThirdRecoil()
+    {
+        enemyBase.animator.Play("被弾", 0, 0);
+        yield return new WaitForSeconds(thirdRecoilDuration);
+        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) yield break;
+        thirdRecoilActive = false;
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.AttackCount = 0f;
+        AttackNumber = 0;
+        AttackPhase = 0;
+    }
+
+    void FinishThirdIntro()
+    {
+        if (!thirdIntroRoar) return;
+        thirdIntroRoar = false;
+        SetThirdBodyScale(thirdBodyMultiplier);
+        if (DamageArea != null) DamageArea.SetActive(true);
+        enemyBase.IsInvulnerable = false;
+        ApplyThirdParticles();
+    }
+
+    void SetThirdBodyScale(float amount)
+    {
+        if (enemyBase == null) return;
+        if (initialBodyScale == Vector3.zero) initialBodyScale = enemyBase.transform.localScale;
+        enemyBase.transform.localScale = initialBodyScale * amount;
+    }
+
+    void ApplyThirdParticles()
+    {
+        if (thirdParticleSystem == null && enemyBase != null)
+        {
+            foreach (ParticleSystem particle in enemyBase.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                if (particle != null &&
+                    string.Equals(particle.gameObject.name, "third", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    thirdParticleSystem = particle;
+                    break;
+                }
+            }
+        }
+        if (thirdParticleSystem == null)
+        {
+            Debug.LogWarning("SB_Whale_AI: thirdParticleSystem is not assigned.", this);
+            return;
+        }
+        ParticleSystem.EmissionModule emission = thirdParticleSystem.emission;
+        emission.rateOverTime = new ParticleSystem.MinMaxCurve(3f);
+    }
+
+    float ThirdRangeScale => phase == Phase.P3 ? thirdAttackMultiplier : 1f;
+
+    GameObject ScaleSpawn(GameObject instance, float amount)
+    {
+        if (instance != null && !Mathf.Approximately(amount, 1f))
+            instance.transform.localScale *= amount;
+        return instance;
+    }
+
+    GameObject SpawnThirdScaledObject(GameObject prefab, Vector2 position, float lifetime)
+    {
+        if (prefab == SlashLit)
+            return SpawnWhaleRift(position, lifetime, ThirdRangeScale);
+        return ScaleSpawn(SpawnObjectNow_Input(prefab, position, lifetime), ThirdRangeScale);
+    }
+
+    GameObject SpawnWhaleRift(Vector2 position, float lifetime, float scale)
+    {
+        if (SlashLit == null) return null;
+        GameObject rift = SpawnObjectNow_Input(SlashLit, position, lifetime);
+        if (rift != null)
+        {
+            OW_DimensionalRift controller = rift.GetComponent<OW_DimensionalRift>();
+            if (controller != null)
+                controller.SetEnemyAttackOwner(enemyBase);
+            else if (!warnedMissingRiftController)
+            {
+                warnedMissingRiftController = true;
+                Debug.LogWarning("SB_Whale_AI: SlashLit has no OW_DimensionalRift component.", this);
+            }
+        }
+        return ScaleSpawn(rift, scale);
+    }
+
+    bool warnedMissingRiftController;
+
+    void SpawnRoarWarning(float seconds)
+    {
+        float amount = phase == Phase.P3 ? Mathf.Pow(thirdRoarGrowth, thirdRoarPulse) : 1f;
+        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, seconds), amount);
+    }
+
+    void EmitRoarPulse()
+    {
+        float amount = phase == Phase.P3 ? Mathf.Pow(thirdRoarGrowth, thirdRoarPulse) : 1f;
+        ScaleSpawn(SpawnObjectNow_Input(HoukouAttack, transform.position, 0.1f), amount);
+        ScaleSpawn(SpawnObjectNow_Input(Effects[0], transform.position, 3f), amount);
+        if (thirdIntroRoar)
+            SetThirdBodyScale(Mathf.Lerp(1f, thirdBodyMultiplier,
+                Mathf.Clamp01((thirdRoarPulse + 1f) / 4f)));
+        thirdRoarPulse++;
+    }
+
+    bool IsThirdWarpSafe(Vector2 destination)
+    {
+        int count = Physics2D.OverlapPointNonAlloc(destination, warpQueryHits);
+        // A saturated buffer is not trustworthy for collision clearance.
+        if (count == warpQueryHits.Length) return false;
+
+        bool onFloor = false;
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D hit = warpQueryHits[i];
+            if (hit != null && hit.CompareTag("Stage_Floor"))
+            {
+                onFloor = true;
+                break;
+            }
+        }
+        if (!onFloor) return false;
+
+        // Bounds can be empty while DamageArea is disabled during a warp.
+        Vector2 size = new Vector2(4f, 4.5f) * thirdBodyMultiplier;
+        if (cachedWarpCapsule == null && DamageArea != null)
+            cachedWarpCapsule = DamageArea.GetComponent<CapsuleCollider2D>();
+
+        if (cachedWarpCapsule != null)
+        {
+            Vector3 scale = cachedWarpCapsule.transform.lossyScale;
+            size = Vector2.Scale(cachedWarpCapsule.size,
+                new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y)));
+        }
+
+        count = Physics2D.OverlapBoxNonAlloc(destination, size * 0.9f, 0f, warpQueryHits);
+        if (count == warpQueryHits.Length) return false;
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D hit = warpQueryHits[i];
+            if (hit != null && hit.CompareTag("Stage_Wall")) return false;
+        }
+        return true;
+    }
+
+    bool warnedThirdWarpNoDestination;
+
+    void WarpThirdFourway()
+    {
+        if (enemyBase == null || thirdWarpRadius <= 0f) return;
+        Vector2 origin = enemyBase.transform.position;
+        Vector2 destination = origin;
+        bool found = false;
+
+        // First attempt random positions, prioritizing a clearly visible teleport.
+        for (int attempt = 0; attempt < 36; attempt++)
+        {
+            Vector2 offset = Random.insideUnitCircle * thirdWarpRadius;
+            if (offset.sqrMagnitude < 1f) continue;
+            Vector2 candidate = origin + offset;
+            if (!IsThirdWarpSafe(candidate)) continue;
+            destination = candidate;
+            found = true;
+            break;
+        }
+
+        // Deterministic fallback prevents random bad luck from cancelling every warp.
+        // Grid offsets are world units; one unit corresponds to one tile on the stage grid.
+        if (!found)
+        {
+            int radius = Mathf.CeilToInt(thirdWarpRadius);
+            int validCount = 0;
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
+                {
+                    Vector2 offset = new Vector2(x, y);
+                    if (offset.sqrMagnitude < 1f ||
+                        offset.sqrMagnitude > thirdWarpRadius * thirdWarpRadius)
+                        continue;
+
+                    Vector2 candidate = origin + offset;
+                    if (!IsThirdWarpSafe(candidate)) continue;
+
+                    // Reservoir sampling: every valid grid point has the same probability.
+                    validCount++;
+                    if (Random.Range(0, validCount) == 0)
+                    {
+                        destination = candidate;
+                        found = true;
+                    }
+                }
+            }
+        }
+
+        if (!found)
+        {
+            if (!warnedThirdWarpNoDestination)
+            {
+                Debug.LogWarning(
+                    "SB_Whale_AI: P3 four-direction warp has no safe Stage_Floor " +
+                    "destination within the configured radius. " +
+                    "Check floor/wall tags and the 1.5x boss footprint.", this);
+                warnedThirdWarpNoDestination = true;
+            }
+            return;
+        }
+
+        warnedThirdWarpNoDestination = false;
+        enemyBase.rb.velocity = Vector2.zero;
+        enemyBase.transform.position = destination;
+        LookAtCurrentTarget();
+        if (audioclips.Count > 2 && audioclips[2] != null)
+            audioManager.PlaySE(audioclips[2]);
+    }
+
+    IEnumerator ThirdRiftShockwave(Vector2 position)
+    {
+        // StartCoroutine executes up to the first yield immediately, so this
+        // warning appears in the same frame as its dimensional rift.
+        // The warning and the actual hit are driven by ONE timer: no gap.
+        float warningDuration = Mathf.Max(0.01f, thirdShockwaveWarningDuration);
+        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea, position,
+            warningDuration), thirdShockwaveAreaScale);
+
+        yield return new WaitForSeconds(warningDuration);
+        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die ||
+            enemyBase.IsCharmed || phase != Phase.P3) yield break;
+
+        ScaleSpawn(SpawnObjectNow_Input(HoukouAttack, position, thirdShockwaveHitDuration),
+            thirdShockwaveAreaScale);
+        ScaleSpawn(SpawnObjectNow_Input(Effects[0], position, 2f),
+            thirdShockwaveAreaScale);
+        all_System.camera_Controller.Shake(thirdShockwaveShakeDuration,
+            thirdShockwaveShakeStrength);
+    }
+
     public override void M_Stan()
     {
+        if (ultimateActive) return;
         Finish(); AttackWaitTime = 0; StandOk = false; asaltAttackArea.SetActive(false);
         if (myRunningCoroutine != null)
         {
@@ -63,6 +411,7 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     public override void M_Con()
     {
+        if (ultimateActive) return;
         Finish(); AttackWaitTime = 0; StandOk = false; asaltAttackArea.SetActive(false);
         if (myRunningCoroutine != null)
         {
@@ -75,6 +424,7 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     public override void M_AI()
     {
+        if (thirdRecoilActive) return;
         
         if (enemyBase.moveType != EnemyBase.MoveType.Attack)
         {
@@ -92,6 +442,7 @@ public class SB_Whale_AI : Boss_MoveBase
                     audioManager.BgmSource.clip = BossBGM;
                     
                     phase = Phase.P2;
+                    secondPhaseIntroCompleted = false;
                     AttackWaitTime = 0;
                     enemyBase.moveType = EnemyBase.MoveType.Attack;
                     enemyBase.attackType = EnemyBase.AttackType.A6;
@@ -142,7 +493,22 @@ public class SB_Whale_AI : Boss_MoveBase
             }
             if (phase == Phase.P2)
             {
-
+                // If A6 was interrupted (e.g. by stun), replay it before
+                // selecting any regular P2 attack or allowing phase 3.
+                if (!secondPhaseIntroCompleted)
+                {
+                    if (audioManager != null && audioManager.BgmSource != null)
+                        audioManager.BgmSource.clip = BossBGM;
+                    AttackWaitTime = 0f;
+                    enemyBase.rb.velocity = Vector2.zero;
+                    enemyBase.moveType = EnemyBase.MoveType.Attack;
+                    enemyBase.attackType = EnemyBase.AttackType.A6;
+                    enemyBase.AttackCount = 0f;
+                    AttackNumber = 0;
+                    AttackPhase = 0;
+                    if (DamageArea != null) DamageArea.SetActive(false);
+                    return;
+                }
 
                 if (AttackWaitTime > 1.5)
                 {
@@ -184,11 +550,38 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 }
             }
+
+            if (phase == Phase.P3 && AttackWaitTime > 1.5f)
+            {
+                AttackWaitTime = 0f;
+                enemyBase.moveType = EnemyBase.MoveType.Attack;
+                enemyBase.rb.velocity = Vector2.zero;
+                // Count attack actions, not individual hits/pulses within an action.
+                // The sixth action is replaced by the ultimate (A7).
+                thirdAttackActionCount++;
+                if (thirdAttackActionCount >= Mathf.Max(1, ultimateEveryNthAttack))
+                {
+                    thirdAttackActionCount = 0;
+                    enemyBase.attackType = EnemyBase.AttackType.A7;
+                }
+                else
+                {
+                    switch (Random.Range(1, 6))
+                    {
+                        case 1: enemyBase.attackType = EnemyBase.AttackType.A1; break;
+                        case 2: enemyBase.attackType = EnemyBase.AttackType.A2; break;
+                        case 3: enemyBase.attackType = EnemyBase.AttackType.A3; break;
+                        case 4: enemyBase.attackType = EnemyBase.AttackType.A4; break;
+                        case 5: enemyBase.attackType = EnemyBase.AttackType.A5; break;
+                    }
+                }
+            }
         }
 
     }
     public override void M_Attack()
     {
+        if (thirdRecoilActive) return;
 
         enemyBase.AttackCount += Time.deltaTime;
         switch (enemyBase.attackType)
@@ -213,7 +606,7 @@ public class SB_Whale_AI : Boss_MoveBase
                 A6();
                 break;
             case EnemyBase.AttackType.A7:
-                //A7();
+                A7();
                 break;
             case EnemyBase.AttackType.A8:
                 //A8();
@@ -244,6 +637,7 @@ public class SB_Whale_AI : Boss_MoveBase
     }
     void Finish()
     {
+        StopThirdFourwayWarpAnimation();
         AttackPhase = 0;
         AttackNumber = 0;
         AttackCount1 = 0;
@@ -256,7 +650,8 @@ public class SB_Whale_AI : Boss_MoveBase
         if (AttackPhase == 0)
         {
             enemyBase.animator.Play("攻撃待機", 0, 0);
-            DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, 2);
+            thirdRoarPulse = 0;
+            SpawnRoarWarning(2f);
             
             NextPhase();
         }
@@ -265,23 +660,25 @@ public class SB_Whale_AI : Boss_MoveBase
             if (attackcount() > 2) 
             {
                 enemyBase.animator.Play("攻撃", 0, 0);
-                SpawnObjectNow(HoukouAttack, transform.position, 0.1f);
-                SpawnObjectNow(Effects[0], transform.position, 3);
+                EmitRoarPulse();
                 all_System.camera_Controller.Shake(0.2f, 0.3f);
                 audioManager.PlaySE(audioclips[0]);
                 NextPhase();
-                DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, 0.5f);
+                SpawnRoarWarning(0.5f);
             }
         }
         if (AttackPhase == 2) 
         {
             if (attackcount() > 0.5) 
             {
-                DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, 0.5f);
-                SpawnObjectNow(HoukouAttack, transform.position, 0.1f);
+                // Unlike the legacy warning timing, P3 warns before each growing pulse.
+                if (phase != Phase.P3)
+                    DengerAreaSpawn(Denger_HoukouAttackArea, transform.position, 0.5f);
+                EmitRoarPulse();
                 all_System.camera_Controller.Shake(0.2f, 0.3f);
-                SpawnObjectNow(Effects[0], transform.position, 3);
                 AttackNumber++;
+                if (phase == Phase.P3 && AttackNumber < 3)
+                    SpawnRoarWarning(0.5f);
                 if (AttackNumber < 3)
                 {
                     enemyBase.AttackCount = 0;
@@ -290,38 +687,14 @@ public class SB_Whale_AI : Boss_MoveBase
                 {
                     if (isSerious)
                     {
-                        for (int i = 0; i < 50; i++)
-                        {
-                            for (int j = 0; j < 6; j++)
-                            {
-                                Vector2 randomPos = Vector2.zero;
-                                bool ok = false;
-                                float range = 12f;
-                                float minrange = 5.5f;
-                                while (!ok)
-                                {
-                                    randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-                                    if (Mathf.Abs(randomPos.x) > minrange || Mathf.Abs(randomPos.y) > minrange) ok = true;
-                                }
-                                StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
-                            }
-                        }
-                        for (int i = 0; i < 50; i++)
-                        {
-                            for (int j = 0; j < 4; j++)
-                            {
-                                Vector2 randomPos = Vector2.zero;
-                                bool ok = false;
-                                float range = 20;
-                                float minrange = 12f;
-                                while (!ok)
-                                {
-                                    randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-                                    if (Mathf.Abs(randomPos.x) > minrange || Mathf.Abs(randomPos.y) > minrange) ok = true;
-                                }
-                                StartCoroutine(LiftSpawnLing((float)i / 30 + 2, (Vector2)transform.position + randomPos));
-                            }
-                        }
+                        Vector2 origin = transform.position;
+                        float scale = ThirdRangeScale;
+                        // Originally 300 + 200 rifts in 500 separate coroutines.
+                        // Preserve both waves and their 2-second offset.
+                        StartCoroutine(SpawnRiftWaves(origin, 50, 6,
+                            1f / 30f, 0f, 12f, 5.5f, scale, phase));
+                        StartCoroutine(SpawnRiftWaves(origin, 50, 4,
+                            1f / 30f, 2f, 20f, 12f, scale, phase));
                     }
                     NextPhase();
                 }
@@ -331,13 +704,120 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             if (attackcount() > 0.5) 
             {
+                FinishThirdIntro();
                 AttackFinish();
             }
         }
     }
    
+    void StartThirdFourwayWarpAnimation()
+    {
+        if (enemyBase == null) return;
+        enemyBase.rb.velocity = Vector2.zero;
+        if (!thirdFourwayWarpAnimating)
+            thirdFourwayOriginalAnimatorSpeed = enemyBase.animator.speed;
+        thirdFourwayWarpAnimating = true;
+        enemyBase.animator.speed = thirdFourwayOriginalAnimatorSpeed * thirdFourwayWarpAnimationSpeed;
+        enemyBase.animator.Play("ワープ", 0, 0);
+        if (DamageArea != null) DamageArea.SetActive(false);
+        if (audioclips.Count > 2 && audioclips[2] != null)
+            audioManager.PlaySE(audioclips[2]);
+    }
+
+    void StopThirdFourwayWarpAnimation()
+    {
+        if (!thirdFourwayWarpAnimating || enemyBase == null) return;
+        thirdFourwayWarpAnimating = false;
+        enemyBase.animator.speed = thirdFourwayOriginalAnimatorSpeed;
+        if (DamageArea != null && enemyBase.status != EnemyBase.Status.Die)
+            DamageArea.SetActive(true);
+    }
+
+    void A2Third()
+    {
+        // Unlike the previous instant position swap, replay the whale's actual
+        // warp and appearance animations at an accelerated speed for every shot.
+        if (AttackPhase == 0)
+        {
+            if (AttackNumber == 0) saveAngle = 0f;
+            StartThirdFourwayWarpAnimation();
+            NextPhase();
+            return;
+        }
+        if (AttackPhase == 1)
+        {
+            if (attackcount() >= thirdFourwayDisappearSeconds)
+            {
+                WarpThirdFourway(); // Move only after the warp animation has hidden the whale.
+                enemyBase.animator.Play("出現", 0, 0);
+                NextPhase();
+            }
+            return;
+        }
+        if (AttackPhase == 2)
+        {
+            if (attackcount() >= thirdFourwayAppearSeconds)
+            {
+                StopThirdFourwayWarpAnimation();
+                enemyBase.animator.Play("攻撃", 0, 0);
+                NextPhase();
+            }
+            return;
+        }
+        if (AttackPhase == 3)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                GameObject warning = ScaleSpawn(
+                    DengerAreaSpawn(Denger_4AttackArea, transform.position,
+                        thirdFourwayWarningDuration), ThirdRangeScale);
+                warning.transform.Rotate(0, 0, saveAngle + 90f * i);
+            }
+            NextPhase();
+            return;
+        }
+        if (AttackPhase == 4)
+        {
+            if (attackcount() >= thirdFourwayAttackDelay)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    GameObject hit = SpawnThirdScaledObject(AttackArea4, transform.position, 0.1f);
+                    hit.transform.Rotate(0, 0, saveAngle + 90f * i);
+                }
+                saveAngle += 45f;
+                enemyBase.animator.Play("攻撃待機", 0, 0);
+                audioManager.PlaySE(audioclips[1]);
+                all_System.camera_Controller.Shake(0.3f, 0.2f);
+                SpawnThirdScaledObject(Effects[0], transform.position, 3f);
+
+                // P2 dimensional-rift follow-ups are deliberately retained.
+                if (isSerious)
+                {
+                    StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
+                        5, 10, 1f / 30f, 0f, 12f, 0f, ThirdRangeScale, phase));
+                }
+                NextPhase();
+            }
+            return;
+        }
+        if (AttackPhase == 5 && attackcount() > 0.1f)
+        {
+            AttackNumber++;
+            if (AttackNumber > 4)
+                AttackFinish();
+            else
+                ChoiseNextPhase(0);
+        }
+    }
+
     void A2()
     {
+        if (phase == Phase.P3)
+        {
+            A2Third();
+            return;
+        }
         if (AttackPhase == 0)
         {
             enemyBase.animator.Play("攻撃");
@@ -349,11 +829,14 @@ public class SB_Whale_AI : Boss_MoveBase
         }
         if (AttackPhase == 1) 
         {
-            if (attackcount() > 0.1) 
+            if (attackcount() > 0.1)
             {
                 for (int i = 0; i < 4; i++) 
                 {
-                    GameObject CL_Effect = DengerAreaSpawn(Denger_4AttackArea, transform.position, 1f);
+                    GameObject CL_Effect = ScaleSpawn(
+                        DengerAreaSpawn(Denger_4AttackArea, transform.position,
+                            phase == Phase.P3 ? thirdFourwayAttackDelay : 1f),
+                        ThirdRangeScale);
 
                     float dirAngle = saveAngle + 90 * i;
                     CL_Effect.transform.Rotate(0, 0, dirAngle);
@@ -365,11 +848,11 @@ public class SB_Whale_AI : Boss_MoveBase
         }
         if (AttackPhase == 2) 
         {
-            if (attackcount() > 1.1f)
+            if (attackcount() > (phase == Phase.P3 ? thirdFourwayAttackDelay : 1.1f))
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    GameObject CL_Effect = SpawnObjectNow_Input(AttackArea4, transform.position, 0.1f);
+                    GameObject CL_Effect = SpawnThirdScaledObject(AttackArea4, transform.position, 0.1f);
                     CL_Effect.transform.Rotate(0, 0, saveAngle + 90 * i);
                 }
                 saveAngle += 45;
@@ -377,23 +860,14 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 audioManager.PlaySE(audioclips[1]);
                 all_System.camera_Controller.Shake(0.3f, 0.2f);
-                SpawnObjectNow(Effects[0], transform.position, 3);
+                SpawnThirdScaledObject(Effects[0], transform.position, 3f);
 
                 NextPhase();
 
                 if (isSerious)
                 {
-                    for (int i = 0; i < 5; i++)
-                    {
-                        for (int j = 0; j < 10; j++)
-                        {
-                            Vector2 randomPos = Vector2.zero;
-                            float range = 12f;
-                            randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-
-                            StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
-                        }
-                    }
+                    StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
+                        5, 10, 1f / 30f, 0f, 12f, 0f, ThirdRangeScale, phase));
                 }
             }
             
@@ -467,7 +941,9 @@ public class SB_Whale_AI : Boss_MoveBase
 
                         // 攻撃判定オブジェクトを左右に生成
                         GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(leftAttack);
                         GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(rightAttack);
                         Destroy(leftAttack, 5);
                         Destroy(rightAttack, 5);
                     }
@@ -485,7 +961,9 @@ public class SB_Whale_AI : Boss_MoveBase
 
                         // 攻撃判定オブジェクトを左右に生成
                         GameObject leftAttack = Instantiate(RockNeedle, leftPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(leftAttack);
                         GameObject rightAttack = Instantiate(RockNeedle, rightPos, Quaternion.identity);
+                        ConfigureSpawnedAttack(rightAttack);
                         Destroy(leftAttack, 5);
                         Destroy(rightAttack, 5);
                     }
@@ -555,7 +1033,9 @@ public class SB_Whale_AI : Boss_MoveBase
                         Random.Range(-2f, 2f) + TargetPosition.y
                     );
 
-                    FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
+                    FindPlayerPos = phase == Phase.P3
+                        ? IsThirdWarpSafe(TargetFindPlayerPos)
+                        : IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
 
                     if (FindPlayerPos)
                     {
@@ -569,7 +1049,9 @@ public class SB_Whale_AI : Boss_MoveBase
                 if (!FindPlayerPos)
                 {
                     // 代替位置を設定（例：現在位置のまま or デフォルト座標）
-                    targetPos = new Vector2 (TargetPosition.x, TargetPosition.y+2);
+                    targetPos = phase == Phase.P3
+                        ? (Vector2)transform.position
+                        : new Vector2(TargetPosition.x, TargetPosition.y + 2f);
                     
                     Debug.LogWarning("Floor not found. Using player position as fallback.");
                 }
@@ -579,17 +1061,8 @@ public class SB_Whale_AI : Boss_MoveBase
                 enemyBase.animator.Play("出現", 0, 0);
                 NextPhase();
 
-                for (int i = 0; i < 5; i++)
-                {
-                    for (int j = 0; j < 5; j++)
-                    {
-                        Vector2 randomPos = Vector2.zero;
-                        float range = 6f;
-                        randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-
-                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
-                    }
-                }
+                StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
+                    5, 5, 1f / 30f, 0f, 6f, 0f, 1f, phase));
             }
         }
         if (AttackPhase == 12) 
@@ -625,7 +1098,8 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             LookAtCurrentTarget();
             enemyBase.animator.Play("攻撃待機");
-            GameObject CL_denger = DengerAreaSpawn(Denger_4AttackArea, transform.position, 1);
+            GameObject CL_denger = ScaleSpawn(
+                DengerAreaSpawn(Denger_4AttackArea, transform.position, 1f), ThirdRangeScale);
             CL_denger.transform.up = TargetDirection.normalized;
             targetPos = TargetPosition;
             NextPhase();
@@ -634,20 +1108,18 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             if (attackcount() > 1)
             {
-                GameObject CL_Attack = SpawnObjectNow_Input(AttackArea4, transform.position, 0.1f);
+                GameObject CL_Attack = SpawnThirdScaledObject(AttackArea4, transform.position, 0.1f);
                 CL_Attack.transform.up = TargetDirection.normalized;
                 NextPhase();
                 audioManager.PlaySE(audioclips[1]);
 
                 all_System.camera_Controller.Shake(0.3f, 0.2f);
-                SpawnObjectNow(Effects[0], transform.position, 3);
+                SpawnThirdScaledObject(Effects[0], transform.position, 3f);
 
                 if (isSerious)
                 {
-                    for (int i = 0; i < 50; i++)
-                    {
-                        StartCoroutine(Ougi(i, targetPos, (float)i / 40));
-                    }
+                    StartCoroutine(SpawnFanRifts((Vector2)transform.position,
+                        targetPos, ThirdRangeScale, phase == Phase.P3, phase));
                 }
             }
         }
@@ -697,7 +1169,9 @@ public class SB_Whale_AI : Boss_MoveBase
                         Random.Range(-2f, 2f) + TargetPosition.y
                     );
 
-                    FindPlayerPos = IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
+                    FindPlayerPos = phase == Phase.P3
+                        ? IsThirdWarpSafe(TargetFindPlayerPos)
+                        : IsTagAtPosition(TargetFindPlayerPos, "Stage_Floor");
 
                     if (FindPlayerPos)
                     {
@@ -711,7 +1185,9 @@ public class SB_Whale_AI : Boss_MoveBase
                 if (!FindPlayerPos)
                 {
                     // 代替位置を設定（例：現在位置のまま or デフォルト座標）
-                    targetPos = new Vector2(TargetPosition.x, TargetPosition.y + 2);
+                    targetPos = phase == Phase.P3
+                        ? (Vector2)transform.position
+                        : new Vector2(TargetPosition.x, TargetPosition.y + 2f);
                     Debug.LogWarning("Floor not found. Using player position as fallback.");
                 }
 
@@ -720,17 +1196,8 @@ public class SB_Whale_AI : Boss_MoveBase
                 enemyBase.animator.Play("出現", 0, 0);
                 NextPhase();
 
-                for (int i = 0; i < 5; i++)
-                {
-                    for (int j = 0; j < 5; j++)
-                    {
-                        Vector2 randomPos = Vector2.zero;
-                        float range = 6f;
-                        randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-
-                        StartCoroutine(LiftSpawnLing((float)i / 30, (Vector2)transform.position + randomPos));
-                    }
-                }
+                StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
+                    5, 5, 1f / 30f, 0f, 6f, 0f, ThirdRangeScale, phase));
             }
         }
         if (AttackPhase == 2)
@@ -752,7 +1219,8 @@ public class SB_Whale_AI : Boss_MoveBase
         {
             LookAtCurrentTarget();
             enemyBase.animator.Play("攻撃");
-            GameObject CL_denger = DengerAreaSpawn(Denger_4AttackArea, transform.position, 1);
+            GameObject CL_denger = ScaleSpawn(
+                DengerAreaSpawn(Denger_4AttackArea, transform.position, 1f), ThirdRangeScale);
             CL_denger.transform.up = TargetDirection.normalized;
             targetPos = TargetPosition;
             NextPhase();
@@ -762,18 +1230,16 @@ public class SB_Whale_AI : Boss_MoveBase
             if (attackcount() > 1)
             {
                 enemyBase.animator.Play("攻撃待機");
-                GameObject CL_Attack = SpawnObjectNow_Input(AttackArea4, transform.position, 0.1f);
+                GameObject CL_Attack = SpawnThirdScaledObject(AttackArea4, transform.position, 0.1f);
                 CL_Attack.transform.up = TargetDirection.normalized;
                 NextPhase();
                 audioManager.PlaySE(audioclips[1]);
 
                 all_System.camera_Controller.Shake(0.3f, 0.2f);
-                SpawnObjectNow(Effects[0], transform.position, 3);
+                SpawnThirdScaledObject(Effects[0], transform.position, 3f);
 
-                for (int i = 0; i < 50; i++)
-                {
-                    StartCoroutine(Ougi(i, targetPos, (float)i / 40));
-                }
+                StartCoroutine(SpawnFanRifts((Vector2)transform.position,
+                    targetPos, ThirdRangeScale, phase == Phase.P3, phase));
 
                 
             }
@@ -792,6 +1258,335 @@ public class SB_Whale_AI : Boss_MoveBase
                     ChoiseNextPhase(0);
                 }
             }
+        }
+    }
+
+
+    // Ultimate is a dedicated state machine rather than a coroutine that fights
+    // M_Attack's state/timers. This also keeps animator and hitboxes synchronized.
+    void A7()
+    {
+        if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die) return;
+        enemyBase.rb.velocity = Vector2.zero;
+
+        if (AttackPhase == 0)
+        {
+            StartUltimate();
+            enemyBase.animator.Play("ワープ", 0, 0);
+            if (DamageArea != null) DamageArea.SetActive(false);
+            if (audioclips.Count > 2 && audioclips[2] != null)
+                audioManager.PlaySE(audioclips[2]);
+            NextPhase();
+            return;
+        }
+
+        if (AttackPhase == 1)
+        {
+            if (attackcount() >= ultimateWarpDisappearTime)
+            {
+                Vector3 pos = enemyBase.transform.position;
+                enemyBase.transform.position = new Vector3(ultimateCenter.x, ultimateCenter.y, pos.z);
+                enemyBase.animator.Play("出現", 0, 0);
+                if (audioclips.Count > 2 && audioclips[2] != null)
+                    audioManager.PlaySE(audioclips[2]);
+                NextPhase();
+            }
+            return;
+        }
+
+        if (AttackPhase == 2)
+        {
+            if (attackcount() >= ultimateWarpAppearTime)
+            {
+                if (DamageArea != null) DamageArea.SetActive(true);
+                enemyBase.animator.Play("攻撃待機", 0, 0);
+                SetUltimateEmission(ultimateChargeEmissionRate);
+                ultimateChargeShakeClock = 0f;
+                SpawnUltimateRoarWarning(0, ultimateChargeTime);
+                NextPhase();
+            }
+            return;
+        }
+
+        if (AttackPhase == 3)
+        {
+            ShakeDuringUltimateCharge();
+            if (attackcount() >= ultimateChargeTime)
+            {
+                SetUltimateEmission(3f);
+                ultimateRoarFiredCount = 0;
+                EmitUltimateRoar(ultimateRoarFiredCount);
+                ultimateRoarFiredCount++;
+                if (ultimateRoarFiredCount < ultimateRoarCount)
+                    SpawnUltimateRoarWarning(ultimateRoarFiredCount,
+                        UltimateRoarInterval);
+                NextPhase();
+            }
+            return;
+        }
+
+        if (AttackPhase == 4)
+        {
+            if (attackcount() >= UltimateRoarInterval)
+            {
+                if (ultimateRoarFiredCount < ultimateRoarCount)
+                {
+                    EmitUltimateRoar(ultimateRoarFiredCount);
+                    ultimateRoarFiredCount++;
+                }
+                if (ultimateRoarFiredCount >= ultimateRoarCount)
+                {
+                    enemyBase.animator.Play("攻撃待機", 0, 0);
+                    // Finish with rifts and individually warned shockwaves,
+                    // without the unavoidable full-screen roar.
+                    NextPhase();
+                }
+                else
+                {
+                    SpawnUltimateRoarWarning(ultimateRoarFiredCount, UltimateRoarInterval);
+                    enemyBase.AttackCount = 0f;
+                }
+            }
+            return;
+        }
+
+        if (AttackPhase == 5)
+        {
+            if (attackcount() >= ultimateLastChargeTime)
+            {
+                EmitUltimateFinalRifts();
+                NextPhase();
+            }
+            return;
+        }
+
+        if (AttackPhase == 6 && attackcount() >= ultimateRecoveryTime)
+        {
+            EndUltimate(true);
+            AttackFinish();
+        }
+    }
+
+    float UltimateRoarInterval => 0.5f * ultimateRoarIntervalMultiplier;
+
+    void StartUltimate()
+    {
+        if (ultimateActive) return;
+        ultimateActive = true;
+        ultimateRoarFiredCount = 0;
+        ultimateChargeShakeClock = 0f;
+        if (enemyBase == null) return;
+        enemyBase.IsUnstaggerable = true;
+        enemyBase.status = EnemyBase.Status.Nomal;
+        enemyBase.StanCount = 0f;
+        enemyBase.animator.SetBool("Damage", false);
+        enemyBase.rb.velocity = Vector2.zero;
+        // A7 begins separately from the fast A2 warp; restore its animator speed.
+        StopThirdFourwayWarpAnimation();
+    }
+
+    void EndUltimate(bool completed)
+    {
+        if (!ultimateActive && (enemyBase == null || !enemyBase.IsUnstaggerable))
+            return;
+        ultimateActive = false;
+        if (enemyBase != null)
+        {
+            enemyBase.IsUnstaggerable = false;
+            if (enemyBase.status != EnemyBase.Status.Die)
+            {
+                enemyBase.rb.velocity = Vector2.zero;
+                if (DamageArea != null) DamageArea.SetActive(true);
+            }
+        }
+        SetUltimateEmission(3f);
+    }
+
+    void SetUltimateEmission(float rate)
+    {
+        if (thirdParticleSystem == null) ApplyThirdParticles();
+        if (thirdParticleSystem == null) return;
+        ParticleSystem.EmissionModule emission = thirdParticleSystem.emission;
+        emission.rateOverTime = new ParticleSystem.MinMaxCurve(Mathf.Max(0f, rate));
+    }
+
+    void ShakeDuringUltimateCharge()
+    {
+        ultimateChargeShakeClock += Time.deltaTime;
+        if (ultimateChargeShakeClock < 0.1f) return;
+        ultimateChargeShakeClock = 0f;
+        if (all_System != null && all_System.camera_Controller != null)
+            all_System.camera_Controller.Shake(0.15f, ultimateChargeShakeStrength);
+    }
+
+    void SpawnUltimateRoarWarning(int index, float warningSeconds)
+    {
+        float radiusMultiplier = Mathf.Pow(ultimateRoarRangeGrowth, index);
+        ScaleSpawn(DengerAreaSpawn(Denger_HoukouAttackArea,
+            enemyBase.transform.position, warningSeconds), radiusMultiplier);
+    }
+
+    void EmitUltimateRoar(int index)
+    {
+        enemyBase.animator.Play("攻撃", 0, 0);
+        float radiusMultiplier = Mathf.Pow(ultimateRoarRangeGrowth, index);
+        ScaleSpawn(SpawnObjectNow_Input(HoukouAttack,
+            enemyBase.transform.position, 0.15f), radiusMultiplier);
+        if (Effects.Count > 0 && Effects[0] != null)
+            ScaleSpawn(SpawnObjectNow_Input(Effects[0],
+                enemyBase.transform.position, 3f), radiusMultiplier);
+        if (audioclips.Count > 0 && audioclips[0] != null)
+            audioManager.PlaySE(audioclips[0]);
+        if (all_System != null && all_System.camera_Controller != null)
+            all_System.camera_Controller.Shake(0.25f, 0.3f);
+
+        float progress = ultimateRoarCount <= 1
+            ? 1f : (float)index / (ultimateRoarCount - 1);
+        int count = Mathf.RoundToInt(Mathf.Lerp(
+            ultimateFirstRiftCount, ultimateLastRiftCount, progress));
+        count = Mathf.Max(1, count);
+
+        // Only the third roar targets a shockwave at the player's position.
+        // The sixth and ninth roar use random rift locations as usual.
+        bool targetPlayer = index == 2;
+        Vector2 playerPos = enemyBase.Player != null
+            ? (Vector2)enemyBase.Player.transform.position : (Vector2)TargetPosition;
+        StartCoroutine(SpawnUltimateRifts(count,
+            ultimateRiftBaseRadius * radiusMultiplier,
+            targetPlayer, playerPos, false));
+    }
+
+    void GetUltimateScreenRect(out Vector2 center, out Vector2 size)
+    {
+        Camera cam = Camera.main;
+        if (cam == null && all_System != null &&
+            all_System.camera_Controller != null)
+            cam = all_System.camera_Controller.GetComponent<Camera>();
+
+        if (cam != null && cam.orthographic)
+        {
+            center = cam.transform.position;
+            float height = cam.orthographicSize * 2f;
+            size = new Vector2(height * cam.aspect, height);
+        }
+        else
+        {
+            center = ultimateCenter;
+            size = new Vector2(32f, 18f);
+        }
+    }
+
+    void EmitUltimateFinalRifts()
+    {
+        // Scatter the final rifts (and their same-frame shockwave warnings)
+        // across the full floor over exactly one second, not in a burst.
+        StartCoroutine(SpawnUltimateRifts(Mathf.Max(1, ultimateFinalRiftCount),
+            0f, false, Vector2.zero, true));
+    }
+
+    List<Tilemap> FindUltimateFinalFloorTilemaps()
+    {
+        List<Tilemap> floors = new List<Tilemap>();
+        if (ultimateFinalFloorTilemap != null && ultimateFinalFloorTilemap.gameObject.activeInHierarchy)
+        {
+            floors.Add(ultimateFinalFloorTilemap);
+            return floors;
+        }
+
+        // Tilemaps tagged Stage_Floor are the same walkable-floor objects
+        // already used by the whale's normal safe-warp checks.
+        foreach (Tilemap tilemap in FindObjectsOfType<Tilemap>())
+        {
+            if (tilemap == null || tilemap.cellBounds.size.x <= 0 ||
+                tilemap.cellBounds.size.y <= 0) continue;
+            for (Transform node = tilemap.transform; node != null; node = node.parent)
+            {
+                if (!node.CompareTag("Stage_Floor")) continue;
+                floors.Add(tilemap);
+                break;
+            }
+        }
+        return floors;
+    }
+
+    Vector2 ChooseUltimateFinalPosition(List<Tilemap> floors,
+        Vector2 screenCenter, Vector2 screenSize)
+    {
+        // Sample existing floor tiles rather than the screen bounds: the
+        // barrage should reach the whole stage, but never the surrounding void.
+        if (floors != null && floors.Count > 0)
+        {
+            for (int attempt = 0; attempt < 40; attempt++)
+            {
+                Tilemap floor = floors[Random.Range(0, floors.Count)];
+                BoundsInt cells = floor.cellBounds;
+                if (cells.size.x <= 0 || cells.size.y <= 0 || cells.size.z <= 0) continue;
+                Vector3Int cell = new Vector3Int(
+                    Random.Range(cells.xMin, cells.xMax),
+                    Random.Range(cells.yMin, cells.yMax),
+                    Random.Range(cells.zMin, cells.zMax));
+                if (floor.HasTile(cell))
+                    return floor.GetCellCenterWorld(cell);
+            }
+        }
+
+        // Compatibility fallback for stages that don't use Stage_Floor tilemaps.
+        return screenCenter + new Vector2(
+            Random.Range(-screenSize.x * 0.5f, screenSize.x * 0.5f),
+            Random.Range(-screenSize.y * 0.5f, screenSize.y * 0.5f));
+    }
+
+    IEnumerator SpawnUltimateRifts(int count, float radius, bool targetPlayer,
+        Vector2 playerSnapshot, bool final)
+    {
+        Phase ownerPhase = phase;
+        int perFrame = Mathf.Max(1, ultimateRiftsPerFrame);
+        // Capture the finisher's time range and entire floor once. Random
+        // jitter inside each time slot produces a scattered but evenly paced
+        // one-second barrage without allocating a coroutine for every rift.
+        float finalStart = Time.time;
+        float finalDuration = Mathf.Max(0.1f, ultimateFinalSpawnDuration);
+        List<Tilemap> finalFloors = null;
+        Vector2 screenCenter = Vector2.zero;
+        Vector2 screenSize = Vector2.zero;
+        if (final)
+        {
+            GetUltimateScreenRect(out screenCenter, out screenSize);
+            finalFloors = FindUltimateFinalFloorTilemaps();
+        }
+        for (int i = 0; i < count; i++)
+        {
+            if (final)
+            {
+                float dueTime = finalStart +
+                    (i + Random.value) / count * finalDuration;
+                while (Time.time < dueTime)
+                    yield return null;
+            }
+            else if (i > 0 && i % perFrame == 0)
+                yield return null;
+            if (!ultimateActive || enemyBase == null ||
+                enemyBase.status == EnemyBase.Status.Die ||
+                enemyBase.IsCharmed || phase != ownerPhase)
+                yield break;
+
+            Vector2 position;
+            if (targetPlayer && i == 0)
+                position = playerSnapshot;
+            else if (final)
+            {
+                position = ChooseUltimateFinalPosition(finalFloors,
+                    screenCenter, screenSize);
+            }
+            else
+                position = ultimateCenter + Random.insideUnitCircle * radius;
+
+            SpawnThirdScaledObject(SlashLit, position, final ? 3f : 2f);
+            // A7-only reduction. Keep A4/A5 shockwave frequency untouched.
+            int ultimateShockwaveStride = Mathf.Max(1, thirdShockwaveEveryNthRift) *
+                Mathf.Max(1, ultimateShockwaveIntervalMultiplier);
+            if (i % ultimateShockwaveStride == 0 || (targetPlayer && i == 0))
+                StartCoroutine(ThirdRiftShockwave(position));
         }
     }
 
@@ -850,23 +1645,16 @@ public class SB_Whale_AI : Boss_MoveBase
 
                 NextPhase();
                 
-                for (int i = 0; i < 30; i++)
-                {
-                    for (int j = 0; j < 8; j++)
-                    {
-                        Vector2 randomPos = Vector2.zero;
-                        float range = 15f;
-                        randomPos = new Vector2(Random.Range(-range, range), Random.Range(-range, range));
-
-                        StartCoroutine(LiftSpawnLing((float)i / 7, (Vector2)transform.position + randomPos));
-                    }
-                }
+                StartCoroutine(SpawnRiftWaves((Vector2)transform.position,
+                    30, 8, 1f / 7f, 0f, 15f, 0f, ThirdRangeScale, phase));
             }
         }
         if (AttackPhase == 5)
         {
             if (attackcount() > 1)
             {
+                // A6 has finished: its appearance and second-phase BGM have played.
+                secondPhaseIntroCompleted = true;
                 ChoiseNextPhase(0);
                 enemyBase.moveType = EnemyBase.MoveType.Attack;
                 enemyBase.attackType = EnemyBase.AttackType.A1;
@@ -932,6 +1720,7 @@ public class SB_Whale_AI : Boss_MoveBase
         audioManager.PlaySE(audioclips[0]);
         Vector2 ARMdirection = TargetPosition - ArmAttackPoint.transform.position;
         GameObject CL_Bullet = Instantiate(Bullet, ArmAttackPoint.transform.position, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Bullet);
         CL_Bullet.transform.up = ARMdirection.normalized;
 
         Rigidbody2D CL_rb = CL_Bullet.GetComponent<Rigidbody2D>();
@@ -946,6 +1735,7 @@ public class SB_Whale_AI : Boss_MoveBase
         for (int i = 0; i < 2; i++)
         {
             GameObject CL_Slash = Instantiate(HalfBullet, ArmAttackPoint.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Slash);
             Vector2 NewLookDirection = Quaternion.Euler(0, 0, -6 + 12 * i) * ARMdirection.normalized;
             CL_Slash.transform.up = NewLookDirection.normalized;
 
@@ -988,50 +1778,98 @@ public class SB_Whale_AI : Boss_MoveBase
     void NeedleSpawn(Vector2 Ptransform)
     {
         GameObject CL_Needle = Instantiate(RockNeedle, Ptransform, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Needle);
 
         Destroy(CL_Needle, 5);
     }
     bool IsTagAtPosition(Vector2 position, string tag)
     {
-        Collider2D hit = Physics2D.OverlapPoint(position);
-
-        if (hit != null && hit.CompareTag(tag))
+        // OverlapPoint only sees the first collider, which can be the player
+        // instead of the floor. Check every returned overlap without allocating.
+        int count = Physics2D.OverlapPointNonAlloc(position, warpQueryHits);
+        if (count == warpQueryHits.Length) return false;
+        for (int i = 0; i < count; i++)
         {
-            return true;
+            Collider2D hit = warpQueryHits[i];
+            if (hit != null && hit.CompareTag(tag)) return true;
         }
-
         return false;
     }
-    private IEnumerator LiftSpawnLing(float delayTime, Vector2 Pos)
+    // A single coroutine schedules an entire wave of rifts, instead of one
+    // coroutine/WaitForSeconds allocation per individual projectile.
+    // Wave count, positions, total projectiles and timing match the former loops.
+    private IEnumerator SpawnRiftWaves(Vector2 origin, int waves, int perWave,
+        float interval, float initialDelay, float range, float exclusion, float scale,
+        Phase ownerPhase)
     {
-        //Debug.Log("コルーチンが開始されました。今から " + delayTime + " 秒待ちます...");
+        if (initialDelay > 0f)
+            yield return new WaitForSeconds(initialDelay);
+        else
+            yield return null;
 
-        // ここで指定した秒数だけ待機する
-        yield return new WaitForSeconds(delayTime);
-        SpawnObjectNow(SlashLit, Pos, 5);
+        float beginTime = Time.time;
+        for (int wave = 0; wave < waves; wave++)
+        {
+            if (wave > 0)
+            {
+                float dueTime = beginTime + wave * interval;
+                while (Time.time < dueTime)
+                    yield return null;
+            }
+
+            if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die ||
+                enemyBase.IsCharmed || phase != ownerPhase)
+                yield break;
+
+            for (int j = 0; j < perWave; j++)
+            {
+                Vector2 offset;
+                do
+                {
+                    offset = new Vector2(Random.Range(-range, range),
+                        Random.Range(-range, range));
+                }
+                while (Mathf.Abs(offset.x) <= exclusion &&
+                    Mathf.Abs(offset.y) <= exclusion && range > exclusion);
+
+                SpawnWhaleRift(origin + offset * scale, 5f, scale);
+            }
+        }
     }
-    IEnumerator Ougi(int number, Vector2 pos ,float delayTime)
+
+    // One timer drives all fifty fan rifts. The cast origin/direction are
+    // captured before the boss moves or warps, so delayed rifts don't drift.
+    private IEnumerator SpawnFanRifts(Vector2 origin, Vector2 target,
+        float scale, bool allowShockwaves, Phase ownerPhase)
     {
-        yield return new WaitForSeconds(delayTime);
-        //number++;
+        yield return null;
+        float beginTime = Time.time;
+        Vector2 direction = (target - origin).normalized;
 
-        float AttackDistance = number / 2.5f;
+        for (int i = 0; i < 50; i++)
+        {
+            if (i > 0)
+            {
+                float dueTime = beginTime + i / 40f;
+                while (Time.time < dueTime)
+                    yield return null;
+            }
+            if (enemyBase == null || enemyBase.status == EnemyBase.Status.Die ||
+                enemyBase.IsCharmed || phase != ownerPhase)
+                yield break;
 
-        // ランダムな角度を生成 (0 ~ 360度)
-        float randomAngle = Random.Range(-80f, 80f);
+            float angle = Random.Range(-80f, 80f);
+            Vector2 directionRotated = Quaternion.AngleAxis(angle, Vector3.forward) * direction;
+            Vector2 position = origin + directionRotated * (i / 2.5f * scale);
+            SpawnWhaleRift(position, 2f, scale);
 
-        // ランダムな角度をラジアンに変換
-        float radians = randomAngle * Mathf.Deg2Rad;
-
-       
-        Quaternion rotation = Quaternion.AngleAxis(randomAngle, Vector3.forward);
-        Vector2 newDirection = (pos - (Vector2)transform.position).normalized;
-
-       
-        Vector2 rotatedDirection = rotation * newDirection; // SavePos方向を基準に角度を回転
-        Vector2 newPosition = (Vector2)transform.position + rotatedDirection * AttackDistance; // 回転方向で新しい位置を計算
-
-        SpawnObjectNow(SlashLit,newPosition,2);
+            if (allowShockwaves && i % Mathf.Max(1, thirdShockwaveEveryNthRift) == 0)
+            {
+                // Warning and explosion share the same 1.5s timeline.
+                StartCoroutine(ThirdRiftShockwave(position));
+            }
+        }
     }
+
 }
 

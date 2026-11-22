@@ -19,6 +19,9 @@ public class BuffData : ScriptableObject
     public float ATK;
     public float MultiplyATK;
 
+    // Skill-specific damage buffs do not modify global damage (relics, DoTs, etc.).
+    public bool SkillAttackOnly = false;
+
     public float ATKDF;
     public float MultiplyATKDF;
 

@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NAME: 
   MAXHP: 850
-  enemyStrength: 2
+  enemyStrength: 3
   Regen: 0
   MAXMP: 0
   SPEED: 1
   ATK: 4
-  ATKDF: 20
+  ATKDF: 50
   GOLD: 54
   XP: 0
   StanHP: 15

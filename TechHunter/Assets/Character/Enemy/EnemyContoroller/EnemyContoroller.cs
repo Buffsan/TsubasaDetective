@@ -125,6 +125,34 @@ public class EnemyContoroller : EnemyBase
         ChooseTargetNow();
     }
 
+    public void EnableCharmedAllyTargeting()
+    {
+        if (IsCharmed || targetType == TargetType.EnemyOnly) return;
+        if (targetType == TargetType.PlayerOnly)
+        {
+            targetType = TargetType.PlayerAndEnemy;
+            targetPriority = TargetPriority.Nearest;
+            targetAllFactions = false;
+            targetFactions = Faction.Charmed;
+        }
+        else if (!targetAllFactions)
+            targetFactions |= Faction.Charmed;
+
+        excludedTargetFactions &= ~Faction.Charmed;
+        ChooseTargetNow();
+    }
+
+    public void BecomeCharmedAlly()
+    {
+        targetType = TargetType.EnemyOnly;
+        targetPriority = TargetPriority.Nearest;
+        targetAllFactions = true;
+        targetFactions = Faction.None;
+        excludedTargetFactions = Faction.Charmed;
+        ClearForcedTarget();
+        ChooseTargetNow();
+    }
+
     public TargetType TargetMode => targetType;
     public Transform CurrentTarget { get; private set; }
 
@@ -190,12 +218,15 @@ public class EnemyContoroller : EnemyBase
             return;
         }
 
-        if (moveType != MoveType.Attack)
+        // 攻撃中の再照準は控えるが、死亡・派閥変更した標的は即時に切り替える。
+        // 敵戦だけ無効な標的を狙い続ける差異を防ぐ。
+        // 標的不在時の探索は従来の間隔制御を維持する（毎FixedUpdate探索しない）。
+        bool invalidTarget = CurrentTarget != null && !IsValidTarget(CurrentTarget);
+        if (moveType != MoveType.Attack || invalidTarget)
         {
             targetSearchTimer += Time.fixedDeltaTime;
-            // ターゲット不在時は指定間隔で探索し、毎FixedUpdateの全敵走査を防ぐ。
-            if (targetSearchTimer >= Mathf.Max(0.05f, targetSearchInterval) ||
-                (CurrentTarget != null && !IsValidTarget(CurrentTarget)))
+            if (invalidTarget ||
+                targetSearchTimer >= Mathf.Max(0.05f, targetSearchInterval))
             {
                 ChooseTargetNow();
                 targetSearchTimer = 0f;
@@ -315,8 +346,28 @@ public class EnemyContoroller : EnemyBase
                 nearest = other.transform;
             }
         }
+        // 魅了済みの敵はAllEnemyから外れているため、敵側だけ追加検索する。
+        if (!IsCharmed)
+        {
+            foreach (EnemyBase other in manager.CharmedAllies)
+            {
+                if (other == null || other.status == Status.Die || other.HP <= 0f) continue;
+                Faction faction = other.Factions;
+                if ((faction & excludedTargetFactions) != Faction.None) continue;
+                if (!targetAllFactions && (faction & targetFactions) == Faction.None) continue;
+                float sqr = ((Vector2)(other.transform.position - transform.position)).sqrMagnitude;
+                if (sqr < minDistanceSqr)
+                {
+                    minDistanceSqr = sqr;
+                    nearest = other.transform;
+                }
+            }
+        }
         return nearest;
     }
+
+    // 個別AIでもControllerと同じ派閥・生存判定を使うための窓口。
+    public bool CanTarget(Transform candidate) => IsValidTarget(candidate);
 
     bool IsValidTarget(Transform candidate)
     {
@@ -404,6 +455,8 @@ public class EnemyContoroller : EnemyBase
         moveBase.enemyBase = this;
         CurrentTarget = Player != null ? Player.transform : null;
         if (targetType != TargetType.PlayerOnly) ChooseTargetNow();
+        if (SystemManager.Instance != null && SystemManager.Instance.CharmedAllies.Count > 0)
+            EnableCharmedAllyTargeting();
     }
     private void FixedUpdate()
     {
@@ -475,8 +528,6 @@ public class EnemyContoroller : EnemyBase
             moveBase.EnemyFriendlyExit();
         }
 
-        // 攻撃終了フレームでTargetDistanceにより即時再攻撃しないようにする。
-        bool wasAttacking = moveType == MoveType.Attack;
         switch (moveType)
         {
             case MoveType.Move:
@@ -486,12 +537,9 @@ public class EnemyContoroller : EnemyBase
                 AttackAction();
                 break;
         }
-        // PlayerOnlyは従来のPlayerDistance、それ以外は選択対象とのTargetDistanceで判定。
-        if (targetType != TargetType.PlayerOnly && wasAttacking &&
-            moveType != MoveType.Attack)
-            return;
-
-        if ((targetType == TargetType.PlayerOnly ? PlayerDistance : TargetDistance) < LookPlayerDistance)
+        // 個別AIが攻撃後にPlayerDistance=1000で再攻撃を抑制する処理を
+        // 敵VS敵でも同じように扱う。距離の更新はPlayerLook/RefreshTargetInfo側。
+        if (PlayerDistance < LookPlayerDistance)
             moveType = MoveType.Attack;
     }
     // EnemyOnlyで攻撃対象がいない間、FixedUpdateから継続的に呼ぶ。
@@ -525,6 +573,8 @@ public class EnemyContoroller : EnemyBase
             else if (CurrentTarget != null)
             {
                 UpdateTargetDistance();
+                PlayerDirection = TargetDirection;
+                PlayerDistance = TargetDistance;
                 isTargetLook(CurrentTarget.position);
                 rb.velocity = TargetDirection.normalized * SPEED;
             }

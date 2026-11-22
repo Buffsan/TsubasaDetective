@@ -19,7 +19,12 @@ public class VastorShop_AI : MonoBehaviour
     SystemManager systemManager => SystemManager.Instance;
     private void Start()
     {
-        kaiwaAnim = systemManager.shopWindowAnimator;
+        kaiwaAnim = systemManager != null ? systemManager.shopWindowAnimator : null;
+
+        // ShopMap now creates the real dialogue UI. Hide the obsolete mock
+        // shop window instead of repeatedly playing its test animations.
+        if (shopManager != null && shopManager.IsDialogueShopActive && kaiwaAnim != null)
+            kaiwaAnim.gameObject.SetActive(false);
     }
 
     Vector2 targetPos = Vector2.zero;
@@ -40,20 +45,24 @@ public class VastorShop_AI : MonoBehaviour
         if (Shop)
         {
             find = true;
-            animator.Play("å©ÇÈ");
+            animator.Play("Ë¶ã„Çã");
             Necks.SetActive(true);
             Head.SetActive(true);
-            kaiwaAnim.Play("ÉeÉXÉgìÆçÏèoåª");
+            if (shopManager != null && !shopManager.IsDialogueShopActive &&
+                kaiwaAnim != null && kaiwaAnim.gameObject.activeInHierarchy)
+                kaiwaAnim.Play("„ÉÜ„Çπ„ÉàÂãï‰ΩúÂá∫Áèæ");
             targetPos = (Vector2)playerController.transform.position + UpPos;
             Headrb.velocity = (targetPos - (Vector2)Head.transform.position) * 3;
             HeadChange();
         }
         else
         {
-            animator.Play("ë“ã@");
+            animator.Play("ÂæÖÊ©ü");
             float Distance = Vector2.Distance(NeckSpot.transform.position, Head.transform.position);
 
-            if(find)kaiwaAnim.Play("ÉeÉXÉgìÆçÏ");
+            if (find && shopManager != null && !shopManager.IsDialogueShopActive &&
+                kaiwaAnim != null && kaiwaAnim.gameObject.activeInHierarchy)
+                kaiwaAnim.Play("„ÉÜ„Çπ„ÉàÂãï‰Ωú");
             if (Distance < 1)
             {
                 Necks.SetActive(false);
@@ -66,10 +75,10 @@ public class VastorShop_AI : MonoBehaviour
     {
         int count = Neck.Count;
 
-        // énì_Å`èIì_Ç count+1 ï™äÑÇµÅAÇªÇÃä‘Ç…îzíu
+        // ÂßãÁÇπÔΩûÁµÇÁÇπ„Çí count+1 ÂàÜÂâ≤„Åó„ÄÅ„Åù„ÅÆÈñì„Å´ÈÖçÁΩÆ
         for (int i = 0; i < count; i++)
         {
-            float t = (float)(i + 1) / (count + 1); // ÅöÇ±Ç±Ç™èdóv
+            float t = (float)(i + 1) / (count + 1); // ‚òÖ„Åì„Åì„ÅåÈáçË¶Å
             Vector3 pos = Vector3.Lerp(NeckSpot.transform.position, Head.transform.position, t);
 
             Transform tr = Neck[i].transform;

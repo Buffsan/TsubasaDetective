@@ -566,6 +566,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
 
                 enemyBase.animator.Play("着地");
                 GameObject leftAttack = Instantiate(AttackObjects[0], transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(leftAttack);
                 if (echoReplay != null) echoReplay.RecordSpawn(AttackObjects[0], leftAttack, 0.1f);
                 Destroy(leftAttack, 0.1f);
                 Finish();
@@ -595,6 +596,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
                 enemyBase.animator.Play("攻撃", 0, 0);
 
                 GameObject CL_Laser = Instantiate(AttackObjects[1], transform.position, Quaternion.identity);
+                ConfigureSpawnedAttack(CL_Laser);
                 Destroy(CL_Laser, 5);
 
                 CL_Laser.transform.up = (TargetPosition - transform.position).normalized;
@@ -979,6 +981,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         if (direction.sqrMagnitude < 0.0001f) direction = Vector2.up;
 
         GameObject laser = Instantiate(AttackObjects[1], origin, Quaternion.identity);
+        ConfigureSpawnedAttack(laser);
         laser.transform.up = direction.normalized;
         laser.transform.Rotate(0f, 0f, 180f);
         float spread = reverseDirection ? phase3FinishSpread : phase3AimSpread;
@@ -1055,6 +1058,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         if (AttackObjects != null && AttackObjects[0] != null)
         {
             GameObject landingBall = Instantiate(AttackObjects[0], transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(landingBall);
             Destroy(landingBall, 0.1f);
         }
 
@@ -1157,6 +1161,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             , shotPos
             , Quaternion.identity
             );
+        ConfigureSpawnedAttack(CL_Arrow);
 
         Rigidbody2D rb = CL_Arrow.GetComponent<Rigidbody2D>();
         Vector2 direction = (Vector2)TargetPosition - shotPos;
@@ -1177,6 +1182,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             , shotPos
             , Quaternion.identity
             );
+        ConfigureSpawnedAttack(CL_Arrow);
 
         Mortar_Controller mortar = CL_Arrow.GetComponent<Mortar_Controller>();
         mortar.ChangePos(TargetPosition + new Vector3(Random.Range(-MoterRandomRange, MoterRandomRange), Random.Range(-MoterRandomRange, MoterRandomRange), 0));
@@ -1229,6 +1235,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
     void NeedleSpawn(Vector2 Ptransform)
     {
         GameObject CL_Needle = Instantiate(RockNeedle, Ptransform, Quaternion.identity);
+        ConfigureSpawnedAttack(CL_Needle);
         if (echoReplay != null) echoReplay.RecordSpawn(RockNeedle, CL_Needle, 5f);
 
         Destroy(CL_Needle, 5);
@@ -1351,6 +1358,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
             shotPos,
             Quaternion.identity
         );
+        ConfigureSpawnedAttack(arrow);
 
         Rigidbody2D rb = arrow.GetComponent<Rigidbody2D>();
 
@@ -1375,6 +1383,7 @@ public class BOSS_TheEternalMaiden : Boss_MoveBase
         for (int i = 0; i < value; i++)
         {
             GameObject CL_Star = Instantiate(Arrow, enemyBase.gameObject.transform.position, Quaternion.identity);
+            ConfigureSpawnedAttack(CL_Star);
             Rigidbody2D CL_rb = CL_Star.GetComponent<Rigidbody2D>();
             EnemyAttack CL_EnemyAttack = CL_Star.GetComponent<EnemyAttack>();
 

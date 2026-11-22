@@ -61,6 +61,9 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
     Transform lastObservedTarget, committedTarget;
     Vector2 lastTargetPosition;
     Vector2 direction = Vector2.right;
+    Vector2 attack1LockedDirection;
+    float attack1LockedFacingX;
+    bool attack1AimLocked;
     Vector2 stepDirection;
     int orbitSign;
     bool initialized, heavy, aimLocked;
@@ -226,6 +229,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
         lastTargetPosition = target.position;
         heavy = Random.value < heavyChance;
         aimLocked = false;
+        attack1AimLocked = false;
         phaseTimer = 0f;
         enemyBase.rb.velocity = Vector2.zero;
         enemyBase.moveType = EnemyBase.MoveType.Attack;
@@ -297,22 +301,32 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
 
             case Phase.Windup:
                 enemyBase.rb.velocity = Vector2.zero;
-                if (!aimLocked)
+                if (heavy)
                 {
-                    lastTargetPosition = committedTarget.position;
-                    direction = LastAimDirection();
-                    if (!heavy || phaseTimer >= Mathf.Min(aimFollowSeconds, heavyWindup))
-                        aimLocked = true;
+                    // 攻撃2だけ従来通り、待機前半の0.5秒で追尾してから固定。
+                    if (!aimLocked)
+                    {
+                        lastTargetPosition = committedTarget.position;
+                        direction = LastAimDirection();
+                        if (phaseTimer >= Mathf.Min(aimFollowSeconds, heavyWindup))
+                            aimLocked = true;
+                    }
+                    enemyBase.isTargetLook((Vector2)transform.position + direction);
+                    UpdateWarning();
                 }
-                enemyBase.isTargetLook((Vector2)transform.position + direction);
-                if (heavy) UpdateWarning();
+                else
+                {
+                    // 攻撃1は攻撃待機アニメの開始時に狙った方向を保持する。
+                    KeepAttack1AimLocked();
+                }
                 if (phaseTimer >= (heavy ? heavyWindup : quickWindup))
                     Slash();
                 break;
 
             case Phase.Swing:
                 enemyBase.rb.velocity = Vector2.zero;
-                enemyBase.isTargetLook((Vector2)transform.position + direction);
+                if (heavy) enemyBase.isTargetLook((Vector2)transform.position + direction);
+                else KeepAttack1AimLocked();
                 PlayAnim(3, "攻撃");
                 if (phaseTimer >= slashActiveSeconds)
                 {
@@ -324,6 +338,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
 
             case Phase.Recovery:
                 enemyBase.rb.velocity = Vector2.zero;
+                KeepAttack1AimLocked();
                 if (phaseTimer >= recoverySeconds) FinishAttack();
                 break;
 
@@ -341,6 +356,14 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
             ? (Vector2)committedTarget.position : (Vector2)transform.position + direction;
         direction = LastAimDirection();
         enemyBase.isTargetLook((Vector2)transform.position + direction);
+        if (!heavy)
+        {
+            // 攻撃待機に切り替える「この瞬間」の狙いと左右方向を確定。
+            attack1LockedDirection = direction;
+            attack1LockedFacingX = enemyBase.EnemyAnimBody != null
+                ? enemyBase.EnemyAnimBody.transform.localScale.x : 0f;
+            attack1AimLocked = true;
+        }
         PlayAnim(2, "攻撃待機", true);
         if (!heavy) return;
 
@@ -358,13 +381,36 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
         return v.sqrMagnitude > 0.0001f ? v.normalized : direction;
     }
 
+    void KeepAttack1AimLocked()
+    {
+        if (!attack1AimLocked) return;
+        // 標的の移動や他の向き更新によらず、攻撃1の狙いは待機開始時のまま。
+        direction = attack1LockedDirection;
+        if (enemyBase == null || enemyBase.EnemyAnimBody == null) return;
+        Transform visual = enemyBase.EnemyAnimBody.transform;
+        Vector3 scale = visual.localScale;
+        if (scale.x != attack1LockedFacingX)
+        {
+            scale.x = attack1LockedFacingX;
+            visual.localScale = scale;
+        }
+    }
+
+    // Animatorの更新で向きが上書きされる場合にも、攻撃1中は固定する。
+    void LateUpdate()
+    {
+        if (attack1AimLocked)
+            KeepAttack1AimLocked();
+    }
+
     void Slash()
     {
         aimLocked = true;
         phase = Phase.Swing;
         phaseTimer = 0f;
         enemyBase.rb.velocity = Vector2.zero;
-        enemyBase.isTargetLook((Vector2)transform.position + direction);
+        if (heavy) enemyBase.isTargetLook((Vector2)transform.position + direction);
+        else KeepAttack1AimLocked();
         ClearWarning();
         PlayAnim(3, "攻撃", true);
         if (enemyBase.AttackAudio != null && enemyBase.audioManager != null)
@@ -458,6 +504,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
         phaseTimer = 0f;
         heavy = false;
         aimLocked = false;
+        attack1AimLocked = false;
         cooldown = attackCooldown;
         decisionTimer = RandomSeconds(betweenAttacksWait);
         enemyBase.rb.velocity = Vector2.zero;
@@ -475,6 +522,7 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
         phase = Phase.Roam;
         phaseTimer = 0f;
         aimLocked = false;
+        attack1AimLocked = false;
         decisionTimer = RandomSeconds(betweenAttacksWait);
         cooldown = Mathf.Max(cooldown, 0.2f);
         if (enemyBase != null && enemyBase.moveType == EnemyBase.MoveType.Attack)
@@ -501,5 +549,10 @@ public sealed class LunarPurgeSquad_axe_AI : EnemyMoveBase
             anim.Play("Base Layer." + state, 0, 0f);
     }
 
-    void OnDisable() { ClearMelee(); ClearWarning(); }
+    void OnDisable()
+    {
+        attack1AimLocked = false;
+        ClearMelee();
+        ClearWarning();
+    }
 }

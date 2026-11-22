@@ -42,9 +42,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9ae6b0d026b843a7901aef07111fba01, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  EnemyName: "月の巡礼者ハルバード使い"
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnemyName: "\u6708\u306E\u5DE1\u793C\u8005\u30CF\u30EB\u30D0\u30FC\u30C9\u4F7F\u3044"
   enemyBase: {fileID: 0}
   A_Phase: 0
   attacktype: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
   waveHitboxSize: {x: 2.8, y: 1.8}
   waveInitialSpeed: 3
   waveAcceleration: 13
-  waveMaxSpeed: 19
+  waveMaxSpeed: 25
   enableStepAfterimages: 1
   afterimageOpacity: 0.42
   afterimageFadeTime: 0.4

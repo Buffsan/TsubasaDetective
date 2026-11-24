@@ -4,8 +4,8 @@
 - StageCannon.prefab をステージプレハブ中央に一基配置する。NPC・EnemySpawnData登録不要。
 - MountPoint を床上、土台のコライダーと重ならない位置へ設定する。半径1.5の乗り込み範囲は選択時のGizmoで確認可能。
 - Base/Turret にSpriteRendererを置くと仮画像の生成を省略する。砲身の基準方向はローカル+X。FirePoint を先端に調整する。
-- 仮コライダーは Stage レイヤーの Base に実行時追加する。独自コライダーを設置する場合は Generate Fallback Collider をオフにしてもよい。
-- GaugeAnchor には自動装填ゲージが生成される。マーカー・砲弾・砲口・爆発の素材は各Prefab欄に任意で設定できる。設定する砲弾/爆発素材は視覚専用（独自のダメージ判定を持たせない）。
+- BaseのStageレイヤーにBoxCollider2Dをプレハブ上で設定済み。仮コライダーの自動生成はOFF。
+- GaugeAnchor には編集時から装填ゲージが表示され、実行時に既存Rendererを更新する。マーカー・砲弾・砲口・爆発の素材は各Prefab欄に任意で設定できる。設定する砲弾/爆発素材は視覚専用（独自のダメージ判定を持たせない）。
 - Fire SE / Explosion SE は使用する素材を設定する。素材未設定時は仮の閃光、砲身反動、カメラ揺れで確認可能。
 
 ## 操作
@@ -23,3 +23,8 @@ Space 0.3秒長押し → 乗り込み・敵混乱・3秒無敵・視野拡張 �
 - 報酬画面遷移、ゲームオーバー、スポット移動、主砲の無効化時に操作制限が残らないことを確認する。
 - ボスの保護付き攻撃や形態移行中の混乱、既存の炎舞・攻撃遺物との相互作用を重点的に確認する。
 - Unity Editor上のコンパイル・Play Modeは別途確認すること。敵車両、列車走行、完成アート/SE、実ステージへの配置は本実装の対象外。
+
+## プレハブ修復・検証
+編集画面から砲台・砲身・装填ゲージが確認可能。CannonPrototypeSquare.png は仮表示専用の単一Sprite。
+Unityのコンパイル完了後、Tools > Stage Cannon > Validate Prefab で参照・Missing Script・Collider・SpriteRendererを確認できる。
+問題があれば Tools > Stage Cannon > Repair Prototype Prefab でUnity標準のPrefabUtilityを使用して修復可能（確認ダイアログあり）。既存の設定・名前付きオブジェクトは読み込める場合に維持する。

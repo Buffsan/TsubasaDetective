@@ -55,6 +55,8 @@ public sealed class StageCannonController : MonoBehaviour
     [SerializeField] LayerMask enemyHitLayers = ~0;
 
     [Header("Prototype visuals (replace with art as needed)")]
+    [SerializeField] Sprite prototypeSprite;
+    [SerializeField] Material prototypeMaterial;
     [SerializeField] bool generateFallbackVisuals = true;
     [SerializeField] bool generateFallbackCollider = true;
     [SerializeField] int cannonSortingOrder = 100;
@@ -158,7 +160,11 @@ public sealed class StageCannonController : MonoBehaviour
 
     public static void InterruptActive()
     {
-        if (active != null) active.Release();
+        if (active != null)
+        {
+            active.Release();
+            // active is cleared by Release; remaining shots are cleared on mode transition.
+        }
     }
 
     void OnEnable()
@@ -275,7 +281,7 @@ public sealed class StageCannonController : MonoBehaviour
                 BeginRestore();
             }
         }
-        else if (state == State.Escaping && !owner.IsCannonEscaping)
+        else if (state == State.Escaping && !owner.IsCannonEscaping && !zoomOwned)
         {
             state = State.Idle;
             owner = null;
@@ -351,7 +357,7 @@ public sealed class StageCannonController : MonoBehaviour
         if (owner.cameraM != null) owner.cameraM.Shake(shakeSeconds, shakeStrength);
         recoilStart = Time.time;
         recoilLocalDirection = turret.parent != null
-            ? turret.parent.InverseTransformVector(-aimDirection) : (Vector3)(-aimDirection);
+            ? turret.parent.InverseTransformVector(-(Vector3)aimDirection) : -(Vector3)aimDirection;
     }
 
     void FixedUpdate()
@@ -359,12 +365,16 @@ public sealed class StageCannonController : MonoBehaviour
         if (!CanOperate()) return;
         for (int i = shots.Count - 1; i >= 0; i--)
         {
+            if (i >= shots.Count) continue;
             Shot shot = shots[i];
             if (shot.player == null || shot.player.HP <= 0f || !StepShot(shot))
             {
                 if (shot.visual != null) Destroy(shot.visual);
-                shots.RemoveAt(i);
+                // An attack event can synchronously finish the battle or kill the
+                // player, and its handler may already have cleared the shot list.
+                if (i < shots.Count && ReferenceEquals(shots[i], shot)) shots.RemoveAt(i);
             }
+            if (i > shots.Count) break;
         }
     }
 
@@ -450,7 +460,7 @@ public sealed class StageCannonController : MonoBehaviour
     static void ApplyHit(charaDamage receiver, EnemyBase enemy, weapondata data,
         PlayerController player, GameObject eventTarget, Vector2 position)
     {
-        if (receiver == null || !IsHostile(enemy) || data == null || player == null ||
+        if (receiver == null || !IsHostile(enemy) || enemy.IsInvulnerable || data == null || player == null ||
             player.playerBuff == null) return;
         float attack = PlayerAttack.CalculateWeaponDamage(data, player, 0, false);
         bool critical = player.AddCritical + player.Critical > UnityEngine.Random.Range(0f, 100f);
@@ -523,7 +533,8 @@ public sealed class StageCannonController : MonoBehaviour
 
     void TickZoom()
     {
-        if (!zoomOwned || zoomCamera == null || zoomDuration <= 0f || zoomElapsed >= zoomDuration) return;
+        if (zoomOwned && zoomCamera == null) { zoomOwned = false; return; }
+        if (!zoomOwned || zoomDuration <= 0f || zoomElapsed >= zoomDuration) return;
         zoomElapsed = Mathf.Min(zoomDuration, zoomElapsed + Time.deltaTime);
         float t = zoomElapsed / zoomDuration;
         float eased = 1f - Mathf.Pow(1f - t, 3f);
@@ -560,6 +571,7 @@ public sealed class StageCannonController : MonoBehaviour
                 marker.transform.SetParent(transform, false);
                 SpriteRenderer sr = marker.AddComponent<SpriteRenderer>();
                 sr.sprite = RingSprite();
+                if (prototypeMaterial != null) sr.sharedMaterial = prototypeMaterial;
                 sr.color = new Color(1f, 0.35f, 0.15f, 0.95f);
                 sr.sortingOrder = feedbackSortingOrder + 1;
                 marker.transform.localScale = Vector3.one * 0.7f;
@@ -595,6 +607,7 @@ public sealed class StageCannonController : MonoBehaviour
 
     Sprite WhiteSprite()
     {
+        if (prototypeSprite != null) return prototypeSprite;
         if (whiteSprite == null)
         {
             Texture2D tex = Texture2D.whiteTexture;
@@ -647,6 +660,7 @@ public sealed class StageCannonController : MonoBehaviour
         go.transform.localScale = scale;
         SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
         sr.sprite = WhiteSprite();
+        if (prototypeMaterial != null) sr.sharedMaterial = prototypeMaterial;
         sr.color = color;
         sr.sortingOrder = order;
         return sr;
@@ -674,11 +688,21 @@ public sealed class StageCannonController : MonoBehaviour
 
     void BuildGauge()
     {
-        MakeRect("ReloadBackground", gaugeAnchor, Vector3.zero,
-            new Vector3(gaugeWidth + 0.1f, gaugeHeight + 0.1f, 1f),
-            new Color(0.06f, 0.07f, 0.08f, 0.9f), feedbackSortingOrder);
-        gaugeFillRenderer = MakeRect("ReloadFill", gaugeAnchor, Vector3.zero,
-            new Vector3(gaugeWidth, gaugeHeight, 1f), Color.green, feedbackSortingOrder + 1);
+        Transform background = gaugeAnchor.Find("ReloadBackground");
+        SpriteRenderer backgroundRenderer = background != null
+            ? background.GetComponent<SpriteRenderer>() : null;
+        if (backgroundRenderer == null)
+            backgroundRenderer = MakeRect("ReloadBackground", gaugeAnchor, Vector3.zero,
+                new Vector3(gaugeWidth + 0.1f, gaugeHeight + 0.1f, 1f),
+                new Color(0.06f, 0.07f, 0.08f, 0.9f), feedbackSortingOrder);
+        backgroundRenderer.transform.localScale =
+            new Vector3(gaugeWidth + 0.1f, gaugeHeight + 0.1f, 1f);
+
+        Transform fill = gaugeAnchor.Find("ReloadFill");
+        gaugeFillRenderer = fill != null ? fill.GetComponent<SpriteRenderer>() : null;
+        if (gaugeFillRenderer == null)
+            gaugeFillRenderer = MakeRect("ReloadFill", gaugeAnchor, Vector3.zero,
+                new Vector3(gaugeWidth, gaugeHeight, 1f), Color.green, feedbackSortingOrder + 1);
         gaugeFill = gaugeFillRenderer.transform;
     }
 
@@ -707,6 +731,7 @@ public sealed class StageCannonController : MonoBehaviour
         go.transform.localScale = Vector3.one * from;
         SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
         sr.sprite = DiskSprite();
+        if (prototypeMaterial != null) sr.sharedMaterial = prototypeMaterial;
         sr.color = color;
         sr.sortingOrder = feedbackSortingOrder;
         pulses.Add(new Pulse { visual = go, renderer = sr, from = Vector3.one * from,

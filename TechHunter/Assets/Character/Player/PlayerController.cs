@@ -157,12 +157,15 @@ public class PlayerController : PlayerStatus
     public bool IsCannonEscaping { get; private set; }
     public bool IsCannonInputBlocked => IsCannonMounted || IsCannonEscaping;
     float cannonDodgeMultiplier = 1f;
+    StageCannonController deferredSpaceCannon;
+    float deferredSpaceStart;
 
     public bool TryMountStageCannon(Vector2 position)
     {
         if (IsDialogueInputBlocked || IsCannonInputBlocked ||
             movetype != MoveType.Nomal || HP <= 0f || rb == null) return false;
         IsCannonMounted = true;
+        deferredSpaceCannon = null; // long press consumed, no dodge on release
         SaveSkillBase = null;
         Dash = false;
         mode = ModeType.M1;
@@ -221,6 +224,7 @@ public class PlayerController : PlayerStatus
         IsDialogueInputBlocked = blocked;
         if (blocked)
         {
+            deferredSpaceCannon = null;
             MoveInput = Vector2.zero;
             MoveInputSave = Vector2.zero;
             Dash = false;
@@ -427,21 +431,44 @@ public class PlayerController : PlayerStatus
 
     public void OnDodge(InputAction.CallbackContext context)
     {
-        if (IsDialogueInputBlocked || IsCannonInputBlocked) return;
-        if (context.phase == InputActionPhase.Performed &&
-            (movetype != MoveType.Dodge || FlameDanceActive) &&
-            movetype != MoveType.NoAction &&
-            movetype != MoveType.Wait)
+        // Space is also the stage cannon's hold-to-mount key. The Input System
+        // callback runs before MonoBehaviour.Update, so arbitrate HERE instead
+        // of trying to undo a dodge after the cannon has seen the key.
+        bool space = context.control != null &&
+            context.control.device is Keyboard && context.control.name == "space";
+
+        if (context.canceled && deferredSpaceCannon != null)
         {
-            // 炎舞中の再回避では、回避タイマーを最初から開始する。
-            DodgeCount = 0f;
-            FlameDanceDodgeSerial++;
-            movetype = MoveType.Dodge;
-            //playerDamage.SetInvincible(0.3f);
-            playerBuff.SpawnBuff(DogeBuff);
-            animator.SetBool("Dodge", true);
-            audioManager.PlaySE(DodgeClip);
+            StageCannonController cannon = deferredSpaceCannon;
+            deferredSpaceCannon = null;
+            if (space && !IsDialogueInputBlocked && !IsCannonInputBlocked &&
+                HP > 0f && cannon.CanReleaseAsDodge(Time.time - deferredSpaceStart))
+                StartNormalDodge();
+            return;
         }
+
+        if (!context.performed || IsDialogueInputBlocked || IsCannonInputBlocked) return;
+        if (space && StageCannonController.TryReserveSpace(this, out StageCannonController candidate))
+        {
+            deferredSpaceCannon = candidate;
+            deferredSpaceStart = Time.time;
+            return;
+        }
+
+        StartNormalDodge();
+    }
+
+    void StartNormalDodge()
+    {
+        if ((movetype == MoveType.Dodge && !FlameDanceActive) ||
+            movetype == MoveType.NoAction || movetype == MoveType.Wait) return;
+        // 炎舞中の再回避では、回避タイマーを最初から開始する。
+        DodgeCount = 0f;
+        FlameDanceDodgeSerial++;
+        movetype = MoveType.Dodge;
+        playerBuff.SpawnBuff(DogeBuff);
+        animator.SetBool("Dodge", true);
+        audioManager.PlaySE(DodgeClip);
     }
 
     // Start is called before the first frame update

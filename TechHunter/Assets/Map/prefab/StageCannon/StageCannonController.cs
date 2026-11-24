@@ -29,6 +29,11 @@ public sealed class StageCannonController : MonoBehaviour
     [SerializeField, Min(0.01f)] float escapeSpeedMultiplier = 2f;
     [SerializeField] InputActionReference optionalMountAction;
     [SerializeField] InputActionReference optionalFireAction;
+    [Header("Mount diagnostics (Play Mode)")]
+    [SerializeField] bool logMountDiagnostics = false;
+    [SerializeField] string mountStatus = "Not initialized";
+    [SerializeField] float mountHoldProgress;
+    [SerializeField] float playerInteractionDistance;
 
     [Header("Camera and feedback")]
     [SerializeField, Min(1f)] float zoomMultiplier = 1.5f;
@@ -67,6 +72,9 @@ public sealed class StageCannonController : MonoBehaviour
     enum State { Idle, Aiming, AwaitingEscape, Escaping }
     State state;
     static StageCannonController active;
+    static readonly List<StageCannonController> availableCannons = new List<StageCannonController>();
+    Collider2D[] baseColliders;
+    string lastLoggedMountStatus;
     PlayerController owner;
     float holdElapsed, reloadRemaining, nextMarkerRefresh;
     bool holdConsumed;
@@ -127,6 +135,7 @@ public sealed class StageCannonController : MonoBehaviour
             BoxCollider2D solid = cannonBase.gameObject.AddComponent<BoxCollider2D>();
             solid.size = new Vector2(2.3f, 1.8f);
         }
+        baseColliders = cannonBase.GetComponentsInChildren<Collider2D>(true);
         BuildGauge();
         UpdateGauge();
     }
@@ -158,6 +167,64 @@ public sealed class StageCannonController : MonoBehaviour
              manager.gameMode == SystemManager.GameMode.Goal);
     }
 
+    // Measure proximity to the solid base surface OR the mount point. The old
+    // mount-point-only test made the sides and rear of the large gun unusable.
+    float DistanceToInteraction(PlayerController player)
+    {
+        if (player == null || mountPoint == null) return float.PositiveInfinity;
+        Vector2 pos = player.transform.position;
+        float distance = Vector2.Distance(pos, mountPoint.position);
+        if (baseColliders != null)
+            foreach (Collider2D collider in baseColliders)
+                if (collider != null && collider.enabled && !collider.isTrigger && collider.gameObject.activeInHierarchy)
+                    distance = Mathf.Min(distance, Vector2.Distance(pos, collider.ClosestPoint(pos)));
+        return distance;
+    }
+
+    string MountBlockReason(PlayerController player, float distance)
+    {
+        if (!CanOperate()) return "Stage mode: " + (SystemManager.Instance != null ? SystemManager.Instance.gameMode.ToString() : "No SystemManager");
+        if (state != State.Idle || active != null) return "Cannon occupied";
+        if (!IsLoaded) return "Reloading";
+        if (player == null) return "No PlayerController";
+        if (player.HP <= 0f) return "Player dead";
+        if (player.IsDialogueInputBlocked) return "Dialogue input blocked";
+        if (player.IsCannonInputBlocked) return "Player already operating cannon";
+        if (distance > interactionDistance) return "Out of interaction range";
+        if (player.movetype != PlayerController.MoveType.Nomal) return "Player move type: " + player.movetype;
+        return null;
+    }
+
+    public static bool TryReserveSpace(PlayerController player, out StageCannonController candidate)
+    {
+        candidate = null;
+        float nearest = float.PositiveInfinity;
+        foreach (StageCannonController cannon in availableCannons)
+        {
+            if (cannon == null || !cannon.isActiveAndEnabled) continue;
+            float distance = cannon.DistanceToInteraction(player);
+            if (distance >= nearest || cannon.MountBlockReason(player, distance) != null) continue;
+            nearest = distance;
+            candidate = cannon;
+        }
+        return candidate != null;
+    }
+
+    public bool CanReleaseAsDodge(float heldSeconds)
+    {
+        return isActiveAndEnabled && CanOperate() && state == State.Idle &&
+            heldSeconds < holdSeconds;
+    }
+
+    void SetMountStatus(string status, bool held)
+    {
+        mountStatus = status;
+        mountHoldProgress = holdSeconds <= 0f ? 0f : Mathf.Clamp01(holdElapsed / holdSeconds);
+        if (held && logMountDiagnostics && status != lastLoggedMountStatus)
+            Debug.Log("[StageCannon] " + status, this);
+        lastLoggedMountStatus = held ? status : null;
+    }
+
     public static void InterruptActive()
     {
         if (active != null)
@@ -169,12 +236,14 @@ public sealed class StageCannonController : MonoBehaviour
 
     void OnEnable()
     {
+        if (!availableCannons.Contains(this)) availableCannons.Add(this);
         GlobalEvents.OnPlayerDie += OnPlayerDie;
         GlobalEvents.OnNextSpot += OnNextSpot;
     }
 
     void OnDisable()
     {
+        availableCannons.Remove(this);
         GlobalEvents.OnPlayerDie -= OnPlayerDie;
         GlobalEvents.OnNextSpot -= OnNextSpot;
         Release();
@@ -207,7 +276,10 @@ public sealed class StageCannonController : MonoBehaviour
 
     bool MountHeld()
     {
+        // The project enables both input backends. The legacy key provides a
+        // fallback when a keyboard is not exposed by the new Input System.
         return (Keyboard.current != null && Keyboard.current.spaceKey.isPressed) ||
+            Input.GetKey(KeyCode.Space) ||
             (optionalMountAction != null && optionalMountAction.action != null &&
              optionalMountAction.action.enabled && optionalMountAction.action.IsPressed());
     }
@@ -235,24 +307,34 @@ public sealed class StageCannonController : MonoBehaviour
             if (state != State.Idle || zoomOwned) Release();
             holdElapsed = 0f;
             ClearShots();
+            SetMountStatus(MountBlockReason(PlayerController.Instance, float.PositiveInfinity), held);
             return;
         }
 
         if (state == State.Idle)
         {
             PlayerController player = PlayerController.Instance;
-            if (!held || holdConsumed || !IsLoaded || active != null ||
-                player == null || player.HP <= 0f || player.IsDialogueInputBlocked ||
-                player.IsCannonInputBlocked || player.movetype != PlayerController.MoveType.Nomal ||
-                Vector2.Distance(player.transform.position, mountPoint.position) > interactionDistance)
+            playerInteractionDistance = DistanceToInteraction(player);
+            string reason = MountBlockReason(player, playerInteractionDistance);
+            if (reason != null || !held || holdConsumed)
             {
                 holdElapsed = 0f;
+                SetMountStatus(reason ?? (holdConsumed ? "Release Space" : "Ready - hold Space"), held);
+                return;
+            }
+            // With multiple guns only the nearest eligible one receives the hold.
+            if (!TryReserveSpace(player, out StageCannonController candidate) || candidate != this)
+            {
+                holdElapsed = 0f;
+                SetMountStatus("Another cannon is nearer", held);
                 return;
             }
             holdElapsed += Time.deltaTime;
+            SetMountStatus("Holding Space", held);
             if (holdElapsed >= holdSeconds) TryMount(player);
             return; // A click on the mounting frame cannot also fire the cannon.
         }
+        SetMountStatus(state.ToString(), held);
 
         if (owner == null || owner.HP <= 0f)
         {
@@ -291,10 +373,16 @@ public sealed class StageCannonController : MonoBehaviour
 
     void TryMount(PlayerController player)
     {
-        if (!player.TryMountStageCannon(mountPoint.position)) return;
+        if (!player.TryMountStageCannon(mountPoint.position))
+        {
+            holdElapsed = 0f;
+            SetMountStatus("Player rejected mount", true);
+            return;
+        }
         active = this;
         owner = player;
         state = State.Aiming;
+        SetMountStatus("Mounted - aim and fire", true);
         holdConsumed = true;
         holdElapsed = 0f;
         if (owner.playerBuff != null)

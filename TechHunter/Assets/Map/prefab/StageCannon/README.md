@@ -28,3 +28,7 @@ Space 0.3秒長押し → 乗り込み・敵混乱・3秒無敵・視野拡張 �
 編集画面から砲台・砲身・装填ゲージが確認可能。CannonPrototypeSquare.png は仮表示専用の単一Sprite。
 Unityのコンパイル完了後、Tools > Stage Cannon > Validate Prefab で参照・Missing Script・Collider・SpriteRendererを確認できる。
 問題があれば Tools > Stage Cannon > Repair Prototype Prefab でUnity標準のPrefabUtilityを使用して修復可能（確認ダイアログあり）。既存の設定・名前付きオブジェクトは読み込める場合に維持する。
+
+## Space入力の競合対策
+既存のDodgeもSpaceに割り当てられているため、装填済みの主砲の起動範囲内では回避の発動を保留する。0.3秒未満で離せば通常回避、長押しで乗り込み。範囲外や装填中は従来通り押した瞬間に回避。Gamepadの通常回避は変更しない。起動範囲はMountPointまたは土台Colliderの表面から1.5。複数設置した場合は最寄りを優先する。
+Play Mode中、StageCannonControllerのMount Status、Mount Hold Progress、Player Interaction DistanceをInspectorで確認できる。Log Mount DiagnosticsをONにするとSpace押下中の状態変化のみConsoleへ出力する。戦闘中(Nomal)または報酬受取後(Goal)以外の起動制限は維持。

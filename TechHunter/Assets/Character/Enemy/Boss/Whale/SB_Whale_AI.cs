@@ -115,6 +115,14 @@ public class SB_Whale_AI : Boss_MoveBase
 
     void Update()
     {
+        // Cannon confusion explicitly overrides ultimate stagger immunity.
+        if (ultimateActive && enemyBase != null && enemyBase.CannonForcedConfusion &&
+            enemyBase.status == EnemyBase.Status.ConfusionResistance)
+        {
+            EndUltimate(false);
+            StopThirdFourwayWarpAnimation();
+            M_Con();
+        }
         if (ultimateActive && (enemyBase == null || enemyBase.IsCharmed ||
             enemyBase.status == EnemyBase.Status.Die))
             EndUltimate(false);

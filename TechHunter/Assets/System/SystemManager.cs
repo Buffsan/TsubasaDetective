@@ -127,6 +127,7 @@ public class SystemManager : MonoBehaviour
     }
     public void OnPlayerDie(float damage)
     {
+        StageCannonController.InterruptActive();
         if (!isGameOverMove) return;
         SceneManager.LoadScene("GameOverScene");
     }
@@ -165,6 +166,7 @@ public class SystemManager : MonoBehaviour
                 {
                     WaitEnemyDieCount = 0;
                     //Debug.Log("全員死んだ！");
+                    StageCannonController.InterruptActive();
                     gameMode = GameMode.Result;
                     mode = ModeType.M1;
                 }
@@ -425,8 +427,9 @@ public class SystemManager : MonoBehaviour
         }
 
     }
-    public void isGameStart() 
+    public void isGameStart()
     {
+        StageCannonController.InterruptActive();
         ClearCharmedAllies();
         skillController.ReRollCount = 0;
         controller.animator.SetBool("Dodge", false);

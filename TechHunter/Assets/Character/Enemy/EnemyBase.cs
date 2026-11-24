@@ -16,6 +16,7 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] bool countsForStageClear = true;
     public bool CountsForStageClear => countsForStageClear;
     public bool IsCharmed { get; private set; }
+    public bool CannonForcedConfusion { get; set; }
     // 魅了値はcharaDamage.buffsに集約する。古いPrefabでCharaDamage参照が
     // 未設定でも、最初に魅了を受けた判定から実行時に受け口を確定できる。
     [System.NonSerialized] charaDamage charmStatusReceiver;
@@ -63,6 +64,13 @@ public class EnemyBase : MonoBehaviour
     {
         if (IsCharmed || status == Status.Die || HP <= 0f) return;
         IsCharmed = true;
+        if (CannonForcedConfusion && status == Status.ConfusionResistance)
+        {
+            status = Status.Nomal;
+            StanCount = 0f;
+            if (animator != null) animator.SetBool("Damage", false);
+        }
+        CannonForcedConfusion = false;
         factions = Faction.Charmed;
 
         // 魅了成立を撃破報酬の獲得タイミングとして扱う。

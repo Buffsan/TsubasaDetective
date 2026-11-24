@@ -397,7 +397,7 @@ public class Boss_Controller : EnemyBase
     {
         // Forced crowd-control from effects outside charaDamage also must
         // not break a boss's protected ultimate attack.
-        if (IsUnstaggerable && (status == Status.Stan ||
+        if (IsUnstaggerable && !CannonForcedConfusion && (status == Status.Stan ||
             status == Status.StanNext || status == Status.ConfusionResistance))
         {
             status = Status.Nomal;
@@ -501,6 +501,7 @@ public class Boss_Controller : EnemyBase
         else
         {
             moveBase.M_Con();
+            CannonForcedConfusion = false;
             StanCount = 0;
             status = Status.Nomal;
             animator.SetBool("Damage", false);

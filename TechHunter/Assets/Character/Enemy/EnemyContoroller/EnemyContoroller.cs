@@ -484,7 +484,7 @@ public class EnemyContoroller : EnemyBase
         }
         else
         {
-            
+            CannonForcedConfusion = false;
             StanCount = 0;
             status = Status.Nomal;
             animator.SetBool("Damage", false);

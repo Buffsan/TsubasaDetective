@@ -153,6 +153,64 @@ public class PlayerController : PlayerStatus
 
 
     public bool IsDialogueInputBlocked { get; private set; }
+    public bool IsCannonMounted { get; private set; }
+    public bool IsCannonEscaping { get; private set; }
+    public bool IsCannonInputBlocked => IsCannonMounted || IsCannonEscaping;
+    float cannonDodgeMultiplier = 1f;
+
+    public bool TryMountStageCannon(Vector2 position)
+    {
+        if (IsDialogueInputBlocked || IsCannonInputBlocked ||
+            movetype != MoveType.Nomal || HP <= 0f || rb == null) return false;
+        IsCannonMounted = true;
+        SaveSkillBase = null;
+        Dash = false;
+        mode = ModeType.M1;
+        movetype = MoveType.Wait;
+        MoveInputSave = Vector2.zero;
+        rb.velocity = Vector2.zero;
+        rb.position = position;
+        animator.SetInteger("Anim", 0);
+        animator.SetInteger("Attack", 0);
+        animator.SetBool("Dodge", false);
+        return true;
+    }
+
+    public bool BeginStageCannonEscape(Vector2 direction, float speedMultiplier)
+    {
+        if (!IsCannonMounted || direction.sqrMagnitude < 0.001f || HP <= 0f)
+            return false;
+        IsCannonMounted = false;
+        IsCannonEscaping = true;
+        cannonDodgeMultiplier = Mathf.Max(0.01f, speedMultiplier);
+        MoveInputSave = direction.normalized;
+        DodgeCount = 0f;
+        FlameDanceDodgeSerial++;
+        Dash = false;
+        movetype = MoveType.Dodge;
+        if (DogeBuff != null && playerBuff != null) playerBuff.SpawnBuff(DogeBuff);
+        animator.SetBool("Dodge", true);
+        if (DodgeClip != null && audioManager != null) audioManager.PlaySE(DodgeClip);
+        return true;
+    }
+
+    public void AbortStageCannonControl()
+    {
+        if (!IsCannonInputBlocked) return;
+        bool ownsMoveState = (IsCannonMounted && movetype == MoveType.Wait) ||
+                             (IsCannonEscaping && movetype == MoveType.Dodge);
+        IsCannonMounted = false;
+        IsCannonEscaping = false;
+        cannonDodgeMultiplier = 1f;
+        DodgeCount = 0f;
+        if (rb != null) rb.velocity = Vector2.zero;
+        if (animator != null) animator.SetBool("Dodge", false);
+        if (ownsMoveState) movetype = MoveType.Nomal;
+        SaveSkillBase = null;
+        MoveInputSave = MoveInput;
+        Dash = false;
+    }
+
     // Avoid handling a mouse click twice through PlayerInput and Update.
     int lastDecideInputFrame = -1;
 
@@ -171,7 +229,7 @@ public class PlayerController : PlayerStatus
 
     public void OnDecide(InputAction.CallbackContext context)
     {
-        if (!context.performed) return;
+        if (!context.performed || IsCannonInputBlocked) return;
         lastDecideInputFrame = Time.frameCount;
 
         DialogueUIController dialogue = DialogueUIController.Instance;
@@ -213,7 +271,7 @@ public class PlayerController : PlayerStatus
     }
     void useSkill(int skillNumber)
     {
-        if (IsDialogueInputBlocked) return;
+        if (IsDialogueInputBlocked || IsCannonInputBlocked) return;
 
         if (ALL_System.systemManager.gameMode == SystemManager.GameMode.Movie) return;//ムービー中は手動でスキルを使えない
         // 3フレーム以内に再度呼ばれたら無視
@@ -261,7 +319,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnNomalAttack(InputAction.CallbackContext context)
     {
-        if (IsDialogueInputBlocked) return;
+        if (IsDialogueInputBlocked || IsCannonInputBlocked) return;
         // Decide and NormalAttack share the mouse left button. Avoid attacking
         // an NPC before OnDecide gets a chance to start the conversation.
         if (context.control != null && context.control.device is Mouse &&
@@ -284,7 +342,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill1(InputAction.CallbackContext context)
     {
-        if (IsDialogueInputBlocked) return;
+        if (IsDialogueInputBlocked || IsCannonInputBlocked) return;
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             //Debug.Log("スキル1");
@@ -296,7 +354,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill2(InputAction.CallbackContext context)
     {
-        if (IsDialogueInputBlocked) return;
+        if (IsDialogueInputBlocked || IsCannonInputBlocked) return;
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             //Debug.Log("スキル2");
@@ -308,7 +366,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill3(InputAction.CallbackContext context)
     {
-        if (IsDialogueInputBlocked) return;
+        if (IsDialogueInputBlocked || IsCannonInputBlocked) return;
         //Debug.Log("スキル3");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -320,7 +378,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill4(InputAction.CallbackContext context)
     {
-        if (IsDialogueInputBlocked) return;//Debug.Log("スキル４");
+        if (IsDialogueInputBlocked || IsCannonInputBlocked) return;//Debug.Log("スキル４");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
             if (skillINFO[3].SkillCardManager.mode == SkillCardManager.Mode.Standby)
@@ -332,7 +390,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill5(InputAction.CallbackContext context)
     {
-        if (IsDialogueInputBlocked) return;
+        if (IsDialogueInputBlocked || IsCannonInputBlocked) return;
         //Debug.Log("スキル４");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -345,7 +403,7 @@ public class PlayerController : PlayerStatus
     }
     public void OnSkill6(InputAction.CallbackContext context)
     {
-        if (IsDialogueInputBlocked) return;
+        if (IsDialogueInputBlocked || IsCannonInputBlocked) return;
         //Debug.Log("スキル6");
         if (context.phase == InputActionPhase.Performed && movetype != MoveType.Dodge && movetype != MoveType.NoAction && movetype != MoveType.Wait)
         {
@@ -369,7 +427,7 @@ public class PlayerController : PlayerStatus
 
     public void OnDodge(InputAction.CallbackContext context)
     {
-        if (IsDialogueInputBlocked) return;
+        if (IsDialogueInputBlocked || IsCannonInputBlocked) return;
         if (context.phase == InputActionPhase.Performed &&
             (movetype != MoveType.Dodge || FlameDanceActive) &&
             movetype != MoveType.NoAction &&
@@ -444,6 +502,7 @@ public class PlayerController : PlayerStatus
     void Update()
     {
         isCursorDirection();
+        if (IsCannonInputBlocked) return;
 
         // Both Decide and NormalAttack use the left mouse button. PlayerInput's
         // callback normally handles Decide, but this polling fallback guarantees
@@ -483,6 +542,16 @@ public class PlayerController : PlayerStatus
             lastUiHpTenth = hpTenth;
             lastUiMaxHpTenth = maxHpTenth;
             HP_Text.text = HP.ToString("F1") + "/" + MaxHP.ToString("F1");
+        }
+        if (IsCannonMounted)
+        {
+            rb.velocity = Vector2.zero;
+            return;
+        }
+        if (IsCannonEscaping && movetype != MoveType.Dodge)
+        {
+            IsCannonEscaping = false;
+            cannonDodgeMultiplier = 1f;
         }
         switch (movetype)
         {
@@ -556,15 +625,17 @@ public class PlayerController : PlayerStatus
         DodgeCount += Time.deltaTime;
         if (DodgeCount < 0.15)
         {
-            rb.velocity = MoveInputSave.normalized * (FlameDanceActive ? 14f : 10f);
+            rb.velocity = MoveInputSave.normalized * (FlameDanceActive ? 14f : 10f) * cannonDodgeMultiplier;
         }
         else if (DodgeCount < (FlameDanceActive ? 0.25f : 0.35f))
         {
-            rb.velocity = MoveInputSave.normalized * (FlameDanceActive ? 1.68f : 1.2f);
+            rb.velocity = MoveInputSave.normalized * (FlameDanceActive ? 1.68f : 1.2f) * cannonDodgeMultiplier;
         }
         else
         {
             DodgeCount = 0;
+            IsCannonEscaping = false;
+            cannonDodgeMultiplier = 1f;
             rb.velocity = Vector2.zero;
             movetype = MoveType.Nomal;
             animator.SetBool("Dodge", false);

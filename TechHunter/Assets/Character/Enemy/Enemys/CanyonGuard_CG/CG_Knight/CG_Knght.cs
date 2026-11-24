@@ -131,13 +131,13 @@ public class CG_Knght : EnemyBase
     void isConfusion() 
     {
         animator.SetBool("Damage", true);
-        if (ConfusionknockBackTimer+3 > StanCount)
+        if (ConfusionknockBackTimer + 3f + (CannonForcedConfusion && playerController != null ? playerController.ConfusionTime + ConfusionAddTime : 0f) > StanCount)
         {
             StanCount += Time.deltaTime;
         }
         else
         {
-
+            CannonForcedConfusion = false;
             StanCount = 0;
             status = Status.Nomal;
             animator.SetBool("Damage", false);

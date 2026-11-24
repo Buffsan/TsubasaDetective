@@ -202,9 +202,9 @@ public class charaDamage : MonoBehaviour, IDamageable
 
     // Only player-owned hits provide this modifier; enemy-vs-enemy damage is unchanged.
     public void DamageFromPlayer(float attack, float stagger, float confusion,
-        bool critical, float confusionDamagePercent)
+        bool critical, float confusionDamagePercent, bool excludeAllies = false)
     {
-        DamageWithModifier(attack, stagger, confusion, critical, confusionDamagePercent, null);
+        DamageWithModifier(attack, stagger, confusion, critical, confusionDamagePercent, null, excludeAllies);
     }
 
     // 遺物の魅了SOを使い、通常ダメージを状態異常の蓄積へ変換。
@@ -221,19 +221,20 @@ public class charaDamage : MonoBehaviour, IDamageable
     }
 
     void DamageWithModifier(float attack, float stagger, float confusion,
-        bool critical, float confusionDamagePercent, StatusEffectAttack charmEffect)
+        bool critical, float confusionDamagePercent, StatusEffectAttack charmEffect, bool excludeAllies = false)
     {
         uint token = ++damageTraversalSerial;
         if (token == 0) token = ++damageTraversalSerial;
         ForwardDamage(attack, stagger, confusion, critical, token,
-            confusionDamagePercent, charmEffect);
+            confusionDamagePercent, charmEffect, excludeAllies);
     }
 
     void ForwardDamage(float attack, float stagger, float confusion, bool critical,
-        uint token, float confusionDamagePercent, StatusEffectAttack charmEffect)
+        uint token, float confusionDamagePercent, StatusEffectAttack charmEffect, bool excludeAllies)
     {
         if (enemyBase == null || isDead || enemyBase.status == EnemyBase.Status.Die ||
-            enemyBase.IsInvulnerable) return;
+            enemyBase.IsInvulnerable || (excludeAllies &&
+            (enemyBase.IsCharmed || (enemyBase.Factions & Faction.Charmed) != 0))) return;
         if (lastDamageTraversal == token)
         {
             if (!reportedDamageCycle)
@@ -254,13 +255,13 @@ public class charaDamage : MonoBehaviour, IDamageable
             case 1:
                 if (passDamageAreas.Count > 0 && passDamageAreas[0] != null)
                     passDamageAreas[0].ForwardDamage(attack, stagger, confusion, critical,
-                        token, confusionDamagePercent, charmEffect);
+                        token, confusionDamagePercent, charmEffect, excludeAllies);
                 break;
             case 2:
                 foreach (charaDamage receiver in passDamageAreas)
                     if (receiver != null)
                         receiver.ForwardDamage(attack, stagger, confusion, critical,
-                            token, confusionDamagePercent, charmEffect);
+                            token, confusionDamagePercent, charmEffect, excludeAllies);
                 break;
         }
     }
@@ -331,13 +332,7 @@ public class charaDamage : MonoBehaviour, IDamageable
             1 - (ConfusionHP / enemyBase.ConfusionHP) > enemyBase.HP / enemyBase.MAXHP && enemyBase.status != EnemyBase.Status.ConfusionResistance)
         {//混乱
 
-            audioManager.PlaySE(enemyBase.ConfusionAudio);
-            enemyBase.status = EnemyBase.Status.ConfusionResistance;
-            StanCount = 0;
-            SavePos = enemyBase.gameObject.transform.position;
-
-            GameObject CL_ConfusionText = Instantiate(enemyBase.ConfusionImageText, enemyBase.transform.position, Quaternion.identity);
-            Destroy(CL_ConfusionText, 2);
+            BeginConfusion(enemyBase, false);
 
         }
         else if (!enemyBase.IsUnstaggerable &&
@@ -355,6 +350,43 @@ public class charaDamage : MonoBehaviour, IDamageable
         {
             Death();
         }
+    }
+
+    // Use the regular confusion state and duration, including all hit receivers.
+    static void BeginConfusion(EnemyBase target, bool forced)
+    {
+        if (target == null || target.HP <= 0f || target.status == EnemyBase.Status.Die)
+            return;
+        if (forced && (target.IsCharmed || (target.Factions & Faction.Charmed) != 0))
+            return;
+        target.CannonForcedConfusion = forced;
+        target.status = EnemyBase.Status.ConfusionResistance;
+        target.StanCount = 0f;
+        Vector2 position = target.transform.position;
+        foreach (charaDamage receiver in target.GetComponentsInChildren<charaDamage>(true))
+        {
+            if (receiver.enemyBase != target &&
+                (receiver.enemyBase != null || receiver.GetComponentInParent<EnemyBase>() != target))
+                continue;
+            receiver.StanCount = 0f;
+            receiver.SavePos = position;
+        }
+        charaDamage primary = target.CharmStatusReceiver;
+        if (primary != null && primary.enemyBase == target)
+        {
+            primary.StanCount = 0f;
+            primary.SavePos = position;
+        }
+        if (target.rb != null) target.rb.velocity = Vector2.zero;
+        if (target.ConfusionAudio != null && AudioManager.instance != null)
+            AudioManager.instance.PlaySE(target.ConfusionAudio);
+        if (target.ConfusionImageText != null)
+            Destroy(Instantiate(target.ConfusionImageText, target.transform.position, Quaternion.identity), 2f);
+    }
+
+    public static void ForceStageCannonConfusion(EnemyBase target)
+    {
+        BeginConfusion(target, true);
     }
 
     // Apply exactly this many HP damage points, without defense or status buildup.

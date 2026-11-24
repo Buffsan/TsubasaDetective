@@ -49,6 +49,30 @@ public class PlayerBuffController : MonoBehaviour
     {
         buffs.Add(new ActiveBuff(buffData));
     }
+
+    // Owned by the player so the remaining buff survives dismount.
+    BuffData stageCannonInvincibility;
+
+    public void GrantStageCannonInvincibility(float duration)
+    {
+        if (duration <= 0f || playerController == null ||
+            playerController.playerDamage == null) return;
+        if (stageCannonInvincibility == null)
+        {
+            stageCannonInvincibility = ScriptableObject.CreateInstance<BuffData>();
+            stageCannonInvincibility.name = "StageCannonInvincibility";
+            stageCannonInvincibility.BuffNAME = "Stage Cannon";
+            stageCannonInvincibility.Invincible = true;
+        }
+        stageCannonInvincibility.BuffTime = duration;
+        SpawnOrRefreshBuff(stageCannonInvincibility);
+        playerController.playerDamage.mode = PlayerDamage.Mode.Invincible;
+    }
+
+    void OnDestroy()
+    {
+        if (stageCannonInvincibility != null) Destroy(stageCannonInvincibility);
+    }
     public void SpawnOrRefreshBuff(BuffData buffData)
     {
         for (int i = 0; i < buffs.Count; i++)

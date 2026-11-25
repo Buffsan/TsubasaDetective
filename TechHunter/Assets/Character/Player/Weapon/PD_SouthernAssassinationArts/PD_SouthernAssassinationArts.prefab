@@ -79,6 +79,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BatteryUsed: 0
+  AttackType: 1
   animator: {fileID: 5183318402944848992}
   Bullet: {fileID: 6777688773717613812, guid: 2439c078d176184468d8138435158d61, type: 3}
   Bullet2: {fileID: 0}
@@ -87,6 +88,9 @@ MonoBehaviour:
   Speed0: 20
   Speed1: 22
   DestroyBullet: 3
+  impactElectricShock: {fileID: 0}
+  impactFieldRadius: 0.65
+  impactKnockbackImpulse: 3
 --- !u!95 &5183318402944848992
 Animator:
   serializedVersion: 5

@@ -9,6 +9,7 @@ public class TT_LightningDriveStaff : MonoBehaviour
     int Phase = 0;
 
     [SerializeField]bool BatteryUsed = true;
+    [SerializeField] int AttackType = 0;
 
     [SerializeField] Animator animator;
     [SerializeField] GameObject Bullet;
@@ -71,7 +72,7 @@ public class TT_LightningDriveStaff : MonoBehaviour
                     }
                 }
 
-                if (bio_Battery)
+                if (bio_Battery && AttackType == 0)
                 {
                     GameObject CL_Bullet = Instantiate(Bullet2, transform.position, Quaternion.identity);
                     var impact = CL_Bullet.AddComponent<TT_LightningImpact>();
@@ -84,8 +85,11 @@ public class TT_LightningDriveStaff : MonoBehaviour
                 else 
                 { 
                     GameObject CL_Bullet = Instantiate(Bullet,transform.position,Quaternion.identity);
-                    var impact = CL_Bullet.AddComponent<TT_LightningImpact>();
-                    impact.Configure(impactElectricShock, impactFieldRadius, impactKnockbackImpulse);
+                    if (AttackType == 0)
+                    {
+                        var impact = CL_Bullet.AddComponent<TT_LightningImpact>();
+                        impact.Configure(impactElectricShock, impactFieldRadius, impactKnockbackImpulse);
+                    }
                     Rigidbody2D rb = CL_Bullet.GetComponent<Rigidbody2D>();
 
                     CL_Bullet.transform.up = controller.CursorDirection;

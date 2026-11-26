@@ -18,6 +18,8 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     [SerializeField, Min(0.1f)] float pelletRange = 8f;
     [SerializeField, Min(0)] float pelletPowerPercent = 100f;
     [SerializeField, Min(0.02f)] float secondsPerShell = 2f;
+    [Tooltip("1発ごとの装填時間のうち、待機アニメーションを再生する割合。残りはリロード。")]
+    [SerializeField, Range(0f, 1f)] float reloadIdleRatio = 0.8f;
     [SerializeField, Min(0)] float shotCooldown = 1f;
     [SerializeField, Min(0)] float fireAnimationSeconds = 0.25f;
     [SerializeField, Min(0.02f)] float windupSeconds = 0.5f;
@@ -665,21 +667,33 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         reloadReason = reason;
         reloadElapsed = 0f;
         coverHiddenTime = 0f;
-        Stop(4);
+        Stop(reloadIdleRatio > 0f ? 0 : 4);
     }
 
     void TickReload()
     {
-        Stop(4);
         reloadElapsed += Dt;
         float perShell = Mathf.Max(0.02f, secondsPerShell);
         while (reloadElapsed + 0.0001f >= perShell && CurrentAmmo < MaximumAmmo)
         {
-            reloadElapsed -= perShell;
+            reloadElapsed = Mathf.Max(0f, reloadElapsed - perShell);
             CurrentAmmo++;
         }
         if (CurrentAmmo >= MaximumAmmo)
-        { SetState(State.Hunt); huntTarget = null; unaimed = 0f; coverHiddenTime = 0f; Stop(0); }
+        {
+            SetState(State.Hunt);
+            huntTarget = null;
+            unaimed = 0f;
+            coverHiddenTime = 0f;
+            Stop(0);
+            return;
+        }
+
+        // 1発ごとに待機80% → リロード20%。装填が完了するたびにタイマーが
+        // リセットされるため、0/2からなら1.6秒＋0.4秒を2回繰り返す。
+        // アニメーションによらず、装填中の速度は必ずゼロにする。
+        float idleDuration = perShell * Mathf.Clamp01(reloadIdleRatio);
+        Stop(reloadElapsed + 0.0001f < idleDuration ? 0 : 4);
     }
 
     void Navigate(Vector2 goal, float speed, bool avoidAim, Vector2? fallbackGoal = null)

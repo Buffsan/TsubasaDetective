@@ -319,6 +319,7 @@ MonoBehaviour:
   pelletRange: 8
   pelletPowerPercent: 100
   secondsPerShell: 2
+  reloadIdleRatio: 0.8
   shotCooldown: 1
   fireAnimationSeconds: 0.25
   windupSeconds: 0.5

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8595cd5ba0da7f41a54ce17c778a078, type: 3}
   m_Name: GS_ImperialAssaultTrooper
   m_EditorClassIdentifier: 
-  NAME: 
+  NAME: "\u5E1D\u56FD\u7A81\u6483\u5287\u5175"
   MAXHP: 770
   enemyStrength: 3
   Regen: 0

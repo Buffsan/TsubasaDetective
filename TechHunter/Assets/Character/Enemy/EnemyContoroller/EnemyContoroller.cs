@@ -5,6 +5,17 @@ using UnityEngine;
 public class EnemyContoroller : EnemyBase
 {
     public EnemyMoveBase moveBase;
+
+    // 召喚されたステージの実体を保持する。Prefab アセットへの参照は保存しない。
+    // Spawn 直後（Start より前）に設定されるため、個別 AI の初期化でも利用可能。
+    public TileMap_Controller SpawnStage { get; private set; }
+
+    public static void AssignSpawnStage(GameObject instance, TileMap_Controller stage)
+    {
+        if (instance == null || stage == null) return;
+        EnemyContoroller controller = instance.GetComponent<EnemyContoroller>();
+        if (controller != null) controller.SpawnStage = stage;
+    }
     [SerializeField] GameObject EnemyMoveBaseObject;
     public enum MoveToBase
     {

@@ -343,6 +343,7 @@ public class EnemySpawnBase : MonoBehaviour
         }
 
         GameObject clone = Instantiate(prefab, position, Quaternion.identity);
+        EnemyContoroller.AssignSpawnStage(clone, sourceStage);
         EnemyBase ally = clone.GetComponent<EnemyBase>();
         if (ally == null)
         {
@@ -412,6 +413,7 @@ public class EnemySpawnBase : MonoBehaviour
             Vector3 spawnPotision = worldPos + randomOffset;
 
             GameObject CL_Enemy = Instantiate(EnemyObject, spawnPotision, Quaternion.identity);
+            EnemyContoroller.AssignSpawnStage(CL_Enemy, Seve_TileMap_C);
             manager.AllEnemy.Add(CL_Enemy);
             Instantiate(SpawnEffect, spawnPotision, Quaternion.identity);
         }
@@ -429,6 +431,7 @@ public class EnemySpawnBase : MonoBehaviour
             Vector3 spawnPotision = worldPos + randomOffset;
 
             GameObject CL_Enemy = Instantiate(EnemyObject, spawnPotision, Quaternion.identity);
+            EnemyContoroller.AssignSpawnStage(CL_Enemy, Seve_TileMap_C);
             Instantiate(SpawnEffect, spawnPotision, Quaternion.identity);
         }
     }

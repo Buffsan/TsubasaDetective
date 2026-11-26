@@ -51,9 +51,11 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
 
     [Header("実行時のナビゲーション診断（確認用）")]
     [SerializeField] Tilemap runtimeFloor;
+    [SerializeField] TileMap_Controller runtimeStage;
     [SerializeField] string navigationStatus;
     [SerializeField] string runtimeState;
     Tilemap lastFloorOverride, lastBlockedOverride;
+    TileMap_Controller lastSpawnStage;
     float floorRetryTimer;
 
 
@@ -97,24 +99,29 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         enemyBase.LookPlayerDistance = -1f;
         navigation = new ImperialShotGunTrooper_Navigation(enemyBase.transform);
         runtimeFloor = null;
+        runtimeStage = null;
         runtimeState = state.ToString();
         ResolveFloor();
     }
 
     static bool UsableFloor(Tilemap map)
     {
-        return map != null && map.isActiveAndEnabled && map.CompareTag("Stage_Floor") &&
-            map.GetUsedTilesCount() > 0;
+        return map != null && map.isActiveAndEnabled && map.gameObject.scene.IsValid() &&
+            map.gameObject.scene.isLoaded && map.CompareTag("Stage_Floor") && map.GetUsedTilesCount() > 0;
     }
 
     // 現在位置または隣接セルに床があるタイルマップを優先。単体テストにも対応。
     Tilemap FindNearestFloor(Tilemap[] maps)
     {
         Tilemap best = null;
+        Tilemap onlyMap = null;
+        int validMaps = 0;
         float bestDistance = float.PositiveInfinity;
         foreach (Tilemap map in maps)
         {
             if (!UsableFloor(map)) continue;
+            onlyMap = map;
+            validMaps++;
             Vector3 world = new Vector3(Position.x, Position.y, map.transform.position.z);
             Vector3Int origin = map.WorldToCell(world);
             for (int x = -1; x <= 1; x++)
@@ -126,7 +133,19 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
                 if (distance < bestDistance) { best = map; bestDistance = distance; }
             }
         }
-        return best;
+        return best != null ? best : validMaps == 1 ? onlyMap : null;
+    }
+
+    // Stage context is injected by EnemySpawnBase first; older summon methods and
+    // enemies placed manually in a scene still have the previous safe fallbacks.
+    TileMap_Controller ResolveStage()
+    {
+        if (controller.SpawnStage != null) return controller.SpawnStage;
+        var stage = GetComponentInParent<TileMap_Controller>();
+        if (stage == null && ALL_SystemManager.Instance != null &&
+            ALL_SystemManager.Instance.enemySpawnBASE != null)
+            stage = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C;
+        return stage;
     }
 
     void ResolveFloor()
@@ -134,25 +153,22 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         bool blockedChanged = lastBlockedOverride != blockedTiles;
         lastFloorOverride = floorMap;
         lastBlockedOverride = blockedTiles;
+        lastSpawnStage = controller.SpawnStage;
         floorRetryTimer = 1f;
+        runtimeStage = ResolveStage();
         Tilemap selected = UsableFloor(floorMap) ? floorMap : null;
-        // 通常スポーンは EnemysObject 配下。直接シーンに置いた敵でも動かす。
-        if (selected == null)
+        if (selected == null && runtimeStage != null)
         {
-            var stage = GetComponentInParent<TileMap_Controller>();
-            if (stage == null && ALL_SystemManager.Instance != null &&
-                ALL_SystemManager.Instance.enemySpawnBASE != null)
-                stage = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C;
-            if (stage != null)
-            {
-                // FloorMap は現行ステージによって EnemySpawnArea を参照する。
-                // StandFloor を最優先し、FloorMap は本当に Stage_Floor のときのみ使用。
-                if (UsableFloor(stage.StandFloor)) selected = stage.StandFloor;
-                else if (UsableFloor(stage.FloorMap)) selected = stage.FloorMap;
-                else selected = FindNearestFloor(stage.GetComponentsInChildren<Tilemap>(false));
-            }
-            if (selected == null) selected = FindNearestFloor(FindObjectsOfType<Tilemap>());
+            // FloorMap は現行ステージによって EnemySpawnArea を参照する。
+            // 召喚元ステージの StandFloor を最優先し、タグで本物の床だけを選ぶ。
+            if (UsableFloor(runtimeStage.StandFloor)) selected = runtimeStage.StandFloor;
+            else if (UsableFloor(runtimeStage.FloorMap)) selected = runtimeStage.FloorMap;
+            else selected = FindNearestFloor(runtimeStage.GetComponentsInChildren<Tilemap>(false));
         }
+        // ステージ管理なしのテストシーンでのみシーン全体を検索。
+        // 召喚元が明確な場合は別ステージの床を誤取得しない。
+        if (selected == null && runtimeStage == null)
+            selected = FindNearestFloor(FindObjectsOfType<Tilemap>());
         if (runtimeFloor != selected || blockedChanged)
         {
             runtimeFloor = selected;
@@ -163,7 +179,8 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
             if (state == State.Retreat && Valid(CurrentTarget)) StartRetreatSearch(CurrentTarget);
         }
         else navigation.SetMaps(runtimeFloor, blockedTiles);
-        navigationStatus = runtimeFloor != null ? "Floor: " + runtimeFloor.name : "Stage_Floor not found";
+        navigationStatus = runtimeFloor != null ? "Floor: " + runtimeFloor.name :
+            runtimeStage != null ? "Stage_Floor not found in " + runtimeStage.name : "Stage_Floor not found";
     }
 
     void LateUpdate()
@@ -300,6 +317,7 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         if (navigation == null || !enabled || enemyBase.status != EnemyBase.Status.Nomal) return;
         floorRetryTimer -= Dt;
         if (lastFloorOverride != floorMap || lastBlockedOverride != blockedTiles ||
+            lastSpawnStage != controller.SpawnStage ||
             ((runtimeFloor == null || !runtimeFloor.isActiveAndEnabled) && floorRetryTimer <= 0f))
             ResolveFloor();
         // シーン直置きテストでプレイヤーが敵の Awake より後から生成された場合。

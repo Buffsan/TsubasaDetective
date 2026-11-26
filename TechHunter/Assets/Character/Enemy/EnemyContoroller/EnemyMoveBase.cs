@@ -226,6 +226,15 @@ public class EnemyMoveBase : MonoBehaviour
         EnemyBase summoned = instance.GetComponent<EnemyBase>();
         EnemyContoroller owner = enemyBase as EnemyContoroller;
         if (owner == null) owner = GetComponentInParent<EnemyContoroller>();
+
+        // 召喚先のステージを渡す。AI自身が親階層やシングルトンを探す必要を減らす。
+        TileMap_Controller stage = instance.GetComponentInParent<TileMap_Controller>();
+        if (stage == null && owner != null) stage = owner.SpawnStage;
+        if (stage == null && ALL_SystemManager.Instance != null &&
+            ALL_SystemManager.Instance.enemySpawnBASE != null)
+            stage = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C;
+        EnemyContoroller.AssignSpawnStage(instance, stage);
+
         if (owner != null && summoned != null)
             owner.CopyTargetSettingsTo(summoned);
 

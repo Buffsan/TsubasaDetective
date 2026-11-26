@@ -343,6 +343,12 @@ MonoBehaviour:
   repathSeconds: 0.45
   arrivalDistance: 0.1
   aimExposurePenalty: 5
+  cornerRadius: 0.45
+  movementAcceleration: 24
+  movementClearance: 0.12
+  movementLookAhead: 0.55
+  coverReloadDelay: 0.25
+  retreatMaxRetries: 3
 --- !u!224 &6662923678536191497 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3008200536617617639, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}

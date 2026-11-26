@@ -48,12 +48,24 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     [SerializeField, Min(0.05f)] float repathSeconds = 0.45f;
     [SerializeField, Min(0.02f)] float arrivalDistance = 0.1f;
     [SerializeField, Min(0)] float aimExposurePenalty = 5f;
+    [Header("曲線移動")]
+    [SerializeField, Min(0)] float cornerRadius = 0.45f;
+    [SerializeField, Min(1)] float movementAcceleration = 24f;
+    [SerializeField, Min(0.005f)] float movementClearance = 0.12f;
+    [SerializeField, Min(0.05f)] float movementLookAhead = 0.55f;
+    [SerializeField, Min(0.05f)] float coverReloadDelay = 0.25f;
+    [SerializeField, Min(1)] int retreatMaxRetries = 3;
+
 
     [Header("実行時のナビゲーション診断（確認用）")]
     [SerializeField] Tilemap runtimeFloor;
     [SerializeField] TileMap_Controller runtimeStage;
     [SerializeField] string navigationStatus;
     [SerializeField] string runtimeState;
+    [SerializeField] bool lowerAllies;
+    [SerializeField] int lowerAllyCount;
+    [SerializeField] Vector2 runtimeRetreatDestination;
+    [SerializeField] string reloadReason;
     Tilemap lastFloorOverride, lastBlockedOverride;
     TileMap_Controller lastSpawnStage;
     float floorRetryTimer;
@@ -64,12 +76,17 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     EnemyContoroller controller;
     ImperialShotGunTrooper_Navigation navigation;
     Transform lockedTarget, huntTarget;
-    Vector2 aimOrigin, aimDirection, lastGoal, aimAtShot, firstShotPosition, retreatProgress;
+    Vector2 aimOrigin, aimDirection, lastGoal, aimAtShot, firstShotPosition, retreatProgress, retreatThreat;
+    Vector2 lastKnownThreat;
+    bool knowsThreat;
+    float coverHiddenTime, repositionTime;
+    int movementFacing = 1;
     Vector2[] directions;
     readonly List<SpriteRenderer> warnings = new List<SpriteRenderer>();
     int routeIndex, lastAmmo = -1, side = 1, retreatRetries;
     float elapsed, reloadElapsed, unaimed, opportunityTimer, allyTimer, repathTimer, retreatStuck;
-    bool lowerAllies, rush, hasAim, routeGoalSet;
+    bool rush, hasAim, routeGoalSet;
+    bool routeAvoidAim;
     public int CurrentAmmo { get; private set; }
     public int MaximumAmmo => Mathf.Max(1, magazineSize);
     public bool IsReloading => state == State.Reload;
@@ -98,6 +115,9 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         controller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Special;
         enemyBase.LookPlayerDistance = -1f;
         navigation = new ImperialShotGunTrooper_Navigation(enemyBase.transform);
+        navigation.ConfigureSmoothing(cornerRadius, movementClearance);
+        // 物理挙動の間も見た目を滑らかにする。停止必須の射撃・装填は従来通り即停止。
+        enemyBase.rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         runtimeFloor = null;
         runtimeStage = null;
         runtimeState = state.ToString();
@@ -176,7 +196,7 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
             routeGoalSet = false;
             routeIndex = 0;
             navigation.SetMaps(runtimeFloor, blockedTiles);
-            if (state == State.Retreat && Valid(CurrentTarget)) StartRetreatSearch(CurrentTarget);
+            if (state == State.Retreat) StartRetreatSearch();
         }
         else navigation.SetMaps(runtimeFloor, blockedTiles);
         navigationStatus = runtimeFloor != null ? "Floor: " + runtimeFloor.name :
@@ -204,12 +224,14 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     public override void EnemyFriendlyPlay()
     {
         if (navigation == null) return;
-        Stop(0);
         if (CurrentAmmo < MaximumAmmo)
         {
-            if (state != State.Reload) BeginReload();
+            if (state != State.Reload) BeginReload("No hostile target");
             TickReload();
+            // 友好待機中の装填は FriendlyActive で継続させる。
+            enemyBase.moveType = EnemyBase.MoveType.Move;
         }
+        else Stop(0);
     }
 
     void OnDisable() { ClearWarnings(); if (navigation != null) Cancel(); }
@@ -221,6 +243,7 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         elapsed = 0f;
         repathTimer = 0f;
         routeGoalSet = false;
+        routeAvoidAim = false;
         routeIndex = 0;
         navigation.Clear();
         enemyBase.moveType = next == State.Hunt || next == State.Retreat || next == State.SecondMove
@@ -254,6 +277,16 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
             return enemyBase.IsCharmed && other.IsCharmed;
         Faction debug = Faction.DebugA | Faction.DebugB;
         if (((a | b) & debug) != 0) return (a & b & debug) != 0;
+        // 通常戦闘では国が違ってもプレイヤーと敵対している敵は同じ戦闘側。
+        // 敵対モードで実際に攻撃対象になっている個体は味方から除外する。
+        if (controller.TargetMode != EnemyContoroller.TargetType.PlayerOnly &&
+            controller.CanTarget(other.transform)) return false;
+        if (controller.TargetMode != EnemyContoroller.TargetType.EnemyOnly)
+        {
+            var peer = other as EnemyContoroller;
+            if (peer != null && peer.TargetMode == EnemyContoroller.TargetType.EnemyOnly) return false;
+            return true;
+        }
         return ((int)a & (int)b & 1023) != 0;
     }
 
@@ -269,13 +302,26 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     bool HasLowerAllies()
     {
         var manager = SystemManager.Instance;
-        if (manager == null) return false;
-        if (manager.AllEnemy != null)
-            foreach (GameObject obj in manager.AllEnemy)
-                if (obj != null && IsLowerAlly(obj.GetComponent<EnemyBase>())) return true;
-        foreach (EnemyBase ally in manager.CharmedAllies)
-            if (IsLowerAlly(ally)) return true;
-        return false;
+        if (manager == null && ALL_SystemManager.Instance != null)
+            manager = ALL_SystemManager.Instance.systemManager;
+        lowerAllyCount = 0;
+        if (manager != null)
+        {
+            if (manager.AllEnemy != null)
+                foreach (GameObject obj in manager.AllEnemy)
+                    if (obj != null && IsLowerAlly(obj.GetComponent<EnemyBase>())) lowerAllyCount++;
+            foreach (EnemyBase ally in manager.CharmedAllies)
+                if (IsLowerAlly(ally)) lowerAllyCount++;
+        }
+        if (manager == null || (manager.AllEnemy != null && manager.AllEnemy.Count == 0 &&
+            manager.CharmedAllies.Count == 0 && runtimeStage == null))
+        {
+            // SystemManager のない／登録なしの単体テストシーンでも階級判定を可能にする。
+            foreach (EnemyBase other in FindObjectsOfType<EnemyBase>())
+                if (IsLowerAlly(other)) lowerAllyCount++;
+        }
+        lowerAllies = lowerAllyCount > 0;
+        return lowerAllies;
     }
 
     void ReadAim(Transform target)
@@ -324,10 +370,12 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         if (enemyBase.Player == null && PlayerController.Instance != null)
             enemyBase.Player = PlayerController.Instance.gameObject;
         allyTimer -= Dt;
-        if (allyTimer <= 0f) { lowerAllies = HasLowerAllies(); allyTimer = 0.25f; }
+        if (allyTimer <= 0f) { HasLowerAllies(); allyTimer = 0.25f; }
         Transform target = CurrentTarget;
+        if (Valid(target)) { lastKnownThreat = target.position; knowsThreat = true; }
         ReadAim(state == State.Hunt || state == State.Retreat ? target : lockedTarget);
         elapsed += Dt;
+        repositionTime = Mathf.Max(0f, repositionTime - Dt);
         switch (state)
         {
             case State.Hunt: TickHunt(target); break;
@@ -341,15 +389,11 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
 
     void TickHunt(Transform target)
     {
+        if (CurrentAmmo <= 0) { RecoverEmptyMagazine(target); return; }
         if (!Valid(target))
         {
             navigationStatus = "No valid target";
-            if (CurrentAmmo < MaximumAmmo) BeginReload(); else Stop(0);
-            return;
-        }
-        if (CurrentAmmo <= 0)
-        {
-            if (lowerAllies) BeginRetreat(target); else BeginReload();
+            if (CurrentAmmo < MaximumAmmo) BeginReload("No hostile target"); else Stop(0);
             return;
         }
         if (huntTarget != target)
@@ -361,7 +405,8 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         bool aimed = AimedAt(Position, AimCos);
         unaimed = aimed ? 0f : unaimed + Dt;
         bool visible = Visible(target);
-        if (!visible && CurrentAmmo < MaximumAmmo) { BeginReload(); return; }
+        if (CurrentAmmo < MaximumAmmo && CoverConfirmed(visible))
+        { BeginReload("Target behind cover (one shell left)"); return; }
 
         bool aggressive = !lowerAllies || unaimed >= unAimedSeconds;
         opportunityTimer -= Dt;
@@ -371,8 +416,14 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
             aggressive = hasAim && !AimedAt(Position, Mathf.Cos(2f * aimHalfAngle * Mathf.Deg2Rad)) &&
                 Random.value < offAimAttackChance;
         }
-        if (visible && aggressive && distance <= Mathf.Min(preferredRange, pelletRange))
+        if (visible && aggressive && repositionTime <= 0f && distance <= Mathf.Min(preferredRange, pelletRange))
         { BeginWindup(target); return; }
+        if (visible && repositionTime > 0f && distance <= preferredRange)
+        {
+            // 銃口だけが壁に引っ掛かって攻撃待機が連続する場合にも位置を変える。
+            Navigate(FlankGoal(target, lowerAllies), enemyBase.SPEED, lowerAllies, (Vector2)target.position);
+            return;
+        }
         if (visible && lowerAllies && (aimed || (!aggressive && distance <= preferredRange)))
         {
             // 迂回目標が壁・床の外にあって到達不能なら、照準回避コスト付きの追跡に戻す。
@@ -401,8 +452,10 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
 
     void BeginWindup(Transform target)
     {
-        if (!Valid(target) || CurrentAmmo == 0) { BeginReload(); return; }
+        if (CurrentAmmo <= 0) { RecoverEmptyMagazine(target); return; }
+        if (!Valid(target)) { SetState(State.Hunt); return; }
         lockedTarget = target;
+        coverHiddenTime = 0f;
         SetState(State.Windup);
         Stop(2);
         enemyBase.isTargetLook(target.position);
@@ -429,8 +482,15 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         if (!Valid(lockedTarget) || !Visible(lockedTarget))
         {
             ClearWarnings();
-            if (CurrentAmmo < MaximumAmmo) BeginReload();
-            else { lockedTarget = null; unaimed = 0f; SetState(State.Hunt); }
+            if (CurrentAmmo <= 0) RecoverEmptyMagazine(lockedTarget);
+            else
+            {
+                // 射撃は中止するが、一瞬の遮蔽だけで装填を始めない。追跡側で再判定。
+                lockedTarget = null;
+                unaimed = 0f;
+                repositionTime = 0.35f;
+                SetState(State.Hunt);
+            }
             return;
         }
         UpdateWarnings();
@@ -453,6 +513,9 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         }
         CurrentAmmo--;
         firstShotPosition = lockedTarget.position;
+        lastKnownThreat = firstShotPosition;
+        knowsThreat = true;
+        coverHiddenTime = 0f;
         if (shotSE != null && enemyBase.audioManager != null) enemyBase.audioManager.PlaySE(shotSE);
         SetState(State.Cooldown);
         Stop(3);
@@ -462,14 +525,20 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     void TickCooldown()
     {
         Stop(elapsed < fireAnimationSeconds ? 3 : 4);
+        bool valid = Valid(lockedTarget);
+        bool visible = CurrentAmmo > 0 && valid && Visible(lockedTarget);
+        bool behindCover = CurrentAmmo > 0 && CoverConfirmed(visible);
         if (elapsed + 0.0001f < shotCooldown) return;
-        if (CurrentAmmo <= 0)
+        // 弾切れ時は遮蔽の有無に関係なく退避を優先（格下がいなければその場で装填）。
+        if (CurrentAmmo <= 0) { RecoverEmptyMagazine(lockedTarget); return; }
+        if (!valid) { SetState(State.Hunt); lockedTarget = null; return; }
+        if (behindCover) { BeginReload("Target behind cover (one shell left)"); return; }
+        if (!visible)
         {
-            if (HasLowerAllies() && Visible(lockedTarget)) BeginRetreat(lockedTarget);
-            else BeginReload();
+            rush = true;
+            SetState(State.SecondMove);
             return;
         }
-        if (!Valid(lockedTarget) || !Visible(lockedTarget)) { BeginReload(); return; }
         Vector2 targetPosition = lockedTarget.position;
         float distance = Vector2.Distance(Position, targetPosition);
         rush = distance > preferredRange ||
@@ -484,7 +553,14 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
 
     void TickSecondMove()
     {
-        if (!Valid(lockedTarget) || !Visible(lockedTarget)) { BeginReload(); return; }
+        if (!Valid(lockedTarget)) { lockedTarget = null; SetState(State.Hunt); return; }
+        bool visible = Visible(lockedTarget);
+        if (CoverConfirmed(visible)) { BeginReload("Target behind cover (one shell left)"); return; }
+        if (!visible)
+        {
+            Navigate(lockedTarget.position, enemyBase.SPEED * rushSpeedMultiplier, false);
+            return;
+        }
         float distance = Vector2.Distance(Position, lockedTarget.position);
         if ((rush && distance <= preferredRange) || (!rush && elapsed >= orbitSeconds) ||
             elapsed >= secondMoveTimeout)
@@ -497,50 +573,98 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         Navigate(goal, enemyBase.SPEED * (rush ? rushSpeedMultiplier : 1f), !rush && lowerAllies);
     }
 
-    void BeginRetreat(Transform target)
+    bool CoverConfirmed(bool visible)
+    {
+        coverHiddenTime = visible ? 0f : coverHiddenTime + Dt;
+        return coverHiddenTime + 0.0001f >= Mathf.Max(0.02f, coverReloadDelay);
+    }
+
+    void RecoverEmptyMagazine(Transform preferredTarget)
+    {
+        if (Valid(preferredTarget))
+        { lastKnownThreat = preferredTarget.position; knowsThreat = true; }
+        else if (Valid(CurrentTarget))
+        { lastKnownThreat = CurrentTarget.position; knowsThreat = true; }
+
+        if (HasLowerAllies() && knowsThreat)
+            BeginRetreat(lastKnownThreat);
+        else BeginReload(lowerAllies ? "No known hostile position" : "No lower-rank allies");
+    }
+
+    void BeginRetreat(Vector2 threat)
     {
         ClearWarnings();
         lockedTarget = null;
         SetState(State.Retreat);
         retreatRetries = 0;
-        StartRetreatSearch(target);
+        retreatThreat = threat;
+        reloadReason = "Retreating before reload";
+        StartRetreatSearch();
     }
 
-    void StartRetreatSearch(Transform target)
+    void StartRetreatSearch()
     {
         Stop(0);
         routeIndex = 0;
         retreatProgress = Position;
         retreatStuck = 0f;
-        navigation.BeginRetreat(Position, target.position);
+        navigation.BeginRetreat(Position, retreatThreat);
+    }
+
+    void RetryRetreat(Transform target, string failure)
+    {
+        if (retreatRetries++ >= Mathf.Max(1, retreatMaxRetries))
+        {
+            // 本当に移動不能なら無限に停止し続けず、到達できた地点で装填する。
+            BeginReload(failure);
+            return;
+        }
+        if (Valid(target)) retreatThreat = target.position;
+        StartRetreatSearch();
     }
 
     void TickRetreat(Transform target)
     {
-        if (!lowerAllies || !Valid(target)) { BeginReload(); return; }
+        // 生存判定は共通の0.25秒更新を利用し、退避中に全敵を毎物理フレーム検索しない。
+        if (!lowerAllies) { BeginReload("Lower-rank allies defeated"); return; }
         navigationStatus = navigation.PathStatus;
         if (navigation.RetreatSearching)
         {
             Stop(0);
             if (!navigation.TickRetreatSearch(retreatNodesPerTick)) return;
         }
-        if (FollowRoute(enemyBase.SPEED * retreatSpeedMultiplier)) { BeginReload(); return; }
-        if (Vector2.Distance(Position, retreatProgress) >= 0.2f)
+
+        if (!navigation.RetreatHasDestination)
+        {
+            Stop(0);
+            retreatStuck += Dt;
+            if (retreatStuck >= 1f) RetryRetreat(target, "No reachable retreat floor");
+            return;
+        }
+
+        runtimeRetreatDestination = navigation.RetreatDestination;
+        navigationStatus = navigation.PathStatus;
+        bool finished = FollowRoute(enemyBase.SPEED * retreatSpeedMultiplier);
+        if (finished && Vector2.Distance(Position, navigation.RetreatDestination) <= Mathf.Max(arrivalDistance, 0.12f))
+        {
+            BeginReload("Reached farthest reachable floor");
+            return;
+        }
+
+        if (Vector2.Distance(Position, retreatProgress) >= 0.18f)
         { retreatProgress = Position; retreatStuck = 0f; }
         else retreatStuck += Dt;
-        if (retreatStuck >= 2f)
-        {
-            if (retreatRetries++ == 0) StartRetreatSearch(target);
-            else BeginReload();
-        }
+        if (retreatStuck >= 1.5f) RetryRetreat(target, "Retreat blocked after retries");
     }
 
-    void BeginReload()
+    void BeginReload(string reason)
     {
         ClearWarnings();
         lockedTarget = null;
         SetState(State.Reload);
+        reloadReason = reason;
         reloadElapsed = 0f;
+        coverHiddenTime = 0f;
         Stop(4);
     }
 
@@ -555,7 +679,7 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
             CurrentAmmo++;
         }
         if (CurrentAmmo >= MaximumAmmo)
-        { SetState(State.Hunt); huntTarget = null; unaimed = 0f; Stop(0); }
+        { SetState(State.Hunt); huntTarget = null; unaimed = 0f; coverHiddenTime = 0f; Stop(0); }
     }
 
     void Navigate(Vector2 goal, float speed, bool avoidAim, Vector2? fallbackGoal = null)
@@ -569,6 +693,7 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
             routeIndex = 0;
             repathTimer = repathSeconds;
             float penalty = avoidAim && hasAim ? aimExposurePenalty : 0f;
+            routeAvoidAim = penalty > 0f;
             bool found = navigation.FindPath(Position, goal, maxPathSearchNodes, searchRadiusCells,
                 aimOrigin, aimDirection, AimCos, penalty);
             if (!found && fallbackGoal.HasValue && (fallbackGoal.Value - goal).sqrMagnitude > 0.01f)
@@ -581,13 +706,54 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
 
     bool FollowRoute(float speed)
     {
+        Vector2 position = Position;
         while (routeIndex < navigation.Route.Count &&
-            Vector2.Distance(Position, navigation.Route[routeIndex]) <= arrivalDistance)
+            Vector2.Distance(position, navigation.Route[routeIndex]) <= arrivalDistance)
             routeIndex++;
         if (routeIndex >= navigation.Route.Count) { Stop(0); return true; }
-        Vector2 delta = (Vector2)navigation.Route[routeIndex] - Position;
-        enemyBase.rb.velocity = delta.normalized * Mathf.Min(speed, delta.magnitude / Dt);
-        enemyBase.isTargetLook(Position + delta);
+
+        // 曲線上の少し先を見る。壁・床・照準を横切る短絡は禁止。
+        int waypoint = routeIndex;
+        for (int i = routeIndex + 1; i < navigation.Route.Count; i++)
+        {
+            if (Vector2.Distance(position, navigation.Route[i]) > movementLookAhead) break;
+            if (!navigation.CanTravel(position, navigation.Route[i], routeAvoidAim && hasAim,
+                aimOrigin, aimDirection, AimCos)) break;
+            waypoint = i;
+        }
+        routeIndex = waypoint;
+        Vector2 delta = (Vector2)navigation.Route[waypoint] - position;
+        float finalSpeed = Mathf.Max(0.01f, speed);
+        float acceleration = Mathf.Max(1f, movementAcceleration);
+        if (waypoint == navigation.Route.Count - 1)
+            finalSpeed = Mathf.Min(finalSpeed, Mathf.Sqrt(2f * acceleration * delta.magnitude));
+        Vector2 desired = delta.normalized * Mathf.Min(finalSpeed, delta.magnitude / Dt);
+        Vector2 velocity = navigation.IsWalkablePosition(position)
+            ? Vector2.MoveTowards(enemyBase.rb.velocity, desired, acceleration * Dt) : desired;
+
+        // 曲がる際の慣性が壁や床外を指す場合は、安全な経路方向へ戻す。
+        if (!navigation.CanMoveStep(position, position + velocity * Dt))
+            velocity = desired;
+        if (!navigation.CanMoveStep(position, position + velocity * Dt))
+        {
+            Stop(0);
+            // 一時的に止まっても、毎FixedUpdateでA*を繰り返さず短時間後に再探索。
+            repathTimer = Mathf.Min(repathTimer, 0.10f);
+            return false;
+        }
+
+        enemyBase.rb.velocity = velocity;
+        // 微小な左右ブレによる振り向きの連打を防ぐ。
+        if (Mathf.Abs(velocity.x) > 0.15f)
+        {
+            int facing = velocity.x > 0f ? 1 : -1;
+            if (facing != movementFacing ||
+                Mathf.Sign(enemyBase.EnemyAnimBody.transform.localScale.x) != facing)
+            {
+                movementFacing = facing;
+                enemyBase.isTargetLook(position + Vector2.right * facing);
+            }
+        }
         Anim(1);
         return false;
     }

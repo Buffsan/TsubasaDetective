@@ -38,7 +38,9 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     [SerializeField, Min(0)] float retreatDistanceThreshold = 0.35f;
 
     [Header("床タイル経路探索")]
+    [Tooltip("未設定の場合は現在のステージの Stage_Floor を自動検索。")]
     [SerializeField] Tilemap floorMap;
+    [Tooltip("任意。移動可能な床と重複する表示用 Tilemap は設定しない。")]
     [SerializeField] Tilemap blockedTiles;
     [SerializeField, Min(1)] int searchRadiusCells = 64;
     [SerializeField, Min(100)] int maxPathSearchNodes = 2000;
@@ -46,6 +48,14 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     [SerializeField, Min(0.05f)] float repathSeconds = 0.45f;
     [SerializeField, Min(0.02f)] float arrivalDistance = 0.1f;
     [SerializeField, Min(0)] float aimExposurePenalty = 5f;
+
+    [Header("実行時のナビゲーション診断（確認用）")]
+    [SerializeField] Tilemap runtimeFloor;
+    [SerializeField] string navigationStatus;
+    [SerializeField] string runtimeState;
+    Tilemap lastFloorOverride, lastBlockedOverride;
+    float floorRetryTimer;
+
 
     enum State { Hunt, Windup, Cooldown, SecondMove, Retreat, Reload }
     State state;
@@ -86,18 +96,74 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         controller.Choice_MoveToBase = EnemyContoroller.MoveToBase.Special;
         enemyBase.LookPlayerDistance = -1f;
         navigation = new ImperialShotGunTrooper_Navigation(enemyBase.transform);
+        runtimeFloor = null;
+        runtimeState = state.ToString();
         ResolveFloor();
+    }
+
+    static bool UsableFloor(Tilemap map)
+    {
+        return map != null && map.isActiveAndEnabled && map.CompareTag("Stage_Floor") &&
+            map.GetUsedTilesCount() > 0;
+    }
+
+    // 現在位置または隣接セルに床があるタイルマップを優先。単体テストにも対応。
+    Tilemap FindNearestFloor(Tilemap[] maps)
+    {
+        Tilemap best = null;
+        float bestDistance = float.PositiveInfinity;
+        foreach (Tilemap map in maps)
+        {
+            if (!UsableFloor(map)) continue;
+            Vector3 world = new Vector3(Position.x, Position.y, map.transform.position.z);
+            Vector3Int origin = map.WorldToCell(world);
+            for (int x = -1; x <= 1; x++)
+            for (int y = -1; y <= 1; y++)
+            {
+                Vector3Int cell = origin + new Vector3Int(x, y, 0);
+                if (!map.HasTile(cell)) continue;
+                float distance = ((Vector2)map.GetCellCenterWorld(cell) - Position).sqrMagnitude;
+                if (distance < bestDistance) { best = map; bestDistance = distance; }
+            }
+        }
+        return best;
     }
 
     void ResolveFloor()
     {
-        if (floorMap == null && ALL_SystemManager.Instance != null &&
-            ALL_SystemManager.Instance.enemySpawnBASE != null)
+        bool blockedChanged = lastBlockedOverride != blockedTiles;
+        lastFloorOverride = floorMap;
+        lastBlockedOverride = blockedTiles;
+        floorRetryTimer = 1f;
+        Tilemap selected = UsableFloor(floorMap) ? floorMap : null;
+        // 通常スポーンは EnemysObject 配下。直接シーンに置いた敵でも動かす。
+        if (selected == null)
         {
-            var stage = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C;
-            if (stage != null) floorMap = stage.FloorMap != null ? stage.FloorMap : stage.StandFloor;
+            var stage = GetComponentInParent<TileMap_Controller>();
+            if (stage == null && ALL_SystemManager.Instance != null &&
+                ALL_SystemManager.Instance.enemySpawnBASE != null)
+                stage = ALL_SystemManager.Instance.enemySpawnBASE.Seve_TileMap_C;
+            if (stage != null)
+            {
+                // FloorMap は現行ステージによって EnemySpawnArea を参照する。
+                // StandFloor を最優先し、FloorMap は本当に Stage_Floor のときのみ使用。
+                if (UsableFloor(stage.StandFloor)) selected = stage.StandFloor;
+                else if (UsableFloor(stage.FloorMap)) selected = stage.FloorMap;
+                else selected = FindNearestFloor(stage.GetComponentsInChildren<Tilemap>(false));
+            }
+            if (selected == null) selected = FindNearestFloor(FindObjectsOfType<Tilemap>());
         }
-        navigation.SetMaps(floorMap, blockedTiles);
+        if (runtimeFloor != selected || blockedChanged)
+        {
+            runtimeFloor = selected;
+            repathTimer = 0f;
+            routeGoalSet = false;
+            routeIndex = 0;
+            navigation.SetMaps(runtimeFloor, blockedTiles);
+            if (state == State.Retreat && Valid(CurrentTarget)) StartRetreatSearch(CurrentTarget);
+        }
+        else navigation.SetMaps(runtimeFloor, blockedTiles);
+        navigationStatus = runtimeFloor != null ? "Floor: " + runtimeFloor.name : "Stage_Floor not found";
     }
 
     void LateUpdate()
@@ -134,6 +200,7 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     void SetState(State next)
     {
         state = next;
+        runtimeState = next.ToString();
         elapsed = 0f;
         repathTimer = 0f;
         routeGoalSet = false;
@@ -231,7 +298,13 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     void Tick()
     {
         if (navigation == null || !enabled || enemyBase.status != EnemyBase.Status.Nomal) return;
-        if (floorMap == null) ResolveFloor();
+        floorRetryTimer -= Dt;
+        if (lastFloorOverride != floorMap || lastBlockedOverride != blockedTiles ||
+            ((runtimeFloor == null || !runtimeFloor.isActiveAndEnabled) && floorRetryTimer <= 0f))
+            ResolveFloor();
+        // シーン直置きテストでプレイヤーが敵の Awake より後から生成された場合。
+        if (enemyBase.Player == null && PlayerController.Instance != null)
+            enemyBase.Player = PlayerController.Instance.gameObject;
         allyTimer -= Dt;
         if (allyTimer <= 0f) { lowerAllies = HasLowerAllies(); allyTimer = 0.25f; }
         Transform target = CurrentTarget;
@@ -252,6 +325,7 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     {
         if (!Valid(target))
         {
+            navigationStatus = "No valid target";
             if (CurrentAmmo < MaximumAmmo) BeginReload(); else Stop(0);
             return;
         }
@@ -283,7 +357,8 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         { BeginWindup(target); return; }
         if (visible && lowerAllies && (aimed || (!aggressive && distance <= preferredRange)))
         {
-            Navigate(FlankGoal(target, true), enemyBase.SPEED, true);
+            // 迂回目標が壁・床の外にあって到達不能なら、照準回避コスト付きの追跡に戻す。
+            Navigate(FlankGoal(target, true), enemyBase.SPEED, true, (Vector2)target.position);
             return;
         }
         // 射撃できないときは壁の向こうの標的へ床セルをたどって追跡。
@@ -302,7 +377,8 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         bool rightGood = navigation.IsWalkablePosition(right) && (!avoidAim || !AimedAt(right, AimCos));
         if (leftGood) return left;
         if (rightGood) return right;
-        return center + (Vector2)(Quaternion.Euler(0, 0, 90f * side) * radial);
+        Vector2 farSide = center + (Vector2)(Quaternion.Euler(0, 0, 90f * side) * radial);
+        return navigation.IsWalkablePosition(farSide) ? farSide : center;
     }
 
     void BeginWindup(Transform target)
@@ -424,6 +500,7 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
     void TickRetreat(Transform target)
     {
         if (!lowerAllies || !Valid(target)) { BeginReload(); return; }
+        navigationStatus = navigation.PathStatus;
         if (navigation.RetreatSearching)
         {
             Stop(0);
@@ -463,8 +540,9 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
         { SetState(State.Hunt); huntTarget = null; unaimed = 0f; Stop(0); }
     }
 
-    void Navigate(Vector2 goal, float speed, bool avoidAim)
+    void Navigate(Vector2 goal, float speed, bool avoidAim, Vector2? fallbackGoal = null)
     {
+        if (runtimeFloor == null) { navigationStatus = "Stage_Floor not found"; Stop(0); return; }
         repathTimer -= Dt;
         if (!routeGoalSet || repathTimer <= 0f || (goal - lastGoal).sqrMagnitude > 1f)
         {
@@ -472,10 +550,15 @@ public sealed class ImperialShotGunTrooper_AI : EnemyMoveBase
             lastGoal = goal;
             routeIndex = 0;
             repathTimer = repathSeconds;
-            navigation.FindPath(Position, goal, maxPathSearchNodes, searchRadiusCells,
-                aimOrigin, aimDirection, AimCos, avoidAim && hasAim ? aimExposurePenalty : 0f);
+            float penalty = avoidAim && hasAim ? aimExposurePenalty : 0f;
+            bool found = navigation.FindPath(Position, goal, maxPathSearchNodes, searchRadiusCells,
+                aimOrigin, aimDirection, AimCos, penalty);
+            if (!found && fallbackGoal.HasValue && (fallbackGoal.Value - goal).sqrMagnitude > 0.01f)
+                navigation.FindPath(Position, fallbackGoal.Value, maxPathSearchNodes, searchRadiusCells,
+                    aimOrigin, aimDirection, AimCos, penalty);
         }
-        if (FollowRoute(speed)) Stop(0);
+        navigationStatus = navigation.PathStatus;
+        FollowRoute(speed);
     }
 
     bool FollowRoute(float speed)

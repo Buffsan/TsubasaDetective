@@ -16,4 +16,8 @@ MonoBehaviour:
   enemyspawnGroup:
   - enemyType: 0
     SpawnNumber: 10
+  - enemyType: 61
+    SpawnNumber: 1
+  allyspawnGroup: []
+  allySpawnIntervalSeconds: 0.4
   StageLevel: 0

@@ -217,7 +217,8 @@ public class EnemySpawnBase : MonoBehaviour
         { EnemySpawnGroup.EnemyType.DIANA_LunarPurgeSquad_Shield,57},
         { EnemySpawnGroup.EnemyType.DIANA_PilgrimOfTheMoon,58},
         { EnemySpawnGroup.EnemyType.DIANA_LunarPurgeSquad_axe,59},
-      
+        { EnemySpawnGroup.EnemyType.GAREWO_ImperialShotGunTrooper,60},
+
     }; // { EnemySpawnGroup.EnemyType.},
 
     public int GetEnemyID(EnemySpawnGroup.EnemyType type)

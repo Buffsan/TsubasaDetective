@@ -100,6 +100,7 @@ public class EnemySpawnGroup
         DIANA_LunarPurgeSquad_Shield,
         DIANA_PilgrimOfTheMoon,
         DIANA_LunarPurgeSquad_axe,
+        GAREWO_ImperialShotGunTrooper,
     }
 
     

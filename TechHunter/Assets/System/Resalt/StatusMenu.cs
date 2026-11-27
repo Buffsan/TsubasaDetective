@@ -206,7 +206,7 @@ public class StatusMenu : MonoBehaviour
         handleImage.color = ScrollbarHandleColor;
         handleImage.raycastTarget = true;
 
-        Scrollbar scrollbar = track.gameObject.AddComponent<Scrollbar>();
+        Scrollbar scrollbar = track.gameObject.AddComponent<StatusMenuScrollbar>();
         scrollbar.direction = Scrollbar.Direction.BottomToTop;
         scrollbar.handleRect = handle;
         scrollbar.targetGraphic = handleImage;

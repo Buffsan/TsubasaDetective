@@ -55,8 +55,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -176,11 +176,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3830952016530330389, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
       propertyPath: m_Sprite
-      value:
+      value: 
       objectReference: {fileID: 21300000, guid: 851bb4cfb5d1ba841b31a1a221b8d621, type: 3}
     - target: {fileID: 4147996868674237292, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
       propertyPath: m_Controller
-      value:
+      value: 
       objectReference: {fileID: 9100000, guid: 4db847c6ae3f485fbeda19667576d5f2, type: 2}
     - target: {fileID: 4313495751056258257, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
       propertyPath: m_AnchorMax.y
@@ -192,15 +192,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5315938453462939683, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
       propertyPath: moveBase
-      value:
+      value: 
       objectReference: {fileID: 8284862813409512861}
     - target: {fileID: 5315938453462939683, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
       propertyPath: charadata
-      value:
+      value: 
       objectReference: {fileID: 11400000, guid: 20a489720cef41fabe54e7dbc9419239, type: 2}
     - target: {fileID: 5315938453462939683, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
+      propertyPath: Choice_MoveToBase
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5315938453462939683, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
+      propertyPath: LookPlayerDistance
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5315938453462939683, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
       propertyPath: EnemyMoveBaseObject
-      value:
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5705269437044844600, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
       propertyPath: m_AnchorMax.y
@@ -266,14 +274,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5315938453462939683, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
-      propertyPath: Choice_MoveToBase
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5315938453462939683, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}
-      propertyPath: LookPlayerDistance
-      value: -1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -300,9 +300,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ee8b467b2664c298b10f803759dba0d, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  EnemyName: "\u5e1d\u56fd\u6563\u5f3e\u9283\u58eb"
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnemyName: "\u5E1D\u56FD\u6563\u5F3E\u9283\u58EB"
   enemyBase: {fileID: 0}
   A_Phase: 0
   attacktype: 0
@@ -312,15 +312,15 @@ MonoBehaviour:
   muzzle: {fileID: 7692004062471786740}
   ammoText: {fileID: 8195900921025005025}
   shotSE: {fileID: 8300000, guid: 7605819949a993c4a80e6e275fce96f8, type: 3}
-  magazineSize: 2
+  magazineSize: 3
   pelletCount: 20
-  spreadHalfAngle: 30
+  spreadHalfAngle: 15
   pelletSpeed: 30
-  pelletRange: 8
+  pelletRange: 20
   pelletPowerPercent: 100
   secondsPerShell: 2
   reloadIdleRatio: 0.8
-  shotCooldown: 1
+  shotCooldown: 0.4
   fireAnimationSeconds: 0.25
   windupSeconds: 0.5
   attackWarningPrefab: {fileID: 8317282966728204219, guid: f065bb0c5e9e4ee4481698931e5c0cc8, type: 3}
@@ -350,6 +350,14 @@ MonoBehaviour:
   movementLookAhead: 0.55
   coverReloadDelay: 0.25
   retreatMaxRetries: 3
+  runtimeFloor: {fileID: 0}
+  runtimeStage: {fileID: 0}
+  navigationStatus: 
+  runtimeState: 
+  lowerAllies: 0
+  lowerAllyCount: 0
+  runtimeRetreatDestination: {x: 0, y: 0}
+  reloadReason: 
 --- !u!224 &6662923678536191497 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3008200536617617639, guid: 143cbfe441283ed4caca300ba428bb3d, type: 3}

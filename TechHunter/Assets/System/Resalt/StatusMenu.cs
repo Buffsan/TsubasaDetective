@@ -1,30 +1,61 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StatusMenu : MonoBehaviour
 {
     [SerializeField] Vector2 SetPosition;
-    [SerializeField] TextMeshProUGUI Statuss;
+    [SerializeField] TextMeshProUGUI TextTemplate;
 
-    // 既存のStatussは残す。新UIを使用する場合は12個ずつ順番に設定する。
-    // 順番: HP, 攻撃倍率, 攻撃, 回復, 防御倍率, 防御, CT, 運, 混乱, スタン, 速度倍率, 速度
-    [SerializeField] List<TextMeshProUGUI> StatusValues = new List<TextMeshProUGUI>();
-    [SerializeField] List<TextMeshProUGUI> StatusDeltas = new List<TextMeshProUGUI>();
+    [Serializable]
+    public class StatusRow
+    {
+        public string Label;
+        [Min(0)] public int ValueIndex;
+        public bool Percentage;
+        [Min(0)] public float ExtraSpacingAfter;
+    }
+
+    [Header("Status rows (order = display order)")]
+    [SerializeField] List<StatusRow> StatusRows = new List<StatusRow>();
+
+    [Header("Viewport (panel local units)")]
+    [SerializeField, Min(0)] float ViewportHorizontalPadding = 10f;
+    [SerializeField, Min(0)] float ViewportTopPadding = 168f;
+    [SerializeField, Min(0)] float ViewportBottomPadding = 24f;
+    [SerializeField, Min(1)] float ScrollSensitivity = 72f;
+
+    [Header("Row layout (X from viewport left)")]
+    [SerializeField, Min(0)] float LabelX = 0f;
+    [SerializeField, Min(0)] float ValueX = 245f;
+    [SerializeField, Min(0)] float DeltaX = 245f;
+    [SerializeField, Min(1)] float RowHeight = 64f;
+    [SerializeField, Min(0)] float RowSpacing = 8f;
+    [SerializeField, Min(1)] float DeltaFontSize = 22f;
+
+    [Header("Card preview")]
     [SerializeField] Color PositiveColor = new Color(0.25f, 0.9f, 0.45f);
     [SerializeField] Color NegativeColor = new Color(1f, 0.3f, 0.3f);
-    [SerializeField] float PreviewFontMultiplier = 1.2f;
+    [SerializeField, Min(1)] float PreviewFontMultiplier = 1.2f;
 
-    readonly HashSet<int> lineBreaks = new HashSet<int> { 2, 5, 6, 9 };
-    readonly List<Color> defaultColors = new List<Color>();
-    readonly List<float> defaultSizes = new List<float>();
+    const int MaxHpIndex = 12;
+    readonly List<RowView> rows = new List<RowView>();
     StatusUP previewCard;
-    static readonly string[] AdditionalStatusNames =
-        { "獲得資金増加", "混乱時ダメージ", "回復量増加", "幸運ダメージ" };
+    RectTransform rect;
+    ScrollRect scroll;
+    bool listBuilt;
+
+    class RowView
+    {
+        public StatusRow Definition;
+        public TextMeshProUGUI Value;
+        public TextMeshProUGUI Delta;
+    }
 
     public enum Move { Move, Wait, Run }
     public Move move = Move.Move;
-    RectTransform rect;
 
     void Awake()
     {
@@ -36,7 +67,10 @@ public class StatusMenu : MonoBehaviour
         switch (move)
         {
             case Move.Move: isMove(); break;
-            case Move.Run: isRun(); break;
+            case Move.Run:
+                if (scroll != null) scroll.enabled = false;
+                isRun();
+                break;
         }
     }
 
@@ -57,104 +91,148 @@ public class StatusMenu : MonoBehaviour
         Render();
     }
 
-    void CacheDefaults()
+    // Construct once per panel instance, after SkillController has parented it to
+    // ResultCanvas. Updating card previews never recreates the rows or resets scrolling.
+    void BuildList()
     {
-        if (defaultSizes.Count == StatusValues.Count) return;
-        defaultSizes.Clear();
-        defaultColors.Clear();
-        foreach (var value in StatusValues)
+        if (listBuilt || TextTemplate == null || rect == null) return;
+        listBuilt = true;
+        TextTemplate.gameObject.SetActive(false);
+
+        RectTransform viewport = CreateRect("StatusViewport", rect);
+        viewport.anchorMin = Vector2.zero;
+        viewport.anchorMax = Vector2.one;
+        viewport.offsetMin = new Vector2(ViewportHorizontalPadding, ViewportBottomPadding);
+        viewport.offsetMax = new Vector2(-ViewportHorizontalPadding, -ViewportTopPadding);
+        viewport.gameObject.AddComponent<RectMask2D>();
+
+        RectTransform content = CreateRect("Content", viewport);
+        content.anchorMin = new Vector2(0f, 1f);
+        content.anchorMax = new Vector2(1f, 1f);
+        content.pivot = new Vector2(0.5f, 1f);
+        content.anchoredPosition = Vector2.zero;
+        content.sizeDelta = Vector2.zero;
+
+        float width = Mathf.Max(1f, viewport.rect.width);
+        float labelWidth = Mathf.Max(1f, Mathf.Min(ValueX, width) - LabelX - 8f);
+        float valueWidth = Mathf.Max(1f, width - ValueX);
+        float deltaWidth = Mathf.Max(1f, width - DeltaX);
+        float height = Mathf.Max(1f, RowHeight);
+        float valueHeight = height * 0.62f;
+        float y = 0f;
+
+        foreach (StatusRow definition in StatusRows)
         {
-            defaultSizes.Add(value != null ? value.fontSize : 0f);
-            defaultColors.Add(value != null ? value.color : Color.white);
+            if (definition == null) continue;
+            RectTransform row = CreateRect(definition.Label, content);
+            row.anchorMin = new Vector2(0f, 1f);
+            row.anchorMax = new Vector2(1f, 1f);
+            row.pivot = new Vector2(0f, 1f);
+            row.anchoredPosition = new Vector2(0f, -y);
+            row.sizeDelta = new Vector2(0f, height);
+
+            TextMeshProUGUI label = CreateText("Label", row, LabelX, 0f, labelWidth,
+                valueHeight, TextAlignmentOptions.MidlineLeft, TextTemplate.fontSize);
+            label.text = definition.Label;
+
+            TextMeshProUGUI value = CreateText("Value", row, ValueX, 0f, valueWidth,
+                valueHeight, TextAlignmentOptions.MidlineRight, TextTemplate.fontSize);
+            TextMeshProUGUI delta = CreateText("Delta", row, DeltaX, valueHeight, deltaWidth,
+                height - valueHeight, TextAlignmentOptions.MidlineRight, DeltaFontSize);
+
+            rows.Add(new RowView { Definition = definition, Value = value, Delta = delta });
+            y += height + RowSpacing + definition.ExtraSpacingAfter;
         }
+
+        if (rows.Count > 0)
+            y -= RowSpacing + rows[rows.Count - 1].Definition.ExtraSpacingAfter;
+        content.sizeDelta = new Vector2(0f, Mathf.Max(viewport.rect.height, y));
+
+        // The existing background Image receives pointer events anywhere on the
+        // panel. ScrollRect uses EventSystem (wheel / touch), not global mouse input.
+        scroll = gameObject.AddComponent<ScrollRect>();
+        scroll.viewport = viewport;
+        scroll.content = content;
+        scroll.horizontal = false;
+        scroll.vertical = true;
+        scroll.movementType = ScrollRect.MovementType.Clamped;
+        scroll.inertia = false;
+        scroll.scrollSensitivity = ScrollSensitivity;
+        scroll.verticalNormalizedPosition = 1f;
+        content.anchoredPosition = Vector2.zero;
+    }
+
+    RectTransform CreateRect(string objectName, Transform parent)
+    {
+        GameObject obj = new GameObject(objectName, typeof(RectTransform));
+        obj.layer = gameObject.layer;
+        RectTransform result = (RectTransform)obj.transform;
+        result.SetParent(parent, false);
+        return result;
+    }
+
+    TextMeshProUGUI CreateText(string objectName, RectTransform parent,
+        float x, float y, float width, float height, TextAlignmentOptions alignment, float fontSize)
+    {
+        TextMeshProUGUI text = Instantiate(TextTemplate, parent, false);
+        text.name = objectName;
+        RectTransform textRect = text.rectTransform;
+        textRect.anchorMin = new Vector2(0f, 1f);
+        textRect.anchorMax = new Vector2(0f, 1f);
+        textRect.pivot = new Vector2(0f, 1f);
+        textRect.anchoredPosition = new Vector2(x, -y);
+        textRect.sizeDelta = new Vector2(width, height);
+        textRect.localScale = Vector3.one;
+        text.text = string.Empty;
+        text.alignment = alignment;
+        text.enableWordWrapping = false;
+        text.raycastTarget = false;
+        text.maskable = true;
+        text.overflowMode = TextOverflowModes.Truncate;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = Mathf.Min(14f, fontSize);
+        text.fontSizeMax = fontSize;
+        text.fontSize = fontSize;
+        text.gameObject.SetActive(true);
+        return text;
     }
 
     void Render()
     {
+        BuildList();
         var player = PlayerController.Instance;
-        if (player == null) return;
+        if (player == null || !listBuilt) return;
 
         float[] current = StatusCardEffects.GetValues(player, null);
         float[] next = previewCard != null ? StatusCardEffects.GetValues(player, previewCard) : current;
-        bool split = StatusValues.Count >= 16 && StatusDeltas.Count >= 16;
-        CacheDefaults();
 
-        if (split)
+        foreach (RowView row in rows)
         {
-            if (Statuss != null) Statuss.gameObject.SetActive(false);
-            for (int i = 0; i < 16; i++)
+            int index = row.Definition.ValueIndex;
+            if (index < 0 || index >= current.Length || index >= next.Length)
             {
-                var value = StatusValues[i];
-                var deltaText = StatusDeltas[i];
-                if (value == null || deltaText == null) continue;
-
-                int index = i < 12 ? i : i + 1; // Index 12 holds MaxHP, shown in HP row.
-                float delta = i == 0 ? next[12] - current[12] : next[index] - current[index];
-                // HP回復のみの場合は回復量を変化量として表示。
-                if (i == 0 && Mathf.Approximately(delta, 0f))
-                    delta = next[0] - current[0];
-                bool changed = previewCard != null && !Mathf.Approximately(delta, 0f);
-                Color color = delta >= 0f ? PositiveColor : NegativeColor;
-                value.color = changed ? color : defaultColors[i];
-                value.fontSize = changed ? defaultSizes[i] * PreviewFontMultiplier : defaultSizes[i];
-                value.text = i == 0
-                    ? next[0].ToString("F1") + " / " + next[12].ToString("F1")
-                    : (i < 12 ? next[index].ToString("F1")
-                        : AdditionalStatusNames[i - 12] + ": " + next[index].ToString("F1") + "%");
-                deltaText.text = changed ? (delta > 0f ? "+" : "") + delta.ToString("F1")
-                    + (i >= 12 ? "%" : "") : "";
-                deltaText.color = color;
+                row.Value.text = "-";
+                row.Delta.text = string.Empty;
+                continue;
             }
-            return;
-        }
 
-        // A prefab that has not yet been migrated still shows all 16 values in
-        // the existing legacy text, without instantiating new UI at runtime.
-        if (Statuss == null) return;
-        foreach (var value in StatusValues)
-            if (value != null) value.gameObject.SetActive(false);
-        foreach (var deltaText in StatusDeltas)
-            if (deltaText != null) deltaText.gameObject.SetActive(false);
-        Statuss.gameObject.SetActive(true);
-        string result = "";
-        for (int i = 0; i < 12; i++)
-        {
-            float delta = i == 0 ? next[12] - current[12] : next[i] - current[i];
-            if (i == 0 && Mathf.Approximately(delta, 0f))
+            bool hp = index == 0 && next.Length > MaxHpIndex && current.Length > MaxHpIndex;
+            float delta = hp ? next[MaxHpIndex] - current[MaxHpIndex] : next[index] - current[index];
+            // Retain existing behavior: when max HP is unchanged, show healing.
+            if (hp && Mathf.Approximately(delta, 0f))
                 delta = next[0] - current[0];
-            string value = i == 0
-                ? next[0].ToString("F1") + " / " + next[12].ToString("F1")
-                : next[i].ToString("F1");
-            if (previewCard != null && !Mathf.Approximately(delta, 0f))
-            {
-                string hex = ColorUtility.ToHtmlStringRGB(delta > 0f ? PositiveColor : NegativeColor);
-                value = "<color=#" + hex + "><size=120%>" + value + "</size> <size=75%>"
-                    + (delta > 0f ? "+" : "") + delta.ToString("F1") + "</size></color>";
-            }
-            result += value + "\n";
-            if (lineBreaks.Contains(i)) result += "\n";
+
+            bool changed = previewCard != null && !Mathf.Approximately(delta, 0f);
+            Color color = delta >= 0f ? PositiveColor : NegativeColor;
+            string unit = row.Definition.Percentage ? "%" : string.Empty;
+            row.Value.text = hp
+                ? next[0].ToString("F1") + " / " + next[MaxHpIndex].ToString("F1")
+                : next[index].ToString("F1") + unit;
+            row.Value.color = changed ? color : TextTemplate.color;
+            row.Value.fontSizeMax = TextTemplate.fontSize * (changed ? PreviewFontMultiplier : 1f);
+            row.Delta.text = changed ? (delta > 0f ? "+" : "") + delta.ToString("F1") + unit : "";
+            row.Delta.color = color;
         }
-        // The four additional modifiers have their own labels even when the
-        // existing UI has its original fixed set of twelve labels.
-        for (int i = 0; i < AdditionalStatusNames.Length; i++)
-        {
-            int valueIndex = 13 + i; // 12 is the existing hidden max-HP value.
-            float delta = next[valueIndex] - current[valueIndex];
-            string value = AdditionalStatusNames[i] + ": " + next[valueIndex].ToString("F1") + "%";
-            if (previewCard != null && !Mathf.Approximately(delta, 0f))
-            {
-                string hex = ColorUtility.ToHtmlStringRGB(delta > 0f ? PositiveColor : NegativeColor);
-                value = "<color=#" + hex + "><size=120%>" + value
-                    + "</size> <size=75%>" + (delta > 0f ? "+" : "")
-                    + delta.ToString("F1") + "%</size></color>";
-            }
-            result += value + "\n";
-        }
-        Statuss.text = result;
-        // Allow four extra rows to be visible in legacy single-TMP menus.
-        Statuss.ForceMeshUpdate();
-        Statuss.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-            Mathf.Max(Statuss.rectTransform.rect.height, Statuss.preferredHeight + 8f));
     }
 
     void isRun()

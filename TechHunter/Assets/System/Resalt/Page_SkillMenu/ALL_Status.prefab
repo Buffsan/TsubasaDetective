@@ -475,6 +475,10 @@ MonoBehaviour:
   ViewportTopPadding: 168
   ViewportBottomPadding: 24
   ScrollSensitivity: 72
+  ScrollbarWidth: 16
+  ScrollbarGap: 6
+  ScrollbarTrackColor: {r: 0.25, g: 0.25, b: 0.25, a: 0.65}
+  ScrollbarHandleColor: {r: 0.95, g: 0.95, b: 0.95, a: 1}
   LabelX: 0
   ValueX: 245
   DeltaX: 245

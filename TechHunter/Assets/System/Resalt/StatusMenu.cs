@@ -27,6 +27,12 @@ public class StatusMenu : MonoBehaviour
     [SerializeField, Min(0)] float ViewportBottomPadding = 24f;
     [SerializeField, Min(1)] float ScrollSensitivity = 72f;
 
+    [Header("Left scrollbar")]
+    [SerializeField, Min(4)] float ScrollbarWidth = 16f;
+    [SerializeField, Min(0)] float ScrollbarGap = 6f;
+    [SerializeField] Color ScrollbarTrackColor = new Color(0.25f, 0.25f, 0.25f, 0.65f);
+    [SerializeField] Color ScrollbarHandleColor = new Color(0.95f, 0.95f, 0.95f, 1f);
+
     [Header("Row layout (X from viewport left)")]
     [SerializeField, Min(0)] float LabelX = 0f;
     [SerializeField, Min(0)] float ValueX = 245f;
@@ -68,7 +74,12 @@ public class StatusMenu : MonoBehaviour
         {
             case Move.Move: isMove(); break;
             case Move.Run:
-                if (scroll != null) scroll.enabled = false;
+                if (scroll != null)
+                {
+                    if (scroll.verticalScrollbar != null)
+                        scroll.verticalScrollbar.interactable = false;
+                    scroll.enabled = false;
+                }
                 isRun();
                 break;
         }
@@ -102,7 +113,10 @@ public class StatusMenu : MonoBehaviour
         RectTransform viewport = CreateRect("StatusViewport", rect);
         viewport.anchorMin = Vector2.zero;
         viewport.anchorMax = Vector2.one;
-        viewport.offsetMin = new Vector2(ViewportHorizontalPadding, ViewportBottomPadding);
+        // Reserve a separate gutter for the scrollbar; rows never overlap it.
+        float scrollbarWidth = Mathf.Max(4f, ScrollbarWidth);
+        viewport.offsetMin = new Vector2(ViewportHorizontalPadding + scrollbarWidth + ScrollbarGap,
+            ViewportBottomPadding);
         viewport.offsetMax = new Vector2(-ViewportHorizontalPadding, -ViewportTopPadding);
         viewport.gameObject.AddComponent<RectMask2D>();
 
@@ -158,8 +172,47 @@ public class StatusMenu : MonoBehaviour
         scroll.movementType = ScrollRect.MovementType.Clamped;
         scroll.inertia = false;
         scroll.scrollSensitivity = ScrollSensitivity;
+        scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
+        scroll.verticalScrollbar = CreateScrollbar(scrollbarWidth);
+        scroll.verticalScrollbar.size = Mathf.Clamp01(viewport.rect.height / Mathf.Max(1f, content.rect.height));
         scroll.verticalNormalizedPosition = 1f;
         content.anchoredPosition = Vector2.zero;
+    }
+
+    Scrollbar CreateScrollbar(float width)
+    {
+        RectTransform track = CreateRect("VerticalScrollbar", rect);
+        track.anchorMin = new Vector2(0f, 0f);
+        track.anchorMax = new Vector2(0f, 1f);
+        track.pivot = new Vector2(0f, 0.5f);
+        track.offsetMin = new Vector2(ViewportHorizontalPadding, ViewportBottomPadding);
+        track.offsetMax = new Vector2(ViewportHorizontalPadding + width, -ViewportTopPadding);
+        Image trackImage = track.gameObject.AddComponent<Image>();
+        trackImage.color = ScrollbarTrackColor;
+        trackImage.raycastTarget = true;
+
+        RectTransform slidingArea = CreateRect("SlidingArea", track);
+        slidingArea.anchorMin = Vector2.zero;
+        slidingArea.anchorMax = Vector2.one;
+        slidingArea.offsetMin = new Vector2(2f, 2f);
+        slidingArea.offsetMax = new Vector2(-2f, -2f);
+
+        RectTransform handle = CreateRect("Handle", slidingArea);
+        handle.anchorMin = Vector2.zero;
+        handle.anchorMax = Vector2.one;
+        handle.offsetMin = Vector2.zero;
+        handle.offsetMax = Vector2.zero;
+        Image handleImage = handle.gameObject.AddComponent<Image>();
+        handleImage.color = ScrollbarHandleColor;
+        handleImage.raycastTarget = true;
+
+        Scrollbar scrollbar = track.gameObject.AddComponent<Scrollbar>();
+        scrollbar.direction = Scrollbar.Direction.BottomToTop;
+        scrollbar.handleRect = handle;
+        scrollbar.targetGraphic = handleImage;
+        scrollbar.navigation = new Navigation { mode = Navigation.Mode.None };
+        scrollbar.value = 1f;
+        return scrollbar;
     }
 
     RectTransform CreateRect(string objectName, Transform parent)

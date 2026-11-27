@@ -140,7 +140,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ""
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b0f3628979ca4fe4dbdd80bd5e694e9b, type: 2}
   m_sharedMaterial: {fileID: 1093570716693056643, guid: b0f3628979ca4fe4dbdd80bd5e694e9b, type: 2}
@@ -407,71 +407,71 @@ MonoBehaviour:
   SetPosition: {x: 805, y: 0}
   TextTemplate: {fileID: 8090342100428772791}
   StatusRows:
-  - Label: "HP:"
+  - Label: 'HP:'
     ValueIndex: 0
     Percentage: 0
     ExtraSpacingAfter: 0
-  - Label: "攻撃力(%):"
+  - Label: "\u653B\u6483\u529B(%):"
     ValueIndex: 1
     Percentage: 0
     ExtraSpacingAfter: 0
-  - Label: "攻撃力:"
+  - Label: "\u653B\u6483\u529B:"
     ValueIndex: 2
     Percentage: 0
     ExtraSpacingAfter: 8
-  - Label: "自然回復:"
+  - Label: "\u81EA\u7136\u56DE\u5FA9:"
     ValueIndex: 3
     Percentage: 0
     ExtraSpacingAfter: 0
-  - Label: "防御力(%):"
+  - Label: "\u9632\u5FA1\u529B(%):"
     ValueIndex: 4
     Percentage: 0
     ExtraSpacingAfter: 0
-  - Label: "防御力:"
+  - Label: "\u9632\u5FA1\u529B:"
     ValueIndex: 5
     Percentage: 0
     ExtraSpacingAfter: 8
-  - Label: "クールタイム速度:"
+  - Label: "\u30AF\u30FC\u30EB\u30BF\u30A4\u30E0\u901F\u5EA6:"
     ValueIndex: 6
     Percentage: 0
     ExtraSpacingAfter: 8
-  - Label: "運(%):"
+  - Label: "\u904B(%):"
     ValueIndex: 7
     Percentage: 0
     ExtraSpacingAfter: 0
-  - Label: "混乱効果時間:"
+  - Label: "\u6DF7\u4E71\u52B9\u679C\u6642\u9593:"
     ValueIndex: 8
     Percentage: 0
     ExtraSpacingAfter: 0
-  - Label: "スタン効果時間:"
+  - Label: "\u30B9\u30BF\u30F3\u52B9\u679C\u6642\u9593:"
     ValueIndex: 9
     Percentage: 0
     ExtraSpacingAfter: 8
-  - Label: "移動速度(%):"
+  - Label: "\u79FB\u52D5\u901F\u5EA6(%):"
     ValueIndex: 10
     Percentage: 0
     ExtraSpacingAfter: 0
-  - Label: "移動速度:"
+  - Label: "\u79FB\u52D5\u901F\u5EA6:"
     ValueIndex: 11
     Percentage: 0
     ExtraSpacingAfter: 0
-  - Label: "獲得資金増加:"
+  - Label: "\u7372\u5F97\u8CC7\u91D1\u5897\u52A0:"
     ValueIndex: 13
     Percentage: 1
     ExtraSpacingAfter: 0
-  - Label: "混乱時ダメージ:"
+  - Label: "\u6DF7\u4E71\u6642\u30C0\u30E1\u30FC\u30B8:"
     ValueIndex: 14
     Percentage: 1
     ExtraSpacingAfter: 0
-  - Label: "回復量増加:"
+  - Label: "\u56DE\u5FA9\u91CF\u5897\u52A0:"
     ValueIndex: 15
     Percentage: 1
     ExtraSpacingAfter: 0
-  - Label: "幸運ダメージ:"
+  - Label: "\u5E78\u904B\u30C0\u30E1\u30FC\u30B8:"
     ValueIndex: 16
     Percentage: 1
     ExtraSpacingAfter: 0
-  ViewportHorizontalPadding: 10
+  ViewportHorizontalPadding: 2.96
   ViewportTopPadding: 168
   ViewportBottomPadding: 24
   ScrollSensitivity: 72
@@ -482,7 +482,7 @@ MonoBehaviour:
   LabelX: 0
   ValueX: 245
   DeltaX: 245
-  RowHeight: 64
+  RowHeight: 60
   RowSpacing: 8
   DeltaFontSize: 22
   PositiveColor: {r: 0.25, g: 0.9, b: 0.45, a: 1}
